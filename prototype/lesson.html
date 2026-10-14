@@ -21,6 +21,7 @@
   <symbol id="i-play" viewBox="0 0 16 16"><path d="M5 3.5v9l7-4.5-7-4.5Z"/></symbol>
   <symbol id="i-check" viewBox="0 0 16 16"><path d="m3.5 8.5 3 3 6-7"/></symbol>
   <symbol id="i-x" viewBox="0 0 16 16"><path d="m4 4 8 8M12 4l-8 8"/></symbol>
+  <symbol id="i-margin" viewBox="0 0 16 16"><rect x="2" y="2.5" width="12" height="11" rx="1.5"/><path d="M10 2.5v11"/></symbol>
   <symbol id="i-repeat" viewBox="0 0 16 16"><path d="M13 6.5A5 5 0 1 0 13.3 9"/><path d="M13.5 2.8v3.7H9.8"/></symbol>
   <symbol id="st-solid" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="currentColor" stroke="none"/><path d="m4.2 7.2 1.9 1.9 3.7-4.2" stroke="var(--paper)" stroke-width="1.6" fill="none"/></symbol>
   <symbol id="st-can" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="m4.3 7.2 1.8 1.8 3.6-4" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
@@ -95,12 +96,15 @@
 
   <main class="article-wrap">
     <article class="article">
-      <nav class="breadcrumb" aria-label="Путь"><a href="#">Мост к ML</a><span aria-hidden="true">/</span><span>Урок V.1</span></nav>
+      <div class="article-top">
+        <nav class="breadcrumb" aria-label="Путь"><a href="#">Мост к ML</a><span aria-hidden="true">/</span><span>Урок V.1</span></nav>
+        <button class="btn btn--quiet btn--sm margin-toggle" data-margin-toggle aria-pressed="false"><svg class="icon"><use href="#i-margin"/></svg><span data-label>Скрыть поля</span></button>
+      </div>
       <h1>Линейная регрессия тремя способами</h1>
 
       <aside class="note">
         <span class="label">В CS229</span>
-        Раздел «Linear regression»: <span class="note__term">the normal equations</span> и <span class="note__term">probabilistic interpretation</span>.
+        <div class="note__body">Раздел «Linear regression»: <span class="note__term">the normal equations</span> и <span class="note__term">probabilistic interpretation</span>.</div>
       </aside>
       <p class="lead">Одна и та же формула весов получается из геометрии, из анализа и из теории вероятностей. Выведем её всеми тремя путями и проверим в&nbsp;коде.</p>
       <p class="lesson-meta ui">Около 45 минут: четыре коротких цикла, девять вопросов и лабораторная работа.</p>
@@ -117,8 +121,9 @@
 
       <h2>Способ 2. Минимум функции потерь</h2>
       <aside class="note">
-        Наведите курсор на символ или выберите его в&nbsp;легенде формулы: подсветятся все его вхождения на странице.
-        <p style="margin-top:8px">Цвет закреплён за ролью: <span class="s1">данные</span>, <span class="s2">веса</span>, <span class="s3">ответы</span>; остатки&nbsp;— карандашом.</p>
+        <span class="label">Как читать формулы</span>
+        <div class="note__body">Наведите курсор на символ или выберите его в&nbsp;легенде формулы: подсветятся все его вхождения на странице.
+        <p style="margin-top:8px">Цвет закреплён за ролью: <span class="s1">данные</span>, <span class="s2">веса</span>, <span class="s3">ответы</span>; остатки&nbsp;— карандашом.</p></div>
       </aside>
       <p>Возьмём \(n\) объектов с&nbsp;\(d\) признаками. Признаки сложим в&nbsp;матрицу&nbsp;\(\X\), ответы&nbsp;— в&nbsp;вектор&nbsp;\(\y\), веса модели&nbsp;— в&nbsp;вектор&nbsp;\(\th\). Модель предсказывает \(\X\th\), а&nbsp;разница с&nbsp;ответами&nbsp;— это остатки \(\res = \y - \X\th\). Хорошие веса делают остатки маленькими сразу у&nbsp;всех объектов, поэтому минимизируем сумму их квадратов:</p>
       <div class="math-display" id="lead-formula">$$J(\th) = \tfrac12 \sum_{i=1}^{n} \res_i^{2} = \tfrac12\,\lVert \X\th - \y \rVert^{2}$$</div>
@@ -205,7 +210,7 @@
 
       <aside class="note">
         <span class="label">По-английски</span>
-        <span class="note__term">normal equations</span>. Название не про «нормальное распределение»: вектор остатков нормален, то есть перпендикулярен, столбцам \(\X\).
+        <div class="note__body"><span class="note__term">normal equations</span>. Название не про «нормальное распределение»: вектор остатков нормален, то есть перпендикулярен, столбцам \(\X\).</div>
       </aside>
       <div class="block block--exercise checkpoint" data-choice>
         <p><span class="block__title">Проверка.</span> Почему при раскрытии скобок \(\th\T\X\T\y\) и&nbsp;\(\y\T\X\th\) можно сложить в&nbsp;одно слагаемое?</p>
@@ -219,7 +224,7 @@
 
       <aside class="note note--teacher">
         <span class="label">Пометка на полях</span>
-        Порядок! Транспонирование переставляет множители.
+        <div class="note__body">Порядок! Транспонирование переставляет множители.</div>
       </aside>
       <div class="block block--pitfall">
         <p><span class="block__title">Типичная ошибка.</span> Забыть, что транспонирование меняет порядок множителей:</p>
@@ -230,8 +235,8 @@
       <h2>В коде</h2>
       <aside class="note">
         <span class="label">Почему solve, а не inv</span>
-        Решить систему быстрее и&nbsp;точнее, чем обращать матрицу явно.
-        <p style="margin-top:8px">Лабораторная «Нормальные уравнения» открывается в&nbsp;браузере (JupyterLite) или в&nbsp;Google Colab.</p>
+        <div class="note__body">Решить систему быстрее и&nbsp;точнее, чем обращать матрицу явно.
+        <p style="margin-top:8px">Лабораторная «Нормальные уравнения» открывается в&nbsp;браузере (JupyterLite) или в&nbsp;Google Colab.</p></div>
       </aside>
       <p>Те же двенадцать точек, что на рисунке&nbsp;1. Решаем систему \(\X\T\X\th = \X\T\y\) и&nbsp;сверяем ответ с&nbsp;библиотечной функцией.</p>
       <div class="code-cell">
@@ -264,8 +269,8 @@ ref = np.linalg.lstsq(X, y, rcond=<span class="tok-k">None</span>)[<span class="
 
       <aside class="note">
         <span class="label">Игра «Подгони прямую»</span>
-        Пять наборов данных: проводите прямую на глаз и&nbsp;сравнивайте с&nbsp;МНК. Около трёх минут.
-        <p style="margin-top:8px"><a href="game.html">Открыть игру</a></p>
+        <div class="note__body">Пять наборов данных: проводите прямую на глаз и&nbsp;сравнивайте с&nbsp;МНК. Около трёх минут.
+        <p style="margin-top:8px"><a href="game.html">Открыть игру</a></p></div>
       </aside>
       <div class="block block--exercise" data-exercise data-answer="0.5"
            data-right="\(\th_1 = 0.5\): в среднем каждый следующий объект на полшага выше предыдущего."

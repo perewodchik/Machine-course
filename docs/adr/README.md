@@ -28,4 +28,5 @@
 | № | Решение | Статус |
 |---|---|---|
 | [0001](0001-site-stack.md) | Стек сайта: Astro 7 + острова React, Tailwind 4, Base UI, KaTeX 0.19 | предложено |
-| [0002](0002-python-runtime.md) | Где выполняется Python: Pyodide → JupyterLite → Colab | предложено |
+| [0002](0002-python-runtime.md) | Где выполняется Python: Pyodide в уроке, Colab и JupyterLite для лабораторных | принято |
+| [0003](0003-hosting.md) | Хостинг: Cloudflare Pages | принято |

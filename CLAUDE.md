@@ -2,9 +2,33 @@
 
 Интерактивный курс «Математика для машинного обучения» (русский язык): ЛА, анализ, вероятность, статистика и мост к Stanford CS229. Сейчас этап проектирования: сайт ещё не собран, есть план, программа, токены, прототип и Python-проверки.
 
+## Работа по плану реализации
+
+Реализация идёт по `docs/implementation/PLAN.md`. Начало любой сессии реализации — скилл `continue-plan` (стартовые промпты — `docs/implementation/KICKOFF.md`):
+
+1. `docs/implementation/context/00-project.md` (одна страница) → блок «Сейчас» в `PLAN.md` → верхняя запись `LOG.md`.
+2. Задача: первая `[~]`, иначе первая `[ ]` с выполненными зависимостями.
+3. Читать только пакеты из поля «Контекст» задачи.
+4. После задачи: проверки, статус и «Итог» в `PLAN.md`, блок «Сейчас», запись в `LOG.md`, коммит с ID задачи, пуш в `impl/stage-N`.
+
+## Карта контекста: что читать
+
+| Делаешь | Читай | Не читай целиком |
+|---|---|---|
+| Каркас сайта, раскладка, деплой | `docs/implementation/context/site-foundation.md` | `docs/analysis.md` |
+| Контент, YAML, формулы, KaTeX | `context/content-pipeline.md` | `docs/conventions/*` |
+| Компоненты урока, упражнения | `context/pedagogy-components.md` | `docs/conventions/pedagogy.md` |
+| Виджеты, игры | `context/widgets-games.md` | `prototype/*` (только нужный файл-эталон) |
+| Python, лабораторные | `context/python-runtime.md` | — |
+| Прогресс, повторения, аналитика | `context/progress-learning.md` | — |
+| Урок | `context/content-authoring.md` + карточка `### <номер>.` в `docs/program/` | `docs/program/*` целиком |
+| Проверки, CI, скриншоты | `context/testing-ci.md` | — |
+| ИИ-тьютор (этап 6) | `context/ai-tutor.md` | — |
+
 ## Где что лежит
 
-- `docs/analysis.md` — решения и открытые вопросы; `docs/program/` — программа-хэндбук; `docs/conventions/` — соглашения (читать перед любой работой с контентом или кодом).
+- `docs/implementation/` — план реализации, журнал, пакеты контекста, стартовые промпты.
+- `docs/analysis.md` — решения и открытые вопросы; `docs/program/` — программа-хэндбук; `docs/conventions/` — соглашения; `docs/ideas.md` — идеи. Читать по ссылкам из пакетов контекста, а не целиком.
 - `src/design-system/` — токены и правила внешнего вида; `prototype/` — статичный прототип страниц.
 - `content/` — курс, модули, понятия, формулы с выводами (YAML); `code/` — Python-пакет `mlf`, сниппеты, тесты; `notebooks/` — лабораторные (Jupytext → ipynb).
 - `src/lib/content/types.ts` — модель контента; `src/games/_engine/types.ts` — контракт игры.
@@ -38,4 +62,5 @@ npx http-server -p 8123 -c-1 .                                   # протот�
 | `new-game` | Создать мини-игру по контракту `GameSpec` |
 | `new-notebook` | Создать лабораторную (Jupytext, решения, проверки) |
 | `content-review` | Проверить урок по чек-листу педагогики, нотации и типографики |
+| `continue-plan` | Продолжить реализацию по плану: следующая задача, контекст, проверки, журнал |
 | `frontend-design`, `design-system`, `design-critique`, `accessibility-review`, `ux-copy` | Скиллы Anthropic (см. `THIRD_PARTY_NOTICES.md`) |

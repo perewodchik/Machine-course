@@ -34,7 +34,9 @@ def build(out_dir: Path, transform) -> list[Path]:
     written = []
     for src in sorted(SRC.rglob("*.py")):
         nb = jupytext.read(src)
-        for cell in nb.cells:
+        for i, cell in enumerate(nb.cells):
+            # детерминированные id: пересборка без изменений не меняет файл
+            cell.id = f"{src.stem.replace('_', '-')}-{i:02d}"
             if cell.cell_type == "code":
                 cell.source = transform(cell.source + "\n").rstrip("\n")
                 cell.outputs, cell.execution_count = [], None

@@ -9,7 +9,54 @@
   let theme = params.get("theme");
   try { theme = theme || localStorage.getItem("theme"); } catch (_) { /* приватный режим */ }
   if (theme === "light" || theme === "dark") document.documentElement.dataset.theme = theme;
+  let margins = params.get("margins");
+  try { margins = margins || localStorage.getItem("margins"); } catch (_) { /* приватный режим */ }
+  if (margins === "hidden") document.documentElement.dataset.margins = "hidden";
 })();
+
+/* ───────── Поля: показать или скрыть ───────── */
+function initMargins() {
+  const root = document.documentElement;
+  const buttons = document.querySelectorAll("[data-margin-toggle]");
+  const sync = () => {
+    const hidden = root.dataset.margins === "hidden";
+    buttons.forEach((b) => {
+      b.setAttribute("aria-pressed", String(hidden));
+      b.querySelector("[data-label]").textContent = hidden ? "Показать поля" : "Скрыть поля";
+    });
+    // В свёрнутом режиме подпись заметки — кнопка раскрытия
+    document.querySelectorAll(".note > .label").forEach((label) => {
+      if (hidden) {
+        label.setAttribute("role", "button");
+        label.setAttribute("tabindex", "0");
+        label.setAttribute("aria-expanded", String(label.parentElement.classList.contains("is-open")));
+      } else {
+        label.removeAttribute("role");
+        label.removeAttribute("tabindex");
+        label.removeAttribute("aria-expanded");
+      }
+    });
+  };
+  buttons.forEach((b) =>
+    b.addEventListener("click", () => {
+      root.dataset.margins = root.dataset.margins === "hidden" ? "visible" : "hidden";
+      try { localStorage.setItem("margins", root.dataset.margins); } catch (_) { /* приватный режим */ }
+      sync();
+    }),
+  );
+  const toggleNote = (label) => {
+    if (root.dataset.margins !== "hidden") return;
+    const open = label.parentElement.classList.toggle("is-open");
+    label.setAttribute("aria-expanded", String(open));
+  };
+  document.querySelectorAll(".note > .label").forEach((label) => {
+    label.addEventListener("click", () => toggleNote(label));
+    label.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleNote(label); }
+    });
+  });
+  sync();
+}
 
 function toggleTheme() {
   const root = document.documentElement;
@@ -169,9 +216,13 @@ function initRegression(svg) {
     for (let j = 0; j <= Y_MAX; j += 2) el("text", { class: "tick", x: L - 10, y: sy(j) + 4, "text-anchor": "end" }).textContent = j;
     el("text", { class: "axis-label", x: L + W - 4, y: T + H - 8, "text-anchor": "end" }).textContent = "x";
     el("text", { class: "axis-label", x: L + 8, y: T + 16 }).textContent = "y";
-    const resid = el("g", {});
+    // Всё, что зависит от θ, обрезается областью графика: прямая не «улетает» за оси
+    const clipId = `plot-clip-${Math.random().toString(36).slice(2, 8)}`;
+    const clip = el("clipPath", { id: clipId }, el("defs", {}));
+    el("rect", { x: L, y: T, width: W, height: H }, clip);
+    const resid = el("g", { "clip-path": `url(#${clipId})` });
     lines = DATA_X.map(() => el("line", { class: "resid" }, resid));
-    fit = el("line", { class: "fit" });
+    fit = el("line", { class: "fit", "clip-path": `url(#${clipId})` });
     DATA_X.forEach((x, i) => el("circle", { class: "pt", cx: sx(x), cy: sy(DATA_Y[i]), r: 5 }));
     fitLabel = el("text", { class: "direct-label", "text-anchor": "end" });
     residLabel = el("text", { class: "direct-label direct-label--resid" });
@@ -189,8 +240,22 @@ function initRegression(svg) {
       ln.setAttribute("x1", sx(x)); ln.setAttribute("x2", sx(x));
       ln.setAttribute("y1", sy(DATA_Y[i])); ln.setAttribute("y2", sy(t0 + t1 * x));
     });
-    fitLabel.setAttribute("x", sx(9.7)); fitLabel.setAttribute("y", sy(t0 + t1 * 9.7) + 26);
-    residLabel.setAttribute("x", sx(0.547) + 9); residLabel.setAttribute("y", (sy(DATA_Y[6]) + sy(t0 + t1 * 0.547)) / 2 + 5);
+    // Подпись прямой — у её видимого конца, внутри области графика
+    let xl = 9.7;
+    const yAt = (x) => t0 + t1 * x;
+    if (yAt(xl) > Y_MAX - 0.6 && t1 > 0) xl = (Y_MAX - 0.6 - t0) / t1;
+    if (yAt(xl) < 0.6 && t1 < 0) xl = (0.6 - t0) / t1;
+    xl = Math.min(9.7, Math.max(3, xl));
+    // по умолчанию под прямой (точки в основном над ней); у нижнего края — над прямой
+    let yl = sy(yAt(xl)) + 26;
+    if (yl > T + H - 8) yl = sy(yAt(xl)) - 12;
+    fitLabel.setAttribute("x", sx(xl));
+    fitLabel.setAttribute("y", Math.max(T + 16, yl));
+    // прямая целиком вне графика — подпись не показываем
+    fitLabel.style.display = yAt(xl) < 0 || yAt(xl) > Y_MAX ? "none" : "";
+    const clampY = (v) => Math.min(T + H - 8, Math.max(T + 16, v));
+    residLabel.setAttribute("x", sx(0.547) + 9);
+    residLabel.setAttribute("y", clampY((sy(DATA_Y[6]) + sy(t0 + t1 * 0.547)) / 2 + 5));
     const J = loss(t0, t1);
     v0.textContent = fmt(t0); v1.textContent = fmt(t1);
     jv.textContent = fmt(J);
@@ -287,6 +352,7 @@ function initExercises() {
 /* ───────── Запуск ───────── */
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll("[data-theme-toggle]").forEach((b) => b.addEventListener("click", toggleTheme));
+  initMargins();
   document.querySelectorAll("[data-toc-toggle]").forEach((b) =>
     b.addEventListener("click", () => {
       const toc = document.querySelector(".toc");

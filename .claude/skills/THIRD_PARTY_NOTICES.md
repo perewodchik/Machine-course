@@ -12,4 +12,4 @@
 
 Скопировано 14.10.2026 из ветки `main`. Чтобы обновить: скачайте `SKILL.md` по тем же путям и повторите изменения из таблицы.
 
-Скиллы проекта (написаны для этого курса) лежат в соседних папках: `new-lesson`, `new-formula`, `new-widget`, `new-game`, `new-notebook`, `content-review`.
+Скиллы проекта (написаны для этого курса) лежат в соседних папках: `new-lesson`, `new-formula`, `new-widget`, `new-game`, `new-notebook`, `content-review`, `continue-plan`.
