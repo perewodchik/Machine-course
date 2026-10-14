@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-14 — S1.03 Токены, Tailwind, шрифты, базовые стили — готова
+- **Сделано:** src/styles/global.css (шрифты, theme.css, base.css); base.css — стили прототипа до «Шапки»; vitest.config.ts (тесты рядом с кодом и в tests/unit); тест tests/unit/tailwind-theme.test.ts компилирует фикстуру с bg-indigo-500 и bg-paper.
+- **Файлы:** astro.config.mjs, vitest.config.ts, src/styles/*.css, tests/unit/tailwind-theme.test.ts, tests/fixtures/tailwind/sample.html
+- **Проверка:** npm test → 2 passed; npm run build ok (43 woff2 локально, в CSS нет indigo); astro check → 0 ошибок
+- **Отклонения от плана и решения:** Тесты Vitest — рядом с кодом (*.test.ts) и в tests/unit; e2e Playwright — в tests/e2e (*.spec.ts), Vitest их не подхватывает.
+- **Следующий шаг:** S1.04.
+- **Вопросы пользователю:** —
+
 ### 2026-10-14 — S1.02 Хук старта облачной сессии — готова
 - **Сделано:** Синхронный хук .claude/hooks/session-start.sh (только при CLAUDE_CODE_REMOTE=true): npm install, venv .venv с pip install -e code[dev], PATH через CLAUDE_ENV_FILE; зарегистрирован в .claude/settings.json.
 - **Файлы:** .claude/hooks/session-start.sh, .claude/settings.json, context/testing-ci.md

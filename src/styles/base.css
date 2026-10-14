@@ -1,0 +1,52 @@
+/*
+ * Базовые стили сайта: перенесены из прототипа (prototype/assets/proto.css, всё до раздела «Шапка»).
+ * Только токены дизайн-системы. Элементы — в слое base, служебные классы — в слое components,
+ * чтобы утилиты Tailwind их перекрывали.
+ */
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-text);
+    font-size: var(--text-base);
+    line-height: var(--leading-text);
+    font-optical-sizing: auto;
+    font-kerning: normal;
+    hanging-punctuation: first;
+  }
+  img, svg { display: block; max-width: 100%; }
+  [hidden] { display: none !important; }
+  p { margin: 0 0 var(--space-4); }
+  h1, h2, h3 { font-family: var(--font-ui); color: var(--ink); text-wrap: balance; }
+  h1 { font-size: var(--text-3xl); line-height: var(--leading-tight); font-weight: 600; letter-spacing: -0.015em; margin: var(--space-2) 0 var(--space-4); }
+  h2 { font-size: var(--text-xl); line-height: 1.25; font-weight: 600; letter-spacing: -0.005em; margin: var(--space-8) 0 var(--space-4); }
+  h3 { font-size: var(--text-base); line-height: 1.3; font-weight: 600; margin: var(--space-6) 0 var(--space-3); }
+
+  a {
+    color: var(--pen);
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    text-decoration-color: color-mix(in oklab, var(--pen) 40%, transparent);
+    transition: color var(--duration-ui) var(--ease-out), text-decoration-color var(--duration-ui) var(--ease-out);
+  }
+  a:hover { color: var(--pen-strong); text-decoration-color: currentColor; }
+  :focus-visible { outline: 2px solid var(--pen); outline-offset: 2px; border-radius: 2px; }
+  ::selection { background: var(--highlighter); color: var(--ink); }
+}
+
+@layer components {
+  .ui { font-family: var(--font-ui); }
+  .muted { color: var(--ink-3); }
+  .num { font-variant-numeric: tabular-nums; }
+  .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  /* Маркер: полоса под нижней частью строки, как настоящим выделителем */
+  mark, .marker { background: linear-gradient(to top, var(--highlighter) 0 45%, transparent 45%); color: inherit; padding: 0 0.1em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+  code { font-family: var(--font-code); font-size: 0.86em; background: var(--paper-2); border: 1px solid var(--rule); border-radius: var(--radius-inline); padding: 0 0.3em; }
+
+  /* Иконки: только функциональные, 16 px, наследуют цвет */
+  .icon { width: 16px; height: 16px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+}

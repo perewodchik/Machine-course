@@ -2,8 +2,12 @@
 import { defineConfig } from "astro/config";
 import react from "@astrojs/react";
 import mdx from "@astrojs/mdx";
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   site: "https://example.invalid", // настоящий домен — при подключении Cloudflare Pages (S1.13)
   integrations: [react(), mdx()],
+  vite: {
+    plugins: [tailwindcss()],
+  },
 });
