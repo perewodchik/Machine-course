@@ -1,5 +1,7 @@
 # Курс «Языковые модели и LLM». Порядок модулей задаётся здесь. Каталог курсов — docs/program/catalog.md.
 id: llm
+# Номер в каталоге курсов (docs/program/catalog.md)
+number: 6
 title:
   ru: 'Языковые модели и LLM'
 summary:

@@ -11,3 +11,4 @@
 @import "@fontsource/ibm-plex-mono/400.css";
 @import "../design-system/tokens/theme.css";
 @import "./base.css";
+@import "./layout.css";

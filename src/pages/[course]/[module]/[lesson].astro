@@ -1,0 +1,25 @@
+---
+// Урок курса. Тексты уроков (MDX) подключаются в S1.06–S1.07; пока у каждого урока — страница-заглушка
+// с настоящей раскладкой, чтобы ссылки оглавления вели на существующие страницы.
+import type { GetStaticPaths } from "astro";
+import LessonLayout from "../../../layouts/LessonLayout.astro";
+import { loadCatalog } from "../../../lib/content/collections";
+import type { CourseTree, LessonEntry } from "../../../lib/content/catalog";
+
+export const getStaticPaths = (async () =>
+  (await loadCatalog()).flatMap((course) =>
+    course.lessons.map((lesson) => ({
+      params: { course: course.id, module: lesson.module, lesson: lesson.slug },
+      props: { course, lesson },
+    })),
+  )) satisfies GetStaticPaths;
+
+interface Props {
+  course: CourseTree;
+  lesson: LessonEntry;
+}
+const { course, lesson } = Astro.props;
+---
+<LessonLayout course={course} lesson={lesson} noindex>
+  <p class="lead" slot="intro">Текст этого урока ещё пишется. Соседние уроки&nbsp;— ниже и&nbsp;в&nbsp;оглавлении.</p>
+</LessonLayout>

@@ -1,5 +1,7 @@
 # Курс «ML на табличных данных». Порядок модулей задаётся здесь. Каталог курсов — docs/program/catalog.md.
 id: ml-tabular
+# Номер в каталоге курсов (docs/program/catalog.md)
+number: 3
 title:
   ru: 'ML на табличных данных'
 summary:

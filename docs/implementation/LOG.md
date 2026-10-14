@@ -17,6 +17,15 @@
 
 ---
 
+### 2026-10-14 — S1.05 раскладка: шапка, оглавление, урок с полями — готова
+- **Сделано:** Коллекции courses и modules (src/content.config.ts, раньше S1.06), дерево курса src/lib/content/catalog.ts с тестами; номер курса в каталоге — поле number в course.yaml. Компоненты layout (шапка, оглавление, Know, иконки), src/client/layout.ts, src/styles/layout.css, токен --header-height. Страницы: каталог, курс, урок-заглушка, демо-урок. playwright.config.ts, tests/e2e (layout, axe, помощник скриншотов screens.spec.ts → test-screens/).
+- **Файлы:** src/content.config.ts, src/lib/content/{catalog,collections}.ts, src/components/layout/*, src/layouts/*, src/client/layout.ts, src/styles/layout.css, src/pages/**, playwright.config.ts, tests/e2e/*
+- **Проверка:** lint, vitest 20, astro check 0, build 125 страниц, e2e 45 passed (axe чистый в обеих темах), pytest 27, check_consistency без ошибок
+- **Отклонения от плана и решения:** Отступления от прототипа: .wide без clear (заметка стоит рядом, а не сдвигает блок); линия полей и фон колонки оглавления — элементы, не псевдоэлементы и не градиент (axe проверяет контраст); без scrollIntoView в оглавлении (сдвигал стартовую точку Tab); при открытом оглавлении на 390 px текст inert, фокус на текущем уроке; scroll-padding под шапку. Astro 7 под агентом уводит preview в фон — в webServer флаг --ignore-lock. Галочки пока не сохраняются — S2.04.
+- **Где остановился:** —
+- **Следующий шаг:** S1.06.
+- **Вопросы пользователю:** —
+
 ### 2026-10-14 — S1.04 Линтеры — готова
 - **Сделано:** eslint.config.js и stylelint.config.js; npm run lint = eslint + stylelint; 16 фикстур в tests/fixtures/lint/src (нарушения и разрешённые случаи); tests/unit/lint.test.ts — 10 проверок.
 - **Файлы:** eslint.config.js, stylelint.config.js, tests/unit/lint.test.ts, tests/fixtures/lint/**, src/styles/base.css

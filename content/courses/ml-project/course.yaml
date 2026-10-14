@@ -1,5 +1,7 @@
 # Курс «Практикум: свой ML-проект». Порядок модулей задаётся здесь. Каталог курсов — docs/program/catalog.md.
 id: ml-project
+# Номер в каталоге курсов (docs/program/catalog.md)
+number: 8
 title:
   ru: 'Практикум: свой ML-проект'
 summary:

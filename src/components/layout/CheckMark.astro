@@ -1,0 +1,10 @@
+---
+// Галочка зелёной ручкой: «знаю» у урока, «модуль пройден», подсказка в оглавлении.
+import type { HTMLAttributes } from "astro/types";
+
+type Props = HTMLAttributes<"svg"> & { hidden?: boolean };
+const { class: className, ...rest } = Astro.props;
+---
+<svg class={className} viewBox="0 0 14 14" aria-hidden="true" {...rest}>
+  <path d="m2.4 7.6 3 3 6.2-7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" />
+</svg>

@@ -57,7 +57,7 @@ export default tseslint.config(
     ignores: [
       "dist/**", ".astro/**", "node_modules/**", ".venv/**",
       "prototype/**", "code/**", "notebooks/**", "docs/**",
-      "tests/fixtures/**", "test-results/**", "playwright-report/**",
+      "tests/fixtures/**", "test-results/**", "test-screens/**", "playwright-report/**",
     ],
   },
   js.configs.recommended,

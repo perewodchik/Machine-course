@@ -1,0 +1,65 @@
+---
+// Урок: оглавление слева (выдвижное < 900 px), колонка текста, поля с красной линией и кнопка «Скрыть поля».
+// Слот intro — заметка на полях и вводный абзац до строки «Знаю эту тему»; основной слот — текст урока.
+import BaseLayout from "./BaseLayout.astro";
+import Icon from "../components/layout/Icon.astro";
+import Know from "../components/layout/Know.astro";
+import Toc from "../components/layout/Toc.astro";
+import { neighbours, type CourseTree, type LessonEntry, type TocHeading } from "../lib/content/catalog";
+
+interface Props {
+  course: CourseTree;
+  lesson: LessonEntry;
+  /** Заголовок страницы; по умолчанию — название урока. */
+  title?: string;
+  description?: string;
+  headings?: TocHeading[];
+  /** Строка под заголовком: «Около 45 минут: …». */
+  meta?: string;
+  noindex?: boolean;
+}
+const { course, lesson, title = lesson.title, description, headings, meta, noindex } = Astro.props;
+const module = course.modules.find((m) => m.id === lesson.module);
+const { prev, next } = neighbours(course, lesson.key);
+---
+<BaseLayout title={title} description={description} course={course} withToc noindex={noindex}>
+  <div class="page">
+    <div class="toc-col"><Toc course={course} current={lesson.key} headings={headings} /></div>
+    <main class="article-wrap" id="content">
+      <article class="article">
+        <div class="margin-line" aria-hidden="true"></div>
+        <div class="article-top">
+          <nav class="breadcrumb" aria-label="Путь">
+            <a href={`${course.href}#m-${lesson.module}`}>{module?.title}</a><span aria-hidden="true">/</span><span>Урок {lesson.number}</span>
+          </nav>
+          <button class="btn btn--quiet btn--sm margin-toggle" type="button" data-margin-toggle>
+            <Icon name="margin" /><span data-label>Скрыть поля</span>
+          </button>
+        </div>
+        <h1>{title}</h1>
+        <slot name="intro" />
+        <div class="lesson-meta">
+          {meta && <span>{meta}</span>}
+          <Know lesson={lesson} text="Знаю эту тему" />
+        </div>
+        <slot />
+        {(prev || next) && (
+          <nav class="lesson-nav ui" aria-label="Соседние уроки">
+            {prev && (
+              <a class="btn" href={prev.href} rel="prev">
+                <span class="lesson-nav__dir">Предыдущий урок</span>
+                <span><span class="n">{prev.number}</span> {prev.title}</span>
+              </a>
+            )}
+            {next && (
+              <a class="btn btn--primary" href={next.href} rel="next">
+                <span class="lesson-nav__dir">Следующий урок</span>
+                <span><span class="n">{next.number}</span> {next.title}</span>
+              </a>
+            )}
+          </nav>
+        )}
+      </article>
+    </main>
+  </div>
+</BaseLayout>

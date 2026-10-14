@@ -1,5 +1,7 @@
 # Курс «Обучение с подкреплением». Порядок модулей задаётся здесь. Каталог курсов — docs/program/catalog.md.
 id: rl
+# Номер в каталоге курсов (docs/program/catalog.md)
+number: 7
 title:
   ru: 'Обучение с подкреплением'
 summary:

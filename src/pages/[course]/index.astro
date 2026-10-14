@@ -1,0 +1,39 @@
+---
+// Страница курса: модули и уроки с галочками «знаю». Прогресс, проекты и пререквизиты курса — S7.01.
+import type { GetStaticPaths } from "astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Know from "../../components/layout/Know.astro";
+import { loadCatalog } from "../../lib/content/collections";
+import type { CourseTree } from "../../lib/content/catalog";
+import { hoursRange, plural } from "../../i18n/ru";
+
+export const getStaticPaths = (async () =>
+  (await loadCatalog()).map((course) => ({ params: { course: course.id }, props: { course } }))) satisfies GetStaticPaths;
+
+interface Props {
+  course: CourseTree;
+}
+const { course } = Astro.props;
+---
+<BaseLayout title={course.title} description={course.summary} course={course}>
+  <main class="shell" id="content">
+    <h1>{course.title}</h1>
+    <p class="lead">{course.summary}</p>
+    {course.modules.map((m) => (
+      <section class="module" id={`m-${m.id}`} aria-labelledby={`m-${m.id}-title`}>
+        <h2 id={`m-${m.id}-title`}><span class="n">{m.number}</span><span>{m.title}</span></h2>
+        <p class="module__facts">
+          {m.lessons.length}&nbsp;{plural(m.lessons.length, "урок", "урока", "уроков")}, <span class="nowrap">{hoursRange(m.hours)}</span>
+        </p>
+        <ol class="lesson-list">
+          {m.lessons.map((l) => (
+            <li>
+              <Know lesson={l} />
+              <a href={l.href}><span class="n">{l.number}</span><span>{l.title}{l.optional && " ★"}</span></a>
+            </li>
+          ))}
+        </ol>
+      </section>
+    ))}
+  </main>
+</BaseLayout>

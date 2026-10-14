@@ -1,5 +1,7 @@
 # Курс «Основы машинного обучения». Порядок модулей задаётся здесь. Каталог курсов — docs/program/catalog.md.
 id: ml-basics
+# Номер в каталоге курсов (docs/program/catalog.md)
+number: 1
 title:
   ru: 'Основы машинного обучения'
 summary:

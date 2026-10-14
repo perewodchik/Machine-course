@@ -1,0 +1,247 @@
+/*
+ * Раскладка сайта: шапка, оглавление, урок с полями, галочка «знаю».
+ * Перенесено из прототипа (prototype/assets/proto.css: «Шапка», «Кнопки», «Раскладка урока», «Адаптивность»).
+ * Только токены. Режимы — атрибуты на <html>: data-theme, data-margins (их ставит инлайн-скрипт в <head>).
+ */
+@layer components {
+  /* ───────── Пропуск навигации ───────── */
+  .skip-link {
+    position: absolute; left: var(--space-4); top: calc(-1 * var(--space-9)); z-index: 30;
+    padding: var(--space-2) var(--space-3); border-radius: var(--radius-control);
+    background: var(--surface); color: var(--pen); font: 500 var(--text-sm) / 1.2 var(--font-ui);
+    box-shadow: var(--shadow-popover);
+  }
+  .skip-link:focus { top: var(--space-2); }
+
+  /* ───────── Шапка ───────── */
+  .site-header {
+    position: sticky; top: 0; z-index: 20;
+    background: color-mix(in oklab, var(--paper) 94%, transparent);
+    border-bottom: 1px solid var(--rule);
+    font-family: var(--font-ui); font-size: var(--text-sm);
+  }
+  .site-header__inner { display: flex; align-items: center; gap: var(--space-5); height: var(--header-height); padding: 0 var(--space-5); max-width: 1440px; margin: 0 auto; }
+  .brand { display: flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; font-weight: 600; white-space: nowrap; }
+  .brand:hover { color: var(--ink); }
+  /* Каталог → текущий курс: знак и «Курсы ML» ведут в каталог, рядом название курса */
+  .brand__name { color: var(--ink-2); font-weight: 500; }
+  .brand--home .brand__name { color: var(--ink); font-weight: 600; }
+  .brand__mark { flex: none; width: 22px; height: 22px; }
+  .brand__mark .cell { stroke: var(--grid); }
+  .brand__mark .frame { stroke: var(--ink-3); }
+  .brand__mark .vec { stroke: var(--pen); }
+  .brand__mark .dot { fill: var(--ink); }
+  .crumb-sep { color: var(--ink-3); margin: 0 calc(-1 * var(--space-3)); }
+  .course-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); font-weight: 600; text-decoration: none; }
+  a.course-name:hover { color: var(--pen); }
+  .header-progress { margin-left: auto; display: flex; align-items: center; gap: 10px; color: var(--ink-2); white-space: nowrap; }
+  .show-narrow { display: none; }
+  .progress { width: 96px; height: 4px; border-radius: 2px; background: var(--rule); overflow: hidden; }
+  .progress > span { display: block; height: 100%; background: var(--green-pen); }
+
+  .icon-button {
+    display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: var(--radius-control);
+    border: 1px solid var(--rule); background: var(--surface); color: var(--ink-2); cursor: pointer;
+  }
+  .icon-button:hover { color: var(--ink); border-color: var(--control-border); }
+  .theme-toggle .moon { display: none; }
+  :root[data-theme="dark"] .theme-toggle .sun { display: none; }
+  :root[data-theme="dark"] .theme-toggle .moon { display: block; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .theme-toggle .sun { display: none; }
+    :root:not([data-theme="light"]) .theme-toggle .moon { display: block; }
+  }
+
+  /* ───────── Кнопки ───────── */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    height: 36px; padding: 0 14px; border-radius: var(--radius-control);
+    border: 1px solid var(--control-border); background: var(--surface); color: var(--ink);
+    font: 500 var(--text-sm) / 1 var(--font-ui); text-decoration: none; white-space: nowrap; cursor: pointer;
+    transition: background var(--duration-ui) var(--ease-out), border-color var(--duration-ui) var(--ease-out), color var(--duration-ui) var(--ease-out);
+  }
+  .btn:hover { background: var(--paper-2); border-color: var(--ink-2); color: var(--ink); }
+  .btn--primary { background: var(--pen); border-color: var(--pen); color: var(--paper); }
+  .btn--primary:hover { background: var(--pen-strong); border-color: var(--pen-strong); color: var(--paper); }
+  .btn--quiet { border-color: transparent; background: transparent; color: var(--pen); padding: 0 8px; }
+  .btn--quiet:hover { background: var(--pen-wash); border-color: transparent; color: var(--pen-strong); }
+  .btn--sm { height: 30px; padding: 0 10px; font-size: 14px; }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  /* ───────── Страница без оглавления: каталог, курс ───────── */
+  .shell { max-width: calc(var(--wide-measure) + 2 * var(--space-6)); margin: 0 auto; padding: var(--space-7) var(--space-6) var(--space-9); }
+  .shell > .lead { max-width: var(--measure); }
+
+  /* ───────── Раскладка урока ───────── */
+  .page { max-width: 1440px; margin: 0 auto; display: grid; grid-template-columns: var(--toc-width) minmax(0, 1fr); }
+  /* колонка оглавления тянется на всю высоту страницы, само оглавление прилипает под шапкой */
+  .toc-col { background: var(--paper-2); border-right: 1px solid var(--rule); }
+  .toc {
+    position: sticky; top: var(--header-height); height: calc(100vh - var(--header-height)); overflow: auto;
+    padding: var(--space-6) var(--space-3) var(--space-7); background: var(--paper-2);
+    font-family: var(--font-ui); font-size: var(--text-sm); line-height: 1.35;
+  }
+  .toc__part { margin-bottom: var(--space-2); }
+  /* Левая колонка (24 px) — шеврон модуля или галочка «знаю» урока; номера модулей и уроков в одной колонке */
+  .toc__part-head {
+    display: flex; align-items: center; gap: 4px; width: 100%; padding: 4px 8px 4px 0; border: 0; border-radius: var(--radius-control);
+    background: none; color: var(--ink-2); font: inherit; font-weight: 500; text-align: left; cursor: pointer;
+  }
+  .toc__part-head:hover { background: var(--surface); color: var(--ink); }
+  .toc__part-head .n { margin-right: 4px; }
+  .toc__chevron { flex: none; display: grid; place-items: center; width: 24px; height: 24px; color: var(--ink-3); }
+  .toc__chevron .icon { width: 14px; height: 14px; transition: transform var(--duration-ui) var(--ease-out); }
+  .toc__part-head[aria-expanded="true"] .toc__chevron .icon { transform: rotate(90deg); }
+  .toc__part-head .count { color: var(--ink-3); font-weight: 400; font-variant-numeric: tabular-nums; }
+  .toc__title { flex: 1; min-width: 0; }
+  .toc ol { list-style: none; margin: 0; padding: 0; }
+  .toc ol > li { display: flex; flex-wrap: wrap; align-items: flex-start; }
+  .toc ol > li > .know { margin-top: 3px; }
+  .toc a { flex: 1; min-width: 0; display: flex; gap: 8px; align-items: flex-start; padding: 6px 8px 6px 4px; border-radius: var(--radius-control); color: var(--ink-2); text-decoration: none; }
+  .toc a:hover { background: var(--surface); color: var(--ink); }
+  .toc a[aria-current="page"] { background: var(--pen-wash); color: var(--ink); font-weight: 500; }
+  .toc .n { flex: none; min-width: 2.6em; color: var(--ink-3); font-variant-numeric: tabular-nums; font-weight: 400; }
+  .toc .sub { flex-basis: 100%; }
+  .toc .sub a { padding-left: calc(28px + 2.6em + 8px); font-size: 14px; }
+  /* текущий раздел — синяя черта вплотную к тексту, а не у края колонки */
+  .toc .sub a[aria-current="location"] { position: relative; color: var(--pen); }
+  .toc .sub a[aria-current="location"]::before { content: ""; position: absolute; left: calc(28px + 2.6em); top: 5px; bottom: 5px; width: 2px; background: var(--pen); }
+  .toc__hint { display: flex; gap: 6px; align-items: flex-start; margin: 0 0 var(--space-3); padding: 0 8px var(--space-3) 4px; border-bottom: 1px solid var(--rule); font-size: 13px; line-height: 1.4; color: var(--ink-3); }
+  .status { width: 14px; height: 14px; flex: none; margin-top: 2px; }
+  .status--passed { color: var(--green-pen); }
+  .toc__part-head .status { margin-top: 0; }
+
+  /* Галочка «знаю»: одна булева отметка урока. Пустая клетка — карандашом, отметка — зелёной ручкой; цель 24 px */
+  .know { position: relative; flex: none; display: inline-flex; align-items: center; vertical-align: middle; cursor: pointer; }
+  .know input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+  .know__ind { flex: none; display: grid; place-items: center; width: 24px; height: 24px; border-radius: var(--radius-control); }
+  .know__ind::before { content: ""; grid-area: 1 / 1; width: 12px; height: 12px; border: 1.5px solid var(--control-border); border-radius: 3px; }
+  .know__mark { grid-area: 1 / 1; width: 16px; height: 16px; color: var(--green-pen); visibility: hidden; }
+  .know input:checked + .know__ind::before { visibility: hidden; }
+  .know input:checked + .know__ind .know__mark { visibility: visible; }
+  .know:hover .know__ind::before { border-color: var(--pen); }
+  .know input:focus-visible + .know__ind { outline: 2px solid var(--pen); outline-offset: 0; }
+  .know--text { gap: 2px; min-height: 30px; padding-right: 8px; border-radius: var(--radius-control); color: var(--pen); font: 500 var(--text-sm) / 1.2 var(--font-ui); white-space: nowrap; }
+  .know--text:hover { background: var(--pen-wash); }
+
+  .article-wrap { padding: var(--space-7) var(--space-6) var(--space-9); min-width: 0; }
+  .article {
+    --gap: 2rem;
+    position: relative;
+    max-width: calc(var(--measure) + 2 * var(--gap) + var(--margin-width));
+  }
+  .article > * { max-width: var(--measure); }
+  .article > .note { max-width: var(--margin-width); }
+  /* Широкий блок (.wide): в обычном режиме остаётся в колонке текста и не заходит за линию полей,
+     поэтому заметки на полях стоят рядом с ним, а не сдвигают его вниз;
+     в режиме «поля скрыты» расширяется симметрично до --wide-measure */
+  .article > .article-top { max-width: none; }
+  .article-top { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+  .lesson-meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px var(--space-4); font-family: var(--font-ui); font-size: var(--text-sm); color: var(--ink-3); margin: calc(-1 * var(--space-2)) 0 var(--space-4); }
+  .lesson-meta .know--text { margin-left: -4px; }
+  /* Соседние уроки: две колонки, «назад» слева, «дальше» справа; названия длинные — кнопка переносит строку */
+  .lesson-nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); margin-top: var(--space-8); padding-top: var(--space-5); border-top: 1px solid var(--rule); }
+  .lesson-nav .btn { flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 2px; height: auto; padding: 8px 14px 10px; white-space: normal; text-align: left; line-height: 1.3; }
+  .lesson-nav [rel="next"] { grid-column: 2; align-items: flex-end; text-align: right; }
+  .lesson-nav__dir { font-size: 13px; font-weight: 400; opacity: 0.85; }
+  .lesson-nav .n { font-variant-numeric: tabular-nums; }
+
+  /* Поля тетради: красная линия, за ней — заметки. Линия — элемент, а не псевдоэлемент: псевдоэлемент поверх
+     колонки мешает axe определить фон, и контраст текста остался бы непроверенным */
+  .margin-line {
+    position: absolute; top: 0; bottom: 0;
+    left: calc(var(--measure) + var(--gap)); width: 1px; background: var(--margin-line);
+  }
+  .note {
+    float: right; clear: right; width: var(--margin-width);
+    margin: 0.35rem 0 var(--space-4) var(--gap);
+    font-size: var(--text-sm); line-height: 1.5; color: var(--ink-2);
+  }
+  .note p { margin: 0 0 var(--space-2); }
+  .note__term { font-style: italic; }
+  .note .label { font-family: var(--font-ui); font-size: 13px; font-weight: 600; color: var(--ink-2); display: block; margin-bottom: 2px; }
+
+  /* Режим «поля скрыты»: контент по центру, заметки свёрнуты в строки, раскрываются по клику */
+  :root[data-margins="hidden"] .article { max-width: var(--wide-measure); margin-inline: auto; }
+  :root[data-margins="hidden"] .margin-line { display: none; }
+  :root[data-margins="hidden"] .article > * { margin-inline: auto; }
+  :root[data-margins="hidden"] .article > .wide { max-width: var(--wide-measure); }
+  :root[data-margins="hidden"] .article > .article-top { max-width: var(--measure); }
+  :root[data-margins="hidden"] .article > .note {
+    float: none; width: auto; max-width: var(--measure);
+    margin-block: var(--space-2) var(--space-4); padding-left: var(--space-3); border-left: 1px solid var(--margin-line);
+  }
+  :root[data-margins="hidden"] .note:not(.is-open) > .note__body { display: none; }
+  :root[data-margins="hidden"] .note .label { display: inline-flex; align-items: center; gap: 6px; margin: 0; cursor: pointer; color: var(--ink-3); }
+  :root[data-margins="hidden"] .note .label::before { content: ""; width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(-45deg); transition: transform var(--duration-ui) var(--ease-out); }
+  :root[data-margins="hidden"] .note.is-open .label::before { transform: rotate(45deg); }
+  :root[data-margins="hidden"] .note.is-open > .note__body { margin-top: 4px; }
+
+  .breadcrumb { font-family: var(--font-ui); font-size: var(--text-sm); color: var(--ink-3); display: flex; gap: 8px; flex-wrap: wrap; }
+  .breadcrumb a { color: var(--ink-3); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--pen); }
+  .lead { font-size: var(--text-lg); line-height: 1.55; color: var(--ink-2); }
+
+  /* Рисунок: рамка, область графика, подпись */
+  .figure { margin: var(--space-6) 0; border: 1px solid var(--rule); border-radius: var(--radius-panel); background: var(--surface); overflow: hidden; }
+  .figure__plot { width: 100%; height: auto; }
+  .figure__caption { padding: var(--space-3) var(--space-4) var(--space-4); border-top: 1px solid var(--rule); font-size: 15px; line-height: 1.5; color: var(--ink-2); }
+  .figure__caption b { font-family: var(--font-ui); font-weight: 600; color: var(--ink); margin-right: 4px; }
+  .plot .grid-line { stroke: var(--grid); stroke-width: 1; }
+  .plot .axis { stroke: var(--ink-3); stroke-width: 1.25; }
+
+  /* ───────── Каталог и страница курса ───────── */
+  .course-list { list-style: none; margin: var(--space-6) 0 0; padding: 0; border-top: 1px solid var(--rule); }
+  .course-list > li { display: grid; grid-template-columns: 2.5rem minmax(0, 1fr); gap: 0 var(--space-3); padding: var(--space-5) 0; border-bottom: 1px solid var(--rule); }
+  .course-list .n { font-family: var(--font-ui); color: var(--ink-3); font-variant-numeric: tabular-nums; padding-top: 0.15em; }
+  .course-list h2 { margin: 0 0 var(--space-1); font-size: var(--text-lg); }
+  .course-list h2 a { color: var(--ink); text-decoration: none; }
+  .course-list h2 a:hover { color: var(--pen); }
+  .course-list p { margin: 0; color: var(--ink-2); }
+  .course-list .facts { margin-top: var(--space-2); font-family: var(--font-ui); font-size: var(--text-sm); color: var(--ink-3); }
+
+  /* номер модуля — в своей колонке слева, название и сведения о модуле выровнены по одной линии */
+  .module { margin-top: var(--space-7); --module-indent: 3rem; }
+  .module h2 { position: relative; margin: 0 0 var(--space-1); padding-left: var(--module-indent); }
+  .module h2 .n { position: absolute; left: 0; color: var(--ink-3); font-weight: 500; font-variant-numeric: tabular-nums; }
+  .module__facts { margin: 0 0 var(--space-3); padding-left: var(--module-indent); font-family: var(--font-ui); font-size: var(--text-sm); color: var(--ink-3); }
+  .lesson-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); font-family: var(--font-ui); font-size: var(--text-sm); }
+  .lesson-list li { display: flex; align-items: center; gap: var(--space-2); padding: 6px 0; border-bottom: 1px solid var(--rule); }
+  .lesson-list a { display: flex; gap: var(--space-2); min-width: 0; color: var(--ink); text-decoration: none; }
+  .lesson-list a:hover { color: var(--pen); }
+  .lesson-list .n { flex: none; min-width: 3em; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+
+  /* ───────── Адаптивность ───────── */
+  @media (max-width: 1260px) {
+    .article { max-width: var(--measure); }
+    .margin-line { display: none; }
+    .note { float: none; width: auto; max-width: none; margin: var(--space-4) 0; padding-left: var(--space-4); border-left: 1px solid var(--margin-line); }
+  }
+  @media (max-width: 900px) {
+    .page { grid-template-columns: minmax(0, 1fr); }
+    .toc-col { background: none; border: 0; }
+    .toc { display: none; }
+    .toc.is-open { display: block; position: fixed; inset: var(--header-height) 0 0 0; z-index: 15; height: auto; box-shadow: var(--shadow-popover); }
+    .article-wrap, .shell { padding: var(--space-5) var(--space-4) var(--space-8); }
+    .lesson-nav { grid-template-columns: minmax(0, 1fr); }
+    .lesson-nav [rel="next"] { grid-column: 1; }
+    .hide-narrow, .header-progress .progress { display: none; }
+    /* на узком экране «Курсы ML» скрыт визуально, но остаётся именем ссылки для чтения с экрана */
+    .brand:not(.brand--home) .brand__name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .brand:not(.brand--home) + .crumb-sep { display: none; }
+    .show-narrow { display: inline-flex; align-items: center; gap: 4px; }
+    .site-header__inner { padding: 0 var(--space-4); gap: var(--space-3); }
+    h1 { font-size: var(--text-2xl); }
+  }
+  @media (min-width: 901px) { .toc-toggle { display: none; } }
+  @media (pointer: coarse) {
+    .btn--sm, .icon-button { min-height: var(--target-touch); }
+    .toc__part-head, .toc a { min-height: var(--target-touch); align-items: center; }
+    .toc ol > li { align-items: center; }
+    .toc ol > li > .know { margin-top: 0; }
+    .icon-button { min-width: var(--target-touch); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .toc__chevron .icon, .btn, :root[data-margins="hidden"] .note .label::before { transition: none; }
+  }
+}

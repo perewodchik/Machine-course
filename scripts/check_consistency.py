@@ -151,7 +151,7 @@ for old, new in (redirects.get("lessons") or {}).items():
         err(f"redirects: старый ключ {old} всё ещё занят уроком")
 
 # ───────── ссылки в Markdown ─────────
-SKIP = ("node_modules", ".git", "venv", "frontend-design", "design-critique", "design-system",
+SKIP = ("node_modules", ".git", "venv", ".venv", "dist", "test-results", "test-screens", "frontend-design", "design-critique", "design-system",
         "accessibility-review", "ux-copy")
 for p in ROOT.rglob("*.md"):
     if any(s in p.parts for s in SKIP):

@@ -103,6 +103,8 @@ export interface Module {
 /** Курс: content/courses/<id>/course.yaml. Каталог курсов — docs/program/catalog.md. */
 export interface Course {
   id: string; // «foundations», «ml-basics», …
+  /** Номер в каталоге: 1–8 у курсов ML; у курса математики номера нет — он предисловие. */
+  number?: number;
   title: Localized;
   summary: Localized;
   cs229Edition: string;

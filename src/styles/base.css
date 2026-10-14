@@ -5,7 +5,8 @@
  */
 @layer base {
   *, *::before, *::after { box-sizing: border-box; }
-  html { -webkit-text-size-adjust: 100%; }
+  /* якорь и фокус не прячутся под прилипшей шапкой */
+  html { -webkit-text-size-adjust: 100%; scroll-padding-top: calc(var(--header-height) + var(--space-4)); }
   body {
     margin: 0;
     background: var(--paper);
@@ -42,6 +43,7 @@
   .ui { font-family: var(--font-ui); }
   .muted { color: var(--ink-3); }
   .num { font-variant-numeric: tabular-nums; }
+  .nowrap { white-space: nowrap; }
   .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   /* Маркер: полоса под нижней частью строки, как настоящим выделителем */
   /* stylelint-disable-next-line function-disallowed-list -- маркер: полоса цвета токена, а не декоративный градиент */

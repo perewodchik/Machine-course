@@ -1,5 +1,7 @@
 # Курс «Глубокое обучение». Порядок модулей задаётся здесь. Каталог курсов — docs/program/catalog.md.
 id: deep-learning
+# Номер в каталоге курсов (docs/program/catalog.md)
+number: 4
 title:
   ru: 'Глубокое обучение'
 summary:

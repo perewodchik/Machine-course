@@ -1,0 +1,58 @@
+---
+// Демо-урок с заглушечным текстом: проверка раскладки (e2e, скриншоты). Не индексируется.
+// Есть всё, что проверяют тесты: заметки на полях, широкие блоки (.wide), разделы в оглавлении.
+import LessonLayout from "../../layouts/LessonLayout.astro";
+import { loadCourse } from "../../lib/content/collections";
+
+const course = await loadCourse("foundations");
+const lesson = course.lessons.find((l) => l.key === "foundations/bridge/linear-regression");
+if (!lesson) throw new Error("демо-урок: нет урока foundations/bridge/linear-regression");
+
+const headings = [
+  { slug: "task", text: "Задача и данные" },
+  { slug: "figure", text: "Рисунок во всю колонку" },
+  { slug: "formula", text: "Карточка формулы" },
+  { slug: "summary", text: "Итог" },
+];
+const grid = Array.from({ length: 13 }, (_, i) => i * 81);
+---
+<LessonLayout course={course} lesson={lesson} title="Демо-урок: раскладка" headings={headings} meta="Около 10 минут: страница для проверки раскладки." noindex>
+  <div class="note" role="note" slot="intro">
+    <span class="label">В CS229</span>
+    <div class="note__body">Здесь будет ссылка на раздел конспекта: издание и название раздела, без номера главы.</div>
+  </div>
+  <p class="lead" slot="intro">Демонстрационная страница: заглушечный текст в&nbsp;колонке, заметки на&nbsp;полях, рисунок и&nbsp;карточка формулы во&nbsp;всю ширину колонки.</p>
+
+  <h2 id="task">Задача и данные</h2>
+  <div class="note" role="note">
+    <span class="label">Термин</span>
+    <div class="note__body">Заметка на&nbsp;полях стоит рядом с&nbsp;абзацем, к&nbsp;которому относится. Когда поля скрыты, она сворачивается в&nbsp;строку с&nbsp;подписью.</div>
+  </div>
+  <p>Колонка текста держит строку около семидесяти знаков: так глазу легко найти начало следующей строки. Справа от&nbsp;красной линии&nbsp;— поля тетради: термины, ссылки на&nbsp;конспект и&nbsp;короткие пояснения, которые не&nbsp;должны прерывать основной текст.</p>
+  <p>Абзацы здесь&nbsp;— заглушка. Настоящий урок состоит из&nbsp;коротких циклов: вопрос, объяснение, проверка. На&nbsp;этой странице проверяется только раскладка: ширина колонки, линия полей, положение широких блоков и&nbsp;поведение оглавления на&nbsp;узком экране.</p>
+
+  <h2 id="figure">Рисунок во всю колонку</h2>
+  <figure class="figure wide">
+    <svg class="figure__plot plot" viewBox="0 0 972 300" role="img" aria-label="Пустая клетчатая область графика">
+      {grid.map((x) => <line class="grid-line" x1={x + 0.5} y1="0" x2={x + 0.5} y2="300" />)}
+      {[0, 75, 150, 225].map((y) => <line class="grid-line" x1="0" y1={y + 0.5} x2="972" y2={y + 0.5} />)}
+      <line class="axis" x1="40" y1="260" x2="940" y2="260" />
+      <line class="axis" x1="40" y1="20" x2="40" y2="260" />
+    </svg>
+    <figcaption class="figure__caption"><b>Рисунок 1.</b> Широкий блок не&nbsp;заходит за&nbsp;линию полей. Когда поля скрыты, он&nbsp;расширяется симметрично до&nbsp;ширины рисунка.</figcaption>
+  </figure>
+  <p>После рисунка текст продолжается в&nbsp;колонке. Заметка рядом с&nbsp;рисунком остаётся на&nbsp;полях и&nbsp;не&nbsp;сдвигает его вниз.</p>
+
+  <h2 id="formula">Карточка формулы</h2>
+  <div class="note" role="note">
+    <span class="label">Почему так</span>
+    <div class="note__body">Карточки формул строятся из&nbsp;реестра <code>content/formulas</code>; здесь&nbsp;— только место под карточку.</div>
+  </div>
+  <section class="figure wide" aria-labelledby="demo-formula">
+    <p class="figure__caption" id="demo-formula"><b>Формула 1.</b> Место под карточку формулы: условие, символы, вывод по&nbsp;шагам.</p>
+  </section>
+  <p>Последний абзац перед итогом. Если поля скрыты, колонка текста стоит по&nbsp;центру, а&nbsp;заметки свёрнуты в&nbsp;строки и&nbsp;раскрываются по&nbsp;щелчку.</p>
+
+  <h2 id="summary">Итог</h2>
+  <p>Раскладка урока готова к&nbsp;настоящим текстам: заметки, рисунки и&nbsp;формулы займут свои места без правок вёрстки.</p>
+</LessonLayout>
