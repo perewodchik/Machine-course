@@ -1,0 +1,14 @@
+# Заголовки Cloudflare Pages (ADR 0003, S1.12). Файл попадает в dist/ и наружу не отдаётся.
+# COOP/COEP дают SharedArrayBuffer для Pyodide: кнопка «Стоп» прерывает Python без перезапуска.
+# COEP require-corp не пускает чужие ресурсы без CORP — всё грузится со своего домена (e2e hosting.spec.ts).
+/*
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Embedder-Policy: require-corp
+
+# Хэшированные сборкой JS, CSS и шрифты (Fontsource, KaTeX) — постоянный кэш.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Ядро и пакеты Pyodide (с этапа 2).
+/py/*
+  Cache-Control: public, max-age=31536000, immutable

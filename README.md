@@ -31,3 +31,23 @@ cd code && pip install -e ".[dev]" && pytest
 # лабораторные
 python scripts/build_notebooks.py --solutions /tmp/nb && pytest --nbmake /tmp/nb
 ```
+
+## Хостинг: Cloudflare Pages
+
+Сайт статический (Astro → `dist/`), заголовки COOP/COEP и кэш — в [`public/_headers`](public/_headers) ([ADR 0003](docs/adr/0003-hosting.md)). Бесплатного тарифа хватает. Подключение — один раз:
+
+1. [dash.cloudflare.com](https://dash.cloudflare.com) → **Workers & Pages** → **Create** → вкладка **Pages** → **Connect to Git** → репозиторий `perewodchik/Machine-course`.
+2. Настройки сборки:
+
+   | Поле | Значение |
+   |---|---|
+   | Production branch | `docs/course-analysis` (пока `main` пустой; после PR этапа 1 — `main`) |
+   | Framework preset | Astro |
+   | Build command | `npm run build` |
+   | Build output directory | `dist` |
+
+   Node берётся из `.nvmrc` (22), переменные окружения не нужны.
+3. **Save and Deploy**. Сайт — `https://<проект>.pages.dev`, превью каждой ветки — `https://<ветка>.<проект>.pages.dev`.
+4. Проверка заголовков: `curl -sI https://<проект>.pages.dev/ | grep -i cross-origin` → `same-origin` и `require-corp`.
+
+Проект создавать именно через Git, а не Direct Upload (`wrangler pages deploy`): проект с Direct Upload потом не подключить к Git, и превью веток не будет.

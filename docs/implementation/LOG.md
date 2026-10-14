@@ -17,6 +17,15 @@
 
 ---
 
+### 2026-10-14 — S1.12 Деплой: подготовка — готова
+- **Сделано:** public/_headers (COOP/COEP, immutable для /_astro/* и /py/*), e2e hosting.spec.ts (все запросы на свой origin, 5 страниц × 2 проекта), юнит headers.test.ts, инструкция подключения Cloudflare Pages в README. Пробовали Vercel — пользователь вернул Cloudflare, ADR 0003 в силе.
+- **Файлы:** public/_headers, tests/e2e/hosting.spec.ts, tests/unit/headers.test.ts, README.md
+- **Проверка:** npm test, lint, astro check, build + test -f dist/_headers, e2e hosting
+- **Отклонения от плана и решения:** сделана до S1.11 (CI) по просьбе пользователя. Создать проект из облачной сессии нельзя: сеть среды блокирует api.cloudflare.com и *.pages.dev, токена нет. Найдено, не исправлено: axe «math» на mobile падает и до этих изменений — aria-prohibited-attr на .katex-display (S1.07, scrollable.ts).
+- **Где остановился:** —
+- **Следующий шаг:** S1.13 — пользователь подключает Cloudflare Pages; агенту — S1.09.
+- **Вопросы пользователю:** подключить репозиторий в Cloudflare Pages по README.
+
 ### 2026-10-14 — S1.08 валидатор контента — готова
 - **Сделано:** src/lib/content/validate.ts (validateContent(root) → проблемы «файл: где: что»), scripts/validate-content.ts, npm run validate = tsx; тесты validate.test.ts: текущий content/, база и 13 случаев tests/fixtures/validate/cases/*. Граф понятий дополнен (nota.yaml, calc.yaml, ml.yaml, la.yaml: +15), иначе формулы ссылались на несуществующие ID. Зависимости: tsx 4.23.15, remark-mdx 3.1.1.
 - **Файлы:** src/lib/content/validate.ts, scripts/validate-content.ts, src/lib/content/validate.test.ts, tests/fixtures/validate/**, content/concepts/*.yaml, package.json
