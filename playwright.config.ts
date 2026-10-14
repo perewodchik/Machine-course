@@ -5,8 +5,15 @@ import { defineConfig, devices } from "@playwright/test";
 const port = 4321;
 
 export default defineConfig({
-  testDir: "tests/e2e",
+  // e2e — функциональные проверки и axe (везде); visual — сравнение со скриншотами-эталонами (только в CI, VISUAL=1)
+  testDir: "tests",
+  testMatch: ["e2e/**/*.spec.ts", "visual/**/*.spec.ts"],
   outputDir: "test-results",
+  // эталоны снимаются в образе mcr.microsoft.com/playwright:v1.56.1-noble: локальные шрифты и сглаживание дают другие пиксели
+  snapshotPathTemplate: "tests/visual/__screenshots__/{projectName}/{arg}{ext}",
+  // в CI отсутствующий эталон — ошибка (не пишется молча); обновление — workflow visual.yml с update=true
+  updateSnapshots: process.env.CI ? "none" : "missing",
+  expect: { toHaveScreenshot: { maxDiffPixelRatio: 0.002, animations: "disabled" } },
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: 0, // флейки не чинить повтором: искать причину

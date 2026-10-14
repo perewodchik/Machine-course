@@ -32,7 +32,8 @@
 
 - **Перед коммитом** — все команды, относящиеся к изменённым частям; большие выводы обрезать (`| tail -20`).
 - **Интерфейс:** скриншоты Playwright (1440 и 390 px, светлая и тёмная темы, поля показаны и скрыты), затем скиллы `design-critique` и `accessibility-review` по скриншотам. Chromium уже установлен (`/opt/pw-browsers`), `playwright install` не запускать.
-- **Визуальная регрессия:** эталонные скриншоты `/lab` в `tests/visual/`, снятые в CI; обновлять осознанно (артефакт workflow), с пометкой в журнале.
+- **Визуальная регрессия:** `tests/visual/lab.spec.ts` (только при `VISUAL=1`), эталоны — `tests/visual/__screenshots__/<проект>/`, снимаются в CI: `.github/workflows/visual.yml` в образе `mcr.microsoft.com/playwright:v1.56.1-noble`. Обновлять осознанно: запуск workflow с `update = true` → артефакт `visual-baselines` → коммит с пометкой в журнале. В CI отсутствующий эталон — ошибка (`updateSnapshots: "none"`); пока папки эталонов нет, job только предупреждает.
+- **CSS отдельной страницы** (как `src/styles/lab.css`) начинается строкой `@layer properties, theme, base, components, utilities;`: Astro встраивает маленький файл `<style>` раньше общей таблицы, и без порядка слоёв сброс Tailwind (`base`) перекроет компоненты.
 - **Нет горизонтальной прокрутки** на 390 px (проверка `document.documentElement.scrollWidth`).
 - **Флейки** не «чинить» повтором: найти причину.
 

@@ -5,13 +5,14 @@ import { expect, type Page } from "@playwright/test";
 export type Theme = "light" | "dark";
 export type Margins = "visible" | "hidden";
 
-/** Страницы, на которых проверяется раскладка: каталог, курс, заглушка урока, демо-урок, демо формул. */
+/** Страницы, на которых проверяется раскладка: каталог, курс, заглушка урока, демо-урок, демо формул, витрина. */
 export const layoutPages = {
   home: "/",
   course: "/foundations/",
   lesson: "/foundations/bridge/linear-regression/",
   demo: "/demo/lesson/",
   math: "/demo/math/",
+  lab: "/lab/",
 } as const;
 
 /** Ставит тему и поля в localStorage до загрузки страницы — как их оставил бы ученик. */
