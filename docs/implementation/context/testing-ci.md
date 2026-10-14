@@ -4,6 +4,8 @@
 
 ## Команды (после S1.01)
 
+В облачной сессии зависимости ставит хук `.claude/hooks/session-start.sh` (S1.02): `npm install` и `.venv` с `mlf[dev]`; `.venv/bin` — первым в `PATH`. Локально: `npm ci`, `python3 -m venv .venv && .venv/bin/pip install -e "code[dev]"`.
+
 | Что | Команда |
 |---|---|
 | Типы Astro и TS | `npx astro check` |

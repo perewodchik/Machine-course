@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-14 — S1.02 Хук старта облачной сессии — готова
+- **Сделано:** Синхронный хук .claude/hooks/session-start.sh (только при CLAUDE_CODE_REMOTE=true): npm install, venv .venv с pip install -e code[dev], PATH через CLAUDE_ENV_FILE; зарегистрирован в .claude/settings.json.
+- **Файлы:** .claude/hooks/session-start.sh, .claude/settings.json, context/testing-ci.md
+- **Проверка:** чистый клон ветки → хук (34 с, exit 0) → npm run build ok, cd code && pytest → 27 passed, npm run lint ok
+- **Отклонения от плана и решения:** npm install вместо npm ci в хуке — по рекомендации скилла (кэш контейнера); lockfile не меняется.
+- **Следующий шаг:** S1.03.
+- **Вопросы пользователю:** —
+
 ### 2026-10-14 — S1.01 Проект Astro — готова
 - **Сделано:** Astro 7.3.8 с интеграциями React и MDX в корне; tsconfig strict; скрипты dev/build/preview/check/lint/test/test:e2e/validate (lint и validate — заглушки до S1.04 и S1.08); .nvmrc 22; команды в CLAUDE.md и 00-project.md.
 - **Файлы:** package.json, package-lock.json, astro.config.mjs, tsconfig.json, src/pages/index.astro, .gitignore
