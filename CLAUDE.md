@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Интерактивный курс «Математика для машинного обучения» (русский язык): ЛА, анализ, вероятность, статистика и мост к Stanford CS229. Сейчас этап проектирования: сайт ещё не собран, есть план, программа, токены, прототип и Python-проверки.
+Интерактивный курс «Математика для машинного обучения» (русский язык): ЛА, анализ, вероятность, статистика и мост к Stanford CS229. Текущее состояние — блок «Сейчас» в `docs/implementation/PLAN.md`; пока сайт не собран (S1.01), работают только Python-проверки и статичный прототип.
 
 ## Работа по плану реализации
 
@@ -20,7 +20,7 @@
 | Компоненты урока, упражнения | `context/pedagogy-components.md` | `docs/conventions/pedagogy.md` |
 | Виджеты, игры | `context/widgets-games.md` | `prototype/*` (только нужный файл-эталон) |
 | Python, лабораторные | `context/python-runtime.md` | — |
-| Прогресс, повторения, аналитика | `context/progress-learning.md` | — |
+| Прогресс (пройденные уроки), аналитика | `context/progress-learning.md` | — |
 | Урок | `context/content-authoring.md` + карточка `### <номер>.` в `docs/program/` | `docs/program/*` целиком |
 | Проверки, CI, скриншоты | `context/testing-ci.md` | — |
 | ИИ-тьютор (этап 6) | `context/ai-tutor.md` | — |
@@ -34,6 +34,8 @@
 - `src/lib/content/types.ts` — модель контента; `src/games/_engine/types.ts` — контракт игры.
 
 ## Команды
+
+До S1.01 работают только эти; после неё полный список — `docs/implementation/context/testing-ci.md` (S1.01 обновляет этот раздел).
 
 ```bash
 cd code && pip install -e ".[dev]" && pytest                     # формулы, выводы, сниппеты

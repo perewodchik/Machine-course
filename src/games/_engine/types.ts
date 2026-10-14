@@ -24,7 +24,7 @@ export interface GameSpec<State, Action, Params = void> {
   generate(rng: Rng, difficulty: number): Params; // генератор уровней
 }
 
-/** Что игра сообщает в прогресс: практика, но не «подтверждение» усвоения. */
+/** Что игра сообщает в журнал событий: практика, на статус урока не влияет. */
 export interface GameResult {
   gameId: string;
   version: number;

@@ -360,6 +360,15 @@ document.addEventListener("DOMContentLoaded", () => {
       b.setAttribute("aria-expanded", String(Boolean(open)));
     }),
   );
+  // Модули в оглавлении раскрываются кнопкой; открыт текущий
+  document.querySelectorAll(".toc__part-head[aria-controls]").forEach((b) =>
+    b.addEventListener("click", () => {
+      const list = document.getElementById(b.getAttribute("aria-controls"));
+      const open = b.getAttribute("aria-expanded") !== "true";
+      b.setAttribute("aria-expanded", String(open));
+      if (list) list.hidden = !open;
+    }),
+  );
   renderMath();
   const symbols = initSymbols();
   document.querySelectorAll("svg[data-regression]").forEach(initRegression);

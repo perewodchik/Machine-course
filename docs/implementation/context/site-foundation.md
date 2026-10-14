@@ -1,10 +1,24 @@
 # Пакет: каркас сайта
 
-Для задач S1.01–S1.04, S1.10, S1.11.
+Для задач S1.01, S1.03, S1.05, S1.12, S3.02.
 
 ## Главное
 
-- **Astro 7.3** (Node ≥ 22.12), интеграции: `@astrojs/react`, `@astrojs/mdx`. TypeScript `strict`. Менеджер пакетов — npm.
+- **Astro 7.3** (Node ≥ 22.12), интеграции: `@astrojs/react`, `@astrojs/mdx`. TypeScript `strict`. Менеджер пакетов — npm, `package-lock.json` в git.
+- **Версии** (сверены с npm 14.10.2026; ставить не ниже):
+
+  | Пакет | Версия | Почему так |
+  |---|---|---|
+  | `astro` | 7.3.8 | |
+  | `@astrojs/react`, `@astrojs/mdx` | 7.0.1, 8.0.3 | |
+  | `@astrojs/check` (devDependencies) | 0.9.10 | нужен для `astro check` |
+  | `react`, `react-dom` | 19.3.0 | |
+  | `typescript` | `~6.0.3` | **не 7**: `@astrojs/check` и `typescript-eslint` требуют `^5 \|\| ^6` |
+  | `tailwindcss`, `@tailwindcss/vite` | 4.3.3 | |
+  | `katex` | 0.19.0 | ≥ 0.16.21 из-за CVE-2025-23207 |
+  | `vitest` | 5.0.4 | |
+  | `@playwright/test` | **ровно 1.56.1** | совпадает с Chromium в `/opt/pw-browsers` (chromium-1194) |
+  | `@axe-core/playwright` | 4.13.0 | |
 - **React 19 только в островах** (`client:visible`): виджеты, игры, Python. Шапка, оглавление, раскладка урока — `.astro` без React.
 - **Tailwind CSS 4.3** через `@tailwindcss/vite`; подключить `src/design-system/tokens/theme.css` (он импортирует `tokens.css` и отключает дефолтные палитру, тени, скругления, шрифты). Проверка: класс `bg-indigo-500` не генерируется.
 - **Шрифты** — Fontsource: `@fontsource-variable/literata`, `@fontsource/ibm-plex-sans` (400, 500, 600, 400-italic), `@fontsource/ibm-plex-mono` (400); подмножества латиница, кириллица, греческий.
@@ -23,6 +37,7 @@
   /py/*
     Cache-Control: public, max-age=31536000, immutable
   ```
+- **COEP ломает чужие ресурсы:** с `require-corp` не загрузятся картинки, шрифты и бейджи с других доменов. Всё — со своего домена; «Открыть в Colab» — обычная ссылка-кнопка, не картинка-бейдж с github.com.
 
 ## Источники (только если нужно)
 

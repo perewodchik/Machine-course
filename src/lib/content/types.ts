@@ -100,5 +100,5 @@ export interface Module {
   lessons: LessonRef[];
 }
 
-/** Уровни усвоения понятия (см. docs/conventions/pedagogy.md). */
-export type Mastery = "none" | "familiar" | "proficient" | "solid" | "review-due";
+/** Статус урока (см. docs/conventions/pedagogy.md, «Прогресс: пройденные уроки»). */
+export type LessonStatus = "not-started" | "in-progress" | "passed";

@@ -14,7 +14,6 @@
 <body>
 <!-- SPRITE:BEGIN -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="i-search" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3.5 3.5"/></symbol>
   <symbol id="i-sun" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3"/><path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1 1M11.6 11.6l1 1M3.4 12.6l1-1M11.6 4.4l1-1"/></symbol>
   <symbol id="i-moon" viewBox="0 0 16 16"><path d="M13.5 9.5A5.5 5.5 0 0 1 6.5 2.5a5.5 5.5 0 1 0 7 7Z"/></symbol>
   <symbol id="i-menu" viewBox="0 0 16 16"><path d="M2.5 4h11M2.5 8h11M2.5 12h7"/></symbol>
@@ -22,12 +21,9 @@
   <symbol id="i-check" viewBox="0 0 16 16"><path d="m3.5 8.5 3 3 6-7"/></symbol>
   <symbol id="i-x" viewBox="0 0 16 16"><path d="m4 4 8 8M12 4l-8 8"/></symbol>
   <symbol id="i-margin" viewBox="0 0 16 16"><rect x="2" y="2.5" width="12" height="11" rx="1.5"/><path d="M10 2.5v11"/></symbol>
-  <symbol id="i-repeat" viewBox="0 0 16 16"><path d="M13 6.5A5 5 0 1 0 13.3 9"/><path d="M13.5 2.8v3.7H9.8"/></symbol>
-  <symbol id="st-solid" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="currentColor" stroke="none"/><path d="m4.2 7.2 1.9 1.9 3.7-4.2" stroke="var(--paper)" stroke-width="1.6" fill="none"/></symbol>
-  <symbol id="st-can" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="m4.3 7.2 1.8 1.8 3.6-4" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
-  <symbol id="st-seen" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M7 1.4a5.6 5.6 0 0 1 0 11.2Z" fill="currentColor"/></symbol>
-  <symbol id="st-review" viewBox="0 0 14 14"><path d="M11.8 5.2A5.2 5.2 0 1 0 12 8" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M12.4 2.4v3.2H9.2" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
-  <symbol id="st-todo" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2.2 2"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></symbol>
+  <symbol id="st-passed" viewBox="0 0 14 14"><path d="m2.4 7.6 3 3 6.2-7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="st-started" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.4" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M7 1.6a5.4 5.4 0 0 1 0 10.8Z" fill="currentColor"/></symbol>
 </svg>
 <!-- SPRITE:END -->
 <!-- HEADER:BEGIN -->
@@ -43,10 +39,8 @@
       </svg>
       Математика для ML
     </a>
-    <div class="search" role="search"><svg class="icon"><use href="#i-search"/></svg><span>Поиск по понятиям и формулам</span><span class="kbd" style="flex:none">/</span></div>
     <div class="header-progress">
-      <a class="btn btn--quiet btn--sm header-review" href="#"><svg class="icon"><use href="#i-repeat"/></svg><span><span class="hide-narrow">Повторение: </span>7<span class="hide-narrow"> задач</span></span></a>
-      <span class="label">Пройдено 48 из 61 урока</span>
+      <span class="label"><span class="hide-narrow">Пройдено 48 из 61 урока</span><span class="show-narrow">48 из 61</span></span>
       <span class="progress" aria-hidden="true"><span style="width:79%"></span></span>
       <button class="icon-button theme-toggle" data-theme-toggle aria-label="Сменить тему">
         <svg class="icon sun"><use href="#i-sun"/></svg><svg class="icon moon"><use href="#i-moon"/></svg>
@@ -58,40 +52,107 @@
 
 <div class="page">
   <nav class="toc" aria-label="Оглавление">
-    <div class="toc__part"><div class="toc__part-head"><span class="n">0</span>Старт<span class="count">9/9</span></div></div>
-    <div class="toc__part"><div class="toc__part-head"><span class="n">I</span>Линейная алгебра<span class="count">12/12</span></div></div>
-    <div class="toc__part"><div class="toc__part-head"><span class="n">II</span>Анализ и оптимизация<span class="count">10/10</span></div></div>
-    <div class="toc__part"><div class="toc__part-head"><span class="n">III</span>Вероятность<span class="count">11/13</span></div></div>
-    <div class="toc__part"><div class="toc__part-head"><span class="n">IV</span>Статистика<span class="count">6/8</span></div></div>
     <div class="toc__part">
-      <div class="toc__part-head"><span class="n">V</span>Мост к ML<span class="count">0/9</span></div>
-      <ol>
-        <li><a href="#" aria-current="page"><span class="n">V.1</span>Линейная регрессия тремя способами</a>
-          <ol class="sub">
-            <li><a href="#">Задача и данные</a></li>
-            <li><a href="#">Способ 1. Проекция</a></li>
-            <li><a href="#" aria-current="location">Способ 2. Минимум функции потерь</a></li>
-            <li><a href="#">Способ 3. Правдоподобие</a></li>
-            <li><a href="#">В коде</a></li>
-            <li><a href="#">Итоговая проверка</a></li>
-          </ol>
-        </li>
-        <li><a href="#"><span class="n">V.2</span>Логистическая регрессия</a></li>
-        <li><a href="#"><span class="n">V.3</span>Обобщённые линейные модели</a></li>
-        <li><a href="#"><span class="n">V.4</span>GDA и наивный Байес</a></li>
-        <li><a href="#"><span class="n">V.5</span>Ядра и метод опорных векторов</a></li>
-        <li><a href="#"><span class="n">V.6</span>Обратное распространение</a></li>
-        <li><a href="#"><span class="n">V.7</span>Смещение, разброс, регуляризация</a></li>
-        <li><a href="#"><span class="n">V.8</span>k-means и EM</a></li>
-        <li><a href="#"><span class="n">V.9</span>Метод главных компонент</a></li>
+      <button class="toc__part-head" aria-expanded="false" aria-controls="toc-start"><svg class="icon chevron" aria-hidden="true"><use href="#i-chevron"/></svg><span class="n">0</span><span class="toc__title">Старт</span><svg class="status status--passed" role="img" aria-label="модуль пройден"><use href="#st-passed"/></svg></button>
+      <ol id="toc-start" hidden>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">0.1</span><span class="toc__title">Регрессия руками за 15 минут</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">0.2</span><span class="toc__title">Как устроен курс и входная диагностика</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">0.3</span><span class="toc__title">Язык математики: множества, отображения, кванторы</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">0.4</span><span class="toc__title">Суммы, произведения, индикатор</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">0.5</span><span class="toc__title">Экспонента, логарифм, сигмоида</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">0.6</span><span class="toc__title">Производная и правило цепочки</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">0.7</span><span class="toc__title">Интеграл</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">0.8</span><span class="toc__title">Минимум NumPy: массивы, формы, векторизация</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">0.9</span><span class="toc__title">Обозначения курса и CS229</span></a></li>
       </ol>
     </div>
-    <dl class="legend">
-      <div><dt><svg class="status status--done"><use href="#st-solid"/></svg></dt><dd>Устойчиво</dd></div>
-      <div><dt><svg class="status status--done"><use href="#st-can"/></svg></dt><dd>Умею</dd></div>
-      <div><dt><svg class="status status--read"><use href="#st-seen"/></svg></dt><dd>Знаком</dd></div>
-      <div><dt><svg class="status status--read"><use href="#st-review"/></svg></dt><dd>Пора повторить</dd></div>
-    </dl>
+    <div class="toc__part">
+      <button class="toc__part-head" aria-expanded="false" aria-controls="toc-linear-algebra"><svg class="icon chevron" aria-hidden="true"><use href="#i-chevron"/></svg><span class="n">I</span><span class="toc__title">Линейная алгебра</span><svg class="status status--passed" role="img" aria-label="модуль пройден"><use href="#st-passed"/></svg></button>
+      <ol id="toc-linear-algebra" hidden>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">I.1</span><span class="toc__title">Векторы, линейные комбинации, оболочка</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">I.2</span><span class="toc__title">Скалярное произведение и нормы</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">I.3</span><span class="toc__title">Умножение матриц: четыре взгляда</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">I.4</span><span class="toc__title">Матрица как линейное отображение</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">I.5</span><span class="toc__title">Транспонирование, симметрия, след</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">I.6</span><span class="toc__title">Системы уравнений и ранг</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">I.7</span><span class="toc__title">Обратная матрица и определитель</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">I.8</span><span class="toc__title">Ортогональность и проекции</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">I.9</span><span class="toc__title">Собственные значения и векторы</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">I.10</span><span class="toc__title">Квадратичные формы и знакоопределённость</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">I.11</span><span class="toc__title">Сингулярное разложение и псевдообратная</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">I.12</span><span class="toc__title">Капстоун: МНК как проекция</span></a></li>
+      </ol>
+    </div>
+    <div class="toc__part">
+      <button class="toc__part-head" aria-expanded="false" aria-controls="toc-calculus"><svg class="icon chevron" aria-hidden="true"><use href="#i-chevron"/></svg><span class="n">II</span><span class="toc__title">Анализ и оптимизация</span><svg class="status status--passed" role="img" aria-label="модуль пройден"><use href="#st-passed"/></svg></button>
+      <ol id="toc-calculus" hidden>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">II.1</span><span class="toc__title">Частные производные и градиент</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">II.2</span><span class="toc__title">Многомерное правило цепочки и якобиан</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">II.3</span><span class="toc__title">Матричное дифференцирование</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">II.4</span><span class="toc__title">Гессиан, ряд Тейлора, критические точки</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">II.5</span><span class="toc__title">Выпуклость</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">II.6</span><span class="toc__title">Градиентный спуск и SGD</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">II.7</span><span class="toc__title">Метод Ньютона</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">II.8</span><span class="toc__title">Множители Лагранжа</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">II.9</span><span class="toc__title">Двойственность и условия KKT</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">II.10</span><span class="toc__title">Кратные интегралы и замена переменных</span></a></li>
+      </ol>
+    </div>
+    <div class="toc__part">
+      <button class="toc__part-head" aria-expanded="false" aria-controls="toc-probability"><svg class="icon chevron" aria-hidden="true"><use href="#i-chevron"/></svg><span class="n">III</span><span class="toc__title">Вероятность</span><span class="count"><span class="visually-hidden">пройдено </span>11/13</span></button>
+      <ol id="toc-probability" hidden>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">III.1</span><span class="toc__title">Вероятностное пространство</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">III.2</span><span class="toc__title">Условная вероятность и независимость</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">III.3</span><span class="toc__title">Формула полной вероятности и Байес</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">III.4</span><span class="toc__title">Случайные величины: PMF, PDF, CDF</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">III.5</span><span class="toc__title">Матожидание, дисперсия, неравенство Йенсена</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">III.6</span><span class="toc__title">Дискретные распределения</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">III.7</span><span class="toc__title">Непрерывные распределения</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">III.8</span><span class="toc__title">Предельные теоремы и метод Монте-Карло</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">III.9</span><span class="toc__title">Совместные распределения и ковариация</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">III.10</span><span class="toc__title">Случайные векторы и линейные преобразования</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">III.11</span><span class="toc__title">Многомерное нормальное распределение</span></a></li>
+        <li><a href="#"><span class="status" aria-hidden="true"></span><span class="n">III.12</span><span class="toc__title">Смеси и скрытые переменные</span></a></li>
+        <li><a href="#"><span class="status" aria-hidden="true"></span><span class="n">III.13</span><span class="toc__title">Энтропия, кросс-энтропия, KL</span></a></li>
+      </ol>
+    </div>
+    <div class="toc__part">
+      <button class="toc__part-head" aria-expanded="true" aria-controls="toc-statistics"><svg class="icon chevron" aria-hidden="true"><use href="#i-chevron"/></svg><span class="n">IV</span><span class="toc__title">Статистика</span><span class="count"><span class="visually-hidden">пройдено </span>6/8</span></button>
+      <ol id="toc-statistics">
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">IV.1</span><span class="toc__title">Выборка и описательная статистика</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">IV.2</span><span class="toc__title">Оценки: смещение, разброс, MSE</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">IV.3</span><span class="toc__title">Метод максимального правдоподобия</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">IV.4</span><span class="toc__title">Многомерный MLE</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">IV.5</span><span class="toc__title">Экспоненциальное семейство</span></a></li>
+        <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">IV.6</span><span class="toc__title">Байесовский подход и MAP</span></a></li>
+        <li><a href="#"><svg class="status status--started" role="img" aria-label="начат"><use href="#st-started"/></svg><span class="n">IV.7</span><span class="toc__title">Риск, обобщение, кросс-валидация</span></a></li>
+        <li><a href="#"><span class="status" aria-hidden="true"></span><span class="n">IV.8</span><span class="toc__title">Доверительные интервалы и проверка гипотез</span></a></li>
+      </ol>
+    </div>
+    <div class="toc__part">
+      <button class="toc__part-head" aria-expanded="true" aria-controls="toc-bridge"><svg class="icon chevron" aria-hidden="true"><use href="#i-chevron"/></svg><span class="n">V</span><span class="toc__title">Мост к ML</span><span class="count"><span class="visually-hidden">пройдено </span>0/9</span></button>
+      <ol id="toc-bridge">
+        <li><a href="lesson.html" aria-current="page"><svg class="status status--started" role="img" aria-label="начат"><use href="#st-started"/></svg><span class="n">V.1</span><span class="toc__title">Линейная регрессия тремя способами</span></a>
+          <ol class="sub">
+            <li><a href="#"><svg class="status status--passed" role="img" aria-label="проверка решена"><use href="#st-passed"/></svg><span class="toc__title">Задача и данные</span></a></li>
+            <li><a href="#"><svg class="status status--passed" role="img" aria-label="проверка решена"><use href="#st-passed"/></svg><span class="toc__title">Способ 1. Проекция</span></a></li>
+            <li><a href="#" aria-current="location"><span class="status" aria-hidden="true"></span><span class="toc__title">Способ 2. Минимум функции потерь</span></a></li>
+            <li><a href="#"><span class="status" aria-hidden="true"></span><span class="toc__title">Способ 3. Правдоподобие</span></a></li>
+            <li><a href="#"><span class="status" aria-hidden="true"></span><span class="toc__title">В коде</span></a></li>
+            <li><a href="#"><span class="status" aria-hidden="true"></span><span class="toc__title">Итоговая проверка</span></a></li>
+          </ol>
+        </li>
+        <li><a href="#"><span class="status" aria-hidden="true"></span><span class="n">V.2</span><span class="toc__title">Логистическая регрессия</span></a></li>
+        <li><a href="#"><span class="status" aria-hidden="true"></span><span class="n">V.3</span><span class="toc__title">Обобщённые линейные модели</span></a></li>
+        <li><a href="#"><span class="status" aria-hidden="true"></span><span class="n">V.4</span><span class="toc__title">GDA и наивный Байес</span></a></li>
+        <li><a href="#"><span class="status" aria-hidden="true"></span><span class="n">V.5</span><span class="toc__title">Ядра и метод опорных векторов</span></a></li>
+        <li><a href="#"><span class="status" aria-hidden="true"></span><span class="n">V.6</span><span class="toc__title">Обратное распространение</span></a></li>
+        <li><a href="#"><span class="status" aria-hidden="true"></span><span class="n">V.7</span><span class="toc__title">Смещение, разброс, регуляризация</span></a></li>
+        <li><a href="#"><span class="status" aria-hidden="true"></span><span class="n">V.8</span><span class="toc__title">k-means и EM</span></a></li>
+        <li><a href="#"><span class="status" aria-hidden="true"></span><span class="n">V.9</span><span class="toc__title">Метод главных компонент</span></a></li>
+      </ol>
+    </div>
+    <p class="toc__legend"><span><svg class="status status--passed" aria-hidden="true"><use href="#st-passed"/></svg>пройден</span><span><svg class="status status--started" aria-hidden="true"><use href="#st-started"/></svg>начат</span></p>
   </nav>
 
   <main class="article-wrap">
@@ -112,10 +173,10 @@
       <div class="prereqs">
         <span class="prereqs__label">Опирается на</span>
         <ul>
-          <li><svg class="status status--done"><use href="#st-solid"/></svg><span><a href="#">Проекция на подпространство</a> <span class="ref">I.8</span></span></li>
-          <li><svg class="status status--done"><use href="#st-can"/></svg><span><a href="#">Матричное дифференцирование</a> <span class="ref">II.3</span></span></li>
-          <li><svg class="status status--done"><use href="#st-solid"/></svg><span><a href="#">Выпуклость</a> <span class="ref">II.5</span></span></li>
-          <li><svg class="status status--read"><use href="#st-review"/></svg><span><a href="#">Метод максимального правдоподобия</a> <span class="ref">IV.3</span> <button class="btn btn--quiet btn--sm refresh">Освежить за 2 минуты</button></span></li>
+          <li><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span><a href="#">Проекция на подпространство</a> <span class="ref">I.8</span></span></li>
+          <li><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span><a href="#">Матричное дифференцирование</a> <span class="ref">II.3</span></span></li>
+          <li><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span><a href="#">Выпуклость</a> <span class="ref">II.5</span></span></li>
+          <li><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span><a href="#">Метод максимального правдоподобия</a> <span class="ref">IV.3</span></span></li>
         </ul>
       </div>
 
