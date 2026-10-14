@@ -1,0 +1,9 @@
+id: demo
+title:
+  ru: 'Демо'
+summary:
+  ru: 'Курс для проверки валидатора'
+cs229Edition: main-notes-2026-spring
+requires: [no-such-course]
+modules:
+  - basics

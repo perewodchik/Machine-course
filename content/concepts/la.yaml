@@ -1,4 +1,4 @@
-# Понятия линейной алгебры. Пример формата; полный список — в docs/program/01-linear-algebra.md.
+# Понятия линейной алгебры. Добавляются вместе с уроками (скилл new-lesson); программа — docs/program/01-linear-algebra.md.
 # Обязательные поля: id, title, lesson, prerequisites. ID стабильны: переименование — только через redirects.yaml.
 - id: la.matmul
   title:
@@ -46,4 +46,76 @@
   summary: 'Симметричная A, для которой xᵀAx ≥ 0 при всех x; все собственные значения неотрицательны.'
   lesson: quadratic-forms
   prerequisites: [la.symmetric, la.eigen, la.quadratic-form]
+  core: true
+
+- id: la.dot-product
+  title:
+    ru: 'Скалярное произведение'
+    en: 'dot product'
+  summary: 'xᵀy — сумма произведений координат; ноль у перпендикулярных векторов.'
+  lesson: dot-product-norms
+  prerequisites: [nota.sums]
+  core: true
+
+- id: la.norm
+  title:
+    ru: 'Норма вектора'
+    en: 'norm'
+  summary: 'Длина вектора; евклидова норма — корень из скалярного квадрата, ‖x‖² = xᵀx.'
+  lesson: dot-product-norms
+  prerequisites: [la.dot-product]
+  core: true
+
+- id: la.span
+  title:
+    ru: 'Линейная оболочка'
+    en: 'span'
+  summary: 'Все линейные комбинации набора векторов.'
+  lesson: vectors-span
+  prerequisites: []
+  core: true
+
+- id: la.linear-independence
+  title:
+    ru: 'Линейная независимость'
+    en: 'linear independence'
+  summary: 'Ни один вектор набора не выражается через остальные: нулевая комбинация только с нулевыми коэффициентами.'
+  lesson: vectors-span
+  prerequisites: [la.span]
+  core: true
+
+- id: la.symmetric
+  title:
+    ru: 'Симметричная матрица'
+    en: 'symmetric matrix'
+  summary: 'Квадратная матрица, равная своей транспонированной: Aᵀ = A.'
+  lesson: transpose-trace
+  prerequisites: [la.transpose]
+  core: true
+
+- id: la.inverse
+  title:
+    ru: 'Обратная матрица'
+    en: 'inverse matrix'
+  summary: 'A⁻¹ с AA⁻¹ = A⁻¹A = I; существует, когда квадратная A полного ранга.'
+  lesson: inverse-determinant
+  prerequisites: [la.matmul, la.rank]
+  core: true
+
+- id: la.eigen
+  title:
+    ru: 'Собственные значения и векторы'
+    en: 'eigenvalues and eigenvectors'
+  summary: 'Av = λv: направление v матрица только растягивает в λ раз.'
+  lesson: eigen
+  prerequisites: [la.matmul]
+  core: true
+
+- id: la.quadratic-form
+  title:
+    ru: 'Квадратичная форма'
+    en: 'quadratic form'
+  summary: 'xᵀAx — число, квадратичное по x; матрицу A можно считать симметричной.'
+  lesson: quadratic-forms
+  prerequisites: [la.symmetric, la.dot-product]
   core: true

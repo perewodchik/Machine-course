@@ -1,0 +1,23 @@
+id: f.square
+kind: formula
+title:
+  ru: 'Квадрат нормы'
+statement: '\sym{theta}{\theta}^\top \sym{theta}{\theta}'
+symbols:
+  - name: theta
+    tex: '\theta'
+    role: param
+dependsOn:
+  concepts: [la.norm]
+  rules: [rule.no-such-rule]
+derivation:
+  plan:
+    - 'Записать'
+  steps:
+    - goal: 0
+      tex: '\sym{theta}{\theta}^\top \sym{theta}{\theta}'
+      by: [rule.missing-step-rule]
+      check:
+        kind: same
+        py: 'theta @ theta'
+usedIn: [demo/basics/no-such-lesson]

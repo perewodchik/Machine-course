@@ -1,0 +1,3 @@
+lessons:
+  demo/basics/old-intro: demo/basics/intro-renamed
+  demo/basics/intro: demo/basics/next

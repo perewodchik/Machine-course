@@ -1,0 +1,9 @@
+# Понятия модуля 0 (обозначения и школьная математика). Формат — content/concepts/la.yaml.
+- id: nota.sums
+  title:
+    ru: 'Знак суммы'
+    en: 'summation notation'
+  summary: 'Сумма по индексу: сколько слагаемых, что меняется от слагаемого к слагаемому, что выносится за знак.'
+  lesson: sums-products-indicators
+  prerequisites: []
+  core: true

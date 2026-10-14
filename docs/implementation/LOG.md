@@ -17,6 +17,15 @@
 
 ---
 
+### 2026-10-14 — S1.08 валидатор контента — готова
+- **Сделано:** src/lib/content/validate.ts (validateContent(root) → проблемы «файл: где: что»), scripts/validate-content.ts, npm run validate = tsx; тесты validate.test.ts: текущий content/, база и 13 случаев tests/fixtures/validate/cases/*. Граф понятий дополнен (nota.yaml, calc.yaml, ml.yaml, la.yaml: +15), иначе формулы ссылались на несуществующие ID. Зависимости: tsx 4.23.15, remark-mdx 3.1.1.
+- **Файлы:** src/lib/content/validate.ts, scripts/validate-content.ts, src/lib/content/validate.test.ts, tests/fixtures/validate/**, content/concepts/*.yaml, package.json
+- **Проверка:** npm run validate (26 TeX, ошибок нет), vitest 106, lint, astro check 0, build
+- **Отклонения от плана и решения:** «≤ 3 цветных ролей» гарантирует схема (цветных ролей ровно три: data, param, target), фикстуру на это сделать нельзя — вместо неё проверка «одно имя — одна роль» (role-conflict). Голые символы проверяются только в формулах, где уже есть \sym: в формулах без ролей подсветки нет и голые символы допустимы.
+- **Где остановился:** —
+- **Следующий шаг:** S1.09.
+- **Вопросы пользователю:** —
+
 ### 2026-10-14 — S1.07 Markdown-конвейер, KaTeX, подсветка символов — готова
 - **Сделано:** src/markdown/core/{katex,typograf,plugins}.ts: assignRoles (\sym{name} → \symr{name}{слот} по symbols), renderTex для компонентов, remarkSymbolRoles (меняет и data.hChildren — иначе mdast-util-math рисует исходный TeX), rehypeFailOnMathErrors, rehypeTypograf. astro.config: markdown.processor = unified(), smartypants выключен. KaTeX 0.19 один на проект (overrides). src/lib/state/highlight.ts, src/client/symbols.ts, src/client/scrollable.ts (tabindex у прокручиваемых формул), SymbolLegend.astro, src/styles/math.css, демо /demo/math/.
 - **Файлы:** src/markdown/core/*, astro.config.mjs, src/lib/state/highlight.ts, src/client/{symbols,scrollable}.ts, src/components/pedagogy/SymbolLegend.astro, src/styles/math.css, src/pages/demo/{math.astro,_math.mdx}, tests/e2e/math.spec.ts, docs/adr/0001-site-stack.md

@@ -1,0 +1,12 @@
+id: f.other
+kind: formula
+title:
+  ru: 'Другая формула'
+statement: '\sym{theta}{\theta} = 0'
+symbols:
+  - name: theta
+    tex: '\theta'
+    role: target
+dependsOn:
+  concepts: []
+  rules: []
