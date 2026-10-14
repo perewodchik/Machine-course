@@ -29,5 +29,6 @@
 |---|---|---|
 | [0001](0001-site-stack.md) | Стек сайта: Astro 7 + острова React, Tailwind 4, Base UI, KaTeX 0.19 | предложено |
 | [0002](0002-python-runtime.md) | Где выполняется Python: Pyodide в уроке, Colab и JupyterLite для лабораторных | принято |
-| [0003](0003-hosting.md) | Хостинг: Cloudflare Pages | принято |
+| [0003](0003-hosting.md) | Хостинг: Cloudflare Pages | заменено 0005 |
 | [0004](0004-course-catalog.md) | Каталог курсов: математика — предисловие, ML — восемь курсов | принято |
+| [0005](0005-hosting-workers.md) | Хостинг: Cloudflare Workers со статическими ассетами | принято |

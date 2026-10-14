@@ -32,22 +32,17 @@ cd code && pip install -e ".[dev]" && pytest
 python scripts/build_notebooks.py --solutions /tmp/nb && pytest --nbmake /tmp/nb
 ```
 
-## Хостинг: Cloudflare Pages
+## Хостинг: Cloudflare Workers
 
-Сайт статический (Astro → `dist/`), заголовки COOP/COEP и кэш — в [`public/_headers`](public/_headers) ([ADR 0003](docs/adr/0003-hosting.md)). Бесплатного тарифа хватает. Подключение — один раз:
+Сайт статический (Astro → `dist/`), его отдаёт Worker `machine-course` со статическими ассетами: [`wrangler.jsonc`](wrangler.jsonc), заголовки COOP/COEP и кэш — [`public/_headers`](public/_headers) ([ADR 0005](docs/adr/0005-hosting-workers.md)). Бесплатного тарифа хватает.
 
-1. [dash.cloudflare.com](https://dash.cloudflare.com) → **Workers & Pages** → **Create** → вкладка **Pages** → **Connect to Git** → репозиторий `perewodchik/Machine-course`.
-2. Настройки сборки:
+Проект подключён к репозиторию (Workers & Pages → `machine-course` → Settings → Builds):
 
-   | Поле | Значение |
-   |---|---|
-   | Production branch | `docs/course-analysis` (пока `main` пустой; после PR этапа 1 — `main`) |
-   | Framework preset | Astro |
-   | Build command | `npm run build` |
-   | Build output directory | `dist` |
+| Поле | Значение |
+|---|---|
+| Production branch | `main` |
+| Build command | `npm run build` |
+| Deploy command | `npx wrangler deploy` |
+| Root directory | `/` |
 
-   Node берётся из `.nvmrc` (22), переменные окружения не нужны.
-3. **Save and Deploy**. Сайт — `https://<проект>.pages.dev`, превью каждой ветки — `https://<ветка>.<проект>.pages.dev`.
-4. Проверка заголовков: `curl -sI https://<проект>.pages.dev/ | grep -i cross-origin` → `same-origin` и `require-corp`.
-
-Проект создавать именно через Git, а не Direct Upload (`wrangler pages deploy`): проект с Direct Upload потом не подключить к Git, и превью веток не будет.
+Пуш в `main` публикует сайт, пуш в другую ветку — превью-версию. `name` в `wrangler.jsonc` должен совпадать с именем Worker. Проверка заголовков: `curl -sI https://machine-course.<аккаунт>.workers.dev/ | grep -i cross-origin` → `same-origin` и `require-corp`.

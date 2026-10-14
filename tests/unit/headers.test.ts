@@ -1,4 +1,4 @@
-// Заголовки Cloudflare Pages (S1.12, ADR 0003): astro preview не читает public/_headers, поэтому правила
+// Заголовки Cloudflare (S1.12, ADR 0005): astro preview не читает public/_headers, поэтому правила
 // сверяются здесь, а на живом превью — curl -I.
 import { readFileSync } from "node:fs";
 import path from "node:path";

@@ -1,4 +1,4 @@
-# Заголовки Cloudflare Pages (ADR 0003, S1.12). Файл попадает в dist/ и наружу не отдаётся.
+# Заголовки Cloudflare (Workers со статическими ассетами, ADR 0005). Файл попадает в dist/ и наружу не отдаётся.
 # COOP/COEP дают SharedArrayBuffer для Pyodide: кнопка «Стоп» прерывает Python без перезапуска.
 # COEP require-corp не пускает чужие ресурсы без CORP — всё грузится со своего домена (e2e hosting.spec.ts).
 /*

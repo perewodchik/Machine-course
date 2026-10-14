@@ -1,5 +1,5 @@
-// Хостинг (S1.12, ADR 0003): с COEP require-corp чужие ресурсы без CORP не загрузятся,
-// поэтому страницы берут всё только со своего origin. Сами заголовки отдаёт Cloudflare Pages (public/_headers), не astro preview.
+// Хостинг (S1.12, ADR 0005): с COEP require-corp чужие ресурсы без CORP не загрузятся,
+// поэтому страницы берут всё только со своего origin. Сами заголовки отдаёт Cloudflare (public/_headers), не astro preview.
 import { expect, test } from "@playwright/test";
 import { layoutPages } from "./support";
 

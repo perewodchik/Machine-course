@@ -17,6 +17,15 @@
 
 ---
 
+### 2026-10-14 — S1.13 Подключение Cloudflare — ждёт пользователя
+- **Сделано:** пользователь создал проект Workers `machine-course` (не Pages), продакшен — `main`. ADR 0005 (Workers со статическими ассетами) заменяет 0003. `wrangler.jsonc` отдаёт `dist/`, `public/_headers` без изменений. В `main` положена заглушка (`placeholder/`, коммит 5321d89); ветка слила `main` и убрала заглушку, так что слияние ветки в `main` пройдёт без конфликтов.
+- **Файлы:** wrangler.jsonc, docs/adr/0005-hosting-workers.md, README.md (раздел «Хостинг»), docs/implementation/context/{site-foundation,00-project}.md
+- **Проверка:** npm run build, `npx wrangler deploy --dry-run`, `wrangler dev` + curl -I (COOP/COEP, кэш /_astro/*), npm test, lint, astro check
+- **Отклонения от плана и решения:** Pages → Workers (так создала проект панель Cloudflare). Build command `npm run build` общий для веток: сборки `main` падают до слияния (в заглушке нет package.json) — пользователь согласен.
+- **Где остановился:** заголовки на живом сайте не проверены — сеть среды не пускает к *.workers.dev.
+- **Следующий шаг:** S1.11.
+- **Вопросы пользователю:** прислать адрес сайта или скриншот сборки ветки, если упадёт.
+
 ### 2026-10-14 — S1.10 страница /lab и визуальные тесты — готова
 - **Сделано:** src/pages/lab.astro, src/styles/lab.css, src/design-system/tokens/read.ts (значения тем, контраст WCAG), tests/unit/tokens.test.ts (текст ≥ 4.5:1, рамки ≥ 3:1 в обеих темах, два блока тёмной темы совпадают), tests/e2e/lab.spec.ts, tests/visual/lab.spec.ts (VISUAL=1), playwright.config: testDir tests, snapshotPathTemplate, updateSnapshots none в CI; .github/workflows/visual.yml.
 - **Файлы:** src/pages/lab.astro, src/styles/lab.css, src/design-system/tokens/read.ts, tests/unit/tokens.test.ts, tests/e2e/lab.spec.ts, tests/visual/lab.spec.ts, playwright.config.ts, .github/workflows/visual.yml

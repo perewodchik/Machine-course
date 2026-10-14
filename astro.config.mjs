@@ -7,7 +7,7 @@ import tailwindcss from "@tailwindcss/vite";
 import { rehypePlugins, remarkPlugins } from "./src/markdown/core/plugins.ts";
 
 export default defineConfig({
-  site: "https://example.invalid", // настоящий домен — при подключении Cloudflare Pages (S1.13)
+  site: "https://example.invalid", // настоящий домен — после первого деплоя в Cloudflare (S1.13)
   integrations: [react(), mdx()],
   markdown: {
     // Явный unified (не Sätteri по умолчанию): remark-math, KaTeX и типограф из общего ядра src/markdown/core.

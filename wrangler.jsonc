@@ -1,6 +1,7 @@
-// Cloudflare Workers: статическая заглушка, пока сайт не слит в main (ветка docs/course-analysis).
+// Cloudflare Workers со статическими ассетами (ADR 0005): сборка Astro в dist/, заголовки — public/_headers.
+// В Cloudflare: Build command `npm run build`, Deploy command `npx wrangler deploy`.
 {
   "name": "machine-course",
   "compatibility_date": "2026-09-01",
-  "assets": { "directory": "./placeholder" }
+  "assets": { "directory": "./dist" }
 }
