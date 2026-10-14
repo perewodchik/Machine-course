@@ -17,6 +17,15 @@
 
 ---
 
+### 2026-10-14 — S1.07 Markdown-конвейер, KaTeX, подсветка символов — готова
+- **Сделано:** src/markdown/core/{katex,typograf,plugins}.ts: assignRoles (\sym{name} → \symr{name}{слот} по symbols), renderTex для компонентов, remarkSymbolRoles (меняет и data.hChildren — иначе mdast-util-math рисует исходный TeX), rehypeFailOnMathErrors, rehypeTypograf. astro.config: markdown.processor = unified(), smartypants выключен. KaTeX 0.19 один на проект (overrides). src/lib/state/highlight.ts, src/client/symbols.ts, src/client/scrollable.ts (tabindex у прокручиваемых формул), SymbolLegend.astro, src/styles/math.css, демо /demo/math/.
+- **Файлы:** src/markdown/core/*, astro.config.mjs, src/lib/state/highlight.ts, src/client/{symbols,scrollable}.ts, src/components/pedagogy/SymbolLegend.astro, src/styles/math.css, src/pages/demo/{math.astro,_math.mdx}, tests/e2e/math.spec.ts, docs/adr/0001-site-stack.md
+- **Проверка:** vitest 86 (14 — конвейер: роли, блокировка \href/\url/\htmlStyle/\htmlId/\includegraphics, ошибки TeX, типограф), lint, astro check 0, build, e2e 54 (подсветка мышью и с легенды, axe; mobile-axe прогнан 4 раза подряд), pytest 27
+- **Отклонения от плана и решения:** Недоверенные команды KaTeX не роняют рендер, а показываются красным текстом без ссылок и стилей; запрет их в контенте — задача валидатора S1.08. Stylelint: разрешено подчёркивание inset 0 -Npx currentColor (подсветка символа цветом роли). Флейк axe scrollable-region на 390 px: формула шире блока на 1 px из-за округления — порог без допуска. План и журнал записаны отдельным коммитом (скрипт плана упал на обратном слеше).
+- **Где остановился:** —
+- **Следующий шаг:** S1.08.
+- **Вопросы пользователю:** —
+
 ### 2026-10-14 — S1.06 коллекции контента и схемы — готова
 - **Сделано:** src/lib/content/schemas.ts (вкл. запрет управляющих символов в TeX — ловушка двойных кавычек YAML, проверку подцелей и check у шагов вывода), src/lib/content/files.ts (readYaml/validate/validateList с ошибкой «файл: поле: причина»), src/content.config.ts (свои загрузчики понятий и переименований), schemas.test.ts, tests/fixtures/content/*. Типы: Rule.corollary (уже было в YAML), LessonFrontmatter, GlossaryEntry, Redirects. @types/node 22, yaml 2.9.1.
 - **Файлы:** src/lib/content/{schemas,files,types}.ts, src/content.config.ts, src/lib/content/schemas.test.ts, tests/fixtures/content/*, docs/implementation/context/content-pipeline.md
