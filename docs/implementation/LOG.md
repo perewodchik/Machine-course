@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-14 — S1.04 Линтеры — готова
+- **Сделано:** eslint.config.js и stylelint.config.js; npm run lint = eslint + stylelint; 16 фикстур в tests/fixtures/lint/src (нарушения и разрешённые случаи); tests/unit/lint.test.ts — 10 проверок.
+- **Файлы:** eslint.config.js, stylelint.config.js, tests/unit/lint.test.ts, tests/fixtures/lint/**, src/styles/base.css
+- **Проверка:** npm run lint → exit 0; npm test → 12 passed
+- **Отклонения от плана и решения:** eslint-plugin-jsx-a11y не поддерживает ESLint 10 — не ставили (доступность проверяет axe в e2e). handlebars поднят до 4.7.10 через overrides; у braces/micromatch (dev-зависимости линтеров) исправленной версии нет — риск принят: шаблоны задаём мы сами. Модель виджета для игр выделена путём файла (model.ts), а не категорией: в boundaries 7 категории в политиках не сработали.
+- **Следующий шаг:** S1.05.
+- **Вопросы пользователю:** —
+
 ### 2026-10-14 — S1.03 Токены, Tailwind, шрифты, базовые стили — готова
 - **Сделано:** src/styles/global.css (шрифты, theme.css, base.css); base.css — стили прототипа до «Шапки»; vitest.config.ts (тесты рядом с кодом и в tests/unit); тест tests/unit/tailwind-theme.test.ts компилирует фикстуру с bg-indigo-500 и bg-paper.
 - **Файлы:** astro.config.mjs, vitest.config.ts, src/styles/*.css, tests/unit/tailwind-theme.test.ts, tests/fixtures/tailwind/sample.html

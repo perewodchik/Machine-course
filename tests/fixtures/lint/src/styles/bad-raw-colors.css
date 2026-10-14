@@ -1,0 +1,2 @@
+/* сырые цвета, градиент и тень вне токенов */
+.bad { color: #ff0000; background: linear-gradient(red, blue); box-shadow: 0 1px 2px rgb(0 0 0 / 10%); }
