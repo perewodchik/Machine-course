@@ -1,7 +1,7 @@
 ---
 // Демо формул (S1.07): MDX через общее ядро src/markdown/core — роли символов, подсветка мышью и с легенды, типограф.
 import LessonLayout from "../../layouts/LessonLayout.astro";
-import SymbolLegend from "../../components/pedagogy/SymbolLegend.astro";
+import { lessonComponents } from "../../components/pedagogy";
 import { loadCourse } from "../../lib/content/collections";
 import { Content, getHeadings } from "./_math.mdx";
 
@@ -14,5 +14,5 @@ const headings = getHeadings()
 ---
 <LessonLayout course={course} lesson={lesson} title="Демо: формулы и символы" headings={headings} noindex>
   <p class="lead" slot="intro">Формулы из MDX собираются KaTeX при сборке, цвет символа задаёт его роль, а подсветка связывает символ в&nbsp;разных формулах.</p>
-  <Content components={{ SymbolLegend }} />
+  <Content components={lessonComponents} />
 </LessonLayout>

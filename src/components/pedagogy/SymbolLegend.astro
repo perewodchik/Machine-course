@@ -1,25 +1,35 @@
 ---
-// Легенда символов формулы: кнопки. KaTeX прячет HTML формулы от скринридеров (aria-hidden),
-// поэтому подсветка с клавиатуры идёт через фокус на легенде (src/client/symbols.ts).
+// Легенда символов: «где X — матрица признаков, n × d; θ — …». Символы — кнопки: KaTeX прячет HTML формулы
+// от скринридеров (aria-hidden), поэтому подсветка с клавиатуры идёт через фокус на легенде (src/client/symbols.ts).
 import type { SymbolSpec } from "../../lib/content/types";
-import { ROLE_SLOT, renderTex } from "../../markdown/core/katex";
 import { ru } from "../../lib/content/catalog";
+import { ROLE_SLOT, renderTex, texToText } from "../../markdown/core/katex";
+import { typograf } from "../../markdown/core/typograf";
 
 interface Props {
   symbols: readonly SymbolSpec[];
-  label?: string;
+  /** Начало фразы: «где». */
+  prefix?: string;
+  class?: string;
 }
-const { symbols, label = "Символы формулы" } = Astro.props;
-const shape = (s: SymbolSpec) => (s.shape?.length ? s.shape.join(" × ") : undefined);
+const { symbols, prefix = "где", class: className } = Astro.props;
+const shape = (s: SymbolSpec) => (s.shape?.length ? s.shape.join("\u202f×\u202f") : undefined);
+const last = symbols.length - 1;
 ---
-<ul class="sym-legend" aria-label={label}>
-  {symbols.map((s) => (
-    <li>
-      <button type="button" class:list={["sym-key", s.role && `s${ROLE_SLOT[s.role]}`]} data-sym-key={s.name}>
-        <span class="sym-key__tex" set:html={renderTex(s.tex)} />
-        {s.meaning && <span class="sym-key__meaning">{ru(s.meaning)}</span>}
-        {shape(s) && <span class="sym-key__shape">{shape(s)}</span>}
-      </button>
-    </li>
+<p class:list={["sym-legend", className]}>
+  {prefix}{" "}
+  {symbols.map((s, i) => (
+    <>
+      <button
+        type="button"
+        class:list={["sym-key", s.role && `s${ROLE_SLOT[s.role]}`]}
+        data-sym-key={s.name}
+        aria-label={s.meaning ? `${texToText(s.tex)} — ${ru(s.meaning)}` : texToText(s.tex)}
+        set:html={renderTex(s.tex)}
+      />
+      {s.meaning && <>{"\u00a0— "}{typograf(ru(s.meaning))}</>}
+      {shape(s) && <>, <span class="sym-legend__shape">{shape(s)}</span></>}
+      {i < last ? "; " : ""}
+    </>
   ))}
-</ul>
+</p>

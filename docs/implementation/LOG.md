@@ -17,6 +17,24 @@
 
 ---
 
+### 2026-10-14 — S1.10 страница /lab и визуальные тесты — готова
+- **Сделано:** src/pages/lab.astro, src/styles/lab.css, src/design-system/tokens/read.ts (значения тем, контраст WCAG), tests/unit/tokens.test.ts (текст ≥ 4.5:1, рамки ≥ 3:1 в обеих темах, два блока тёмной темы совпадают), tests/e2e/lab.spec.ts, tests/visual/lab.spec.ts (VISUAL=1), playwright.config: testDir tests, snapshotPathTemplate, updateSnapshots none в CI; .github/workflows/visual.yml.
+- **Файлы:** src/pages/lab.astro, src/styles/lab.css, src/design-system/tokens/read.ts, tests/unit/tokens.test.ts, tests/e2e/lab.spec.ts, tests/visual/lab.spec.ts, playwright.config.ts, .github/workflows/visual.yml
+- **Проверка:** lint, astro check 0, vitest 135, build, e2e 88 (axe /lab в обеих темах, 1440 и 390 px)
+- **Отклонения от плана и решения:** Эталонов скриншотов в репозитории ещё нет: их снимает workflow visual.yml с update=true (артефакт visual-baselines) — после первого прогона CI их нужно закоммитить; до этого job только предупреждает. Ловушка: маленький CSS страницы Astro встраивает <style> раньше общей таблицы — без строки порядка слоёв base (сброс Tailwind) перекрывал компоненты.
+- **Где остановился:** —
+- **Следующий шаг:** S1.11.
+- **Вопросы пользователю:** —
+
+### 2026-10-14 — S1.09 педагогические компоненты — готова
+- **Сделано:** src/components/pedagogy/* (Note, Block, Prereqs, Formula, Derivation, SymbolLegend — теперь фраза «где X — …» с кнопками, Tex, index.ts), src/lib/content/registry.ts, src/client/{tabs,derivation}.ts, src/styles/pedagogy.css, класс .js в <head>; маршрут урока рендерит MDX из коллекции lessons; f.normal-equations: \sym во всех шагах и условии; texToText для aria-label легенды; tests/e2e/pedagogy.spec.ts.
+- **Файлы:** src/components/pedagogy/*, src/lib/content/registry.ts, src/client/{tabs,derivation,scrollable}.ts, src/styles/{pedagogy,math}.css, src/pages/demo/lesson.astro, src/pages/[course]/[module]/[lesson].astro, content/formulas/calc/normal-equations.yaml, tests/e2e/pedagogy.spec.ts
+- **Проверка:** lint, astro check 0, vitest 107, validate, pytest 27, build, e2e 66 (вкладки стрелками, шаги вывода, раскрытие правила, axe в обеих темах на 1440 и 390 px); скриншоты сверены с прототипом
+- **Отклонения от плана и решения:** Ловушки: в атрибуте tex="…" .astro обрабатывает escape-последовательности (\t → табуляция) — только String.raw; aria-label на div без роли запрещён axe — у прокручиваемой формулы role="group" (это и сбой axe на /demo/math, найденный в S1.12). Скрытие шагов и вкладок — под классом .js (без JS видно всё). package-lock: нормализация флагов dev после npm install в хуке старта.
+- **Где остановился:** —
+- **Следующий шаг:** S1.10.
+- **Вопросы пользователю:** —
+
 ### 2026-10-14 — S1.12 Деплой: подготовка — готова
 - **Сделано:** public/_headers (COOP/COEP, immutable для /_astro/* и /py/*), e2e hosting.spec.ts (все запросы на свой origin, 5 страниц × 2 проекта), юнит headers.test.ts, инструкция подключения Cloudflare Pages в README. Пробовали Vercel — пользователь вернул Cloudflare, ADR 0003 в силе.
 - **Файлы:** public/_headers, tests/e2e/hosting.spec.ts, tests/unit/headers.test.ts, README.md
