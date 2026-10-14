@@ -110,6 +110,7 @@ function initSymbols() {
   const pop = document.createElement("div");
   pop.className = "sym-pop";
   pop.setAttribute("role", "tooltip");
+  pop.hidden = true; // пустая подсказка не должна быть в дереве доступности
   document.body.append(pop);
 
   const all = (name) => document.querySelectorAll(`[data-sym="${name}"] .sym`);
@@ -128,11 +129,13 @@ function initSymbols() {
     const bottom = display ? display.getBoundingClientRect().bottom : r.bottom;
     pop.style.left = `${Math.max(12, r.left + scrollX - 8)}px`;
     pop.style.top = `${bottom + scrollY + 8}px`;
+    pop.hidden = false;
     pop.classList.add("is-open");
   };
   const close = () => {
     document.querySelectorAll(".sym.is-lit").forEach((el) => el.classList.remove("is-lit"));
     pop.classList.remove("is-open");
+    pop.hidden = true;
   };
   document.querySelectorAll(".sym").forEach((el) => {
     el.addEventListener("mouseenter", () => open(el));
@@ -349,13 +352,53 @@ function initExercises() {
   });
 }
 
+/* ───────── Галочка «знаю» ─────────
+   Одна булева отметка на урок. Все чекбоксы одного урока синхронны; счётчики в шапке
+   и у модулей пересчитываются. Уроки ★ (data-optional) в счётчики не входят. */
+function initKnow() {
+  const boxes = [...document.querySelectorAll("input[data-know]")];
+  if (!boxes.length) return;
+  const totalEls = document.querySelectorAll("[data-known-total]");
+  const bar = document.querySelector("[data-known-bar]");
+  const total = 59;
+  boxes.forEach((box) =>
+    box.addEventListener("change", () => {
+      // change приходит от ученика: состояние урока сменилось ровно на ±1
+      boxes.filter((b) => b.dataset.know === box.dataset.know).forEach((b) => (b.checked = box.checked));
+      if (!box.hasAttribute("data-optional")) {
+        const n = Number(totalEls[0]?.textContent ?? 0) + (box.checked ? 1 : -1);
+        totalEls.forEach((el) => (el.textContent = String(n)));
+        if (bar) bar.style.width = `${Math.round((100 * n) / total)}%`;
+      }
+      // счётчик и галочка модуля в оглавлении
+      document.querySelectorAll(".toc__part").forEach((part) => {
+        const req = [...part.querySelectorAll("input[data-know]:not([data-optional])")];
+        if (!req.length) return;
+        const k = req.filter((b) => b.checked).length;
+        part.querySelectorAll("[data-known-count]").forEach((el) => (el.textContent = String(k)));
+        const count = part.querySelector(".toc__part-head .count");
+        const done = part.querySelector("[data-module-done]");
+        if (count) count.hidden = k === req.length;
+        if (done) done.toggleAttribute("hidden", k !== req.length);
+      });
+    }),
+  );
+}
+
 /* ───────── Запуск ───────── */
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll("[data-theme-toggle]").forEach((b) => b.addEventListener("click", toggleTheme));
   initMargins();
+  // кнопка оглавления — только там, где оглавление есть (образец на витрине не считается)
+  const pageToc = document.querySelector(".toc:not(.toc--sample)");
+  if (pageToc) pageToc.id ||= "toc";
+  document.querySelectorAll("[data-toc-toggle]").forEach((b) => {
+    if (!pageToc) { b.hidden = true; return; }
+    b.setAttribute("aria-controls", pageToc.id);
+  });
   document.querySelectorAll("[data-toc-toggle]").forEach((b) =>
     b.addEventListener("click", () => {
-      const toc = document.querySelector(".toc");
+      const toc = pageToc;
       const open = toc?.classList.toggle("is-open");
       b.setAttribute("aria-expanded", String(Boolean(open)));
     }),
@@ -369,11 +412,21 @@ document.addEventListener("DOMContentLoaded", () => {
       if (list) list.hidden = !open;
     }),
   );
+  initKnow();
   renderMath();
   const symbols = initSymbols();
   document.querySelectorAll("svg[data-regression]").forEach(initRegression);
   document.querySelectorAll("[data-derivation]").forEach(initDerivation);
   initExercises();
+  // прокручиваемые формулы и код (на узком экране) доступны с клавиатуры
+  const markScrollable = () =>
+    document.querySelectorAll(".step__math, .code, .math-display, .formula-card__statement").forEach((el) => {
+      if (el.scrollWidth > el.clientWidth + 1) el.tabIndex = 0;
+      else el.removeAttribute("tabindex");
+    });
+  markScrollable();
+  document.fonts?.ready.then(markScrollable);
+  addEventListener("resize", markScrollable);
 
   // Для скриншотов: ?demo=1 показывает подсветку символа и подсказку
   if (new URLSearchParams(location.search).get("demo") === "1") {

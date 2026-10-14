@@ -1,6 +1,7 @@
 /* Дополнительные компоненты прототипа: план вывода, выбор ответа, игра, главная, витрина */
 
-.lesson-meta { font-size: var(--text-sm); color: var(--ink-3); margin-top: calc(-1 * var(--space-2)); }
+.lesson-meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px var(--space-4); font-size: var(--text-sm); color: var(--ink-3); margin: calc(-1 * var(--space-2)) 0 var(--space-4); }
+.lesson-meta .know--text { margin-left: -4px; }
 .lesson-nav { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-3); margin-top: var(--space-8); padding-top: var(--space-5); border-top: 1px solid var(--rule); }
 
 /* План вывода: подцели над шагами */
@@ -78,7 +79,8 @@
 .part__meta { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
 .part__meta .status { margin-top: 0; }
 .lessons { list-style: none; margin: 0; padding: 0; display: grid; grid-auto-flow: column; grid-template-rows: repeat(var(--rows, 6), auto); grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-6); font-family: var(--font-ui); font-size: var(--text-sm); }
-.lessons li { display: grid; grid-template-columns: 16px 3rem minmax(0, 1fr); gap: 6px; align-items: start; padding: 7px 0; border-bottom: 1px solid var(--rule); line-height: 1.35; }
+.lessons li { display: grid; grid-template-columns: 24px 3rem minmax(0, 1fr); gap: 4px; align-items: start; padding: 7px 0; border-bottom: 1px solid var(--rule); line-height: 1.35; }
+.lessons li .know { margin-top: -3px; }
 .lessons .n { color: var(--ink-3); font-variant-numeric: tabular-nums; }
 .lessons a { color: var(--ink); text-decoration: none; }
 .lessons a:hover { color: var(--pen); text-decoration: underline; }
@@ -94,7 +96,6 @@
 .map .grid-line { stroke: var(--grid); }
 .map .edge { stroke: var(--ink-3); stroke-width: 1.25; fill: none; marker-end: url(#arrow); }
 .map .node .box { fill: var(--surface); stroke: var(--control-border); stroke-width: 1.25; }
-.map .node.done .box { stroke: var(--green-pen); }
 .map .node.now .box { stroke: var(--pen); stroke-width: 2; fill: var(--pen-wash); }
 .map .node text { font: 500 12.5px var(--font-ui); fill: var(--ink); }
 .map .node .sub { font-weight: 400; font-size: 11.5px; fill: var(--ink-3); }
@@ -151,3 +152,7 @@
 
 /* Пример оглавления на витрине: без липкой колонки */
 .toc.toc--sample { display: block; position: static; height: auto; overflow: visible; margin-top: var(--space-4); padding: 0; border: 1px solid var(--rule); border-radius: var(--radius-panel); background: var(--paper-2); padding: var(--space-2); }
+@media (max-width: 600px) {
+  .part__head { grid-template-columns: 2.2rem minmax(0, 1fr); }
+  .part__meta { grid-column: 2; }
+}

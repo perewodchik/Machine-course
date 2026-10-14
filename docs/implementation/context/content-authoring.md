@@ -26,4 +26,5 @@
 
 ## Источники (только если нужно)
 
+- `docs/program/interactives.md` — какие виджеты, игры и лабораторные у каждого урока; читать только раздел своего модуля.
 - `docs/conventions/authoring.md`, `docs/conventions/notation.md`, `docs/conventions/sources.md` (иерархия источников).

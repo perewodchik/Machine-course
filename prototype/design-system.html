@@ -23,7 +23,6 @@
   <symbol id="i-x" viewBox="0 0 16 16"><path d="m4 4 8 8M12 4l-8 8"/></symbol>
   <symbol id="i-chevron" viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></symbol>
   <symbol id="st-passed" viewBox="0 0 14 14"><path d="m2.4 7.6 3 3 6.2-7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-  <symbol id="st-started" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.4" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M7 1.6a5.4 5.4 0 0 1 0 10.8Z" fill="currentColor"/></symbol>
 </svg>
 <!-- SPRITE:END -->
 <!-- HEADER:BEGIN -->
@@ -40,8 +39,8 @@
       Математика для ML
     </a>
     <div class="header-progress">
-      <span class="label"><span class="hide-narrow">Пройдено 48 из 61 урока</span><span class="show-narrow">48 из 61</span></span>
-      <span class="progress" aria-hidden="true"><span style="width:79%"></span></span>
+      <span class="label"><span class="hide-narrow">Знаю <span data-known-total>47</span> из 59 уроков</span><span class="show-narrow"><svg class="status status--passed" aria-hidden="true"><use href="#st-passed"/></svg><span class="visually-hidden">Знаю </span><span data-known-total>47</span> из 59<span class="visually-hidden"> уроков</span></span></span>
+      <span class="progress" aria-hidden="true"><span data-known-bar style="width:80%"></span></span>
       <button class="icon-button theme-toggle" data-theme-toggle aria-label="Сменить тему">
         <svg class="icon sun"><use href="#i-sun"/></svg><svg class="icon moon"><use href="#i-moon"/></svg>
       </button>
@@ -56,7 +55,7 @@
   <ol class="rules">
     <li><b>Бумага, а не экран.</b> Холодный белый фон без крема и градиентов. Клетка появляется только внутри рисунков, где у неё есть смысл.</li>
     <li><b>Поля тетради.</b> Красная линия отделяет текст от заметок, английских терминов и ссылок на CS229. На узком экране заметки встают в текст.</li>
-    <li><b>Синяя ручка&nbsp;— то, что делает ученик:</b> ссылки, кнопки, ползунки, ввод, упражнения. Красная&nbsp;— ошибки и поправки, зелёная&nbsp;— «верно» и&nbsp;галочка пройденного урока. Ручки никогда не красят символы.</li>
+    <li><b>Синяя ручка&nbsp;— то, что делает ученик:</b> ссылки, кнопки, ползунки, ввод, упражнения. Красная&nbsp;— ошибки и поправки, зелёная&nbsp;— «верно» и&nbsp;галочка «знаю». Ручки никогда не красят символы.</li>
     <li><b>Цвет символа закреплён за ролью</b> и совпадает в формуле и на рисунке. Цветов три, вспомогательное&nbsp;— карандашом.</li>
     <li><b>Текст важнее интерфейса.</b> Literata для чтения, IBM Plex Sans для управления. Без заглавных меток, эмодзи и декоративных иконок.</li>
     <li><b>Скругление растёт с размером:</b> 3&nbsp;px у метки, 6&nbsp;px у кнопки, 10&nbsp;px у рисунка. Теней нет, кроме всплывающих слоёв.</li>
@@ -92,7 +91,7 @@
     <div class="type-row"><div class="spec">Лид, Literata 400<br>21 / 33</div><div class="lead" style="margin:0">Одна и та же формула весов получается из геометрии, из анализа и из теории вероятностей.</div></div>
     <div class="type-row"><div class="spec">Текст, Literata 400<br>18 / 30, до 70 знаков</div><p style="margin:0;max-width:var(--measure)">Матрица переводит каждый вектор в&nbsp;новый, и&nbsp;прямые остаются прямыми. Поэтому достаточно знать, куда попадают базисные векторы: всё остальное получается линейными комбинациями.</p></div>
     <div class="type-row"><div class="spec">Заметка на полях<br>Literata 15 / 22</div><p class="note" style="float:none;margin:0;width:auto;max-width:var(--margin-width)"><span class="label">По-английски</span><span class="note__term">eigenvector</span>, от немецкого <span class="note__term">eigen</span>&nbsp;— «собственный».</p></div>
-    <div class="type-row"><div class="spec">Интерфейс, Plex Sans<br>15 / 22</div><div class="ui" style="font-size:var(--text-sm)">Пройдено 39 из 61 урока. Следующий шаг откроется после ответа.</div></div>
+    <div class="type-row"><div class="spec">Интерфейс, Plex Sans<br>15 / 22</div><div class="ui" style="font-size:var(--text-sm)">Знаю 39 из 59 уроков. Следующий шаг откроется после ответа.</div></div>
     <div class="type-row"><div class="spec">Код, Plex Mono<br>14 / 23</div><code style="font-size:14px">theta = np.linalg.solve(X.T @ X, X.T @ y)</code></div>
   </section>
 
@@ -131,26 +130,26 @@
         <p class="ui muted" style="font-size:14px">Бегунок окрашен в&nbsp;цвет величины, которую двигает. Ползунки без роли&nbsp;— синей ручкой.</p>
       </div>
       <div>
-        <h3>Пройденные уроки</h3>
+        <h3>Галочка «знаю»</h3>
         <div class="prereqs" style="margin:0">
           <span class="prereqs__label">Опирается на</span>
           <ul>
-            <li><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span><a href="#">Проекция</a> <span class="ref">I.8</span></span></li>
-            <li><svg class="status status--started" role="img" aria-label="начат"><use href="#st-started"/></svg><span><a href="#">Градиент</a> <span class="ref">II.1</span></span></li>
-            <li><span class="status" aria-hidden="true"></span><span><a href="#">MLE</a> <span class="ref">IV.3</span></span></li>
+            <li><label class="know"><input type="checkbox" data-know="I.8" checked aria-label="Знаю: I.8 Проекция"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span><a href="#">Проекция</a> <span class="ref">I.8</span></span></li>
+            <li><label class="know"><input type="checkbox" data-know="II.1" aria-label="Знаю: II.1 Градиент"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span><a href="#">Градиент</a> <span class="ref">II.1</span></span></li>
           </ul>
         </div>
         <nav class="toc toc--sample" aria-label="Пример оглавления">
           <div class="toc__part">
-            <button class="toc__part-head" aria-expanded="true" aria-controls="toc-sample"><svg class="icon chevron" aria-hidden="true"><use href="#i-chevron"/></svg><span class="n">IV</span><span class="toc__title">Статистика</span><span class="count"><span class="visually-hidden">пройдено </span>6/8</span></button>
+            <button class="toc__part-head" aria-expanded="true" aria-controls="toc-sample"><span class="toc__chevron" aria-hidden="true"><svg class="icon"><use href="#i-chevron"/></svg></span><span class="n">IV</span><span class="toc__title">Статистика</span><span class="count"><span aria-hidden="true"><span data-known-count>6</span>/7</span><span class="visually-hidden">знаю <span data-known-count>6</span> из 7</span></span><svg class="status status--passed" role="img" aria-label="все уроки модуля отмечены" hidden data-module-done><use href="#st-passed"/></svg></button>
             <ol id="toc-sample">
-              <li><a href="#"><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">IV.6</span><span class="toc__title">Байесовский подход и MAP</span></a></li>
-              <li><a href="#"><svg class="status status--started" role="img" aria-label="начат"><use href="#st-started"/></svg><span class="n">IV.7</span><span class="toc__title">Риск, обобщение, кросс-валидация</span></a></li>
-              <li><a href="#"><span class="status" aria-hidden="true"></span><span class="n">IV.8</span><span class="toc__title">Доверительные интервалы ★</span></a></li>
+              <li><label class="know"><input type="checkbox" data-know="IV.6" checked aria-label="Знаю: IV.6 Байесовский подход и MAP"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">IV.6</span><span class="toc__title">Байесовский подход и MAP</span></a></li>
+              <li><label class="know"><input type="checkbox" data-know="IV.7" aria-label="Знаю: IV.7 Риск, обобщение, кросс-валидация"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">IV.7</span><span class="toc__title">Риск, обобщение, кросс-валидация</span></a></li>
+              <li><label class="know"><input type="checkbox" data-know="IV.8" data-optional aria-label="Знаю: IV.8 Доверительные интервалы ★"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">IV.8</span><span class="toc__title">Доверительные интервалы ★</span></a></li>
             </ol>
           </div>
         </nav>
-        <p class="ui muted" style="font-size:14px;margin-top:12px">Урок пройден, когда верно решены все его проверки: зелёная галочка в&nbsp;оглавлении, на&nbsp;главной и&nbsp;в&nbsp;строке «Опирается на». Начатый урок&nbsp;— полукруг карандашом. Уровней усвоения и&nbsp;повторений нет.</p>
+        <p style="margin-top:12px"><label class="know know--text"><input type="checkbox" data-know="V.1"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span><span>Знаю эту тему</span></label></p>
+        <p class="ui muted" style="font-size:14px">Одна булева отметка на&nbsp;урок: знаю или нет. Ставит и&nbsp;снимает ученик (в&nbsp;оглавлении, на&nbsp;главной, в&nbsp;«Опирается на», в&nbsp;начале урока); курс ставит её сам после итоговой проверки урока и&nbsp;диагностики. Пустая клетка&nbsp;— карандашом, отметка&nbsp;— зелёной ручкой.</p>
       </div>
     </div>
 

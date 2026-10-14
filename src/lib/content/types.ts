@@ -100,5 +100,17 @@ export interface Module {
   lessons: LessonRef[];
 }
 
-/** Статус урока (см. docs/conventions/pedagogy.md, «Прогресс: пройденные уроки»). */
-export type LessonStatus = "not-started" | "in-progress" | "passed";
+/**
+ * Галочка «знаю» у урока — одна булева отметка (см. docs/conventions/pedagogy.md, «Прогресс: галочка „знаю“»).
+ * Нет записи — урок не отмечен. Уроки с `optional` (★) в счётчики не входят.
+ */
+export interface LessonMark {
+  known: boolean;
+  /** Кто изменил отметку последним: ученик, итоговая проверка урока или диагностика (тест-аут). */
+  by: "learner" | "lesson-check" | "diagnostic";
+  /** Дата изменения, ISO 8601. */
+  at: string;
+}
+
+/** Прогресс ученика: отметки по слагам уроков (`<module>/<slug>`). */
+export type LessonMarks = Record<string, LessonMark>;

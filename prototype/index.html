@@ -22,7 +22,6 @@
   <symbol id="i-x" viewBox="0 0 16 16"><path d="m4 4 8 8M12 4l-8 8"/></symbol>
   <symbol id="i-chevron" viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></symbol>
   <symbol id="st-passed" viewBox="0 0 14 14"><path d="m2.4 7.6 3 3 6.2-7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-  <symbol id="st-started" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.4" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M7 1.6a5.4 5.4 0 0 1 0 10.8Z" fill="currentColor"/></symbol>
 </svg>
 <!-- SPRITE:END -->
 <!-- HEADER:BEGIN -->
@@ -39,8 +38,8 @@
       Математика для ML
     </a>
     <div class="header-progress">
-      <span class="label"><span class="hide-narrow">Пройдено 48 из 61 урока</span><span class="show-narrow">48 из 61</span></span>
-      <span class="progress" aria-hidden="true"><span style="width:79%"></span></span>
+      <span class="label"><span class="hide-narrow">Знаю <span data-known-total>47</span> из 59 уроков</span><span class="show-narrow"><svg class="status status--passed" aria-hidden="true"><use href="#st-passed"/></svg><span class="visually-hidden">Знаю </span><span data-known-total>47</span> из 59<span class="visually-hidden"> уроков</span></span></span>
+      <span class="progress" aria-hidden="true"><span data-known-bar style="width:80%"></span></span>
       <button class="icon-button theme-toggle" data-theme-toggle aria-label="Сменить тему">
         <svg class="icon sun"><use href="#i-sun"/></svg><svg class="icon moon"><use href="#i-moon"/></svg>
       </button>
@@ -54,59 +53,59 @@
     <p class="lead">Линейная алгебра, анализ, вероятность и статистика в&nbsp;объёме, который нужен для курса Stanford CS229. Каждая формула показывает, на&nbsp;что опирается и&nbsp;как выводится.</p>
 
     <div class="continue">
-      <p>Вы остановились на уроке <b>V.1 «Линейная регрессия тремя способами»</b>, раздел «Способ 2». Пройдено 48 из 61 урока.</p>
+      <p>Вы остановились на уроке <b>V.1 «Линейная регрессия тремя способами»</b>, раздел «Способ 2». Вы отметили «знаю» 47 из 59 уроков.</p>
       <a class="btn btn--primary" href="lesson.html">Продолжить урок</a>
     </div>
 
     <section class="part">
-      <div class="part__head"><span class="part__no">I</span><h2>Линейная алгебра</h2><span class="part__meta"><svg class="status status--passed" role="img" aria-label="модуль пройден"><use href="#st-passed"/></svg>12 из 12, около 30 часов</span></div>
+      <div class="part__head"><span class="part__no">I</span><h2>Линейная алгебра</h2><span class="part__meta"><svg class="status status--passed" role="img" aria-label="все уроки модуля отмечены"><use href="#st-passed"/></svg>12 из 12, около 30 часов</span></div>
       <ol class="lessons" style="--rows:6">
-        <li><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">I.1</span><span><a href="#">Векторы, линейные комбинации, оболочка</a></span></li>
-        <li><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">I.2</span><span><a href="#">Скалярное произведение и нормы</a></span></li>
-        <li><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">I.3</span><span><a href="#">Умножение матриц: четыре взгляда</a></span></li>
-        <li><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">I.4</span><span><a href="#">Матрица как линейное отображение</a><span class="tag">игра</span></span></li>
-        <li><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">I.5</span><span><a href="#">Транспонирование, симметрия, след</a></span></li>
-        <li><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">I.6</span><span><a href="#">Системы уравнений и ранг</a><span class="tag">игра</span></span></li>
-        <li><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">I.7</span><span><a href="#">Обратная матрица и определитель</a></span></li>
-        <li><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">I.8</span><span><a href="#">Ортогональность и проекции</a></span></li>
-        <li><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">I.9</span><span><a href="#">Собственные значения и векторы</a><span class="tag">игра</span></span></li>
-        <li><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">I.10</span><span><a href="#">Квадратичные формы и знакоопределённость</a></span></li>
-        <li><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">I.11</span><span><a href="#">Сингулярное разложение и псевдообратная</a></span></li>
-        <li><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">I.12</span><span><a href="#">Капстоун: МНК как проекция</a><span class="tag">лабораторная</span></span></li>
+        <li><label class="know"><input type="checkbox" data-know="I.1" checked aria-label="Знаю: I.1 Векторы, линейные комбинации, оболочка"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">I.1</span><span><a href="#">Векторы, линейные комбинации, оболочка</a></span></li>
+        <li><label class="know"><input type="checkbox" data-know="I.2" checked aria-label="Знаю: I.2 Скалярное произведение и нормы"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">I.2</span><span><a href="#">Скалярное произведение и нормы</a></span></li>
+        <li><label class="know"><input type="checkbox" data-know="I.3" checked aria-label="Знаю: I.3 Умножение матриц: четыре взгляда"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">I.3</span><span><a href="#">Умножение матриц: четыре взгляда</a></span></li>
+        <li><label class="know"><input type="checkbox" data-know="I.4" checked aria-label="Знаю: I.4 Матрица как линейное отображение"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">I.4</span><span><a href="#">Матрица как линейное отображение</a><span class="tag">игра</span></span></li>
+        <li><label class="know"><input type="checkbox" data-know="I.5" checked aria-label="Знаю: I.5 Транспонирование, симметрия, след"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">I.5</span><span><a href="#">Транспонирование, симметрия, след</a></span></li>
+        <li><label class="know"><input type="checkbox" data-know="I.6" checked aria-label="Знаю: I.6 Системы уравнений и ранг"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">I.6</span><span><a href="#">Системы уравнений и ранг</a><span class="tag">игра</span></span></li>
+        <li><label class="know"><input type="checkbox" data-know="I.7" checked aria-label="Знаю: I.7 Обратная матрица и определитель"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">I.7</span><span><a href="#">Обратная матрица и определитель</a></span></li>
+        <li><label class="know"><input type="checkbox" data-know="I.8" checked aria-label="Знаю: I.8 Ортогональность и проекции"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">I.8</span><span><a href="#">Ортогональность и проекции</a></span></li>
+        <li><label class="know"><input type="checkbox" data-know="I.9" checked aria-label="Знаю: I.9 Собственные значения и векторы"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">I.9</span><span><a href="#">Собственные значения и векторы</a><span class="tag">игра</span></span></li>
+        <li><label class="know"><input type="checkbox" data-know="I.10" checked aria-label="Знаю: I.10 Квадратичные формы и знакоопределённость"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">I.10</span><span><a href="#">Квадратичные формы и знакоопределённость</a></span></li>
+        <li><label class="know"><input type="checkbox" data-know="I.11" checked aria-label="Знаю: I.11 Сингулярное разложение и псевдообратная"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">I.11</span><span><a href="#">Сингулярное разложение и псевдообратная</a></span></li>
+        <li><label class="know"><input type="checkbox" data-know="I.12" checked aria-label="Знаю: I.12 Капстоун: МНК как проекция"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">I.12</span><span><a href="#">Капстоун: МНК как проекция</a><span class="tag">лабораторная</span></span></li>
       </ol>
     </section>
 
     <section class="part">
       <div class="part__head"><span class="part__no">III</span><h2>Вероятность</h2><span class="part__meta">11 из 13, около 28 часов</span></div>
       <ol class="lessons" style="--rows:7">
-        <li><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">III.1</span><span><a href="#">Вероятностное пространство</a></span></li>
-        <li><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">III.2</span><span><a href="#">Условная вероятность и независимость</a></span></li>
-        <li><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">III.3</span><span><a href="#">Формула полной вероятности и Байес</a><span class="tag">игра</span></span></li>
-        <li><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">III.4</span><span><a href="#">Случайные величины</a></span></li>
-        <li><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">III.5</span><span><a href="#">Матожидание, дисперсия, Йенсен</a></span></li>
-        <li><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">III.6</span><span><a href="#">Дискретные распределения</a></span></li>
-        <li><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">III.7</span><span><a href="#">Непрерывные распределения</a></span></li>
-        <li><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">III.8</span><span><a href="#">Предельные теоремы и Монте-Карло</a><span class="tag">лабораторная</span></span></li>
-        <li><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">III.9</span><span><a href="#">Совместные распределения</a><span class="tag">игра</span></span></li>
-        <li><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">III.10</span><span><a href="#">Случайные векторы</a></span></li>
-        <li><svg class="status status--passed" role="img" aria-label="пройден"><use href="#st-passed"/></svg><span class="n">III.11</span><span><a href="#">Многомерное нормальное распределение</a><span class="tag">игра</span></span></li>
-        <li><span class="status" aria-hidden="true"></span><span class="n">III.12</span><span><a href="#">Смеси и скрытые переменные</a></span></li>
-        <li><span class="status" aria-hidden="true"></span><span class="n">III.13</span><span><a href="#">Энтропия, кросс-энтропия, KL</a></span></li>
+        <li><label class="know"><input type="checkbox" data-know="III.1" checked aria-label="Знаю: III.1 Вероятностное пространство"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">III.1</span><span><a href="#">Вероятностное пространство</a></span></li>
+        <li><label class="know"><input type="checkbox" data-know="III.2" checked aria-label="Знаю: III.2 Условная вероятность и независимость"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">III.2</span><span><a href="#">Условная вероятность и независимость</a></span></li>
+        <li><label class="know"><input type="checkbox" data-know="III.3" checked aria-label="Знаю: III.3 Формула полной вероятности и Байес"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">III.3</span><span><a href="#">Формула полной вероятности и Байес</a><span class="tag">игра</span></span></li>
+        <li><label class="know"><input type="checkbox" data-know="III.4" checked aria-label="Знаю: III.4 Случайные величины"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">III.4</span><span><a href="#">Случайные величины</a></span></li>
+        <li><label class="know"><input type="checkbox" data-know="III.5" checked aria-label="Знаю: III.5 Матожидание, дисперсия, Йенсен"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">III.5</span><span><a href="#">Матожидание, дисперсия, Йенсен</a></span></li>
+        <li><label class="know"><input type="checkbox" data-know="III.6" checked aria-label="Знаю: III.6 Дискретные распределения"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">III.6</span><span><a href="#">Дискретные распределения</a></span></li>
+        <li><label class="know"><input type="checkbox" data-know="III.7" checked aria-label="Знаю: III.7 Непрерывные распределения"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">III.7</span><span><a href="#">Непрерывные распределения</a></span></li>
+        <li><label class="know"><input type="checkbox" data-know="III.8" checked aria-label="Знаю: III.8 Предельные теоремы и Монте-Карло"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">III.8</span><span><a href="#">Предельные теоремы и Монте-Карло</a><span class="tag">лабораторная</span></span></li>
+        <li><label class="know"><input type="checkbox" data-know="III.9" checked aria-label="Знаю: III.9 Совместные распределения"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">III.9</span><span><a href="#">Совместные распределения</a><span class="tag">игра</span></span></li>
+        <li><label class="know"><input type="checkbox" data-know="III.10" checked aria-label="Знаю: III.10 Случайные векторы"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">III.10</span><span><a href="#">Случайные векторы</a></span></li>
+        <li><label class="know"><input type="checkbox" data-know="III.11" checked aria-label="Знаю: III.11 Многомерное нормальное распределение"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">III.11</span><span><a href="#">Многомерное нормальное распределение</a><span class="tag">игра</span></span></li>
+        <li><label class="know"><input type="checkbox" data-know="III.12" aria-label="Знаю: III.12 Смеси и скрытые переменные"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">III.12</span><span><a href="#">Смеси и скрытые переменные</a></span></li>
+        <li><label class="know"><input type="checkbox" data-know="III.13" aria-label="Знаю: III.13 Энтропия, кросс-энтропия, KL"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">III.13</span><span><a href="#">Энтропия, кросс-энтропия, KL</a></span></li>
       </ol>
     </section>
 
     <section class="part">
       <div class="part__head"><span class="part__no">V</span><h2>Мост к ML</h2><span class="part__meta">0 из 9, около 23 часов</span></div>
       <ol class="lessons" style="--rows:5">
-        <li class="is-current"><svg class="status status--started" role="img" aria-label="начат"><use href="#st-started"/></svg><span class="n">V.1</span><span><a href="lesson.html">Линейная регрессия тремя способами</a><span class="tag">лабораторная</span></span></li>
-        <li><span class="status" aria-hidden="true"></span><span class="n">V.2</span><span><a href="#">Логистическая регрессия</a></span></li>
-        <li><span class="status" aria-hidden="true"></span><span class="n">V.3</span><span><a href="#">Обобщённые линейные модели</a></span></li>
-        <li><span class="status" aria-hidden="true"></span><span class="n">V.4</span><span><a href="#">GDA и наивный Байес</a></span></li>
-        <li><span class="status" aria-hidden="true"></span><span class="n">V.5</span><span><a href="#">Ядра и метод опорных векторов</a><span class="tag">игра</span></span></li>
-        <li><span class="status" aria-hidden="true"></span><span class="n">V.6</span><span><a href="#">Двухслойная сеть и backprop</a></span></li>
-        <li><span class="status" aria-hidden="true"></span><span class="n">V.7</span><span><a href="#">Смещение, разброс, регуляризация</a><span class="tag">игра</span></span></li>
-        <li><span class="status" aria-hidden="true"></span><span class="n">V.8</span><span><a href="#">k-means и EM</a></span></li>
-        <li><span class="status" aria-hidden="true"></span><span class="n">V.9</span><span><a href="#">Метод главных компонент</a></span></li>
+        <li class="is-current"><label class="know"><input type="checkbox" data-know="V.1" aria-label="Знаю: V.1 Линейная регрессия тремя способами"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">V.1</span><span><a href="lesson.html">Линейная регрессия тремя способами</a><span class="tag">лабораторная</span></span></li>
+        <li><label class="know"><input type="checkbox" data-know="V.2" aria-label="Знаю: V.2 Логистическая регрессия"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">V.2</span><span><a href="#">Логистическая регрессия</a></span></li>
+        <li><label class="know"><input type="checkbox" data-know="V.3" aria-label="Знаю: V.3 Обобщённые линейные модели"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">V.3</span><span><a href="#">Обобщённые линейные модели</a></span></li>
+        <li><label class="know"><input type="checkbox" data-know="V.4" aria-label="Знаю: V.4 GDA и наивный Байес"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">V.4</span><span><a href="#">GDA и наивный Байес</a></span></li>
+        <li><label class="know"><input type="checkbox" data-know="V.5" aria-label="Знаю: V.5 Ядра и метод опорных векторов"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">V.5</span><span><a href="#">Ядра и метод опорных векторов</a><span class="tag">игра</span></span></li>
+        <li><label class="know"><input type="checkbox" data-know="V.6" aria-label="Знаю: V.6 Двухслойная сеть и backprop"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">V.6</span><span><a href="#">Двухслойная сеть и backprop</a></span></li>
+        <li><label class="know"><input type="checkbox" data-know="V.7" aria-label="Знаю: V.7 Смещение, разброс, регуляризация"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">V.7</span><span><a href="#">Смещение, разброс, регуляризация</a><span class="tag">игра</span></span></li>
+        <li><label class="know"><input type="checkbox" data-know="V.8" aria-label="Знаю: V.8 k-means и EM"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">V.8</span><span><a href="#">k-means и EM</a></span></li>
+        <li><label class="know"><input type="checkbox" data-know="V.9" aria-label="Знаю: V.9 Метод главных компонент"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span class="n">V.9</span><span><a href="#">Метод главных компонент</a></span></li>
       </ol>
     </section>
   </div>
@@ -114,7 +113,7 @@
   <aside class="side">
     <section>
       <h2>Карта курса</h2>
-      <svg class="map" viewBox="0 0 340 356" role="img" aria-label="Модули курса и связи между ними">
+      <svg class="map" viewBox="0 0 340 356" role="img" aria-label="Модули курса и связи между ними. Отмечены все уроки модулей 0, I, II и уроков III.1–III.8">
         <defs>
           <pattern id="cells" width="20" height="20" patternUnits="userSpaceOnUse"><path class="grid-line" d="M20 0H0V20" fill="none"/></pattern>
           <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 1 9 5 0 9z"/></marker>
@@ -137,7 +136,7 @@
         <g class="node " transform="translate(102 228)"><rect class="box" width="136" height="44" rx="6"/><text x="12" y="19"><tspan class="sub">IV</tspan> Статистика</text><rect class="bar-bg" x="12" y="29" width="112" height="3" rx="1.5"/><rect class="bar" x="12" y="29" width="84" height="3" rx="1.5"/></g>
         <g class="node now" transform="translate(102 300)"><rect class="box" width="136" height="44" rx="6"/><text x="12" y="19"><tspan class="sub">V</tspan> Мост к ML</text><rect class="bar-bg" x="12" y="29" width="112" height="3" rx="1.5"/></g>
       </svg>
-      <p class="ui muted" style="font-size:13.5px;margin:8px 0 0">Стрелка ведёт от модуля к тому, что на нём строится. Полоска под названием&nbsp;— доля пройденных уроков, галочка&nbsp;— модуль пройден.</p>
+      <p class="ui muted" style="font-size:13.5px;margin:8px 0 0">Стрелка ведёт от модуля к тому, что на нём строится. Полоска под названием&nbsp;— доля уроков с&nbsp;галочкой «знаю», галочка на&nbsp;рамке&nbsp;— отмечены все уроки. III-а&nbsp;— уроки III.1–III.8, III-б&nbsp;— III.9–III.13.</p>
     </section>
     <section>
       <h2>Игры</h2>

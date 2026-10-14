@@ -20,7 +20,7 @@
 | Компоненты урока, упражнения | `context/pedagogy-components.md` | `docs/conventions/pedagogy.md` |
 | Виджеты, игры | `context/widgets-games.md` | `prototype/*` (только нужный файл-эталон) |
 | Python, лабораторные | `context/python-runtime.md` | — |
-| Прогресс (пройденные уроки), аналитика | `context/progress-learning.md` | — |
+| Прогресс (галочка «знаю»), аналитика | `context/progress-learning.md` | — |
 | Урок | `context/content-authoring.md` + карточка `### <номер>.` в `docs/program/` | `docs/program/*` целиком |
 | Проверки, CI, скриншоты | `context/testing-ci.md` | — |
 | ИИ-тьютор (этап 6) | `context/ai-tutor.md` | — |
