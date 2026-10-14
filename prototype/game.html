@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Матрица-пазл — Математика для ML</title>
+  <link rel="stylesheet" href="vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="assets/proto.css">
+  <link rel="stylesheet" href="assets/proto-extra.css">
+  <script defer src="vendor/katex/katex.min.js"></script>
+  <script defer src="vendor/katex/contrib/auto-render.min.js"></script>
+  <script defer src="assets/proto.js"></script>
+  <script defer src="assets/game.js"></script>
+</head>
+<body>
+<!-- SPRITE:BEGIN -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-search" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3.5 3.5"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3"/><path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1 1M11.6 11.6l1 1M3.4 12.6l1-1M11.6 4.4l1-1"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 16 16"><path d="M13.5 9.5A5.5 5.5 0 0 1 6.5 2.5a5.5 5.5 0 1 0 7 7Z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 16 16"><path d="M2.5 4h11M2.5 8h11M2.5 12h7"/></symbol>
+  <symbol id="i-play" viewBox="0 0 16 16"><path d="M5 3.5v9l7-4.5-7-4.5Z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 16 16"><path d="m3.5 8.5 3 3 6-7"/></symbol>
+  <symbol id="i-x" viewBox="0 0 16 16"><path d="m4 4 8 8M12 4l-8 8"/></symbol>
+  <symbol id="i-repeat" viewBox="0 0 16 16"><path d="M13 6.5A5 5 0 1 0 13.3 9"/><path d="M13.5 2.8v3.7H9.8"/></symbol>
+  <symbol id="st-solid" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="currentColor" stroke="none"/><path d="m4.2 7.2 1.9 1.9 3.7-4.2" stroke="var(--paper)" stroke-width="1.6" fill="none"/></symbol>
+  <symbol id="st-can" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="m4.3 7.2 1.8 1.8 3.6-4" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+  <symbol id="st-seen" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M7 1.4a5.6 5.6 0 0 1 0 11.2Z" fill="currentColor"/></symbol>
+  <symbol id="st-review" viewBox="0 0 14 14"><path d="M11.8 5.2A5.2 5.2 0 1 0 12 8" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M12.4 2.4v3.2H9.2" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
+  <symbol id="st-todo" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2.2 2"/></symbol>
+</svg>
+<!-- SPRITE:END -->
+<!-- HEADER:BEGIN -->
+<header class="site-header">
+  <div class="site-header__inner">
+    <button class="icon-button toc-toggle" data-toc-toggle aria-expanded="false" aria-label="Оглавление"><svg class="icon"><use href="#i-menu"/></svg></button>
+    <a class="brand" href="index.html">
+      <svg class="brand__mark" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+        <path class="cell" d="M1 6h20M1 11h20M1 16h20M6 1v20M11 1v20M16 1v20" stroke-width="1"/>
+        <rect class="frame" x="1" y="1" width="20" height="20" rx="3" stroke-width="1.2"/>
+        <path class="vec" d="M3.5 17.5 18.5 5" stroke-width="1.8" stroke-linecap="round"/>
+        <circle class="dot" cx="6" cy="12.5" r="1.7"/><circle class="dot" cx="11" cy="12" r="1.7"/><circle class="dot" cx="15.5" cy="6.5" r="1.7"/>
+      </svg>
+      Математика для ML
+    </a>
+    <div class="search" role="search"><svg class="icon"><use href="#i-search"/></svg><span>Поиск по понятиям и формулам</span><span class="kbd" style="flex:none">/</span></div>
+    <div class="header-progress">
+      <a class="btn btn--quiet btn--sm header-review" href="#"><svg class="icon"><use href="#i-repeat"/></svg><span><span class="hide-narrow">Повторение: </span>7<span class="hide-narrow"> задач</span></span></a>
+      <span class="label">Пройдено 48 из 61 урока</span>
+      <span class="progress" aria-hidden="true"><span style="width:79%"></span></span>
+      <button class="icon-button theme-toggle" data-theme-toggle aria-label="Сменить тему">
+        <svg class="icon sun"><use href="#i-sun"/></svg><svg class="icon moon"><use href="#i-moon"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+<!-- HEADER:END -->
+<main class="game" data-game data-level="2" data-start="[[0,-1],[1,1]]" data-moves="3">
+  <nav class="breadcrumb" aria-label="Путь"><a href="index.html">Игры</a><span aria-hidden="true">/</span><span>Линейная алгебра</span></nav>
+  <h1>Матрица-пазл</h1>
+  <p class="lead" style="max-width:44rem">Подберите матрицу \(2\times 2\), которая переводит букву F в&nbsp;пунктирный контур. Каждое нажатие&nbsp;— ход, чем их меньше, тем лучше.</p>
+
+  <div class="game__layout">
+    <figure class="board" style="margin:0">
+      <svg class="plot" viewBox="0 0 480 480" role="img" aria-label="Координатная плоскость: целевая фигура и текущая фигура"></svg>
+      <figcaption class="board__foot">
+        <span class="key"><span class="swatch-line swatch-line--dashed" style="color:var(--ink-3)"></span>цель</span>
+        <span class="key"><span class="swatch-line" style="color:var(--pen)"></span>ваша фигура</span>
+        <span class="key"><span class="swatch-line" style="color:var(--sym-1)"></span>куда ушёл \(e_1\)</span>
+        <span class="key"><span class="swatch-line" style="color:var(--sym-2)"></span>куда ушёл \(e_2\)</span>
+      </figcaption>
+    </figure>
+
+    <section class="panel" aria-label="Управление">
+      <div class="level" data-level-name></div>
+      <div class="levels" aria-label="Уровни"><span class="done">1</span><span class="done">2</span><span class="now">3</span><span>4</span><span>5</span></div>
+
+      <div class="matrix-input">
+        <span style="font-family:var(--font-text);font-size:22px;font-style:italic">A =</span>
+        <div class="matrix" role="group" aria-label="Матрица A">
+          <span class="col-1"><span class="stepper"><button data-d="-1" aria-label="Уменьшить a₁₁">−</button><output>0</output><button data-d="1" aria-label="Увеличить a₁₁">+</button></span></span>
+          <span class="col-2"><span class="stepper"><button data-d="-1" aria-label="Уменьшить a₁₂">−</button><output>0</output><button data-d="1" aria-label="Увеличить a₁₂">+</button></span></span>
+          <span class="col-1"><span class="stepper"><button data-d="-1" aria-label="Уменьшить a₂₁">−</button><output>0</output><button data-d="1" aria-label="Увеличить a₂₁">+</button></span></span>
+          <span class="col-2"><span class="stepper"><button data-d="-1" aria-label="Уменьшить a₂₂">−</button><output>0</output><button data-d="1" aria-label="Увеличить a₂₂">+</button></span></span>
+        </div>
+        <div class="matrix-facts">
+          <span>\(\det A\) = <b data-det></b></span>
+          <span>Первый столбец&nbsp;— это \(Ae_1\), второй&nbsp;— \(Ae_2\)</span>
+        </div>
+      </div>
+
+      <div class="game-status"><span>Ходы: <b data-moves></b></span><span>Лучший результат на уровне: <b>2</b></span></div>
+      <p class="feedback" data-status style="color:var(--ink-2)"><svg class="icon" style="color:var(--pen)"><use href="#i-check"/></svg><span></span></p>
+
+      <div class="game-actions">
+        <button class="btn btn--sm">Подсказка</button>
+        <button class="btn btn--sm" data-reset>Начать уровень заново</button>
+        <button class="btn btn--sm btn--quiet">Пропустить уровень</button>
+      </div>
+
+      <div class="block block--intuition teaches">
+        <p><span class="block__title">Чему учит игра.</span> Столбцы матрицы&nbsp;— это образы базисных векторов: первый столбец показывает, куда попадает \(e_1\), второй&nbsp;— куда попадает \(e_2\). Поняв это, любую матрицу \(2\times 2\) можно собрать почти без проб.</p>
+        <p style="margin:0"><a href="lesson.html">Урок I.4. Матрица как линейное отображение</a></p>
+      </div>
+      <div class="block block--exercise teaches">
+        <p style="margin:0"><span class="block__title">После уровня.</span> Площадь буквы F после поворота не изменилась. Какому числу равен \(\det A\) и почему?</p>
+      </div>
+    </section>
+  </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,19 @@
+id: rule.grad-linear
+kind: rule
+title:
+  ru: 'Градиент линейной функции'
+  en: 'gradient of a linear function'
+statement: '\nabla_x\, b^\top x = b'
+symbols:
+  - name: b
+    tex: 'b'
+    shape: [d, 1]
+  - name: x
+    tex: 'x'
+    shape: [d, 1]
+concept: calc.matrix-calculus
+checks:
+  - kind: gradient
+    f: 'b @ x'
+    grad: 'b'
+    wrt: x

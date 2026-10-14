@@ -1,0 +1,17 @@
+# Курс «Математика для машинного обучения». Порядок модулей задаётся здесь.
+id: foundations
+title:
+  ru: 'Математика для машинного обучения'
+summary:
+  ru: 'Линейная алгебра, анализ, вероятность и статистика в объёме, нужном для Stanford CS229'
+# Издание конспекта CS229, на которое ссылаются уроки. Ссылки хранят издание и название раздела, а не номер главы.
+cs229Edition: main-notes-2026-spring
+# Сквозной кейс: один синтетический набор данных на весь курс (см. docs/program/README.md)
+throughline: apartments
+modules:
+  - start
+  - linear-algebra
+  - calculus
+  - probability
+  - statistics
+  - bridge

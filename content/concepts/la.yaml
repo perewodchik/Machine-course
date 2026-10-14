@@ -1,0 +1,49 @@
+# Понятия линейной алгебры. Пример формата; полный список — в docs/program/01-linear-algebra.md.
+# Обязательные поля: id, title, lesson, prerequisites. ID стабильны: переименование — только через redirects.yaml.
+- id: la.matmul
+  title:
+    ru: 'Умножение матриц'
+    en: 'matrix multiplication'
+  summary: '(AB)_{ij} = сумма по k произведений A_{ik} B_{kj}; определено, когда столбцов у A столько же, сколько строк у B.'
+  lesson: matrix-multiplication
+  prerequisites: [nota.sums, la.dot-product]
+  core: true
+
+- id: la.transpose
+  title:
+    ru: 'Транспонирование'
+    en: 'transpose'
+  summary: 'Строки становятся столбцами; (AB)ᵀ = BᵀAᵀ.'
+  lesson: transpose-trace
+  prerequisites: [la.matmul]
+  core: true
+
+- id: la.rank
+  title:
+    ru: 'Ранг матрицы'
+    en: 'rank'
+  summary: 'Число линейно независимых столбцов (равно числу независимых строк).'
+  lesson: systems-rank
+  prerequisites: [la.span, la.linear-independence]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Linear regression / The normal equations'
+
+- id: la.projection
+  title:
+    ru: 'Проекция на подпространство'
+    en: 'orthogonal projection'
+  summary: 'Ближайшая к вектору точка подпространства; остаток перпендикулярен подпространству.'
+  lesson: orthogonality-projections
+  prerequisites: [la.dot-product, la.span, la.transpose]
+  core: true
+
+- id: la.psd
+  title:
+    ru: 'Положительно полуопределённая матрица'
+    en: 'positive semidefinite matrix'
+  summary: 'Симметричная A, для которой xᵀAx ≥ 0 при всех x; все собственные значения неотрицательны.'
+  lesson: quadratic-forms
+  prerequisites: [la.symmetric, la.eigen, la.quadratic-form]
+  core: true

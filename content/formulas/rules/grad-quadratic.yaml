@@ -1,0 +1,20 @@
+id: rule.grad-quadratic
+kind: rule
+title:
+  ru: 'Градиент квадратичной формы'
+  en: 'gradient of a quadratic form'
+statement: '\nabla_x\, x^\top A x = (A + A^\top)\,x'
+symbols:
+  - name: A
+    tex: 'A'
+    shape: [d, d]
+  - name: x
+    tex: 'x'
+    shape: [d, 1]
+concept: calc.matrix-calculus
+corollary: 'Для симметричной A: ∇ xᵀAx = 2Ax.'
+checks:
+  - kind: gradient
+    f: 'x @ A @ x'
+    grad: '(A + A.T) @ x'
+    wrt: x

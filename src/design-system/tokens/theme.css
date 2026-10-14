@@ -1,0 +1,61 @@
+/*
+ * Подключение токенов к Tailwind CSS v4.
+ * Дефолтные палитра, шрифты, тени и скругления Tailwind отключены:
+ * классы вроде bg-indigo-500 или shadow-lg просто не существуют.
+ * Доступны только классы из наших токенов: bg-paper, text-ink, text-pen, rounded-panel…
+ */
+@import "tailwindcss";
+@import "./tokens.css";
+
+@theme {
+  --color-*: initial;
+  --font-*: initial;
+  --shadow-*: initial;
+  --radius-*: initial;
+  --text-*: initial;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-surface: var(--surface);
+  --color-grid: var(--grid);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-rule: var(--rule);
+  --color-control-border: var(--control-border);
+  --color-pen: var(--pen);
+  --color-pen-strong: var(--pen-strong);
+  --color-pen-wash: var(--pen-wash);
+  --color-red-pen: var(--red-pen);
+  --color-margin-line: var(--margin-line);
+  --color-green-pen: var(--green-pen);
+  --color-highlighter: var(--highlighter);
+  --color-sym-1: var(--sym-1);
+  --color-sym-1-text: var(--sym-1-text);
+  --color-sym-2: var(--sym-2);
+  --color-sym-2-text: var(--sym-2-text);
+  --color-sym-3: var(--sym-3);
+  --color-sym-3-text: var(--sym-3-text);
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  --font-text: var(--font-text);
+  --font-ui: var(--font-ui);
+  --font-code: var(--font-code);
+  --font-math: var(--font-math);
+
+  --text-xs: var(--text-xs);
+  --text-sm: var(--text-sm);
+  --text-base: var(--text-base);
+  --text-lg: var(--text-lg);
+  --text-xl: var(--text-xl);
+  --text-2xl: var(--text-2xl);
+  --text-3xl: var(--text-3xl);
+
+  --radius-inline: var(--radius-inline);
+  --radius-control: var(--radius-control);
+  --radius-panel: var(--radius-panel);
+  --shadow-popover: var(--shadow-popover);
+}

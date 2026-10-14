@@ -1,0 +1,160 @@
+/* Дополнительные компоненты прототипа: повторение, легенда, план вывода, выбор ответа, игра, главная, витрина */
+
+/* Повторение на сегодня */
+.review-box { display: grid; gap: 4px; padding: var(--space-3); margin-bottom: var(--space-5); border: 1px solid var(--rule); border-radius: var(--radius-control); background: var(--surface); }
+.review-box b { font-weight: 600; color: var(--ink); }
+.review-box span { color: var(--ink-2); font-size: 14px; }
+.review-box .btn { justify-self: start; margin-top: 6px; }
+
+.legend { display: grid; gap: 4px; margin: var(--space-6) 0 0; padding: var(--space-3) 8px 0; border-top: 1px solid var(--rule); font-size: 13px; color: var(--ink-3); }
+.legend div { display: flex; align-items: center; gap: 8px; }
+.legend dt, .legend dd { margin: 0; }
+
+.lesson-meta { font-size: var(--text-sm); color: var(--ink-3); margin-top: calc(-1 * var(--space-2)); }
+.prereqs .refresh { height: 26px; padding: 0 6px; font-weight: 500; }
+.lesson-nav { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-3); margin-top: var(--space-8); padding-top: var(--space-5); border-top: 1px solid var(--rule); }
+
+/* План вывода: подцели над шагами */
+.plan { display: flex; flex-wrap: wrap; gap: 4px 6px; list-style: none; margin: 0; padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule); font-family: var(--font-ui); font-size: 13.5px; }
+.plan li { display: inline-block; padding: 3px 10px; border-radius: var(--radius-control); color: var(--ink-3); }
+.plan li.is-current { color: var(--pen); background: var(--pen-wash); font-weight: 500; }
+.plan li:has(~ li.is-current) { color: var(--ink-2); }
+
+/* Выбор ответа */
+.choices { display: grid; gap: 6px; margin-top: var(--space-2); }
+.choices button {
+  text-align: left; padding: 8px 12px; border-radius: var(--radius-control); border: 1px solid var(--control-border);
+  background: var(--surface); color: var(--ink); font: var(--text-sm) / 1.45 var(--font-ui); cursor: pointer;
+  transition: border-color var(--duration-ui) var(--ease-out), background var(--duration-ui) var(--ease-out);
+}
+.choices button:hover { border-color: var(--pen); }
+.choices button.is-right { border-color: var(--green-pen); box-shadow: inset 3px 0 0 var(--green-pen); }
+.choices button.is-wrong { border-color: var(--red-pen); box-shadow: inset 3px 0 0 var(--red-pen); }
+.choices .katex { font-size: 1em; }
+
+/* ───────── Игра ───────── */
+.game { max-width: 1180px; margin: 0 auto; padding: var(--space-7) var(--space-6) var(--space-9); }
+.game__layout { display: grid; grid-template-columns: minmax(0, 560px) minmax(0, 1fr); gap: var(--space-7); align-items: start; margin-top: var(--space-5); }
+.board { border: 1px solid var(--rule); border-radius: var(--radius-panel); background: var(--surface); overflow: hidden; }
+.board svg { width: 100%; height: auto; }
+.board__foot { display: flex; align-items: center; gap: var(--space-4); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule); font-family: var(--font-ui); font-size: 14px; color: var(--ink-2); }
+.board__foot .key { display: inline-flex; align-items: center; gap: 6px; }
+.swatch-line { width: 18px; height: 0; border-top: 2px solid; }
+.swatch-line--dashed { border-top-style: dashed; }
+.shape-target { fill: none; stroke: var(--ink-3); stroke-width: 2; stroke-dasharray: 6 5; }
+.shape-current { fill: color-mix(in oklab, var(--pen) 14%, transparent); stroke: var(--pen); stroke-width: 2; stroke-linejoin: round; }
+.basis-1 { stroke: var(--sym-1); stroke-width: 2.5; }
+.basis-2 { stroke: var(--sym-2); stroke-width: 2.5; }
+.basis-label { font: 17px var(--font-math); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
+
+.panel h2 { margin-top: 0; }
+.level { font-family: var(--font-ui); font-size: var(--text-sm); color: var(--ink-3); margin-bottom: var(--space-2); }
+.levels { display: flex; gap: 6px; margin: var(--space-2) 0 var(--space-5); }
+.levels span { width: 26px; height: 26px; display: grid; place-items: center; border-radius: var(--radius-control); border: 1px solid var(--rule); font: 500 12px var(--font-ui); color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.levels .done { background: var(--paper-2); color: var(--green-pen); border-color: var(--rule); }
+.levels .now { border-color: var(--pen); color: var(--pen); box-shadow: inset 0 0 0 1px var(--pen); }
+
+.matrix-input > span:first-child { white-space: nowrap; }
+.matrix-input { display: flex; align-items: center; gap: var(--space-4); margin: var(--space-4) 0; font-family: var(--font-ui); }
+.matrix { position: relative; display: inline-grid; grid-template-columns: repeat(2, auto); gap: 8px 10px; padding: 8px 14px; }
+.matrix::before, .matrix::after { content: ""; position: absolute; top: 0; bottom: 0; width: 7px; border: 2px solid var(--ink); }
+.matrix::before { left: 0; border-right: 0; }
+.matrix::after { right: 0; border-left: 0; }
+.stepper { display: inline-flex; align-items: center; height: 36px; border: 1px solid var(--control-border); border-radius: var(--radius-control); background: var(--surface); overflow: hidden; }
+.stepper button { width: 28px; height: 100%; border: 0; background: transparent; color: var(--ink-2); font: 500 16px var(--font-ui); cursor: pointer; }
+.stepper button:hover { background: var(--paper-2); color: var(--ink); }
+.stepper output { min-width: 2.6em; text-align: center; font: 500 15px var(--font-ui); font-variant-numeric: tabular-nums; color: var(--ink); }
+.col-1 .stepper { box-shadow: inset 3px 0 0 var(--sym-1); }
+.col-2 .stepper { box-shadow: inset 3px 0 0 var(--sym-2); }
+.col-1, .col-2 { display: contents; }
+.matrix-facts { display: grid; gap: 4px; font-size: 14px; color: var(--ink-2); }
+.matrix-facts b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; }
+.game-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: var(--space-4) 0; }
+.game-status { display: flex; gap: var(--space-5); font-family: var(--font-ui); font-size: 14px; color: var(--ink-2); padding: var(--space-3) 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+.game-status b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.teaches { font-size: 15px; color: var(--ink-2); }
+
+/* ───────── Главная ───────── */
+.home { max-width: 1200px; margin: 0 auto; padding: var(--space-8) var(--space-6) var(--space-9); display: grid; grid-template-columns: minmax(0, 1fr) 22rem; gap: var(--space-8); }
+.home h1 { font-size: 2.75rem; max-width: 16ch; }
+.home .lead { max-width: 36rem; }
+.continue { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-4); margin: var(--space-6) 0 var(--space-7); padding: var(--space-4) 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); font-family: var(--font-ui); font-size: var(--text-sm); color: var(--ink-2); }
+.continue p { margin: 0; flex: 1 1 20rem; }
+.continue b { color: var(--ink); font-weight: 500; }
+.part { margin-bottom: var(--space-6); }
+.part__head { display: grid; grid-template-columns: 2.2rem minmax(0, 1fr) auto; align-items: baseline; gap: var(--space-2); padding-bottom: var(--space-2); border-bottom: 1px solid var(--ink); }
+.part__head h2 { margin: 0; font-size: var(--text-lg); }
+.part__no { font: 600 var(--text-lg) var(--font-ui); color: var(--ink-3); }
+.part__meta { font-family: var(--font-ui); font-size: 14px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.lessons { list-style: none; margin: 0; padding: 0; display: grid; grid-auto-flow: column; grid-template-rows: repeat(var(--rows, 6), auto); grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-6); font-family: var(--font-ui); font-size: var(--text-sm); }
+.lessons li { display: grid; grid-template-columns: 16px 3rem minmax(0, 1fr); gap: 6px; align-items: start; padding: 7px 0; border-bottom: 1px solid var(--rule); line-height: 1.35; }
+.lessons .n { color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.lessons a { color: var(--ink); text-decoration: none; }
+.lessons a:hover { color: var(--pen); text-decoration: underline; }
+.lessons .tag { color: var(--ink-3); font-size: 13px; margin-left: 4px; white-space: nowrap; }
+.lessons li.is-current a { color: var(--pen); font-weight: 500; }
+.side h2 { font-size: var(--text-base); margin: 0 0 var(--space-3); }
+.side section { padding-bottom: var(--space-6); margin-bottom: var(--space-6); border-bottom: 1px solid var(--rule); }
+.side ul { list-style: none; margin: 0; padding: 0; font-family: var(--font-ui); font-size: var(--text-sm); }
+.side li { padding: 6px 0; color: var(--ink-2); line-height: 1.4; }
+.side li a { font-weight: 500; }
+.side li > span { display: block; font-size: 13.5px; color: var(--ink-3); }
+.map { width: 100%; height: auto; border: 1px solid var(--rule); border-radius: var(--radius-panel); background: var(--surface); }
+.map .grid-line { stroke: var(--grid); }
+.map .edge { stroke: var(--ink-3); stroke-width: 1.25; fill: none; marker-end: url(#arrow); }
+.map .node .box { fill: var(--surface); stroke: var(--control-border); stroke-width: 1.25; }
+.map .node.done .box { stroke: var(--green-pen); }
+.map .node.now .box { stroke: var(--pen); stroke-width: 2; fill: var(--pen-wash); }
+.map .node text { font: 500 12.5px var(--font-ui); fill: var(--ink); }
+.map .node .sub { font-weight: 400; font-size: 11.5px; fill: var(--ink-3); }
+.map .node .bar-bg { fill: var(--rule); stroke: none; }
+.map .node .bar { fill: var(--green-pen); stroke: none; }
+.map #arrow path { fill: var(--ink-3); }
+
+/* ───────── Витрина дизайн-системы ───────── */
+.ds { max-width: 1180px; margin: 0 auto; padding: var(--space-7) var(--space-6) var(--space-9); }
+.ds > section { padding: var(--space-6) 0; border-top: 1px solid var(--rule); }
+.ds h2 { margin: 0 0 var(--space-2); }
+.ds .intro { max-width: 46rem; color: var(--ink-2); }
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr)); gap: var(--space-4) var(--space-4); margin-top: var(--space-4); }
+.swatch { font-family: var(--font-ui); font-size: 13px; color: var(--ink-2); }
+.swatch__chip { height: 52px; border-radius: var(--radius-control); border: 1px solid var(--rule); margin-bottom: 6px; }
+.swatch b { display: block; color: var(--ink); font-weight: 500; font-size: 14px; }
+.swatch code { font-size: 12px; background: none; border: 0; padding: 0; color: var(--ink-3); }
+.type-row { display: grid; grid-template-columns: 11rem minmax(0, 1fr); gap: var(--space-5); align-items: baseline; padding: var(--space-3) 0; border-bottom: 1px solid var(--rule); }
+.type-row .spec { font-family: var(--font-ui); font-size: 13px; color: var(--ink-3); line-height: 1.4; }
+.ds-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-6) var(--space-7); margin-top: var(--space-4); }
+.ds-grid > div > h3 { margin-top: 0; font-size: var(--text-sm); color: var(--ink-3); font-weight: 500; }
+.row { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+.btn.is-hover { background: var(--paper-2); border-color: var(--ink-2); }
+.btn.is-focus { outline: 2px solid var(--pen); outline-offset: 2px; }
+.sym-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-3); margin-top: var(--space-4); }
+.sym-card { border: 1px solid var(--rule); border-radius: var(--radius-control); padding: 10px 12px; font-family: var(--font-ui); font-size: 13px; color: var(--ink-3); background: var(--surface); }
+.sym-card .glyph { font-size: 26px; line-height: 1.2; }
+.sym-card .bar { height: 4px; border-radius: 2px; margin: 8px 0 6px; }
+.rules { columns: 2; column-gap: var(--space-7); font-size: 16px; padding-left: 1.2em; }
+.rules li { margin-bottom: 6px; break-inside: avoid; }
+
+@media (max-width: 1000px) {
+  .game__layout, .home, .ds-grid { grid-template-columns: minmax(0, 1fr); }
+  .lessons { grid-auto-flow: row; grid-template-columns: minmax(0, 1fr); grid-template-rows: none; }
+  .type-row { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .lesson-nav .btn { white-space: normal; height: auto; min-height: 36px; padding: 8px 14px; text-align: left; }
+  .rules { columns: 1; }
+  .sym-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* Легенда символов: доступна с клавиатуры */
+.sym-key { display: inline-flex; align-items: baseline; padding: 0 3px; margin: 0 1px; border: 0; border-bottom: 1px dotted currentColor; border-radius: 3px 3px 0 0; background: transparent; font: inherit; cursor: help; }
+.sym-key:hover, .sym-key:focus-visible { background: color-mix(in oklab, currentColor 12%, transparent); }
+.sym-key.s1 { color: var(--sym-1-text); }
+.header-review { display: inline-flex; align-items: center; gap: 8px; }
+.header-review b { font-weight: 600; color: var(--ink); }
+
+/* Правка красной ручкой: неверное зачёркнуто, исправление вписано рядом */
+.struck { background: linear-gradient(to top right, transparent calc(50% - 1px), var(--red-pen) calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px)); }
+.fix, .fix .sym { color: var(--red-pen); }
+.note--teacher { color: var(--red-pen); font-style: italic; }
+.note--teacher .label { color: var(--red-pen); font-style: normal; }
+.sym-key.s2 { color: var(--sym-2-text); }
+.sym-key.s3 { color: var(--sym-3-text); }

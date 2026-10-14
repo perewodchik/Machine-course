@@ -1,0 +1,170 @@
+/*
+ * Дизайн-токены курса. Единственный источник цветов, шрифтов, отступов и форм.
+ * Концепция «Тетрадь в клетку» — см. src/design-system/README.md.
+ *
+ * Правила:
+ * - компоненты используют только эти переменные, сырые hex запрещены (stylelint);
+ * - тёмная тема задана дважды: для системной настройки и для переключателя
+ *   (data-theme), значения в двух блоках должны совпадать;
+ * - контраст каждого текстового цвета посчитан и указан в комментарии
+ *   (WCAG, относительно --paper);
+ * - цвета ручек (интерфейс) и символов (математика) не пересекаются:
+ *   расстояние в OKLab между любой ручкой и любым --sym-* не меньше 10 (×100).
+ */
+
+:root {
+  color-scheme: light;
+
+  /* Бумага */
+  --paper: #fcfdfe;        /* фон страницы, холодный белый, не кремовый */
+  --paper-2: #f3f6f9;      /* оглавление, блоки кода */
+  --surface: #ffffff;      /* поле рисунка и виджета */
+  --grid: #d4e5f5;         /* клетка: только внутри рисунков */
+
+  /* Чернила и карандаш */
+  --ink: #182233;          /* основной текст, 15.7:1 */
+  --ink-2: #48505e;        /* вторичный текст, 8.0:1 */
+  --ink-3: #686d78;        /* карандаш: подписи, оси, построения, интуиция, 5.1:1 */
+  --rule: #dadee3;         /* разделители */
+  --control-border: #81878f; /* рамки полей и ползунков, 3.6:1 */
+
+  /* Ручки: только интерфейс и обратная связь, никогда — символы */
+  --pen: #2b55b9;          /* синяя: всё, что делает ученик (ссылки, кнопки, ввод, упражнения), 6.7:1 */
+  --pen-strong: #1b3f97;   /* наведение, нажатие, 9.4:1 */
+  --pen-wash: #e9f0ff;     /* фон активного пункта */
+  --red-pen: #c2272d;      /* красная: ошибки и поправки, 5.7:1 */
+  --margin-line: #ed8a8e;  /* линия полей (декоративная, не текст) */
+  --green-pen: #0d7435;    /* зелёная: «верно» и усвоение, 5.8:1 */
+  --highlighter: #f9e77b;  /* маркер: полоса под нижней частью строки */
+
+  /* Педагогические блоки: цвет несут только линейка слева и заголовок блока */
+  --block-definition: var(--ink);
+  --block-theorem: var(--ink);       /* двойная линейка */
+  --block-intuition: var(--ink-3);   /* набросок карандашом */
+  --block-derivation: var(--ink-3);  /* пунктирная линейка */
+  --block-pitfall: var(--red-pen);
+  --block-exercise: var(--pen);      /* упражнение — действие ученика */
+
+  /* Код: почти монохромно, как листинг в учебнике */
+  --code-text: var(--ink);
+  --code-comment: var(--ink-3);
+  --code-literal: var(--ink-2);
+
+  /*
+   * Символы: три слота, цвет закреплён за ролью объекта во всём уроке.
+   * Роли назначает урок (по умолчанию — в комментариях, см. README).
+   * --sym-N — линии и точки на рисунке, --sym-N-text — символ в формуле (≥ 4.5:1).
+   * Слоты проверены валидатором dataviz: попарно различимы при дальтонизме в обеих темах.
+   * Четвёртая роль (остатки, шум, вспомогательное) — карандаш --ink-3, пунктиром.
+   */
+  --sym-1: #0d9eab;  --sym-1-text: #02717a;  /* бирюза: данные x, X; e₁ в ЛА */
+  --sym-2: #bf7101;  --sym-2-text: #8f5301;  /* оранжевый: параметры θ, w; e₂; μ */
+  --sym-3: #823bae;  --sym-3-text: #7b38a3;  /* пурпур: ответы y; Av; Σ */
+
+  /* Шрифты */
+  --font-text: "Literata Variable", "Literata", Georgia, serif;
+  --font-ui: "IBM Plex Sans", system-ui, sans-serif;
+  --font-code: "IBM Plex Mono", ui-monospace, monospace;
+  --font-math: "KaTeX_Math", "Latin Modern Math", serif; /* подписи на рисунках — тем же начертанием, что в формулах */
+
+  /* Шкала: текст урока 18 px, интерфейс 15 px */
+  --text-xs: 0.8125rem;   /* 13 */
+  --text-sm: 0.9375rem;   /* 15 */
+  --text-base: 1.125rem;  /* 18 */
+  --text-lg: 1.3125rem;   /* 21 */
+  --text-xl: 1.5625rem;   /* 25 */
+  --text-2xl: 1.875rem;   /* 30 */
+  --text-3xl: 2.5rem;     /* 40 */
+  --leading-text: 1.65;
+  --leading-ui: 1.45;
+  --leading-tight: 1.15;
+  --measure: 40rem;       /* ≈ 70 знаков Literata 18 px */
+
+  /* Отступы: шаг 4 px */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+
+  /* Формы: скругление растёт с размером объекта */
+  --radius-inline: 3px;   /* код в строке */
+  --radius-control: 6px;  /* кнопки, поля */
+  --radius-panel: 10px;   /* рисунки, карточка формулы */
+  --shadow-popover: 0 1px 2px rgb(24 34 51 / 0.08), 0 8px 24px rgb(24 34 51 / 0.12);
+  --target-touch: 44px;   /* минимальная цель касания на сенсорных экранах */
+
+  /* Клетка: 20 px ≈ 5 мм тетради при 96 dpi */
+  --cell: 20px;
+
+  /* Движение */
+  --duration-ui: 160ms;
+  --duration-math: 600ms;
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  /* Раскладка урока */
+  --toc-width: 17rem;
+  --margin-width: 17rem;
+}
+
+/* Тёмная тема «Грифельная доска»: графит с зеленцой и меловой текст, подобрана отдельно */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --paper: #111919;
+    --paper-2: #0c1313;
+    --surface: #172020;
+    --grid: #253030;
+    --ink: #ecebe5;          /* мел, 14.9:1 */
+    --ink-2: #c5c4bd;        /* 10.2:1 */
+    --ink-3: #939e9d;        /* 6.5:1 */
+    --rule: #2b3535;
+    --control-border: #6b7777; /* 3.9:1 */
+    --pen: #8ab4ff;          /* 8.5:1 */
+    --pen-strong: #aeceff;
+    --pen-wash: #192d41;
+    --red-pen: #f3817f;      /* 7.0:1 */
+    --margin-line: #944a4b;
+    --green-pen: #76cf8a;    /* 9.4:1 */
+    --highlighter: #756208;
+    --sym-1: #02a5b3;  --sym-1-text: #44d4e2;
+    --sym-2: #c77609;  --sym-2-text: #f4ad67;
+    --sym-3: #9b56c2;  --sym-3-text: #e0a4ee;
+    --shadow-popover: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px rgb(0 0 0 / 0.45);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #111919;
+  --paper-2: #0c1313;
+  --surface: #172020;
+  --grid: #253030;
+  --ink: #ecebe5;
+  --ink-2: #c5c4bd;
+  --ink-3: #939e9d;
+  --rule: #2b3535;
+  --control-border: #6b7777;
+  --pen: #8ab4ff;
+  --pen-strong: #aeceff;
+  --pen-wash: #192d41;
+  --red-pen: #f3817f;
+  --margin-line: #944a4b;
+  --green-pen: #76cf8a;
+  --highlighter: #756208;
+  --sym-1: #02a5b3;  --sym-1-text: #44d4e2;
+  --sym-2: #c77609;  --sym-2-text: #f4ad67;
+  --sym-3: #9b56c2;  --sym-3-text: #e0a4ee;
+  --shadow-popover: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px rgb(0 0 0 / 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-ui: 0ms;
+    --duration-math: 0ms;
+  }
+}
