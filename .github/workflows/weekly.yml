@@ -1,0 +1,44 @@
+# Еженедельный прогон на свежих версиях пакетов: ловит поломки до того, как обновление придётся делать срочно.
+# Версии в package.json зафиксированы точно; здесь они временно поднимаются до последних минорных.
+# Упал — завести задачу в docs/implementation/PLAN.md: какой пакет и что сломалось.
+name: Свежие версии
+
+on:
+  schedule:
+    - cron: "17 4 * * 1" # понедельник, 04:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  site:
+    name: Сайт на свежих минорных версиях npm
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - name: Поднять зависимости до последних минорных
+        run: npx --yes npm-check-updates@23.1.0 --upgrade --target minor
+      - run: npm install --no-audit --no-fund
+      - run: npm run lint
+      - run: npm run check
+      - run: npm test
+      - run: npm run validate
+      - run: npm run build
+
+  python:
+    name: Python на свежих версиях
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install --upgrade -e "code[dev]"
+      - run: pytest
+        working-directory: code
+      - run: python scripts/build_notebooks.py --solutions "$RUNNER_TEMP/nb"
+      - run: pytest --nbmake "$RUNNER_TEMP/nb"
