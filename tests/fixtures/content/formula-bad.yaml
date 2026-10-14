@@ -1,0 +1,26 @@
+# Битая формула: шаг ссылается на несуществующую подцель, у шага нет проверки, TeX в двойных кавычках
+id: f.bad
+kind: formula
+title:
+  ru: 'Плохая формула'
+statement: "\theta = 1"
+symbols:
+  - name: theta
+    tex: '\theta'
+    shape: [d, 1]
+dependsOn:
+  concepts: [la.matmul]
+  rules: []
+derivation:
+  plan:
+    - 'Единственная подцель'
+  steps:
+    - goal: 0
+      tex: 'a = b'
+      by: [la.matmul]
+      check:
+        kind: same
+        py: 'theta'
+    - goal: 3
+      tex: '= c'
+      by: [la.matmul]

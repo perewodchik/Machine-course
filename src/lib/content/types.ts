@@ -1,6 +1,6 @@
 /**
  * Модель контента курса. Это контракт между content/ (YAML и MDX) и кодом сайта.
- * На этапе 1 эти типы станут zod-схемами в src/content.config.ts; здесь — без зависимостей.
+ * Схемы Zod повторяют эти типы: src/lib/content/schemas.ts (коллекции — src/content.config.ts). Здесь — без зависимостей.
  */
 
 /** Текст на нескольких языках. Строка — сокращение для { ru }. */
@@ -71,6 +71,8 @@ export interface Rule extends FormulaBase {
   id: RuleId;
   kind: "rule";
   concept: ConceptId;
+  /** Частный случай, который чаще всего нужен: «для симметричной A: ∇ xᵀAx = 2Ax». */
+  corollary?: Localized;
   checks: Check[];
 }
 
@@ -98,6 +100,32 @@ export interface Module {
   title: Localized;
   hours: [number, number];
   lessons: LessonRef[];
+}
+
+/** Frontmatter урока: content/courses/<курс>/<модуль>/<slug>.mdx (docs/conventions/authoring.md, «MDX»). */
+export interface LessonFrontmatter {
+  id: string; // slug, совпадает с именем файла и записью в module.yaml
+  title: string;
+  number: string;
+  concepts: ConceptId[]; // понятия, которые урок вводит
+  minutes: number;
+  cs229?: CS229Ref[];
+  symbols?: SymbolSpec[]; // символы с ролями для \sym в разовых формулах урока
+}
+
+/** Термин глоссария: content/glossary.yaml. */
+export interface GlossaryEntry {
+  id: string;
+  ru: string;
+  en: string;
+  note?: Localized;
+}
+
+/** Переименования: content/redirects.yaml, «старое → новое». Записи не удаляются. */
+export interface Redirects {
+  concepts?: Record<string, ConceptId>;
+  lessons?: Record<string, LessonKey>;
+  formulas?: Record<string, RuleId | FormulaId>;
 }
 
 /** Курс: content/courses/<id>/course.yaml. Каталог курсов — docs/program/catalog.md. */

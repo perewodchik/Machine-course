@@ -4,7 +4,8 @@
 
 ## Главное
 
-- **Модель контента** — `src/lib/content/types.ts` (источник истины для схем). Схемы Zod 4 — в `src/content.config.ts`, коллекции через `glob()` из `content/`.
+- **Модель контента** — `src/lib/content/types.ts` (источник истины для схем). Схемы Zod 4 — `src/lib/content/schemas.ts` (сообщения по-русски), коллекции — `src/content.config.ts`: `glob()` из `content/`, свои загрузчики для понятий (списки в нескольких файлах) и переименований. Чтение и проверка вне Astro — `src/lib/content/files.ts` (`readYaml`, `validate`, `validateList`; ошибка «файл: поле: причина»); битые примеры — `tests/fixtures/content/`.
+- **ID записей коллекций:** курс — `foundations`; модуль — `<курс>/<модуль>`; урок — `LessonKey`; понятие, правило, формула, термин — свой `id`. Дерево курса для страниц — `loadCatalog()` (`src/lib/content/collections.ts`).
 - **Коллекции:** курсы (`content/courses/*/course.yaml`: математика `foundations` и курсы ML — `docs/program/catalog.md`), модули (`<курс>/<модуль>/module.yaml`, порядок уроков здесь), уроки (`<курс>/<модуль>/<slug>.mdx`; ключ урока — `<курс>/<модуль>/<slug>`, тип `LessonKey`), понятия (`content/concepts/*.yaml`), правила и формулы (`content/formulas/**`), глоссарий, переименования (`content/redirects.yaml`).
 - **YAML:** только блочный стиль; TeX в `'…'` или `|`. В `"…"` обратный слеш портит TeX (`"\theta"` → табуляция + `heta`). Текст с «: » — в кавычках.
 - **Символы с ролями** в TeX — макрос `\sym{name}{tex}`; `name` объявлен в `symbols` формулы (или в frontmatter урока). Роли: `data` → `s1` бирюза, `param` → `s2` оранжевый, `target` → `s3` пурпур, `aux` → `s4` карандаш. Не больше трёх цветных ролей.

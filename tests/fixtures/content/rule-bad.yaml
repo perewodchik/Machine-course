@@ -1,0 +1,9 @@
+# Битое правило: пустой список проверок
+id: rule.bad
+kind: rule
+title:
+  ru: 'Плохое правило'
+statement: 'A = A'
+symbols: []
+concept: la.matmul
+checks: []

@@ -17,6 +17,15 @@
 
 ---
 
+### 2026-10-14 — S1.06 коллекции контента и схемы — готова
+- **Сделано:** src/lib/content/schemas.ts (вкл. запрет управляющих символов в TeX — ловушка двойных кавычек YAML, проверку подцелей и check у шагов вывода), src/lib/content/files.ts (readYaml/validate/validateList с ошибкой «файл: поле: причина»), src/content.config.ts (свои загрузчики понятий и переименований), schemas.test.ts, tests/fixtures/content/*. Типы: Rule.corollary (уже было в YAML), LessonFrontmatter, GlossaryEntry, Redirects. @types/node 22, yaml 2.9.1.
+- **Файлы:** src/lib/content/{schemas,files,types}.ts, src/content.config.ts, src/lib/content/schemas.test.ts, tests/fixtures/content/*, docs/implementation/context/content-pipeline.md
+- **Проверка:** vitest 72 passed, astro check 0, lint, build (битый контент роняет сборку с файлом и полем — проверено вручную), e2e 45, pytest 27, check_consistency
+- **Отклонения от плана и решения:** Уроков MDX пока нет: сборка предупреждает «No files found matching */*/*.mdx» — уйдёт с первым уроком (S2).
+- **Где остановился:** —
+- **Следующий шаг:** S1.07.
+- **Вопросы пользователю:** —
+
 ### 2026-10-14 — S1.05 раскладка: шапка, оглавление, урок с полями — готова
 - **Сделано:** Коллекции courses и modules (src/content.config.ts, раньше S1.06), дерево курса src/lib/content/catalog.ts с тестами; номер курса в каталоге — поле number в course.yaml. Компоненты layout (шапка, оглавление, Know, иконки), src/client/layout.ts, src/styles/layout.css, токен --header-height. Страницы: каталог, курс, урок-заглушка, демо-урок. playwright.config.ts, tests/e2e (layout, axe, помощник скриншотов screens.spec.ts → test-screens/).
 - **Файлы:** src/content.config.ts, src/lib/content/{catalog,collections}.ts, src/components/layout/*, src/layouts/*, src/client/layout.ts, src/styles/layout.css, src/pages/**, playwright.config.ts, tests/e2e/*
