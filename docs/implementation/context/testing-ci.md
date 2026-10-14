@@ -21,6 +21,16 @@
 
 Без тестов команды завершаются с кодом 0: `vitest run --passWithNoTests`, `playwright test --pass-with-no-tests`. Код выхода проверять (`; echo $?`), а не только вывод.
 
+## CI (`.github/workflows/`)
+
+| Workflow | Когда | Что |
+|---|---|---|
+| `ci.yml` | push в `main`, pull request, вручную | `site`: `npm ci`, lint, check, Vitest, validate, build; `e2e`: Playwright + axe в образе `mcr.microsoft.com/playwright:v1.56.1-noble`, отчёт артефактом при падении; `python`: pytest `code/`, сборка лабораторных, ученические ноутбуки совпадают с исходниками (`git diff --exit-code notebooks/`), nbmake, `check_consistency.py` |
+| `visual.yml` | push в `main`, pull request, вручную (`update`) | визуальная регрессия `/lab` в том же образе |
+| `weekly.yml` | понедельник 04:17 UTC, вручную | зависимости поднимаются до последних минорных (`npm-check-updates --target minor`, `pip install --upgrade`) и прогоняются проверки; упал — задача в план |
+
+Workflow с `workflow_dispatch` видны в Actions только после попадания в `main`.
+
 ## Playwright
 
 - `@playwright/test` **ровно 1.56.1**: его Chromium (chromium-1194) уже лежит в `/opt/pw-browsers`. Другая версия ищет другой браузер; тогда — `launchOptions.executablePath: '/opt/pw-browsers/chromium'`. `playwright install` не запускать.

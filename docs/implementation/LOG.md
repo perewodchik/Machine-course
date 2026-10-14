@@ -23,8 +23,17 @@
 - **Проверка:** npm run build, `npx wrangler deploy --dry-run`, `wrangler dev` + curl -I (COOP/COEP, кэш /_astro/*), npm test, lint, astro check
 - **Отклонения от плана и решения:** Pages → Workers (так создала проект панель Cloudflare). Build command `npm run build` общий для веток: сборки `main` падают до слияния (в заглушке нет package.json) — пользователь согласен.
 - **Где остановился:** заголовки на живом сайте не проверены — сеть среды не пускает к *.workers.dev.
-- **Следующий шаг:** S1.11.
+- **Следующий шаг:** S1.14.
 - **Вопросы пользователю:** прислать адрес сайта или скриншот сборки ветки, если упадёт.
+
+### 2026-10-14 — S1.11 CI — готова
+- **Сделано:** .github/workflows/ci.yml, .github/workflows/weekly.yml; раздел «CI» в context/testing-ci.md. Локально теми же командами: npm ci, lint, check, test (135), validate, build, CI=true test:e2e (88), pytest (27), build_notebooks + git diff notebooks/ + nbmake, check_consistency.
+- **Файлы:** .github/workflows/{ci,weekly}.yml, docs/implementation/context/testing-ci.md
+- **Проверка:** все команды workflow выполнены локально, код выхода 0
+- **Отклонения от плана и решения:** Workflow ещё ни разу не запускались на GitHub: ветка не main, а workflow_dispatch виден только из main — первый прогон будет на pull request. Версии actions (checkout@v4, setup-node@v4, setup-python@v5, upload-artifact@v4) не сверены с последними релизами: доступ к чужим репозиториям в этой сессии закрыт. S1.12 уже сделана другой сессией; S1.13 ждёт пользователя — следующей агентской задачей идёт S1.14 (итог этапа) или этап 2.
+- **Где остановился:** —
+- **Следующий шаг:** S1.14 (S1.13 ждёт пользователя).
+- **Вопросы пользователю:** —
 
 ### 2026-10-14 — S1.10 страница /lab и визуальные тесты — готова
 - **Сделано:** src/pages/lab.astro, src/styles/lab.css, src/design-system/tokens/read.ts (значения тем, контраст WCAG), tests/unit/tokens.test.ts (текст ≥ 4.5:1, рамки ≥ 3:1 в обеих темах, два блока тёмной темы совпадают), tests/e2e/lab.spec.ts, tests/visual/lab.spec.ts (VISUAL=1), playwright.config: testDir tests, snapshotPathTemplate, updateSnapshots none в CI; .github/workflows/visual.yml.
