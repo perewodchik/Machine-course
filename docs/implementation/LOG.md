@@ -23,8 +23,17 @@
 - **Проверка:** npm run build, `npx wrangler deploy --dry-run`, `wrangler dev` + curl -I (COOP/COEP, кэш /_astro/*), npm test, lint, astro check
 - **Отклонения от плана и решения:** Pages → Workers (так создала проект панель Cloudflare). Build command `npm run build` общий для веток: сборки `main` падают до слияния (в заглушке нет package.json) — пользователь согласен.
 - **Где остановился:** заголовки на живом сайте не проверены — сеть среды не пускает к *.workers.dev.
-- **Следующий шаг:** S1.14.
+- **Следующий шаг:** S2.01 (S1.14 ждёт согласия на pull request).
 - **Вопросы пользователю:** прислать адрес сайта или скриншот сборки ветки, если упадёт.
+
+### 2026-10-14 — S1.14 итог этапа 1 — нужен пользователь
+- **Сделано:** Этап 1 (S1.01–S1.12, кроме S1.13): Astro 7 + React-острова, Tailwind 4 из токенов, линтеры со слоями и токенами, раскладка урока с полями и оглавлением с галочками «знаю», коллекции и Zod-схемы всего content/, KaTeX-конвейер с ролями символов и типографом, валидатор контента, педагогические компоненты (Note, Block, Prereqs, Formula, Derivation), витрина /lab, CI (ci.yml, visual.yml, weekly.yml), заголовки Cloudflare Pages. Проверки: 135 юнит-тестов, 88 e2e с axe в обеих темах на 1440 и 390 px, валидатор, pytest, лабораторные. Скриншоты — docs/implementation/screens/stage1-*.png.
+- **Файлы:** docs/implementation/screens/stage1-lab-light.png, docs/implementation/screens/stage1-lesson-light.png
+- **Проверка:** все команды CI локально, код выхода 0
+- **Отклонения от плана и решения:** Ветка — docs/course-analysis, а не impl/stage-1: среда разрешает пуш только в неё. Открыто: S1.13 (подключить Cloudflare Pages — пользователь), эталоны визуальной регрессии (первый прогон visual.yml с update=true), версии GitHub Actions не сверены.
+- **Где остановился:** ждёт ответа о pull request; агент продолжает этап 2 (S2.01)
+- **Следующий шаг:** S2.01.
+- **Вопросы пользователю:** Открыть pull request docs/course-analysis → main с этапом 1? Подключите Cloudflare Pages по README («Хостинг»), если ещё не подключили.
 
 ### 2026-10-14 — S1.11 CI — готова
 - **Сделано:** .github/workflows/ci.yml, .github/workflows/weekly.yml; раздел «CI» в context/testing-ci.md. Локально теми же командами: npm ci, lint, check, test (135), validate, build, CI=true test:e2e (88), pytest (27), build_notebooks + git diff notebooks/ + nbmake, check_consistency.
