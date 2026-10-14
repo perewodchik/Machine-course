@@ -1,6 +1,8 @@
-# Программа курса: хэндбук понятий
+# Программа курса «Математика для машинного обучения»: хэндбук понятий
 
-Программа v0.2. Она одновременно план курса и справочник: у каждого урока есть карточка с целями, основными понятиями (RU/EN), ключевыми формулами, типичными ошибками и практикой. Из этих карточек на этапе 1 генерируются страница «Программа», справочник понятий и шпаргалки к разделам CS229.
+Это предисловие ко всему направлению. Машинное обучение — отдельные курсы: [`catalog.md`](catalog.md).
+
+Программа v0.3. Она одновременно план курса и справочник: у каждого урока есть карточка с целями, основными понятиями (RU/EN), ключевыми формулами, типичными ошибками и практикой. Из этих карточек на этапе 1 генерируются страница «Программа», справочник понятий и шпаргалки к разделам CS229.
 
 | Модуль | Файл | Уроков | Часов |
 |---|---|---|---|
@@ -9,8 +11,8 @@
 | II. Анализ и оптимизация | [`02-calculus.md`](02-calculus.md) | 10 | 22–26 |
 | III. Вероятность | [`03-probability.md`](03-probability.md) | 13 | 26–30 |
 | IV. Статистика | [`04-statistics.md`](04-statistics.md) | 8 | 18–22 |
-| V. Мост к ML | [`05-bridge.md`](05-bridge.md) | 9 | 20–26 |
-| **Итого** | | **61** | **≈ 122–148** |
+| V. Мост к ML | [`05-bridge.md`](05-bridge.md) | 2 | 4–6 |
+| **Итого** | | **54** | **≈ 106–128** |
 
 Интерактивы, игры и лабораторные по модулям — [`interactives.md`](interactives.md).
 
@@ -68,7 +70,7 @@ flowchart LR
 | II | Минимизируем функцию потерь градиентным спуском и методом Ньютона |
 | III | Шум в цене, распределение признаков, ковариация признаков |
 | IV | Оценки параметров, MLE, MAP, кросс-валидация |
-| V | Линейная и логистическая регрессия, GDA, PCA признаков |
+| V | Линейная регрессия тремя способами; дальше — курсы ML: регрессия и классификация («Основы»), GDA («Классические методы»), PCA («Без учителя») |
 
 ## Как читать карточку урока
 
@@ -84,22 +86,29 @@ flowchart LR
 
 ## Покрытие CS229
 
+Какие уроки математики нужны каждому разделу конспекта. Сами модели разбираются в курсах ML (`catalog.md`, «Покрытие CS229»).
+
 | Раздел конспекта CS229 | Что из курса нужно |
 |---|---|
 | Linear regression (LMS, normal equations, probabilistic interpretation, locally weighted regression) | I.3–I.8, II.1–II.6, III.7, IV.3, V.1 |
-| Classification and logistic regression (Newton's method, multi-class) | 0.5, II.5, II.7, III.6, IV.3, III.13, V.2 |
-| Generalized linear models | IV.5, V.3 |
-| Generative learning algorithms (GDA, Naive Bayes, Laplace smoothing) | III.2, III.11, IV.3, IV.4, IV.6, V.4 |
-| Kernel methods | I.2, I.10 (матрица Грама), III.1★ (число мономов), V.5 |
-| Support vector machines | I.8 (гиперплоскость), II.8, II.9★, V.5 |
-| Deep learning (backpropagation, vectorization) | 0.8, I.3 (адамарово произведение), II.2, II.3, V.6 |
-| Generalization (bias-variance, double descent) | IV.2, IV.7, I.11 (псевдообратная), III.8 (union bound, ★ Хёффдинг), V.7 |
-| Regularization and model selection | IV.6, IV.7, V.7 |
-| Clustering and k-means | II.6 (покоординатный спуск), V.8 |
-| The EM algorithm | III.5 (Йенсен), III.12, III.13, II.8, V.8 |
-| Principal components analysis | I.9–I.11, II.8, III.10, V.9 |
+| Classification and logistic regression (Newton's method, multi-class) | 0.5, II.5, II.7, III.6, IV.3, III.13 |
+| Generalized linear models | IV.5 |
+| Generative learning algorithms (GDA, Naive Bayes, Laplace smoothing) | III.2, III.11, IV.3, IV.4, IV.6 |
+| Kernel methods | I.2, I.10 (матрица Грама), III.1★ (число мономов) |
+| Support vector machines | I.8 (гиперплоскость), II.8, II.9★ |
+| Deep learning (backpropagation, vectorization) | 0.8, I.3 (адамарово произведение), II.2, II.3 |
+| Generalization (bias-variance, double descent) | IV.2, IV.7, I.11 (псевдообратная), III.8 (union bound, ★ Хёффдинг) |
+| Regularization and model selection | IV.6, IV.7 |
+| Clustering and k-means | II.6 (покоординатный спуск) |
+| The EM algorithm | III.5 (Йенсен), III.12, III.13, II.8 |
+| Principal components analysis | I.9–I.11, II.8, III.10 |
 | Independent components analysis | II.10, III.10, I.7 |
 | Reinforcement learning (основы) | 0.4 (геометрический ряд), III.9 (условное матожидание); ★ цепи Маркова — кандидат на курс ML |
+
+## Что изменилось в v0.3
+
+- Машинное обучение выделено в отдельные курсы (`catalog.md`). Модуль V сокращён до двух уроков: V.1 «Линейная регрессия тремя способами» и V.2 «Итоговая проверка: математика в выводах ML». Уроки V.2–V.9 v0.2 (логистическая регрессия, GLM, GDA и наивный Байес, ядра и SVM, обратное распространение, смещение и разброс, k-means и EM, PCA) переехали в курсы ML; старые адреса — в `content/redirects.yaml`.
+- Итого: 54 урока (52 обязательных), ≈ 106–128 часов.
 
 ## Что изменилось после ревью v0.1
 

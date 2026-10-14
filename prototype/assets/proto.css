@@ -58,6 +58,11 @@ code { font-family: var(--font-code); font-size: 0.86em; background: var(--paper
 }
 .site-header__inner { display: flex; align-items: center; gap: var(--space-5); height: 56px; padding: 0 var(--space-5); max-width: 1440px; margin: 0 auto; }
 .brand { display: flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; font-weight: 600; white-space: nowrap; }
+/* Каталог → текущий курс: знак и «Курсы ML» ведут в каталог, рядом название курса */
+.brand__name { color: var(--ink-2); font-weight: 500; }
+.crumb-sep { color: var(--ink-3); margin: 0 calc(-1 * var(--space-3)); }
+.course-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); font-weight: 600; text-decoration: none; }
+a.course-name:hover { color: var(--pen); }
 .brand:hover { color: var(--ink); }
 .brand__mark { flex: none; width: 22px; height: 22px; }
 .brand__mark .cell { stroke: var(--grid); }
@@ -359,6 +364,7 @@ pre.code { margin: 0; padding: var(--space-3) var(--space-4); font: 14px/1.65 va
   .toc { display: none; }
   .article-wrap { padding: var(--space-5) var(--space-4) var(--space-8); }
   .hide-narrow, .header-progress .progress { display: none; }
+  .brand__name, .crumb-sep { display: none; }
   .show-narrow { display: inline-flex; align-items: center; gap: 4px; }
   .site-header__inner { padding: 0 var(--space-4); gap: var(--space-3); }
   .figure__controls { grid-template-columns: minmax(0, 1fr); }

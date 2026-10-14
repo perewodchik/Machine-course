@@ -1,0 +1,19 @@
+# Модуль 2. Деревья и ансамбли. Порядок уроков задаётся здесь, а не именами файлов.
+id: trees-ensembles
+number: '2'
+title:
+  ru: 'Деревья и ансамбли'
+hours: [12, 15]
+lessons:
+  - slug: decision-trees
+    number: '2.1'
+    title: 'Деревья решений'
+  - slug: bagging-forests
+    number: '2.2'
+    title: 'Бэггинг и случайный лес'
+  - slug: boosting
+    number: '2.3'
+    title: 'Бустинг: AdaBoost и градиентный бустинг'
+  - slug: boosting-practice
+    number: '2.4'
+    title: 'Градиентный бустинг на практике'

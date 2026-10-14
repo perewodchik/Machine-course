@@ -1,0 +1,13 @@
+# Модуль 3. Теория обучения. Порядок уроков задаётся здесь, а не именами файлов.
+id: learning-theory
+number: '3'
+title:
+  ru: 'Теория обучения'
+hours: [6, 8]
+lessons:
+  - slug: sample-complexity
+    number: '3.1'
+    title: 'Сложность выборки: union bound, Хёффдинг, VC-размерность'
+  - slug: bayesian-ml
+    number: '3.2'
+    title: 'Байесовский взгляд: апостериорное, MAP и регуляризация'

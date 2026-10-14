@@ -94,11 +94,26 @@ export interface LessonRef {
 
 export interface Module {
   id: string;
-  number: string;
+  number: string; // «II» в курсе математики, «1» в курсах ML
   title: Localized;
   hours: [number, number];
   lessons: LessonRef[];
 }
+
+/** Курс: content/courses/<id>/course.yaml. Каталог курсов — docs/program/catalog.md. */
+export interface Course {
+  id: string; // «foundations», «ml-basics», …
+  title: Localized;
+  summary: Localized;
+  cs229Edition: string;
+  /** Курсы, на уроки которых ссылаются строки «Опирается на». */
+  requires?: string[];
+  throughline?: string;
+  modules: string[]; // ID модулей по порядку
+}
+
+/** Ключ урока во всех курсах: «<курс>/<модуль>/<slug>», например «ml-basics/linear-models/logistic-regression». */
+export type LessonKey = `${string}/${string}/${string}`;
 
 /**
  * Галочка «знаю» у урока — одна булева отметка (см. docs/conventions/pedagogy.md, «Прогресс: галочка „знаю“»).
@@ -112,5 +127,5 @@ export interface LessonMark {
   at: string;
 }
 
-/** Прогресс ученика: отметки по слагам уроков (`<module>/<slug>`). */
-export type LessonMarks = Record<string, LessonMark>;
+/** Прогресс ученика: отметки по ключам уроков. Отметка общая для всех курсов: урок математики, отмеченный из курса ML, отмечен и в курсе математики. */
+export type LessonMarks = Record<LessonKey, LessonMark>;

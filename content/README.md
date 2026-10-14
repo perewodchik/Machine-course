@@ -4,9 +4,9 @@
 
 | Путь | Что | Формат |
 |---|---|---|
-| `courses/foundations/course.yaml` | Курс: порядок модулей, издание CS229, сквозной кейс | YAML |
-| `courses/foundations/<модуль>/module.yaml` | Модуль: порядок уроков, номера, часы | YAML |
-| `courses/foundations/<модуль>/<slug>.mdx` | Урок (появятся на этапе 2) | MDX |
+| `courses/<курс>/course.yaml` | Курс: порядок модулей, издание CS229, `requires`. Курсы: `foundations` (математика) и восемь курсов ML (`docs/program/catalog.md`) | YAML |
+| `courses/<курс>/<модуль>/module.yaml` | Модуль: порядок уроков, номера, часы | YAML |
+| `courses/<курс>/<модуль>/<slug>.mdx` | Урок (появятся на этапе 2); ключ урока — `<курс>/<модуль>/<slug>` | MDX |
 | `concepts/*.yaml` | Граф понятий: ID, пререквизиты, где вводится, ссылки на CS229 | YAML |
 | `formulas/rules/*.yaml` | Атомарные тождества с численной проверкой | YAML |
 | `formulas/<раздел>/*.yaml` | Формулы с выводами; каждый шаг проверяется в CI | YAML |

@@ -1,0 +1,20 @@
+# Модуль 2. Ядра и SVM. Порядок уроков задаётся здесь, а не именами файлов.
+id: kernels-svm
+number: '2'
+title:
+  ru: 'Ядра и SVM'
+hours: [12, 15]
+lessons:
+  - slug: kernels
+    number: '2.1'
+    title: 'Признаковые отображения и ядровой трюк'
+  - slug: kernel-properties
+    number: '2.2'
+    title: 'Свойства ядер и теорема Мерсера'
+    optional: true  # углубление: не блокирует прогресс
+  - slug: svm-margins
+    number: '2.3'
+    title: 'SVM: зазоры и оптимальный классификатор'
+  - slug: svm-dual
+    number: '2.4'
+    title: 'SVM: двойственная задача, мягкий зазор, SMO'

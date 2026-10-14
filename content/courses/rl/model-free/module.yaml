@@ -1,0 +1,13 @@
+# Модуль 2. Обучение без модели. Порядок уроков задаётся здесь, а не именами файлов.
+id: model-free
+number: '2'
+title:
+  ru: 'Обучение без модели'
+hours: [8, 11]
+lessons:
+  - slug: q-learning
+    number: '2.1'
+    title: 'TD-обучение и Q-обучение'
+  - slug: policy-gradient
+    number: '2.2'
+    title: 'Градиент стратегии (REINFORCE)'

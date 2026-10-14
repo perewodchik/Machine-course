@@ -98,7 +98,7 @@ function renderMath(root = document.body) {
       { left: "$$", right: "$$", display: true },
       { left: "\\(", right: "\\)", display: false },
     ],
-    macros: MACROS,
+    macros: { ...MACROS, ...(window.LESSON_MACROS || {}) }, // макросы урока дополняют общие
     trust: (ctx) => TRUSTED.has(ctx.command),
     // KaTeX ≥ 0.19 предупреждает о \htmlData, если strict не вернул ответ явно
     strict: (code) => (code === "htmlExtension" ? "ignore" : "warn"),
@@ -116,7 +116,7 @@ function initSymbols() {
   const all = (name) => document.querySelectorAll(`[data-sym="${name}"] .sym`);
   const open = (host) => {
     const name = host.dataset.symKey || host.closest("[data-sym]")?.dataset.sym;
-    const info = SYMBOLS[name];
+    const info = (window.LESSON_SYMBOLS || {})[name] || SYMBOLS[name];
     if (!info) return;
     all(name).forEach((el) => el.classList.add("is-lit"));
     pop.innerHTML = `<div class="sym-pop__head"><span class="s${info.slot}">\\(${info.tex}\\)</span><span class="sym-pop__shape">${info.shape}</span></div><div>${info.meaning}</div>`;
@@ -358,14 +358,17 @@ function initExercises() {
 function initKnow() {
   const boxes = [...document.querySelectorAll("input[data-know]")];
   if (!boxes.length) return;
+  // шапка показывает прогресс текущего курса; ключ урока — «<курс>:<номер>»
+  const progress = document.querySelector(".header-progress[data-course]");
+  const course = progress?.dataset.course;
   const totalEls = document.querySelectorAll("[data-known-total]");
   const bar = document.querySelector("[data-known-bar]");
-  const total = 59;
+  const total = Number(document.querySelector("[data-known-of]")?.textContent || 0);
   boxes.forEach((box) =>
     box.addEventListener("change", () => {
       // change приходит от ученика: состояние урока сменилось ровно на ±1
       boxes.filter((b) => b.dataset.know === box.dataset.know).forEach((b) => (b.checked = box.checked));
-      if (!box.hasAttribute("data-optional")) {
+      if (course && box.dataset.know.startsWith(`${course}:`) && !box.hasAttribute("data-optional") && total) {
         const n = Number(totalEls[0]?.textContent ?? 0) + (box.checked ? 1 : -1);
         totalEls.forEach((el) => (el.textContent = String(n)));
         if (bar) bar.style.width = `${Math.round((100 * n) / total)}%`;

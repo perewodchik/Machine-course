@@ -1,0 +1,25 @@
+# Модуль 1. Линейные модели. Порядок уроков задаётся здесь, а не именами файлов.
+id: linear-models
+number: '1'
+title:
+  ru: 'Линейные модели'
+hours: [20, 24]
+lessons:
+  - slug: learning-problem
+    number: '1.1'
+    title: 'Задача обучения: данные, модель, потери, обобщение'
+  - slug: linear-regression-lms
+    number: '1.2'
+    title: 'Линейная регрессия и LMS: пакетный и стохастический спуск'
+  - slug: features-lwr
+    number: '1.3'
+    title: 'Признаки, полиномы и локально взвешенная регрессия'
+  - slug: logistic-regression
+    number: '1.4'
+    title: 'Логистическая регрессия и метод Ньютона'
+  - slug: perceptron-softmax
+    number: '1.5'
+    title: 'Перцептрон и многоклассовая классификация'
+  - slug: glm
+    number: '1.6'
+    title: 'Обобщённые линейные модели'

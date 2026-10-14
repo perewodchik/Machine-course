@@ -1,0 +1,13 @@
+# Курс «Глубокое обучение». Порядок модулей задаётся здесь. Каталог курсов — docs/program/catalog.md.
+id: deep-learning
+title:
+  ru: 'Глубокое обучение'
+summary:
+  ru: 'Нейросети с нуля, обратное распространение, обучение сетей, PyTorch, свёрточные сети и перенос обучения'
+cs229Edition: main-notes-2026-spring
+# Курсы, на уроки которых ссылаются строки «Опирается на» (ключ урока — <курс>/<модуль>/<slug>).
+requires: [foundations, ml-basics]
+modules:
+  - nn-from-scratch
+  - training
+  - architectures

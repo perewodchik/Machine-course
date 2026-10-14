@@ -1,0 +1,20 @@
+# Модуль 1. Планирование в MDP. Порядок уроков задаётся здесь, а не именами файлов.
+id: planning
+number: '1'
+title:
+  ru: 'Планирование в MDP'
+hours: [11, 14]
+lessons:
+  - slug: mdp
+    number: '1.1'
+    title: 'Марковские процессы принятия решений'
+  - slug: value-policy-iteration
+    number: '1.2'
+    title: 'Итерация по ценности и по стратегиям'
+  - slug: model-learning-continuous
+    number: '1.3'
+    title: 'Обучение модели и непрерывные состояния'
+  - slug: lqr
+    number: '1.4'
+    title: 'LQR и дифференциальное динамическое программирование'
+    optional: true  # углубление: не блокирует прогресс

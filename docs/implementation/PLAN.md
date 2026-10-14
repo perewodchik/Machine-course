@@ -23,10 +23,15 @@
 | 2. Вертикальный срез | Уроки V.1, I.4, III.3 целиком; галочка «знаю», Python, игра | `[u]` Пилот на 6–10 человек, решение «продолжаем / нет» |
 | 3. Модули 0 и I + проверка решений | Диагностика, карта, ввод формул, проверка выводов по шагам | Ученик проходит ЛА от начала до конца |
 | 4. Модули II–IV | Анализ, вероятность, статистика | Итоговые проверки модулей |
-| 5. Модуль V и выход | Капстоуны, перенос на CS229, компаньон к конспекту | Выходные критерии `docs/program/README.md` |
+| 5. Модуль V и выход | V.1, итоговая проверка V.2, карта готовности к курсам ML, компаньон к конспекту | Выходные критерии `docs/program/README.md` |
 | 6. ИИ и сервер | Тьютор, синхронизация, аналитика на сервере | `[u]` Только после решения в `docs/analysis.md` §9 |
+| 7. Курс «Основы ML» | Каталог курсов на сайте, 11 уроков, проекты P1–P2 | Выходные критерии `docs/program/ml-basics/README.md`; PR этапа |
+| 8. «Табличные данные», «Глубокое обучение», «Практикум» | Карточки, уроки и проекты P4, P5, P9 | Выходные критерии курсов |
+| 9. LLM, «Без учителя», RL, «Классические методы» | Карточки, уроки и проекты P7, P6, P8, P3 | Выходные критерии курсов |
 
 Не делаем (решение заказчика 14.10.2026): поиск по сайту, интервальные повторения, уровни усвоения. Прогресс — булева галочка «знаю» на урок.
+
+Курсы — каталог из математики и восьми курсов ML (`docs/program/catalog.md`, ADR 0004). Маршруты и коллекции с уровнем курса закладываются на этапе 1.
 
 ---
 
@@ -82,7 +87,8 @@
 - **Зависит от:** S1.03
 - **Контекст:** `context/site-foundation.md`, `context/testing-ci.md`; эталон — `prototype/lesson.html`
 - **Сделать:**
-  - `BaseLayout`: шапка (название, прогресс «Знаю N из 59 уроков», тема), инлайн-скрипт темы и полей без мигания. Поиска и повторения нет.
+  - Маршруты с уровнем курса (ADR 0004): `/[course]`, `/[course]/[module]/[lesson]`; главная — список курсов из `content/courses/*`.
+  - `BaseLayout`: шапка (название, текущий курс, прогресс курса «Знаю N из M уроков», тема), инлайн-скрипт темы и полей без мигания. Поиска и повторения нет.
   - `LessonLayout`: оглавление с раскрывающимися модулями и чекбоксами «знаю» в левой колонке (выдвижное < 900 px), колонка текста, поля с красной линией, кнопка «Скрыть поля» с сохранением состояния, сворачивание заметок.
   - Playwright: `playwright.config.ts` (браузер из `/opt/pw-browsers`), `@axe-core/playwright`, помощник для скриншотов (1440/390 px × темы × поля).
   - Демо-урок с заглушечным текстом.
@@ -94,7 +100,7 @@
 - **Статус:** [ ]
 - **Зависит от:** S1.01
 - **Контекст:** `context/content-pipeline.md`
-- **Сделать:** Zod-схемы в `src/content.config.ts` по `src/lib/content/types.ts`; коллекции курса, модулей, уроков, понятий, правил, формул, глоссария, переименований из `content/`.
+- **Сделать:** Zod-схемы в `src/content.config.ts` по `src/lib/content/types.ts`; коллекции курсов (`content/courses/*`: математика и курсы ML), модулей, уроков (ключ `LessonKey` = `<курс>/<модуль>/<slug>`), понятий, правил, формул, глоссария, переименований из `content/`.
 - **Готово, когда:** Vitest проверяет схемы на текущем `content/` и на битых фикстурах (ошибка понятна: файл, поле, причина); `npm run build` проходит.
 - **Проверка:** `npm test && npm run build`
 - **Итог:** —
@@ -115,7 +121,7 @@
 - **Статус:** [ ]
 - **Зависит от:** S1.06, S1.07
 - **Контекст:** `context/content-pipeline.md`
-- **Сделать:** `scripts/validate-content.ts` и `npm run validate`: граф без циклов, все ID существуют, KaTeX (с макросами из `src/markdown/core`) компилирует каждый TeX, символы с ролями — через `\sym` и объявлены, ≤ 3 цветных ролей, у заметок есть подписи.
+- **Сделать:** `scripts/validate-content.ts` и `npm run validate`: граф без циклов, все ID существуют, KaTeX (с макросами из `src/markdown/core`) компилирует каждый TeX, символы с ролями — через `\sym` и объявлены, ≤ 3 цветных ролей, у заметок есть подписи; ключи уроков уникальны, `requires` курсов существуют, цели `redirects.yaml` существуют.
 - **Готово, когда:** текущий контент проходит; на каждую проверку есть фикстура, которую валидатор ловит.
 - **Проверка:** `npm run validate && npm test`
 - **Итог:** —
@@ -142,7 +148,7 @@
 - **Статус:** [ ]
 - **Зависит от:** S1.04, S1.08, S1.10
 - **Контекст:** `context/testing-ci.md`, `context/python-runtime.md`
-- **Сделать:** GitHub Actions: lint, check, Vitest, validate, build, Playwright + axe (в образе из S1.10); pytest `code/`; сборка лабораторных + nbmake; еженедельный прогон на свежих версиях пакетов.
+- **Сделать:** GitHub Actions: lint, check, Vitest, validate, build, Playwright + axe (в образе из S1.10); pytest `code/`; сборка лабораторных + nbmake; `python scripts/check_consistency.py`; еженедельный прогон на свежих версиях пакетов.
 - **Готово, когда:** все шаги проходят локально теми же командами; workflow лежит в `.github/workflows/`.
 - **Проверка:** выполнить команды workflow локально.
 - **Итог:** —
@@ -429,44 +435,34 @@
 
 ## Этап 5. Модуль V и выход
 
+### S5.01. Банк фрагментов для итоговой проверки V.2
+- **Статус:** [ ] · **Зависит от:** S4.L4 · **Контекст:** `context/pedagogy-components.md`, `context/content-authoring.md`
+- **Сделать:** фрагменты выводов из таблицы карточки `### V.2.` в `docs/program/05-bridge.md`: по 2–3 задания «какое правило применено», «восстанови строку», «найди ошибку» на фрагмент; свои формулировки, ссылка на раздел CS229 по изданию и названию; каждый подложенный вариант ошибки проверяется численно (`content/formulas`).
+- **Проверка:** `npm run validate && npm test && cd code && pytest` · **Итог:** —
+
 ### S5.L5. Уроки модуля V
-- **Статус:** [ ] · **Зависит от:** S4.L4
+- **Статус:** [ ] · **Зависит от:** S4.L4, S5.01
 - **Контекст для каждого урока:** `context/content-authoring.md` + карточка `### <номер>.` в `docs/program/05-bridge.md`.
 - **Готово, когда:** «Определение готовности урока» из `context/content-authoring.md`.
 - **Проверка:** `npm run validate && npm run build && cd code && pytest`
-- **Игры:** «Раздвинь коридор» (V.5), «Почини backprop» (V.6), «Ручной k-means» (V.8). **Лабораторная:** «PCA признаков квартир» (V.9).
 
 - [ ] L-V.1. Линейная регрессия тремя способами — `bridge/linear-regression` (сделан в S2.06: только проверить по определению готовности)
-- [ ] L-V.2. Логистическая регрессия — `bridge/logistic-regression`
-- [ ] L-V.3. Обобщённые линейные модели и softmax — `bridge/glm`
-- [ ] L-V.4. GDA и наивный Байес — `bridge/gda-naive-bayes`
-- [ ] L-V.5. Ядра и метод опорных векторов — `bridge/kernels-svm`
-- [ ] L-V.6. Двухслойная сеть и обратное распространение — `bridge/backprop`
-- [ ] L-V.7. Смещение, разброс и регуляризация — `bridge/bias-variance-regularization`
-- [ ] L-V.8. k-means и EM для смеси гауссиан — `bridge/kmeans-em`
-- [ ] L-V.9. Метод главных компонент — `bridge/pca`
-- [ ] Итоговая проверка модуля V: перемешанный набор задач уроков модуля (`ExerciseSet` из S2.03)
+- [ ] L-V.2. Итоговая проверка: математика в выводах ML — `bridge/math-in-ml`
 
-### S5.01. Итоговая проверка переноса на CS229
-- **Статус:** [ ] · **Зависит от:** S5.L5 · **Контекст:** `context/pedagogy-components.md`
-- **Сделать:** задания «восстановить пропущенный шаг» по разделам конспекта CS229 (свои формулировки, ссылка на раздел по изданию и названию).
-- **Проверка:** `npm run validate && npm test` · **Итог:** —
-
-### S5.02. Страница «Готов к CS229»
-- **Статус:** [ ] · **Зависит от:** S5.01 · **Контекст:** `context/progress-learning.md`
-- **Сделать:** выходные критерии из `docs/program/README.md` списком; у каждого — уроки и проверки, которые его подтверждают, и зелёная галочка, когда все они отмечены «знаю».
+### S5.02. Карта готовности к курсам ML
+- **Статус:** [ ] · **Зависит от:** S5.L5 · **Контекст:** `context/progress-learning.md`, `context/ml-courses.md`
+- **Сделать:** страница после V.2: выходные критерии курса математики и по каждому курсу ML — нужные уроки математики (раздел «Вход» в `docs/program/<курс>/README.md`) с чекбоксами «знаю» и итогом «готов / освежить N уроков».
 - **Проверка:** `npm test && npm run test:e2e` · **Итог:** —
 
 ### S5.03. Компаньон к конспекту CS229 (идея B3)
 - **Статус:** [ ] · **Зависит от:** S5.L5 · **Контекст:** `context/content-pipeline.md`
-- **Сделать:** страница на каждый раздел конспекта: уроки-пререквизиты с чекбоксами «знаю», карточки формул на шаги вывода, пятиминутная разминка перед чтением. Текст Stanford не копировать.
+- **Сделать:** страница на каждый раздел конспекта: уроки-пререквизиты всех курсов с чекбоксами «знаю», карточки формул на шаги вывода, пятиминутная разминка перед чтением. Текст Stanford не копировать.
 - **Проверка:** `npm run validate && npm run build` · **Итог:** —
 
 ### S5.04. Шпаргалки (идея B7)
 - **Статус:** [ ] · **Зависит от:** S5.L5 · **Контекст:** `context/content-pipeline.md`
 - **Сделать:** печатная страница по модулю и по разделу CS229 из уроков с галочкой «знаю»: формулы и типичные ошибки.
 - **Проверка:** `npm run build`; печать в PDF через Playwright · **Итог:** —
-
 ---
 
 ## Этап 6. ИИ и сервер
@@ -489,4 +485,284 @@
 
 ### S6.04. Синхронизация прогресса и аналитика на сервере (идея B8)
 - **Статус:** [u] · **Зависит от:** S6.01 · **Контекст:** `context/progress-learning.md`
+- **Итог:** —
+
+---
+
+## Этап 7. Курс «Основы ML»
+
+Первый курс направления ML (`docs/program/ml-basics/README.md`). Полные карточки уроков — `docs/program/ml-basics/01-linear-models.md`, `02-evaluation.md`.
+
+### S7.01. Каталог курсов на сайте
+- **Статус:** [ ] · **Зависит от:** S2.12 · **Контекст:** `context/ml-courses.md`, `context/site-foundation.md`, `context/progress-learning.md`
+- **Сделать:** главная — каталог курсов с графом и маршрутами (эталон — `prototype/courses.html`); страница курса `/[course]` (модули, прогресс, проекты); в шапке — текущий курс; «Опирается на» с уроками других курсов (название курса у ссылки); стор отметок по `LessonKey`, общий для всех курсов; миграция старых ключей `<модуль>/<slug>` курса математики.
+- **Готово, когда:** e2e: отметка урока математики в «Опирается на» урока ML видна в оглавлении курса математики; счётчик шапки — по текущему курсу; axe без ошибок.
+- **Проверка:** `npm test && npm run test:e2e` · **Итог:** —
+
+### S7.02. Данные курса и лицензии
+- **Статус:** [ ] · **Зависит от:** S1.11 · **Контекст:** `context/ml-courses.md`, `context/python-runtime.md`
+- **Сделать:** проверить лицензии California Housing и Bank Marketing, записать ADR; загрузчики `code/mlf/datasets.py` с контрольными суммами и кэшем; подвыборки для браузера (≤ 10⁴ строк) в `public/data/`.
+- **Готово, когда:** ADR принят; тесты загрузчиков (контрольные суммы, формы) зелёные.
+- **Проверка:** `cd code && pytest` · **Итог:** —
+
+### S7.03. Инфраструктура проектов
+- **Статус:** [ ] · **Зависит от:** S2.09 · **Контекст:** `context/ml-courses.md`, `context/python-runtime.md`
+- **Сделать:** шаблон ноутбука-проекта (Jupytext): этапы, ячейки автопроверки `mlf.check` (скрытые тесты функций, порог метрики на закрытой выборке, проверка, что тест не использован при выборе), шаблон отчёта; страница проекта на сайте с этапами и рубрикой.
+- **Готово, когда:** демонстрационный проект проходит автопроверку в CI (`nbmake`); подложенная утечка ловится.
+- **Проверка:** `python scripts/build_notebooks.py --solutions /tmp/nb && pytest --nbmake /tmp/nb` · **Итог:** —
+
+### S7.04. Виджет «Порог классификатора» и игра «Цена ошибки»
+- **Статус:** [ ] · **Зависит от:** S2.01 · **Контекст:** `context/widgets-games.md`, `context/ml-courses.md`; эталон — `prototype/ml-lesson.html`
+- **Сделать:** модель (матрица ошибок, ROC, PR, ожидаемая стоимость) с тестами против `code/snippets/ml_basics/threshold.py` (те же числа проверяет `code/tests/test_threshold.py`); данные — `scripts/export_widget_data.py`; представление на `_kit` по эталону прототипа; игра «Цена ошибки» по `GameSpec`.
+- **Готово, когда:** числа виджета совпадают с Python (AUC, лучший порог); клавиатура; axe без ошибок.
+- **Проверка:** `npm test && npm run test:e2e && cd code && pytest` · **Итог:** —
+
+### S7.L1. Уроки модуля 1 «Линейные модели»
+- **Статус:** [ ] · **Зависит от:** S7.01, S7.02
+- **Контекст для каждого урока:** `context/ml-courses.md`, `context/content-authoring.md` + карточка `### <номер>.` в `docs/program/ml-basics/01-linear-models.md`.
+- **Готово, когда:** «Определение готовности урока» из `context/content-authoring.md`; алгоритм реализован с нуля и сверен с библиотекой в `code/tests/`.
+- **Проверка:** `npm run validate && npm run build && cd code && pytest`
+
+- [ ] L-ml-basics-1.1. Задача обучения: данные, модель, потери, обобщение — `ml-basics/linear-models/learning-problem`
+- [ ] L-ml-basics-1.2. Линейная регрессия и LMS: пакетный и стохастический спуск — `ml-basics/linear-models/linear-regression-lms`
+- [ ] L-ml-basics-1.3. Признаки, полиномы и локально взвешенная регрессия — `ml-basics/linear-models/features-lwr`
+- [ ] L-ml-basics-1.4. Логистическая регрессия и метод Ньютона — `ml-basics/linear-models/logistic-regression`
+- [ ] L-ml-basics-1.5. Перцептрон и многоклассовая классификация — `ml-basics/linear-models/perceptron-softmax`
+- [ ] L-ml-basics-1.6. Обобщённые линейные модели — `ml-basics/linear-models/glm`
+- [ ] Итоговая проверка модуля 1 «Линейные модели»: перемешанный набор задач уроков модуля (`ExerciseSet`)
+
+### S7.L2. Уроки модуля 2 «Оценка и обобщение»
+- **Статус:** [ ] · **Зависит от:** S7.L1, S7.04
+- **Контекст для каждого урока:** `context/ml-courses.md`, `context/content-authoring.md` + карточка `### <номер>.` в `docs/program/ml-basics/02-evaluation.md`.
+- **Готово, когда:** «Определение готовности урока»; алгоритм сверен с библиотекой в `code/tests/`.
+- **Проверка:** `npm run validate && npm run build && cd code && pytest`
+- **Игры:** «Цена ошибки» (2.1, из S7.04), «Переобучи, если сможешь» (2.2–2.4; есть с урока IV.7 математики), «Найди утечку» (2.5) — по скиллу `new-game`.
+
+- [ ] L-ml-basics-2.1. Метрики классификации: порог, ROC, PR, калибровка — `ml-basics/evaluation/classification-metrics`
+- [ ] L-ml-basics-2.2. Смещение и разброс — `ml-basics/evaluation/bias-variance`
+- [ ] L-ml-basics-2.3. Регуляризация: L2 и L1 — `ml-basics/evaluation/regularization`
+- [ ] L-ml-basics-2.4. Выбор модели и кросс-валидация — `ml-basics/evaluation/model-selection`
+- [ ] L-ml-basics-2.5. Кривые обучения, анализ ошибок и утечки — `ml-basics/evaluation/ml-practice`
+- [ ] Итоговая проверка модуля 2 «Оценка и обобщение»: перемешанный набор задач уроков модуля (`ExerciseSet`)
+
+### S7.05. Проект P1 «Цена квартиры»
+- **Статус:** [ ] · **Зависит от:** S7.03, S7.L1 · **Контекст:** `context/ml-courses.md`, `context/python-runtime.md`
+- **Сделать:** ноутбук проекта по `docs/program/ml-basics/README.md`, раздел P1: этапы, автопроверки, отчёт; прогнать бейзлайн и заменить пометки «[уточнить по бейзлайну]» порогами.
+- **Готово, когда:** эталонное решение проходит все автопроверки; заготовка ученика — нет; подложенные ошибки (утечка масштабирования, подбор по тесту) ловятся.
+- **Проверка:** `python scripts/build_notebooks.py --solutions /tmp/nb && pytest --nbmake /tmp/nb` · **Итог:** —
+
+### S7.06. Проект P2 «Отклик на предложение банка»
+- **Статус:** [ ] · **Зависит от:** S7.03, S7.L2 · **Контекст:** `context/ml-courses.md`, `context/python-runtime.md`
+- **Сделать:** как S7.05, по разделу P2; автопроверка находит, что признак длительности звонка исключён, а порог выбран на валидации.
+- **Проверка:** `python scripts/build_notebooks.py --solutions /tmp/nb && pytest --nbmake /tmp/nb` · **Итог:** —
+
+### S7.07. Ревью и пилот курса
+- **Статус:** [ ] · **Зависит от:** S7.05, S7.06 · **Контекст:** `context/testing-ci.md`
+- **Сделать:** скриншоты всех страниц курса; скиллы `design-critique`, `accessibility-review`, `content-review`; исправить критичное. `[u]` Пилот курса — пользователь.
+- **Проверка:** все команды из `context/testing-ci.md` · **Итог:** —
+
+### S7.08. Итог этапа 7 и pull request
+- **Статус:** [ ] · **Зависит от:** S7.07 · **Контекст:** `docs/implementation/README.md`
+- **Сделать:** сводка этапа и скриншоты пользователю; pull request `impl/stage-7` → `main` после согласия.
+- **Итог:** —
+
+---
+
+## Этап 8. «Табличные данные», «Глубокое обучение», «Практикум»
+
+Для каждого курса: сначала карточки уроков по шаблону каталога, потом уроки, потом проект.
+
+### S8.01. Карточки «Табличных данных»
+- **Статус:** [ ] · **Зависит от:** S7.08 · **Контекст:** `context/ml-courses.md`, `context/content-authoring.md`
+- **Сделать:** `docs/program/ml-tabular/01-data-validation.md`, `02-trees-ensembles.md`, `03-delivery.md` по шаблону «Карточка урока ML» (`docs/program/catalog.md`) из программы `docs/program/ml-tabular/README.md`; затем скилл `content-review`; лицензия Default of Credit Card Clients — в ADR.
+- **Готово, когда:** у каждого урока есть карточка; ревью без критичных замечаний.
+- **Проверка:** `python scripts/check_consistency.py` · **Итог:** —
+
+### S8.LT. Уроки курса «ML на табличных данных»
+- **Статус:** [ ] · **Зависит от:** S8.01
+- **Контекст для каждого урока:** `context/ml-courses.md`, `context/content-authoring.md` + карточка в `docs/program/ml-tabular/`.
+- **Готово, когда:** «Определение готовности урока»; алгоритм сверен с библиотекой.
+- **Проверка:** `npm run validate && npm run build && cd code && pytest`
+- **Игры:** «Двадцать вопросов» (2.1), «Найди утечку» на табличных данных (1.2).
+
+- [ ] L-ml-tabular-1.1. Схемы валидации: группы, время, вложенная кросс-валидация — `ml-tabular/data-validation/validation-schemes`
+- [ ] L-ml-tabular-1.2. Признаки: категории, пропуски, даты, кодирование целевой — `ml-tabular/data-validation/feature-engineering`
+- [ ] L-ml-tabular-1.3. Несбалансированные классы и цена ошибок — `ml-tabular/data-validation/imbalanced-costs`
+- [ ] Итоговая проверка модуля 1 «Данные и валидация»: перемешанный набор задач уроков модуля (`ExerciseSet`)
+- [ ] L-ml-tabular-2.1. Деревья решений — `ml-tabular/trees-ensembles/decision-trees`
+- [ ] L-ml-tabular-2.2. Бэггинг и случайный лес — `ml-tabular/trees-ensembles/bagging-forests`
+- [ ] L-ml-tabular-2.3. Бустинг: AdaBoost и градиентный бустинг — `ml-tabular/trees-ensembles/boosting`
+- [ ] L-ml-tabular-2.4. Градиентный бустинг на практике — `ml-tabular/trees-ensembles/boosting-practice`
+- [ ] Итоговая проверка модуля 2 «Деревья и ансамбли»: перемешанный набор задач уроков модуля (`ExerciseSet`)
+- [ ] L-ml-tabular-3.1. Интерпретация: важность признаков, SHAP, частичная зависимость — `ml-tabular/delivery/interpretation`
+- [ ] L-ml-tabular-3.2. Калибровка, карточка модели и дрейф данных — `ml-tabular/delivery/model-handoff`
+- [ ] Итоговая проверка модуля 3 «Интерпретация и передача модели»: перемешанный набор задач уроков модуля (`ExerciseSet`)
+
+### S8.02. Проект P4 «Кредитный скоринг»
+- **Статус:** [ ] · **Зависит от:** S7.03, S8.LT · **Контекст:** `context/ml-courses.md`, `context/python-runtime.md`
+- **Сделать:** ноутбук по `docs/program/ml-tabular/README.md`, раздел P4; пороги по бейзлайну.
+- **Проверка:** `python scripts/build_notebooks.py --solutions /tmp/nb && pytest --nbmake /tmp/nb` · **Итог:** —
+
+### S8.03. Карточки «Глубокого обучения»
+- **Статус:** [ ] · **Зависит от:** S7.08 · **Контекст:** `context/ml-courses.md`, `context/content-authoring.md`
+- **Сделать:** `docs/program/deep-learning/01-nn-from-scratch.md`, `02-training.md`, `03-architectures.md` по шаблону каталога из программы курса; `content-review`; лицензии MNIST и предобученной сети — в ADR.
+- **Проверка:** `python scripts/check_consistency.py` · **Итог:** —
+
+### S8.LD. Уроки курса «Глубокое обучение»
+- **Статус:** [ ] · **Зависит от:** S8.03
+- **Контекст для каждого урока:** `context/ml-courses.md`, `context/content-authoring.md`, `context/widgets-games.md` + карточка в `docs/program/deep-learning/`.
+- **Готово, когда:** «Определение готовности урока»; градиенты проверены конечными разностями в `code/tests/`.
+- **Проверка:** `npm run validate && npm run build && cd code && pytest`
+- **Игры:** «Почини backprop» (1.2), «Собери сеть» (1.1).
+
+- [ ] L-deep-learning-1.1. Нейросеть: от нейрона к многослойной сети — `deep-learning/nn-from-scratch/neural-networks`
+- [ ] L-deep-learning-1.2. Обратное распространение и автодифференцирование — `deep-learning/nn-from-scratch/backprop`
+- [ ] L-deep-learning-1.3. Векторизация, мини-батчи и инициализация — `deep-learning/nn-from-scratch/vectorization-init`
+- [ ] Итоговая проверка модуля 1 «Нейросети с нуля»: перемешанный набор задач уроков модуля (`ExerciseSet`)
+- [ ] L-deep-learning-2.1. Оптимизаторы, нормализация и dropout — `deep-learning/training/optimizers-regularization`
+- [ ] L-deep-learning-2.2. Двойной спуск и неявная регуляризация — `deep-learning/training/double-descent`
+- [ ] L-deep-learning-2.3. От NumPy к PyTorch — `deep-learning/training/pytorch`
+- [ ] Итоговая проверка модуля 2 «Обучение сетей»: перемешанный набор задач уроков модуля (`ExerciseSet`)
+- [ ] L-deep-learning-3.1. Свёрточные сети — `deep-learning/architectures/convnets`
+- [ ] L-deep-learning-3.2. Остаточные связи и нормализация слоя — `deep-learning/architectures/residual-normalization`
+- [ ] L-deep-learning-3.3. Перенос обучения: предобученные сети и дообучение — `deep-learning/architectures/transfer-learning`
+- [ ] Итоговая проверка модуля 3 «Архитектуры»: перемешанный набор задач уроков модуля (`ExerciseSet`)
+
+### S8.04. Проект P5 «Цифры с нуля»
+- **Статус:** [ ] · **Зависит от:** S7.03, S8.LD · **Контекст:** `context/ml-courses.md`, `context/python-runtime.md`
+- **Сделать:** ноутбук по `docs/program/deep-learning/README.md`, раздел P5; этап с CNN — в Colab с GPU, в CI — укороченный прогон на CPU.
+- **Проверка:** `python scripts/build_notebooks.py --solutions /tmp/nb && pytest --nbmake /tmp/nb` · **Итог:** —
+
+### S8.05. Карточки и уроки «Практикума»
+- **Статус:** [ ] · **Зависит от:** S7.08 · **Контекст:** `context/ml-courses.md`, `context/content-authoring.md`
+- **Сделать:** `docs/program/ml-project/01-project.md` по шаблону каталога; уроки ниже; шаблоны заявки, журнала экспериментов и отчёта; страница проекта P9 с рубрикой и взаимной проверкой.
+- **Проверка:** `npm run validate && npm run build` · **Итог:** —
+
+- [ ] L-ml-project-1.1. Постановка задачи: метрика, бейзлайн, данные — `ml-project/project/framing`
+- [ ] L-ml-project-1.2. Цикл экспериментов: анализ ошибок и журнал — `ml-project/project/experiments`
+- [ ] L-ml-project-1.3. Отчёт и защита проекта — `ml-project/project/report`
+
+### S8.06. Итог этапа 8 и pull request
+- **Статус:** [ ] · **Зависит от:** S8.02, S8.04, S8.05 · **Контекст:** `docs/implementation/README.md`
+- **Сделать:** ревью трёх курсов (`design-critique`, `accessibility-review`, `content-review`), сводка и скриншоты пользователю; PR `impl/stage-8` → `main` после согласия.
+- **Итог:** —
+
+---
+
+## Этап 9. LLM, «Без учителя», RL, «Классические методы»
+
+Порядок курсов — по спросу после пилота; по умолчанию — как ниже.
+
+### S9.01. Карточки курса «Языковые модели и LLM»
+- **Статус:** [ ] · **Зависит от:** S8.06 · **Контекст:** `context/ml-courses.md`, `context/content-authoring.md`
+- **Сделать:** `docs/program/llm/01-language-models.md`, `02-working-with-llm.md` по шаблону каталога из программы `docs/program/llm/README.md`; `content-review`; лицензии данных и моделей — в ADR.
+- **Проверка:** `python scripts/check_consistency.py` · **Итог:** —
+
+### S9.LL. Уроки курса «Языковые модели и LLM»
+- **Статус:** [ ] · **Зависит от:** S9.01
+- **Контекст для каждого урока:** `context/ml-courses.md`, `context/content-authoring.md` + карточка в `docs/program/llm/`.
+- **Готово, когда:** «Определение готовности урока»; алгоритм сверен с библиотекой в `code/tests/`.
+- **Проверка:** `npm run validate && npm run build && cd code && pytest`
+- **Игры:** «Угадай следующий токен» (1.1).
+
+- [ ] L-llm-1.1. Языковые модели: токены, авторегрессия, перплексия — `llm/language-models/language-modeling`
+- [ ] L-llm-1.2. Эмбеддинги слов и текстов — `llm/language-models/embeddings`
+- [ ] L-llm-1.3. Трансформер и внимание — `llm/language-models/transformer`
+- [ ] L-llm-1.4. Предобучение и масштабирование — `llm/language-models/pretraining`
+- [ ] Итоговая проверка модуля 1 «Языковые модели»: перемешанный набор задач уроков модуля (`ExerciseSet`)
+- [ ] L-llm-2.1. Адаптация: дообучение, LoRA, обучение в контексте — `llm/working-with-llm/adaptation`
+- [ ] L-llm-2.2. Выравнивание по предпочтениям: RLHF и DPO ★ — `llm/working-with-llm/alignment`
+- [ ] L-llm-2.3. Поиск и генерация (RAG) и оценка LLM-систем — `llm/working-with-llm/rag-evaluation`
+- [ ] Итоговая проверка модуля 2 «Работа с LLM»: перемешанный набор задач уроков модуля (`ExerciseSet`)
+
+### S9.02. Проект P7 «Умный поиск по курсу»
+- **Статус:** [ ] · **Зависит от:** S7.03, S9.LL · **Контекст:** `context/ml-courses.md`, `context/python-runtime.md`
+- **Сделать:** ноутбук по `docs/program/llm/README.md`, раздел P7; пороги по бейзлайну.
+- **Проверка:** `python scripts/build_notebooks.py --solutions /tmp/nb && pytest --nbmake /tmp/nb` · **Итог:** —
+
+### S9.03. Карточки курса «Обучение без учителя и представления»
+- **Статус:** [ ] · **Зависит от:** S8.06 · **Контекст:** `context/ml-courses.md`, `context/content-authoring.md`
+- **Сделать:** `docs/program/unsupervised/01-clustering-latent.md`, `02-representations.md` по шаблону каталога из программы `docs/program/unsupervised/README.md`; `content-review`; лицензии данных и моделей — в ADR.
+- **Проверка:** `python scripts/check_consistency.py` · **Итог:** —
+
+### S9.LU. Уроки курса «Обучение без учителя и представления»
+- **Статус:** [ ] · **Зависит от:** S9.03
+- **Контекст для каждого урока:** `context/ml-courses.md`, `context/content-authoring.md` + карточка в `docs/program/unsupervised/`.
+- **Готово, когда:** «Определение готовности урока»; алгоритм сверен с библиотекой в `code/tests/`.
+- **Проверка:** `npm run validate && npm run build && cd code && pytest`
+- **Игры:** «Ручной k-means» (1.1).
+
+- [ ] L-unsupervised-1.1. Кластеризация и k-means — `unsupervised/clustering-latent/kmeans`
+- [ ] L-unsupervised-1.2. Смесь гауссиан и EM — `unsupervised/clustering-latent/gmm-em`
+- [ ] L-unsupervised-1.3. EM в общем виде: нижняя оценка правдоподобия — `unsupervised/clustering-latent/em-general`
+- [ ] L-unsupervised-1.4. Вариационный вывод и вариационный автокодировщик ★ — `unsupervised/clustering-latent/vae`
+- [ ] Итоговая проверка модуля 1 «Кластеризация и скрытые переменные»: перемешанный набор задач уроков модуля (`ExerciseSet`)
+- [ ] L-unsupervised-2.1. Метод главных компонент — `unsupervised/representations/pca`
+- [ ] L-unsupervised-2.2. Анализ независимых компонент ★ — `unsupervised/representations/ica`
+- [ ] L-unsupervised-2.3. Самообучение и контрастное обучение — `unsupervised/representations/self-supervised`
+- [ ] Итоговая проверка модуля 2 «Снижение размерности и представления»: перемешанный набор задач уроков модуля (`ExerciseSet`)
+
+### S9.04. Проект P6 «Сегменты клиентов»
+- **Статус:** [ ] · **Зависит от:** S7.03, S9.LU · **Контекст:** `context/ml-courses.md`, `context/python-runtime.md`
+- **Сделать:** ноутбук по `docs/program/unsupervised/README.md`, раздел P6; пороги по бейзлайну.
+- **Проверка:** `python scripts/build_notebooks.py --solutions /tmp/nb && pytest --nbmake /tmp/nb` · **Итог:** —
+
+### S9.05. Карточки курса «Обучение с подкреплением»
+- **Статус:** [ ] · **Зависит от:** S8.06 · **Контекст:** `context/ml-courses.md`, `context/content-authoring.md`
+- **Сделать:** `docs/program/rl/01-planning.md`, `02-model-free.md` по шаблону каталога из программы `docs/program/rl/README.md`; `content-review`; лицензии данных и моделей — в ADR.
+- **Проверка:** `python scripts/check_consistency.py` · **Итог:** —
+
+### S9.LR. Уроки курса «Обучение с подкреплением»
+- **Статус:** [ ] · **Зависит от:** S9.05
+- **Контекст для каждого урока:** `context/ml-courses.md`, `context/content-authoring.md` + карточка в `docs/program/rl/`.
+- **Готово, когда:** «Определение готовности урока»; алгоритм сверен с библиотекой в `code/tests/`.
+- **Проверка:** `npm run validate && npm run build && cd code && pytest`
+- **Игры:** «Настрой награду» (1.1).
+
+- [ ] L-rl-1.1. Марковские процессы принятия решений — `rl/planning/mdp`
+- [ ] L-rl-1.2. Итерация по ценности и по стратегиям — `rl/planning/value-policy-iteration`
+- [ ] L-rl-1.3. Обучение модели и непрерывные состояния — `rl/planning/model-learning-continuous`
+- [ ] L-rl-1.4. LQR и дифференциальное динамическое программирование ★ — `rl/planning/lqr`
+- [ ] Итоговая проверка модуля 1 «Планирование в MDP»: перемешанный набор задач уроков модуля (`ExerciseSet`)
+- [ ] L-rl-2.1. TD-обучение и Q-обучение — `rl/model-free/q-learning`
+- [ ] L-rl-2.2. Градиент стратегии (REINFORCE) — `rl/model-free/policy-gradient`
+- [ ] Итоговая проверка модуля 2 «Обучение без модели»: перемешанный набор задач уроков модуля (`ExerciseSet`)
+
+### S9.06. Проект P8 «Агент»
+- **Статус:** [ ] · **Зависит от:** S7.03, S9.LR · **Контекст:** `context/ml-courses.md`, `context/python-runtime.md`
+- **Сделать:** ноутбук по `docs/program/rl/README.md`, раздел P8; пороги по бейзлайну.
+- **Проверка:** `python scripts/build_notebooks.py --solutions /tmp/nb && pytest --nbmake /tmp/nb` · **Итог:** —
+
+### S9.07. Карточки курса «Классические методы»
+- **Статус:** [ ] · **Зависит от:** S8.06 · **Контекст:** `context/ml-courses.md`, `context/content-authoring.md`
+- **Сделать:** `docs/program/ml-classic/01-generative.md`, `02-kernels-svm.md`, `03-learning-theory.md` по шаблону каталога из программы `docs/program/ml-classic/README.md`; `content-review`; лицензии данных и моделей — в ADR.
+- **Проверка:** `python scripts/check_consistency.py` · **Итог:** —
+
+### S9.LC. Уроки курса «Классические методы»
+- **Статус:** [ ] · **Зависит от:** S9.07
+- **Контекст для каждого урока:** `context/ml-courses.md`, `context/content-authoring.md` + карточка в `docs/program/ml-classic/`.
+- **Готово, когда:** «Определение готовности урока»; алгоритм сверен с библиотекой в `code/tests/`.
+- **Проверка:** `npm run validate && npm run build && cd code && pytest`
+- **Игры:** «Раздвинь коридор» (2.3), «Генеративный или дискриминативный» (1.1).
+
+- [ ] L-ml-classic-1.1. Генеративные и дискриминативные модели: GDA — `ml-classic/generative/gda`
+- [ ] L-ml-classic-1.2. Наивный Байес и классификация текстов — `ml-classic/generative/naive-bayes`
+- [ ] Итоговая проверка модуля 1 «Генеративные модели»: перемешанный набор задач уроков модуля (`ExerciseSet`)
+- [ ] L-ml-classic-2.1. Признаковые отображения и ядровой трюк — `ml-classic/kernels-svm/kernels`
+- [ ] L-ml-classic-2.2. Свойства ядер и теорема Мерсера ★ — `ml-classic/kernels-svm/kernel-properties`
+- [ ] L-ml-classic-2.3. SVM: зазоры и оптимальный классификатор — `ml-classic/kernels-svm/svm-margins`
+- [ ] L-ml-classic-2.4. SVM: двойственная задача, мягкий зазор, SMO — `ml-classic/kernels-svm/svm-dual`
+- [ ] Итоговая проверка модуля 2 «Ядра и SVM»: перемешанный набор задач уроков модуля (`ExerciseSet`)
+- [ ] L-ml-classic-3.1. Сложность выборки: union bound, Хёффдинг, VC-размерность — `ml-classic/learning-theory/sample-complexity`
+- [ ] L-ml-classic-3.2. Байесовский взгляд: апостериорное, MAP и регуляризация — `ml-classic/learning-theory/bayesian-ml`
+- [ ] Итоговая проверка модуля 3 «Теория обучения»: перемешанный набор задач уроков модуля (`ExerciseSet`)
+
+### S9.08. Проект P3 «Фильтр сообщений»
+- **Статус:** [ ] · **Зависит от:** S7.03, S9.LC · **Контекст:** `context/ml-courses.md`, `context/python-runtime.md`
+- **Сделать:** ноутбук по `docs/program/ml-classic/README.md`, раздел P3; пороги по бейзлайну.
+- **Проверка:** `python scripts/build_notebooks.py --solutions /tmp/nb && pytest --nbmake /tmp/nb` · **Итог:** —
+
+### S9.09. Итог этапа 9 и pull request
+- **Статус:** [ ] · **Зависит от:** S9.02, S9.04, S9.06, S9.08 · **Контекст:** `docs/implementation/README.md`
+- **Сделать:** ревью курсов, сводка и скриншоты пользователю; PR `impl/stage-9` → `main` после согласия.
 - **Итог:** —

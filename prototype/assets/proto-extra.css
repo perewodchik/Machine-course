@@ -156,3 +156,4 @@
   .part__head { grid-template-columns: 2.2rem minmax(0, 1fr); }
   .part__meta { grid-column: 2; }
 }
+.next-courses { margin: var(--space-4) 0 0; font-size: var(--text-sm); color: var(--ink-2); }

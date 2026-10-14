@@ -1,0 +1,22 @@
+# Модуль 2. Оценка и обобщение. Порядок уроков задаётся здесь, а не именами файлов.
+id: evaluation
+number: '2'
+title:
+  ru: 'Оценка и обобщение'
+hours: [18, 22]
+lessons:
+  - slug: classification-metrics
+    number: '2.1'
+    title: 'Метрики классификации: порог, ROC, PR, калибровка'
+  - slug: bias-variance
+    number: '2.2'
+    title: 'Смещение и разброс'
+  - slug: regularization
+    number: '2.3'
+    title: 'Регуляризация: L2 и L1'
+  - slug: model-selection
+    number: '2.4'
+    title: 'Выбор модели и кросс-валидация'
+  - slug: ml-practice
+    number: '2.5'
+    title: 'Кривые обучения, анализ ошибок и утечки'

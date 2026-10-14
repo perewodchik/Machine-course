@@ -14,6 +14,7 @@
 | E2E и доступность | `npm run test:e2e` (Playwright + axe) |
 | Формулы и Python | `cd code && pytest` |
 | Лабораторные | `python scripts/build_notebooks.py --solutions /tmp/nb && pytest --nbmake /tmp/nb` |
+| Согласованность курсов, программы и плана | `python scripts/check_consistency.py` (работает и до S1.01) |
 
 Без тестов команды завершаются с кодом 0: `vitest run --passWithNoTests`, `playwright test --pass-with-no-tests`. Код выхода проверять (`; echo $?`), а не только вывод.
 

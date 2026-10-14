@@ -1,0 +1,17 @@
+# Модуль 2. Работа с LLM. Порядок уроков задаётся здесь, а не именами файлов.
+id: working-with-llm
+number: '2'
+title:
+  ru: 'Работа с LLM'
+hours: [11, 14]
+lessons:
+  - slug: adaptation
+    number: '2.1'
+    title: 'Адаптация: дообучение, LoRA, обучение в контексте'
+  - slug: alignment
+    number: '2.2'
+    title: 'Выравнивание по предпочтениям: RLHF и DPO'
+    optional: true  # углубление: не блокирует прогресс
+  - slug: rag-evaluation
+    number: '2.3'
+    title: 'Поиск и генерация (RAG) и оценка LLM-систем'

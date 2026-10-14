@@ -5,7 +5,7 @@
 ## Главное
 
 - **Модель контента** — `src/lib/content/types.ts` (источник истины для схем). Схемы Zod 4 — в `src/content.config.ts`, коллекции через `glob()` из `content/`.
-- **Коллекции:** курс (`content/courses/foundations/course.yaml`), модули (`*/module.yaml`, порядок уроков здесь), уроки (`*/<slug>.mdx`), понятия (`content/concepts/*.yaml`), правила и формулы (`content/formulas/**`), глоссарий, переименования (`content/redirects.yaml`).
+- **Коллекции:** курсы (`content/courses/*/course.yaml`: математика `foundations` и курсы ML — `docs/program/catalog.md`), модули (`<курс>/<модуль>/module.yaml`, порядок уроков здесь), уроки (`<курс>/<модуль>/<slug>.mdx`; ключ урока — `<курс>/<модуль>/<slug>`, тип `LessonKey`), понятия (`content/concepts/*.yaml`), правила и формулы (`content/formulas/**`), глоссарий, переименования (`content/redirects.yaml`).
 - **YAML:** только блочный стиль; TeX в `'…'` или `|`. В `"…"` обратный слеш портит TeX (`"\theta"` → табуляция + `heta`). Текст с «: » — в кавычках.
 - **Символы с ролями** в TeX — макрос `\sym{name}{tex}`; `name` объявлен в `symbols` формулы (или в frontmatter урока). Роли: `data` → `s1` бирюза, `param` → `s2` оранжевый, `target` → `s3` пурпур, `aux` → `s4` карандаш. Не больше трёх цветных ролей.
 - **KaTeX 0.19 при сборке.** Общий модуль `src/markdown/core` с настройками: макросы курса; `trust: (ctx) => ['\\htmlData','\\htmlClass'].includes(ctx.command)`; `strict: (code) => code === 'htmlExtension' ? 'ignore' : 'warn'`. Один и тот же модуль используют MDX и компонент `<Formula>`.

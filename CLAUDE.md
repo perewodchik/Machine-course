@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Интерактивный курс «Математика для машинного обучения» (русский язык): ЛА, анализ, вероятность, статистика и мост к Stanford CS229. Текущее состояние — блок «Сейчас» в `docs/implementation/PLAN.md`; пока сайт не собран (S1.01), работают только Python-проверки и статичный прототип.
+Интерактивные курсы на русском: «Математика для машинного обучения» (ЛА, анализ, вероятность, статистика, мост к Stanford CS229) — предисловие, и направление ML из восьми курсов по CS229 с проектами (`docs/program/catalog.md`, ADR 0004). Текущее состояние — блок «Сейчас» в `docs/implementation/PLAN.md`; пока сайт не собран (S1.01), работают только Python-проверки и статичный прототип.
 
 ## Работа по плану реализации
 
@@ -23,14 +23,15 @@
 | Прогресс (галочка «знаю»), аналитика | `context/progress-learning.md` | — |
 | Урок | `context/content-authoring.md` + карточка `### <номер>.` в `docs/program/` | `docs/program/*` целиком |
 | Проверки, CI, скриншоты | `context/testing-ci.md` | — |
+| Курсы ML (этапы 7–9) | `context/ml-courses.md` + программа курса `docs/program/<курс>/README.md` | `docs/program/catalog.md` целиком |
 | ИИ-тьютор (этап 6) | `context/ai-tutor.md` | — |
 
 ## Где что лежит
 
 - `docs/implementation/` — план реализации, журнал, пакеты контекста, стартовые промпты.
-- `docs/analysis.md` — решения и открытые вопросы; `docs/program/` — программа-хэндбук; `docs/conventions/` — соглашения; `docs/ideas.md` — идеи. Читать по ссылкам из пакетов контекста, а не целиком.
+- `docs/analysis.md` — решения и открытые вопросы; `docs/program/` — программа курса математики, `docs/program/catalog.md` и `docs/program/<курс>/` — курсы ML; `docs/conventions/` — соглашения; `docs/ideas.md` — идеи. Читать по ссылкам из пакетов контекста, а не целиком.
 - `src/design-system/` — токены и правила внешнего вида; `prototype/` — статичный прототип страниц.
-- `content/` — курс, модули, понятия, формулы с выводами (YAML); `code/` — Python-пакет `mlf`, сниппеты, тесты; `notebooks/` — лабораторные (Jupytext → ipynb).
+- `content/` — курсы (`content/courses/<курс>/`), модули, понятия, формулы с выводами (YAML); `code/` — Python-пакет `mlf`, сниппеты, тесты; `notebooks/` — лабораторные (Jupytext → ipynb).
 - `src/lib/content/types.ts` — модель контента; `src/games/_engine/types.ts` — контракт игры.
 
 ## Команды
@@ -41,6 +42,7 @@
 cd code && pip install -e ".[dev]" && pytest                     # формулы, выводы, сниппеты
 python scripts/build_notebooks.py --solutions /tmp/nb            # сборка лабораторных
 pytest --nbmake /tmp/nb                                          # лабораторные выполняются
+python scripts/check_consistency.py                              # курсы, карточки, план, ссылки
 npx http-server -p 8123 -c-1 .                                   # прототип: /prototype/
 ```
 
