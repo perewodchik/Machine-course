@@ -11,7 +11,7 @@ export default {
     ],
     "declaration-property-value-allowed-list": [
       // токен; рамка или боковая линия цветом токена; подчёркивание подсвеченного символа цветом его роли (currentColor)
-      { "box-shadow": ["none", "/^var\\(--/", "/^inset 0 0 0 1px var\\(--/", "/^inset [0-9]+px 0 0 var\\(--/", "/^inset 0 -[0-9]+px (currentColor|var\\(--)/"] },
+      { "box-shadow": ["none", "/^var\\(--/", "/^inset 0 0 0 1px var\\(--/", "/^inset [0-9]+px 0 0 var\\(--/", "/^inset 0 -[0-9]+px (currentColor|var\\(--)/", "/^0 0 0 1px var\\(--/"] },
       { message: "Тень — только токеном (var(--shadow-popover)) или линией цветом токена" },
     ],
     "color-no-invalid-hex": true,

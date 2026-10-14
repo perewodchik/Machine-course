@@ -1,0 +1,13 @@
+---
+// Заметка на полях: обязательная подпись. При скрытых полях сворачивается в строку с подписью (src/client/layout.ts).
+// teacher — пометка учителя красной ручкой, только рядом с типичной ошибкой.
+interface Props {
+  label: string;
+  teacher?: boolean;
+}
+const { label, teacher = false } = Astro.props;
+---
+<div class:list={["note", teacher && "note--teacher"]} role="note">
+  <span class="label">{label}</span>
+  <div class="note__body"><slot /></div>
+</div>

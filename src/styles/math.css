@@ -1,5 +1,5 @@
 /*
- * Формулы: роли символов, подсветка, изменения в выводе, легенда символов.
+ * Формулы: роли символов, подсветка, изменения в выводе. Легенда символов — pedagogy.css.
  * Перенесено из прототипа (prototype/assets/proto.css, «Символы в формулах»). Только токены.
  */
 @layer components {
@@ -19,22 +19,5 @@
   .katex-display { margin: var(--space-5) 0; overflow-x: auto; overflow-y: hidden; padding-block: 2px; }
   .katex-display > .katex { font-size: 1.12em; }
 
-  /* Легенда символов: кнопка на символ; фокус подсвечивает символ в формулах */
-  .sym-legend { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; margin: calc(-1 * var(--space-2)) 0 var(--space-5); padding: 0; font-family: var(--font-ui); font-size: var(--text-sm); }
-  .sym-key {
-    display: inline-flex; align-items: baseline; gap: 8px; min-height: 30px; padding: 3px 10px;
-    border: 1px solid var(--rule); border-radius: var(--radius-control); background: var(--surface);
-    font: inherit; color: var(--ink-2); text-align: left; cursor: help;
-  }
-  .sym-key:hover { border-color: var(--control-border); }
-  .sym-key.s1 .sym-key__tex { color: var(--sym-1-text); }
-  .sym-key.s2 .sym-key__tex { color: var(--sym-2-text); }
-  .sym-key.s3 .sym-key__tex { color: var(--sym-3-text); }
-  .sym-key.s4 .sym-key__tex { color: var(--ink-3); }
-  .sym-key.is-lit { background: var(--paper-2); border-color: var(--ink-3); }
-  .sym-key__meaning { color: var(--ink-2); }
-  .sym-key__shape { color: var(--ink-3); font-variant-numeric: tabular-nums; white-space: nowrap; }
-
-  @media (pointer: coarse) { .sym-key { min-height: var(--target-touch); } }
   @media (prefers-reduced-motion: reduce) { .sym { transition: none; } }
 }

@@ -6,7 +6,7 @@ import { unified } from "unified";
 import { VFile } from "vfile";
 import { describe, expect, it } from "vitest";
 import type { SymbolSpec } from "../../lib/content/types";
-import { assignRoles, renderTex, symbolNames } from "./katex";
+import { assignRoles, renderTex, symbolNames, texToText } from "./katex";
 import { rehypePlugins, remarkPlugins } from "./plugins";
 import { typograf } from "./typograf";
 
@@ -41,6 +41,11 @@ describe("роли символов", () => {
     expect(html).toContain('data-sym="y"><span class="enclosing sym s3"');
     expect(html).toContain('data-sym="eps"><span class="enclosing sym s4"');
     expect(html).toContain('class="katex-display"');
+  });
+
+  it("texToText даёт текст символа для доступного имени", () => {
+    expect(texToText("\\theta")).toBe("θ");
+    expect(texToText("X^\\top")).toBe("X⊤");
   });
 
   it("renderTex для компонентов даёт те же классы", () => {

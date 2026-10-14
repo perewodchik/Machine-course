@@ -1,0 +1,77 @@
+---
+// Вывод формулы из реестра: план из подцелей, шаги с обоснованием, режим «Сначала предсказать шаг».
+// Без JS видны все шаги; с JS (класс .js на <html> ставится до отрисовки) — шаги до start, остальные открываются кнопками.
+// Поведение — src/client/derivation.ts.
+import { loadRegistry, refLink } from "../../lib/content/registry";
+import { ru } from "../../lib/content/catalog";
+import { renderTex } from "../../markdown/core/katex";
+import { typograf } from "../../markdown/core/typograf";
+
+interface Props {
+  formula: string;
+  /** Индекс шага, открытого в начале (с нуля). */
+  start?: number;
+  /** Режим «Сначала предсказать шаг» включён в начале. */
+  predict?: boolean;
+}
+const { formula, start = 0, predict = true } = Astro.props;
+const reg = await loadRegistry();
+const f = reg.formulas.get(formula);
+if (!f) throw new Error(`<Derivation>: нет формулы «${formula}» в content/formulas`);
+if (!f.derivation) throw new Error(`<Derivation>: у формулы «${formula}» нет вывода`);
+const { plan, steps } = f.derivation;
+const first = Math.min(Math.max(start, 0), steps.length - 1);
+
+const NEXT = "Какой шаг дальше? Запишите сами, затем откройте его.";
+const LATER = "Откроется после предыдущего шага.";
+const stepClass = (i: number) => [i === first && "is-current", i > first && "is-pending", i > first && predict && "is-masked"];
+---
+<div class="derivation-box" data-derivation data-start={first} data-predict={predict ? "on" : "off"}>
+  <ol class="plan" aria-label="План вывода">
+    {plan.map((g, i) => <li class:list={[i === steps[first]!.goal && "is-current"]}>{typograf(g)}</li>)}
+  </ol>
+  <ol class="derivation" aria-label="Шаги вывода">
+    {steps.map((st, i) => (
+      <li class:list={["step", ...stepClass(i)]} data-goal={st.goal}>
+        <span class="step__n" aria-hidden="true">{i + 1}</span>
+        <div class="step__math" set:html={renderTex(st.tex, { symbols: f.symbols })} />
+        <div class="step__why">
+          {st.note && <>{typograf(ru(st.note))} </>}
+          {st.by.map((id) => {
+            const link = refLink(reg, id);
+            const rule = id.startsWith("rule.") ? reg.rules.get(id) : undefined;
+            return rule ? (
+              <details class="rule-ref">
+                <summary>{link.title}</summary>
+                <span class="rule-ref__body">
+                  <span set:html={renderTex(rule.statement, { display: true, symbols: rule.symbols })} />
+                  {rule.corollary && <span>{typograf(ru(rule.corollary))} </span>}
+                  {link.href && <a href={link.href}>Урок {link.lesson}</a>}
+                </span>
+              </details>
+            ) : link.href ? (
+              <a class="step__ref" href={link.href}>{link.title}, {link.lesson}</a>
+            ) : (
+              <span class="step__ref">{link.title}</span>
+            );
+          })}
+          {st.why && (
+            <details class="step__more">
+              <summary>Почему так?</summary>
+              {typograf(ru(st.why))}
+            </details>
+          )}
+        </div>
+        <p class="step__placeholder">{i === first + 1 ? NEXT : LATER}</p>
+      </li>
+    ))}
+  </ol>
+  <div class="derivation__controls">
+    <button class="btn btn--sm" type="button" data-prev disabled={first === 0}>Назад</button>
+    <button class="btn btn--sm btn--primary" type="button" data-next disabled={first === steps.length - 1}>Следующий шаг</button>
+    <button class="btn btn--sm btn--quiet" type="button" data-all disabled={first === steps.length - 1}>Показать все шаги</button>
+    <span class="spacer"></span>
+    <label class="switch"><input type="checkbox" data-predict-toggle checked={predict} />Сначала предсказать шаг</label>
+    <span class="muted num" data-pos aria-live="polite">Шаг {first + 1} из {steps.length}</span>
+  </div>
+</div>

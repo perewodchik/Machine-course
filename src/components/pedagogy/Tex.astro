@@ -1,0 +1,15 @@
+---
+// TeX на странице .astro (в MDX — $…$). Роли символов — из symbols, как в формулах реестра.
+// Передавайте TeX как tex={String.raw`\theta`}: в атрибуте tex="…" Astro превращает \t в табуляцию.
+import type { SymbolSpec } from "../../lib/content/types";
+import { renderTex } from "../../markdown/core/katex";
+
+interface Props {
+  tex: string;
+  display?: boolean;
+  symbols?: readonly SymbolSpec[];
+}
+const { tex, display = false, symbols } = Astro.props;
+if (/[\t\f\b\v\r]/.test(tex)) throw new Error(`<Tex>: в TeX управляющий символ — передайте его как tex={String.raw\`…\`}: «${tex}»`);
+---
+<Fragment set:html={renderTex(tex, { display, symbols })} />

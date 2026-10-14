@@ -1,0 +1,27 @@
+---
+// Педагогический блок: определение, теорема, интуиция, вывод, типичная ошибка, упражнение (docs/conventions/authoring.md, «Блоки»).
+// Заголовок стоит «врезкой» в начале первого абзаца; номер сквозной внутри урока и задаётся автором.
+const TITLES = {
+  definition: "Определение",
+  theorem: "Теорема",
+  intuition: "Интуиция",
+  derivation: "Вывод",
+  pitfall: "Типичная ошибка",
+  exercise: "Упражнение",
+} as const;
+
+interface Props {
+  kind: keyof typeof TITLES;
+  n?: number;
+  /** Свой заголовок вместо стандартного: «Сначала попробуйте сами», «Проверка». */
+  title?: string;
+}
+const { kind, n, title } = Astro.props;
+const heading = `${title ?? TITLES[kind]}${n ? `\u00a0${n}` : ""}.`;
+const escape = (t: string) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+const titleHtml = `<span class="block__title">${escape(heading)}</span>`;
+// заголовок — в начале первого абзаца, как в книге; если блок начинается не с абзаца — отдельной строкой
+const body = await Astro.slots.render("default");
+const html = /^\s*<p[\s>]/.test(body) ? body.replace(/^(\s*<p[^>]*>)/, `$1${titleHtml} `) : `<p>${titleHtml}</p>${body}`;
+---
+<div class:list={["block", `block--${kind}`]} set:html={html} />

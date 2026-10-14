@@ -28,7 +28,7 @@ dependsOn:
   rules: [rule.transpose-product, rule.scalar-transpose, rule.grad-linear, rule.grad-quadratic]
 
 conditions:
-  - tex: '\operatorname{rank} X = d'
+  - tex: '\operatorname{rank} \sym{X}{X} = d'
     why: 'Нужно для единственности решения. Без полного ранга любое решение XᵀXθ = Xᵀy всё равно глобальный минимум.'
     concept: la.rank
 
@@ -47,21 +47,21 @@ derivation:
         kind: same
         py: '0.5 * (X @ theta - y) @ (X @ theta - y)'
     - goal: 1
-      tex: '= \tfrac12 \left(\theta^\top X^\top X \theta - \theta^\top X^\top y - y^\top X \theta + y^\top y\right)'
+      tex: '= \tfrac12 \left(\sym{theta}{\theta}^\top \sym{X}{X}^\top \sym{X}{X} \sym{theta}{\theta} - \sym{theta}{\theta}^\top \sym{X}{X}^\top \sym{y}{y} - \sym{y}{y}^\top \sym{X}{X} \sym{theta}{\theta} + \sym{y}{y}^\top \sym{y}{y}\right)'
       by: [rule.transpose-product]
       note: 'Раскрыли скобки, (Xθ)ᵀ = θᵀXᵀ.'
       check:
         kind: same
         py: '0.5 * (theta @ X.T @ X @ theta - theta @ X.T @ y - y @ X @ theta + y @ y)'
     - goal: 1
-      tex: '= \tfrac12 \left(\theta^\top X^\top X \theta - \changed{2\, y^\top X \theta} + y^\top y\right)'
+      tex: '= \tfrac12 \left(\sym{theta}{\theta}^\top \sym{X}{X}^\top \sym{X}{X} \sym{theta}{\theta} - \changed{2\, \sym{y}{y}^\top \sym{X}{X} \sym{theta}{\theta}} + \sym{y}{y}^\top \sym{y}{y}\right)'
       by: [rule.scalar-transpose]
       note: 'θᵀXᵀy — число, а число равно своему транспонированию.'
       check:
         kind: same
         py: '0.5 * (theta @ X.T @ X @ theta - 2 * y @ X @ theta + y @ y)'
     - goal: 2
-      tex: '\nabla_{\theta} J = X^\top X \theta - X^\top y'
+      tex: '\nabla_{\sym{theta}{\theta}} J = \sym{X}{X}^\top \sym{X}{X} \sym{theta}{\theta} - \sym{X}{X}^\top \sym{y}{y}'
       by: [rule.grad-quadratic, rule.grad-linear]
       note: 'XᵀX симметрична, поэтому ∇(θᵀAθ) = 2Aθ.'
       check:
@@ -69,7 +69,7 @@ derivation:
         py: 'X.T @ X @ theta - X.T @ y'
         wrt: theta
     - goal: 3
-      tex: 'X^\top X \theta = X^\top y'
+      tex: '\sym{X}{X}^\top \sym{X}{X} \sym{theta}{\theta} = \sym{X}{X}^\top \sym{y}{y}'
       by: [calc.stationary-point, calc.convexity]
       note: 'Градиент в минимуме равен нулю; J выпукла, поэтому любое решение — глобальный минимум.'
       check:
@@ -77,7 +77,7 @@ derivation:
         lhs: 'X.T @ X @ theta'
         rhs: 'X.T @ y'
     - goal: 3
-      tex: '\theta^{\star} = (X^\top X)^{-1} X^\top y'
+      tex: '\sym{theta}{\theta}^{\star} = (\sym{X}{X}^\top \sym{X}{X})^{-1} \sym{X}{X}^\top \sym{y}{y}'
       by: [la.inverse, la.rank]
       note: 'Решение единственно, когда XᵀX обратима, то есть rank X = d.'
       check:

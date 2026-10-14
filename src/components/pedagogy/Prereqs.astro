@@ -1,0 +1,34 @@
+---
+// «Опирается на»: уроки-пререквизиты с галочкой «знаю». Урок другого курса подписан названием курса.
+import type { LessonKey } from "../../lib/content/types";
+import { loadRegistry } from "../../lib/content/registry";
+import Know from "../layout/Know.astro";
+
+interface Props {
+  lessons: LessonKey[];
+  /** Курс урока; по умолчанию — из адреса страницы (/<курс>/<модуль>/<урок>/). */
+  course?: string;
+}
+const { lessons, course } = Astro.props;
+const reg = await loadRegistry();
+const currentCourse = course ?? Astro.url.pathname.split("/")[1];
+const items = lessons.map((key) => {
+  const lesson = reg.lessonsByKey.get(key);
+  if (!lesson) throw new Error(`<Prereqs>: нет урока «${key}» (ключ — <курс>/<модуль>/<slug>)`);
+  return lesson;
+});
+---
+<div class="prereqs">
+  <span class="prereqs__label">Опирается на</span>
+  <ul>
+    {items.map((l) => (
+      <li>
+        <Know lesson={l} />
+        <span>
+          <a href={l.href}>{l.title}</a>{" "}
+          <span class="ref">{l.course !== currentCourse && `${reg.courseTitles.get(l.course)}, `}{l.number}</span>
+        </span>
+      </li>
+    ))}
+  </ul>
+</div>

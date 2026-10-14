@@ -28,6 +28,7 @@ const fullTitle = course ? `${title} — ${course.title}` : title;
     <script is:inline>
       (() => {
         const root = document.documentElement;
+        root.classList.add("js"); // компоненты с поведением прячут лишнее до отрисовки, без JS видно всё
         let theme, margins;
         try { theme = localStorage.getItem("theme"); margins = localStorage.getItem("margins"); } catch { /* приватный режим */ }
         if (theme === "light" || theme === "dark") root.dataset.theme = theme;
@@ -43,6 +44,8 @@ const fullTitle = course ? `${title} — ${course.title}` : title;
       import "../client/layout";
       import "../client/symbols";
       import "../client/scrollable";
+      import "../client/tabs";
+      import "../client/derivation";
     </script>
   </body>
 </html>

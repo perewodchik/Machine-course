@@ -1,12 +1,16 @@
 ---
-// Демо-урок с заглушечным текстом: проверка раскладки (e2e, скриншоты). Не индексируется.
-// Есть всё, что проверяют тесты: заметки на полях, широкие блоки (.wide), разделы в оглавлении.
+// Демо-урок: раскладка и педагогические компоненты на настоящих данных реестра (e2e, скриншоты). Не индексируется.
+// Есть всё, что проверяют тесты: заметки на полях, широкие блоки (.wide), разделы в оглавлении, формула с выводом.
 import LessonLayout from "../../layouts/LessonLayout.astro";
+import { Block, Formula, Note, Prereqs } from "../../components/pedagogy";
+import Tex from "../../components/pedagogy/Tex.astro";
 import { loadCourse } from "../../lib/content/collections";
+import { loadRegistry } from "../../lib/content/registry";
 
 const course = await loadCourse("foundations");
 const lesson = course.lessons.find((l) => l.key === "foundations/bridge/linear-regression");
 if (!lesson) throw new Error("демо-урок: нет урока foundations/bridge/linear-regression");
+const symbols = (await loadRegistry()).formulas.get("f.normal-equations")!.symbols;
 
 const headings = [
   { slug: "task", text: "Задача и данные" },
@@ -17,17 +21,13 @@ const headings = [
 const grid = Array.from({ length: 13 }, (_, i) => i * 81);
 ---
 <LessonLayout course={course} lesson={lesson} title="Демо-урок: раскладка" headings={headings} meta="Около 10 минут: страница для проверки раскладки." noindex>
-  <div class="note" role="note" slot="intro">
-    <span class="label">В CS229</span>
-    <div class="note__body">Здесь будет ссылка на раздел конспекта: издание и название раздела, без номера главы.</div>
-  </div>
+  <Note label="В CS229" slot="intro">Раздел «Linear regression»: <span class="note__term">the normal equations</span>.</Note>
   <p class="lead" slot="intro">Демонстрационная страница: заглушечный текст в&nbsp;колонке, заметки на&nbsp;полях, рисунок и&nbsp;карточка формулы во&nbsp;всю ширину колонки.</p>
 
+  <Prereqs lessons={["foundations/linear-algebra/orthogonality-projections", "foundations/calculus/matrix-calculus", "foundations/calculus/convexity", "ml-basics/evaluation/regularization"]} course="foundations" />
+
   <h2 id="task">Задача и данные</h2>
-  <div class="note" role="note">
-    <span class="label">Термин</span>
-    <div class="note__body">Заметка на&nbsp;полях стоит рядом с&nbsp;абзацем, к&nbsp;которому относится. Когда поля скрыты, она сворачивается в&nbsp;строку с&nbsp;подписью.</div>
-  </div>
+  <Note label="Термин">Заметка на&nbsp;полях стоит рядом с&nbsp;абзацем, к&nbsp;которому относится. Когда поля скрыты, она сворачивается в&nbsp;строку с&nbsp;подписью.</Note>
   <p>Колонка текста держит строку около семидесяти знаков: так глазу легко найти начало следующей строки. Справа от&nbsp;красной линии&nbsp;— поля тетради: термины, ссылки на&nbsp;конспект и&nbsp;короткие пояснения, которые не&nbsp;должны прерывать основной текст.</p>
   <p>Абзацы здесь&nbsp;— заглушка. Настоящий урок состоит из&nbsp;коротких циклов: вопрос, объяснение, проверка. На&nbsp;этой странице проверяется только раскладка: ширина колонки, линия полей, положение широких блоков и&nbsp;поведение оглавления на&nbsp;узком экране.</p>
 
@@ -44,13 +44,17 @@ const grid = Array.from({ length: 13 }, (_, i) => i * 81);
   <p>После рисунка текст продолжается в&nbsp;колонке. Заметка рядом с&nbsp;рисунком остаётся на&nbsp;полях и&nbsp;не&nbsp;сдвигает его вниз.</p>
 
   <h2 id="formula">Карточка формулы</h2>
-  <div class="note" role="note">
-    <span class="label">Почему так</span>
-    <div class="note__body">Карточки формул строятся из&nbsp;реестра <code>content/formulas</code>; здесь&nbsp;— только место под карточку.</div>
-  </div>
-  <section class="figure wide" aria-labelledby="demo-formula">
-    <p class="figure__caption" id="demo-formula"><b>Формула 1.</b> Место под карточку формулы: условие, символы, вывод по&nbsp;шагам.</p>
-  </section>
+  <Block kind="definition" n={1}>
+    <p>Оценка методом наименьших квадратов&nbsp;— вектор весов <Tex tex={String.raw`\sym{theta}{\theta}^{\star}`} symbols={symbols} />, при котором сумма квадратов остатков минимальна.</p>
+  </Block>
+  <Note label="Почему так">Карточка строится из&nbsp;реестра <code>content/formulas</code>: каждый шаг вывода проверен численно.</Note>
+  <Formula formula="f.normal-equations" n={1} start={2} />
+  <Block kind="pitfall">
+    <p>Забыть, что транспонирование меняет порядок множителей:</p>
+    <Tex display tex={String.raw`(\sym{X}{X}\sym{theta}{\theta})^\top = \struck{\;\sym{X}{X}^\top \sym{theta}{\theta}^\top\;}\;\; \fix{\sym{theta}{\theta}^\top \sym{X}{X}^\top}`} symbols={symbols} />
+    <p>Размерности ловят ошибку сразу: <Tex tex={String.raw`\sym{X}{X}^\top \sym{theta}{\theta}^\top`} symbols={symbols} />&nbsp;— это <Tex tex={String.raw`d \times n`} /> на&nbsp;<Tex tex={String.raw`1 \times d`} />, такое произведение не&nbsp;определено.</p>
+  </Block>
+  <Note label="Учитель" teacher>Проверяйте размерности до&nbsp;того, как раскрывать скобки.</Note>
   <p>Последний абзац перед итогом. Если поля скрыты, колонка текста стоит по&nbsp;центру, а&nbsp;заметки свёрнуты в&nbsp;строки и&nbsp;раскрываются по&nbsp;щелчку.</p>
 
   <h2 id="summary">Итог</h2>

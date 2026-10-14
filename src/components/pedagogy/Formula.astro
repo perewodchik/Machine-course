@@ -1,0 +1,103 @@
+---
+// Карточка формулы из реестра (content/formulas): утверждение, легенда символов кнопками, «Опирается на», условия,
+// вкладки «Вывод / Размерности / Где используется». Вкладки — src/client/tabs.ts, вывод — Derivation.
+import { loadRegistry, refLink } from "../../lib/content/registry";
+import { ru } from "../../lib/content/catalog";
+import { renderTex } from "../../markdown/core/katex";
+import { typograf } from "../../markdown/core/typograf";
+import Derivation from "./Derivation.astro";
+import SymbolLegend from "./SymbolLegend.astro";
+
+interface Props {
+  formula: string;
+  /** Номер формулы внутри урока: «Формула 4». */
+  n?: number;
+  /** Шаг вывода, открытый в начале (с нуля). */
+  start?: number;
+}
+const { formula, n, start } = Astro.props;
+const reg = await loadRegistry();
+const f = reg.formulas.get(formula);
+if (!f) throw new Error(`<Formula>: нет формулы «${formula}» в content/formulas`);
+
+const base = `formula-${f.id.slice(2)}${n ? `-${n}` : ""}`;
+const legend = f.symbols.filter((s) => s.meaning);
+// «Опирается на» — правила, из которых собран вывод; если правил нет — понятия
+const deps = (f.dependsOn.rules.length ? f.dependsOn.rules : f.dependsOn.concepts).map((id) => refLink(reg, id));
+// размеры как в численной проверке (code/mlf/formulas.py)
+const DIMS: Record<string, number> = { n: 7, d: 3, m: 4, k: 5, p: 2 };
+const shapes = f.symbols.filter((s) => s.shape?.length);
+const dimNames = [...new Set(shapes.flatMap((s) => s.shape!.filter((x): x is string => typeof x === "string")))];
+const uses = [
+  ...(f.usedIn ?? []).map((u) => {
+    const lesson = reg.lessonsByKey.get(u);
+    if (lesson) return { title: lesson.title, href: lesson.href, lesson: lesson.number };
+    return refLink(reg, u);
+  }),
+];
+const tabs = [
+  f.derivation && { id: "deriv", label: "Вывод" },
+  shapes.length > 0 && { id: "dims", label: "Размерности" },
+  (uses.length > 0 || (f.cs229?.length ?? 0) > 0) && { id: "uses", label: "Где используется" },
+].filter((t): t is { id: string; label: string } => !!t);
+---
+<section class="formula-card wide" aria-labelledby={`${base}-title`} data-formula={f.id}>
+  <p class="formula-card__head">{n && <span class="muted">Формула {n}</span>}<b id={`${base}-title`}>{f.title.ru}</b></p>
+  <div class="formula-card__statement" set:html={renderTex(f.statement, { display: true, symbols: f.symbols })} />
+  <div class="formula-card__meta">
+    {legend.length > 0 && <SymbolLegend symbols={legend} />}
+    {deps.length > 0 && (
+      <p>
+        <span class="k">Опирается на</span>
+        {deps.map((d, i) => (
+          <>{d.href ? <a href={d.href}>{d.title}</a> : d.title}{i < deps.length - 1 ? ", " : ""}</>
+        ))}
+      </p>
+    )}
+    {f.conditions?.map((c) => (
+      <p>
+        <span class="k">Условие</span>
+        <span set:html={renderTex(c.tex, { symbols: f.symbols })} />. {typograf(ru(c.why))}
+      </p>
+    ))}
+  </div>
+  {tabs.length > 0 && (
+    <div data-tabs>
+      <div class="tabs" role="tablist" aria-label={`${f.title.ru}: разделы`}>
+        {tabs.map((t, i) => (
+          <button class="tab" type="button" role="tab" id={`${base}-tab-${t.id}`} aria-controls={`${base}-panel-${t.id}`} aria-selected={i === 0 ? "true" : "false"} tabindex={i === 0 ? 0 : -1}>
+            {t.label}
+          </button>
+        ))}
+      </div>
+      {tabs.map((t, i) => (
+        <div class:list={["tab-panel", t.id === "dims" && "dims"]} id={`${base}-panel-${t.id}`} role="tabpanel" aria-labelledby={`${base}-tab-${t.id}`} data-inactive={i !== 0 ? "" : undefined}>
+          {t.id === "deriv" && <Derivation formula={f.id} start={start} />}
+          {t.id === "dims" && (
+            <>
+              <table>
+                <thead><tr><th scope="col">Символ</th><th scope="col">Смысл</th><th scope="col">Форма</th></tr></thead>
+                <tbody>
+                  {shapes.map((s) => (
+                    <tr>
+                      <td set:html={renderTex(s.tex, { symbols: [s] })} />
+                      <td>{s.meaning ? typograf(ru(s.meaning)) : "—"}</td>
+                      <td class="num">{s.shape!.join("\u202f×\u202f")}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <p>Каждый шаг вывода проверяется численно на&nbsp;случайных массивах этих форм: {dimNames.map((d) => `${d}\u00a0=\u00a0${DIMS[d] ?? "?"}`).join(", ")}.</p>
+            </>
+          )}
+          {t.id === "uses" && (
+            <ul class="uses">
+              {uses.map((u) => <li>{u.href ? <a href={u.href}>{u.title}</a> : u.title}{u.lesson && `, урок ${u.lesson}`}</li>)}
+              {f.cs229?.map((c) => <li>CS229, раздел «{c.section}»</li>)}
+            </ul>
+          )}
+        </div>
+      ))}
+    </div>
+  )}
+</section>

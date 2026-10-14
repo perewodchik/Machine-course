@@ -13,6 +13,9 @@ export const MACROS: Readonly<Record<string, string>> = {
   // символ с ролью: \symr{имя}{слот}{tex}; сюда переписывает assignRoles
   "\\symr": "\\htmlData{sym=#1}{\\htmlClass{sym s#2}{#3}}",
   "\\changed": "\\htmlClass{changed}{#1}",
+  // правка красной ручкой в «Типичной ошибке»: \struck{неверно} \fix{исправление}
+  "\\struck": "\\htmlClass{struck}{#1}",
+  "\\fix": "\\htmlClass{fix}{#1}",
   "\\T": "^{\\top}",
   "\\R": "\\mathbb{R}",
   "\\E": "\\mathbb{E}",
@@ -63,4 +66,14 @@ export function renderTex(tex: string, opts: { display?: boolean; symbols?: read
   } catch (e) {
     throw new Error(`KaTeX не разобрал формулу «${tex}»: ${e instanceof Error ? e.message : String(e)}`, { cause: e });
   }
+}
+
+/** Текст формулы для доступного имени (aria-label): символы из MathML KaTeX — «θ», «X⊤». */
+export function texToText(tex: string): string {
+  const mathml = katex.renderToString(tex, { ...katexOptions, output: "mathml" });
+  return mathml
+    .replace(/<annotation[\s\S]*?<\/annotation>/g, "")
+    .replace(/<[^>]+>/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
