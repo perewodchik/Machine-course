@@ -1,6 +1,6 @@
 # 0001. Стек сайта
 
-- Статус: предложено (ждёт ответов из `docs/analysis.md` §9)
+- Статус: принято (каркас S1.01–S1.07, 14.10.2026)
 - Дата: 2026-10-14
 
 ## Контекст
@@ -15,6 +15,17 @@
 - Примитивы в островах — Base UI через shadcn/ui; на статичных страницах — нативные `popover` с CSS anchor positioning и `<details>`.
 - KaTeX 0.19 при сборке; `trust` разрешает только `\htmlData` и `\htmlClass`, `strict` — функция; символы с ролями — макрос `\sym`.
 - Markdown-конвейер: на срезе — явный `unified()` (`@astrojs/markdown-remark`), логика KaTeX, `\sym` и Typograf — в модуле, не зависящем от процессора, чтобы позже перейти на Sätteri.
+
+### Конвейер (S1.07)
+
+`markdown.processor = unified({ remarkPlugins, rehypePlugins, smartypants: false })` в `astro.config.mjs`; MDX наследует его. Плагины и настройки — `src/markdown/core`:
+
+1. `remark-math` → `remarkSymbolRoles`: `\sym{name}{tex}` переписывается в `\symr{name}{слот}{tex}` по `symbols` из frontmatter (роль → `s1…s4`). Тот же `assignRoles` использует `renderTex` для компонентов, поэтому классы ролей одинаковы в MDX и в `<Formula>`.
+2. `rehype-katex` с `katexOptions` ядра (макросы курса, `trust` — только `\htmlData` и `\htmlClass`, `strict` — функция). KaTeX один на проект — 0.19.0 (`overrides` в `package.json`).
+3. `rehypeFailOnMathErrors`: `rehype-katex` при ошибке TeX лишь предупреждает — сборка падает с файлом и строкой.
+4. `rehypeTypograf`: только текстовые узлы; код, формулы и SVG не трогаются; правила, меняющие числа (десятичная запятая, разряды, дроби), выключены. `smartypants` выключен — кавычки «ёлочки» ставит типограф.
+
+Подсветка: атом `$activeSym` (`src/lib/state/highlight.ts`) и `src/client/symbols.ts` (делегирование `pointerover`/`focusin`, легенда — кнопки `data-sym-key`).
 - Визуализации — свой SVG-слой на d3-scale (`widgets/_kit`); Mafs сравнить на срезе.
 
 ## Последствия

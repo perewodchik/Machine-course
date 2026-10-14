@@ -10,7 +10,8 @@ export default {
       { message: "Цвета и градиенты — только через токены дизайн-системы" },
     ],
     "declaration-property-value-allowed-list": [
-      { "box-shadow": ["none", "/^var\\(--/", "/^inset 0 0 0 1px var\\(--/", "/^inset [0-9]+px 0 0 var\\(--/"] },
+      // токен; рамка или боковая линия цветом токена; подчёркивание подсвеченного символа цветом его роли (currentColor)
+      { "box-shadow": ["none", "/^var\\(--/", "/^inset 0 0 0 1px var\\(--/", "/^inset [0-9]+px 0 0 var\\(--/", "/^inset 0 -[0-9]+px (currentColor|var\\(--)/"] },
       { message: "Тень — только токеном (var(--shadow-popover)) или линией цветом токена" },
     ],
     "color-no-invalid-hex": true,

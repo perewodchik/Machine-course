@@ -12,7 +12,7 @@ const margins: Margins[] = ["visible", "hidden"];
 for (const [name, path] of Object.entries(layoutPages)) {
   for (const theme of themes) {
     // поля есть только у страниц урока
-    for (const m of name === "lesson" || name === "demo" ? margins : (["visible"] as const)) {
+    for (const m of name === "lesson" || name === "demo" || name === "math" ? margins : (["visible"] as const)) {
       test(`${name} ${theme} ${m}`, async ({ page }, info) => {
         await setMode(page, { theme, margins: m });
         await page.goto(path);

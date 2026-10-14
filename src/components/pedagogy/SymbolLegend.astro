@@ -1,0 +1,25 @@
+---
+// Легенда символов формулы: кнопки. KaTeX прячет HTML формулы от скринридеров (aria-hidden),
+// поэтому подсветка с клавиатуры идёт через фокус на легенде (src/client/symbols.ts).
+import type { SymbolSpec } from "../../lib/content/types";
+import { ROLE_SLOT, renderTex } from "../../markdown/core/katex";
+import { ru } from "../../lib/content/catalog";
+
+interface Props {
+  symbols: readonly SymbolSpec[];
+  label?: string;
+}
+const { symbols, label = "Символы формулы" } = Astro.props;
+const shape = (s: SymbolSpec) => (s.shape?.length ? s.shape.join(" × ") : undefined);
+---
+<ul class="sym-legend" aria-label={label}>
+  {symbols.map((s) => (
+    <li>
+      <button type="button" class:list={["sym-key", s.role && `s${ROLE_SLOT[s.role]}`]} data-sym-key={s.name}>
+        <span class="sym-key__tex" set:html={renderTex(s.tex)} />
+        {s.meaning && <span class="sym-key__meaning">{ru(s.meaning)}</span>}
+        {shape(s) && <span class="sym-key__shape">{shape(s)}</span>}
+      </button>
+    </li>
+  ))}
+</ul>

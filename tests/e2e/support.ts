@@ -5,12 +5,13 @@ import { expect, type Page } from "@playwright/test";
 export type Theme = "light" | "dark";
 export type Margins = "visible" | "hidden";
 
-/** Страницы, на которых проверяется раскладка: каталог, курс, заглушка урока, демо-урок. */
+/** Страницы, на которых проверяется раскладка: каталог, курс, заглушка урока, демо-урок, демо формул. */
 export const layoutPages = {
   home: "/",
   course: "/foundations/",
   lesson: "/foundations/bridge/linear-regression/",
   demo: "/demo/lesson/",
+  math: "/demo/math/",
 } as const;
 
 /** Ставит тему и поля в localStorage до загрузки страницы — как их оставил бы ученик. */
@@ -23,6 +24,10 @@ export async function setMode(page: Page, mode: { theme?: Theme; margins?: Margi
 
 /** Проверка axe по WCAG 2.2 A и AA; в сообщении — правило и селекторы, чтобы сразу найти элемент. */
 export async function expectNoAxeViolations(page: Page): Promise<void> {
+  // ширина формул и текста окончательна только после загрузки шрифтов
+  await page.evaluate(async () => {
+    await document.fonts.ready;
+  });
   const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"]).analyze();
   expect(violations.map((v) => `${v.id}: ${v.help} — ${v.nodes.map((n) => n.target.join(" ")).join(", ")}`)).toEqual([]);
 }

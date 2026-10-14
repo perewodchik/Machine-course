@@ -18,6 +18,7 @@
     "validate": "node -e \"console.log('validate: настраивается в S1.08')\""
   },
   "dependencies": {
+    "@astrojs/markdown-remark": "7.3.2",
     "@astrojs/mdx": "8.0.3",
     "@astrojs/react": "7.0.1",
     "@fontsource-variable/literata": "5.3.0",
@@ -25,9 +26,15 @@
     "@fontsource/ibm-plex-sans": "5.3.0",
     "@tailwindcss/vite": "4.3.3",
     "astro": "7.3.8",
+    "katex": "0.19.0",
+    "nanostores": "1.5.5",
     "react": "19.3.0",
     "react-dom": "19.3.0",
+    "rehype-katex": "7.0.1",
+    "remark-math": "6.0.0",
     "tailwindcss": "4.3.3",
+    "typograf": "7.8.0",
+    "unist-util-visit": "5.1.0",
     "yaml": "2.9.1"
   },
   "devDependencies": {
@@ -45,13 +52,18 @@
     "eslint-plugin-better-tailwindcss": "4.9.1",
     "eslint-plugin-boundaries": "7.2.0",
     "globals": "17.13.0",
+    "rehype-stringify": "10.0.1",
+    "remark-parse": "11.0.0",
+    "remark-rehype": "11.1.2",
     "stylelint": "17.16.0",
     "stylelint-config-standard": "40.0.0",
     "typescript": "6.0.3",
     "typescript-eslint": "8.71.2",
+    "unified": "11.0.5",
     "vitest": "5.0.4"
   },
   "overrides": {
-    "handlebars": "4.7.10"
+    "handlebars": "4.7.10",
+    "katex": "$katex"
   }
 }
