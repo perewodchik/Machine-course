@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-14 — S1.01 Проект Astro — готова
+- **Сделано:** Astro 7.3.8 с интеграциями React и MDX в корне; tsconfig strict; скрипты dev/build/preview/check/lint/test/test:e2e/validate (lint и validate — заглушки до S1.04 и S1.08); .nvmrc 22; команды в CLAUDE.md и 00-project.md.
+- **Файлы:** package.json, package-lock.json, astro.config.mjs, tsconfig.json, src/pages/index.astro, .gitignore
+- **Проверка:** npm ci && npm run build && npx astro check && npm test && npm run test:e2e && npm run validate && npm run lint → exit 0; astro check — 0 ошибок
+- **Отклонения от плана и решения:** Работаю в ветке docs/course-analysis, а не impl/stage-1: в этой облачной сессии разрешён пуш только в неё.
+- **Следующий шаг:** S1.02.
+- **Вопросы пользователю:** —
+
 ### 2026-10-14 — Каталог курсов: математика — предисловие, ML — восемь курсов
 - **Сделано:** ADR 0004; `docs/program/catalog.md`; восемь курсов ML в `content/courses/*` (60 уроков, 55 обязательных) с программами `docs/program/<курс>/README.md`; полные карточки «Основ ML» (11 уроков) и проекты P1–P2; модуль V математики — 2 урока, редиректы старых уроков; этапы 7–9 плана; пакет `context/ml-courses.md`; нотация курсов ML; `scripts/check_consistency.py`. Прототип: каталог `courses.html`, урок ML `ml-lesson.html` с виджетом «Порог классификатора», шапка с текущим курсом.
 - **Проверка:** `python scripts/check_consistency.py` → ok; `cd code && pytest` → 27 passed (числа урока ML закреплены `test_threshold.py`); прототип без ошибок в консоли, без горизонтальной прокрутки на 390 px.

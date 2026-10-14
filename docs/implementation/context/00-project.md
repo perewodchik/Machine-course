@@ -50,11 +50,12 @@
 
 ## Команды
 
-Полный список — `context/testing-ci.md`. До задачи S1.01 работают только эти:
+Полный список — `context/testing-ci.md`.
 
 ```bash
+npm ci && npm run build && npm run check                # сайт: сборка и типы
+npm test && npm run test:e2e                           # Vitest; Playwright + axe
 cd code && pip install -e ".[dev]" && pytest          # формулы, выводы, сниппеты
 python scripts/build_notebooks.py --solutions /tmp/nb && pytest --nbmake /tmp/nb
 python scripts/check_consistency.py                    # курсы, карточки, план, ссылки
-npx http-server -p 8123 -c-1 .                         # прототип: /prototype/
 ```

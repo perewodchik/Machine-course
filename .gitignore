@@ -9,6 +9,9 @@ __pycache__/
 node_modules/
 dist/
 .astro/
+test-results/
+playwright-report/
+blob-report/
 
 # Системное
 .DS_Store

@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Интерактивные курсы на русском: «Математика для машинного обучения» (ЛА, анализ, вероятность, статистика, мост к Stanford CS229) — предисловие, и направление ML из восьми курсов по CS229 с проектами (`docs/program/catalog.md`, ADR 0004). Текущее состояние — блок «Сейчас» в `docs/implementation/PLAN.md`; пока сайт не собран (S1.01), работают только Python-проверки и статичный прототип.
+Интерактивные курсы на русском: «Математика для машинного обучения» (ЛА, анализ, вероятность, статистика, мост к Stanford CS229) — предисловие, и направление ML из восьми курсов по CS229 с проектами (`docs/program/catalog.md`, ADR 0004). Текущее состояние — блок «Сейчас» в `docs/implementation/PLAN.md`. Сайт — Astro в корне репозитория (`src/`), прототип — `prototype/`.
 
 ## Работа по плану реализации
 
@@ -36,9 +36,15 @@
 
 ## Команды
 
-До S1.01 работают только эти; после неё полный список — `docs/implementation/context/testing-ci.md` (S1.01 обновляет этот раздел).
+Полный список и правила — `docs/implementation/context/testing-ci.md`.
 
 ```bash
+npm ci                                                           # зависимости сайта (Node 22, см. .nvmrc)
+npm run dev                                                      # сайт: http://localhost:4321
+npm run build && npm run check                                   # сборка и типы Astro
+npm test                                                         # Vitest
+npm run test:e2e                                                 # Playwright + axe
+npm run lint && npm run validate                                 # линтеры и валидатор контента (с S1.04 и S1.08)
 cd code && pip install -e ".[dev]" && pytest                     # формулы, выводы, сниппеты
 python scripts/build_notebooks.py --solutions /tmp/nb            # сборка лабораторных
 pytest --nbmake /tmp/nb                                          # лабораторные выполняются
