@@ -1,0 +1,18 @@
+---
+// Демо формул (S1.07): MDX через общее ядро src/markdown/core — роли символов, подсветка мышью и с легенды, типограф.
+import LessonLayout from "../../layouts/LessonLayout.astro";
+import { lessonComponents } from "../../components/pedagogy";
+import { loadCourse } from "../../lib/content/collections";
+import { Content, getHeadings } from "./_math.mdx";
+
+const course = await loadCourse("foundations");
+const lesson = course.lessons.find((l) => l.key === "foundations/bridge/linear-regression");
+if (!lesson) throw new Error("демо формул: нет урока foundations/bridge/linear-regression");
+const headings = getHeadings()
+  .filter((h) => h.depth === 2)
+  .map((h) => ({ slug: h.slug, text: h.text }));
+---
+<LessonLayout course={course} lesson={lesson} title="Демо: формулы и символы" headings={headings} noindex>
+  <p class="lead" slot="intro">Формулы из MDX собираются KaTeX при сборке, цвет символа задаёт его роль, а подсветка связывает символ в&nbsp;разных формулах.</p>
+  <Content components={lessonComponents} />
+</LessonLayout>

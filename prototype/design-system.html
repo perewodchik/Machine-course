@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Дизайн-система — Математика для ML</title>
+  <link rel="stylesheet" href="vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="assets/proto.css">
+  <link rel="stylesheet" href="assets/proto-extra.css">
+  <script defer src="vendor/katex/katex.min.js"></script>
+  <script defer src="vendor/katex/contrib/auto-render.min.js"></script>
+  <script defer src="assets/proto.js"></script>
+  <script defer src="assets/ds.js"></script>
+</head>
+<body>
+<!-- SPRITE:BEGIN -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-sun" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3"/><path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1 1M11.6 11.6l1 1M3.4 12.6l1-1M11.6 4.4l1-1"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 16 16"><path d="M13.5 9.5A5.5 5.5 0 0 1 6.5 2.5a5.5 5.5 0 1 0 7 7Z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 16 16"><path d="M2.5 4h11M2.5 8h11M2.5 12h7"/></symbol>
+  <symbol id="i-play" viewBox="0 0 16 16"><path d="M5 3.5v9l7-4.5-7-4.5Z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 16 16"><path d="m3.5 8.5 3 3 6-7"/></symbol>
+  <symbol id="i-x" viewBox="0 0 16 16"><path d="m4 4 8 8M12 4l-8 8"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></symbol>
+  <symbol id="st-passed" viewBox="0 0 14 14"><path d="m2.4 7.6 3 3 6.2-7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+<!-- SPRITE:END -->
+<!-- HEADER:BEGIN -->
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="courses.html" aria-label="Каталог курсов">
+      <svg class="brand__mark" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+        <path class="cell" d="M1 6h20M1 11h20M1 16h20M6 1v20M11 1v20M16 1v20" stroke-width="1"/>
+        <rect class="frame" x="1" y="1" width="20" height="20" rx="3" stroke-width="1.2"/>
+        <path class="vec" d="M3.5 17.5 18.5 5" stroke-width="1.8" stroke-linecap="round"/>
+        <circle class="dot" cx="6" cy="12.5" r="1.7"/><circle class="dot" cx="11" cy="12" r="1.7"/><circle class="dot" cx="15.5" cy="6.5" r="1.7"/>
+      </svg>
+      <span class="brand__name">Курсы ML</span>
+    </a>
+    <span class="crumb-sep" aria-hidden="true">/</span><a class="course-name" href="design-system.html">Дизайн-система</a>
+    <div class="header-progress">
+      <button class="icon-button theme-toggle" data-theme-toggle aria-label="Сменить тему">
+        <svg class="icon sun"><use href="#i-sun"/></svg><svg class="icon moon"><use href="#i-moon"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+<!-- HEADER:END -->
+<main class="ds">
+  <nav class="breadcrumb" aria-label="Путь"><a href="index.html">Курс</a><span aria-hidden="true">/</span><span>Витрина</span></nav>
+  <h1>Дизайн-система «Тетрадь в клетку»</h1>
+  <p class="lead intro">Курс выглядит как аккуратная рабочая тетрадь: белая бумага, клетка там, где есть координаты, поля с&nbsp;красной линией для заметок и&nbsp;три ручки с&nbsp;понятными ролями.</p>
+  <ol class="rules">
+    <li><b>Бумага, а не экран.</b> Холодный белый фон без крема и градиентов. Клетка появляется только внутри рисунков, где у неё есть смысл.</li>
+    <li><b>Поля тетради.</b> Красная линия отделяет текст от заметок, английских терминов и ссылок на CS229. На узком экране заметки встают в текст.</li>
+    <li><b>Синяя ручка&nbsp;— то, что делает ученик:</b> ссылки, кнопки, ползунки, ввод, упражнения. Красная&nbsp;— ошибки и поправки, зелёная&nbsp;— «верно» и&nbsp;галочка «знаю». Ручки никогда не красят символы.</li>
+    <li><b>Цвет символа закреплён за ролью</b> и совпадает в формуле и на рисунке. Цветов три, вспомогательное&nbsp;— карандашом.</li>
+    <li><b>Текст важнее интерфейса.</b> Literata для чтения, IBM Plex Sans для управления. Без заглавных меток, эмодзи и декоративных иконок.</li>
+    <li><b>Скругление растёт с размером:</b> 3&nbsp;px у метки, 6&nbsp;px у кнопки, 10&nbsp;px у рисунка. Теней нет, кроме всплывающих слоёв.</li>
+  </ol>
+
+  <section>
+    <h2>Цвет</h2>
+    <p class="intro">Значения читаются из токенов текущей темы. Контраст посчитан к&nbsp;фону страницы; для текста нужно не меньше 4.5:1, для рамок контролов&nbsp;— 3:1.</p>
+    <h3>Бумага и чернила</h3>
+    <div class="swatches" data-tokens="paper paper-2 surface grid ink ink-2 ink-3 rule control-border"></div>
+    <h3>Ручки и маркер</h3>
+    <div class="swatches" data-tokens="pen pen-strong pen-wash red-pen margin-line green-pen highlighter"></div>
+    <h3>Символы</h3>
+    <div class="swatches" data-tokens="sym-1 sym-1-text sym-2 sym-2-text sym-3 sym-3-text"></div>
+  </section>
+
+  <section>
+    <h2>Символы</h2>
+    <p class="intro">Три цвета, попарно различимые при дальтонизме в&nbsp;обеих темах и&nbsp;заметно отличные от ручек интерфейса. Урок назначает роли; ниже&nbsp;— роли по умолчанию для уроков про ML. Всё вспомогательное рисуется карандашом.</p>
+    <div class="sym-row">
+      <div class="sym-card"><div class="glyph s1">\(X\)</div><div class="bar" style="background:var(--sym-1)"></div>sym-1, бирюза: данные</div>
+      <div class="sym-card"><div class="glyph s2">\(\theta\)</div><div class="bar" style="background:var(--sym-2)"></div>sym-2, оранжевый: параметры</div>
+      <div class="sym-card"><div class="glyph s3">\(y\)</div><div class="bar" style="background:var(--sym-3)"></div>sym-3, пурпур: ответы</div>
+      <div class="sym-card"><div class="glyph s4">\(\varepsilon\)</div><div class="bar" style="background:var(--ink-3)"></div>карандаш: остатки, шум</div>
+    </div>
+    <div class="math-display">$$\th^{\star} = (\X\T\X)^{-1}\X\T\y \qquad \res = \y - \X\th$$</div>
+  </section>
+
+  <section>
+    <h2>Типографика</h2>
+    <div class="type-row"><div class="spec">H1, Plex Sans 600<br>40 / 46</div><div style="font:600 var(--text-3xl)/1.15 var(--font-ui);letter-spacing:-0.015em">Собственные векторы</div></div>
+    <div class="type-row"><div class="spec">H2, Plex Sans 600<br>25 / 31</div><div style="font:600 var(--text-xl)/1.25 var(--font-ui)">Способ 2. Минимум функции потерь</div></div>
+    <div class="type-row"><div class="spec">Лид, Literata 400<br>21 / 33</div><div class="lead" style="margin:0">Одна и та же формула весов получается из геометрии, из анализа и из теории вероятностей.</div></div>
+    <div class="type-row"><div class="spec">Текст, Literata 400<br>18 / 30, до 70 знаков</div><p style="margin:0;max-width:var(--measure)">Матрица переводит каждый вектор в&nbsp;новый, и&nbsp;прямые остаются прямыми. Поэтому достаточно знать, куда попадают базисные векторы: всё остальное получается линейными комбинациями.</p></div>
+    <div class="type-row"><div class="spec">Заметка на полях<br>Literata 15 / 22</div><p class="note" style="float:none;margin:0;width:auto;max-width:var(--margin-width)"><span class="label">По-английски</span><span class="note__term">eigenvector</span>, от немецкого <span class="note__term">eigen</span>&nbsp;— «собственный».</p></div>
+    <div class="type-row"><div class="spec">Интерфейс, Plex Sans<br>15 / 22</div><div class="ui" style="font-size:var(--text-sm)">Знаю 39 из 59 уроков. Следующий шаг откроется после ответа.</div></div>
+    <div class="type-row"><div class="spec">Код, Plex Mono<br>14 / 23</div><code style="font-size:14px">theta = np.linalg.solve(X.T @ X, X.T @ y)</code></div>
+  </section>
+
+  <section>
+    <h2>Компоненты</h2>
+    <div class="ds-grid">
+      <div>
+        <h3>Кнопки</h3>
+        <div class="row">
+          <button class="btn btn--primary">Следующий шаг</button>
+          <button class="btn">Показать минимум</button>
+          <button class="btn btn--quiet">Подсказка</button>
+          <button class="btn" disabled>Недоступно</button>
+        </div>
+        <div class="row" style="margin-top:12px">
+          <button class="btn is-hover">Наведение</button>
+          <button class="btn is-focus">Фокус с клавиатуры</button>
+          <button class="btn btn--sm btn--primary"><svg class="icon"><use href="#i-play"/></svg>Запустить</button>
+        </div>
+      </div>
+      <div>
+        <h3>Ввод ответа</h3>
+        <div class="row">
+          <input class="input" value="0.5" aria-label="Пример поля">
+          <input class="input is-right" value="0.5" aria-label="Верный ответ">
+          <input class="input is-wrong" value="2" aria-label="Неверный ответ">
+        </div>
+        <p class="feedback feedback--right"><svg class="icon"><use href="#i-check"/></svg><b>Верно.</b> <span>Наклон прямой равен 0.5.</span></p>
+        <p class="feedback feedback--wrong" style="margin-top:4px"><svg class="icon"><use href="#i-x"/></svg><b>Пока нет.</b> <span>Составьте XᵀX и Xᵀy, затем решите систему 2 × 2.</span></p>
+      </div>
+      <div>
+        <h3>Ползунки и переключатель</h3>
+        <label class="slider" style="max-width:340px"><span>\(\theta_1\)</span><input class="param" type="range" min="0" max="1" step="0.01" value="0.55"><span class="slider__value">0.55</span></label>
+        <label class="slider" style="max-width:340px;margin-top:6px"><span class="ui">шаг</span><input type="range" min="0" max="1" step="0.01" value="0.3"><span class="slider__value">0.30</span></label>
+        <p style="margin-top:12px"><label class="switch ui" style="font-size:14px"><input type="checkbox" checked>Сначала предсказать шаг</label></p>
+        <p class="ui muted" style="font-size:14px">Бегунок окрашен в&nbsp;цвет величины, которую двигает. Ползунки без роли&nbsp;— синей ручкой.</p>
+      </div>
+      <div>
+        <h3>Галочка «знаю»</h3>
+        <div class="prereqs" style="margin:0">
+          <span class="prereqs__label">Опирается на</span>
+          <ul>
+            <li><label class="know"><input type="checkbox" data-know="demo:I.8" checked aria-label="Знаю: I.8 Проекция"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span><a href="#">Проекция</a> <span class="ref">I.8</span></span></li>
+            <li><label class="know"><input type="checkbox" data-know="demo:II.1" aria-label="Знаю: II.1 Градиент"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span><a href="#">Градиент</a> <span class="ref">II.1</span></span></li>
+          </ul>
+        </div>
+        <nav class="toc toc--sample" aria-label="Пример оглавления">
+          <div class="toc__part">
+            <button class="toc__part-head" aria-expanded="true" aria-controls="toc-sample"><span class="toc__chevron" aria-hidden="true"><svg class="icon"><use href="#i-chevron"/></svg></span><span class="n">IV</span><span class="toc__title">Статистика</span><span class="count"><span aria-hidden="true"><span data-known-count>6</span>/7</span><span class="visually-hidden">знаю <span data-known-count>6</span> из 7</span></span><svg class="status status--passed" role="img" aria-label="все уроки модуля отмечены" hidden data-module-done><use href="#st-passed"/></svg></button>
+            <ol id="toc-sample">
+              <li><label class="know"><input type="checkbox" data-know="demo:IV.6" checked aria-label="Знаю: IV.6 Байесовский подход и MAP"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">IV.6</span><span class="toc__title">Байесовский подход и MAP</span></a></li>
+              <li><label class="know"><input type="checkbox" data-know="demo:IV.7" aria-label="Знаю: IV.7 Риск, обобщение, кросс-валидация"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">IV.7</span><span class="toc__title">Риск, обобщение, кросс-валидация</span></a></li>
+              <li><label class="know"><input type="checkbox" data-know="demo:IV.8" data-optional aria-label="Знаю: IV.8 Доверительные интервалы ★"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">IV.8</span><span class="toc__title">Доверительные интервалы ★</span></a></li>
+            </ol>
+          </div>
+        </nav>
+        <p style="margin-top:12px"><label class="know know--text"><input type="checkbox" data-know="demo:V.1"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span><span>Знаю эту тему</span></label></p>
+        <p class="ui muted" style="font-size:14px">Одна булева отметка на&nbsp;урок: знаю или нет. Ставит и&nbsp;снимает ученик (в&nbsp;оглавлении, на&nbsp;главной, в&nbsp;«Опирается на», в&nbsp;начале урока); курс ставит её сам после итоговой проверки урока и&nbsp;диагностики. Пустая клетка&nbsp;— карандашом, отметка&nbsp;— зелёной ручкой.</p>
+      </div>
+    </div>
+
+    <h3 style="margin-top:var(--space-7)">Педагогические блоки</h3>
+    <div class="ds-grid" style="margin-top:0">
+      <div>
+        <div class="block block--definition"><p><span class="block__title">Определение 4.1.</span> Ненулевой вектор \(v\) называется <i>собственным</i> для матрицы \(A\), если \(Av = \lambda v\) для некоторого числа \(\lambda\).</p></div>
+        <div class="block block--theorem"><p><span class="block__title">Теорема 4.3.</span> У&nbsp;симметричной матрицы собственные значения вещественны, а&nbsp;собственные векторы можно выбрать ортонормированными.</p></div>
+        <div class="block block--intuition"><p><span class="block__title">Интуиция.</span> Собственный вектор матрица только растягивает: направление остаётся тем&nbsp;же.</p></div>
+      </div>
+      <div>
+        <div class="block block--pitfall"><p><span class="block__title">Типичная ошибка.</span> Транспонирование меняет порядок множителей: \((AB)\T = \htmlClass{struck}{\,A\T B\T\,}\;\htmlClass{fix}{B\T A\T}\).</p></div>
+        <div class="block block--exercise"><p><span class="block__title">Упражнение 4.2.</span> Найдите собственные значения матрицы \(\begin{pmatrix}2&1\\1&2\end{pmatrix}\).</p></div>
+        <div class="block block--derivation"><p><span class="block__title">Вывод.</span> Пунктирная линейка отмечает рассуждение, которое можно пропустить при повторении.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Чего не делаем</h2>
+    <ol class="rules">
+      <li>Кремовый фон, контрастные засечки в заголовках и терракотовый акцент&nbsp;— это самый узнаваемый шаблон сгенерированных страниц.</li>
+      <li>Градиенты, стекло, тени у&nbsp;карточек, одинаковые карточки вместо текста.</li>
+      <li>Метки капслоком над заголовками и строки через средние точки.</li>
+      <li>Эмодзи и иконки у&nbsp;каждого пункта; стрелка «→» в&nbsp;конце ссылок.</li>
+      <li>Анимация при прокрутке. Движение только там, где оно объясняет математику.</li>
+      <li>Дефолтная палитра Tailwind: она отключена в&nbsp;теме, классы вроде <code>bg-indigo-500</code> не существуют.</li>
+    </ol>
+  </section>
+</main>
+</body>
+</html>

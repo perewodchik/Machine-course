@@ -1,0 +1,31 @@
+---
+// Главная: список курсов. Каталог с графом курсов и маршрутами по целям — S7.01 (эталон prototype/courses.html).
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { loadCatalog } from "../lib/content/collections";
+import { hoursRange, plural } from "../i18n/ru";
+
+const courses = await loadCatalog();
+const hours = (c: (typeof courses)[number]) =>
+  c.modules.reduce<[number, number]>(([a, b], m) => [a + m.hours[0], b + m.hours[1]], [0, 0]);
+---
+<BaseLayout title="Курсы ML" description="Математика для машинного обучения и восемь курсов машинного обучения по программе Stanford CS229.">
+  <main class="shell" id="content">
+    <h1>Курсы ML</h1>
+    <p class="lead">«Математика для машинного обучения»&nbsp;— предисловие ко&nbsp;всем курсам, «Основы машинного обучения»&nbsp;— база для остальных.</p>
+    <ul class="course-list">
+      {courses.map((c) => (
+        <li>
+          <span class="n">{c.number ?? ""}</span>
+          <div>
+            <h2><a href={c.href}>{c.title}</a></h2>
+            <p>{c.summary}</p>
+            <p class="facts">
+              {c.lessons.length}&nbsp;{plural(c.lessons.length, "урок", "урока", "уроков")}
+              {c.required < c.lessons.length && `, из них ${c.lessons.length - c.required} ★ по желанию`}; <span class="nowrap">{hoursRange(hours(c))}</span>
+            </p>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </main>
+</BaseLayout>

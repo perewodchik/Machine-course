@@ -1,0 +1,14 @@
+# Переименования: единый источник и для редиректов URL, и для миграции прогресса ученика.
+# Формат: старый ID или путь -> новый. Удалять записи нельзя.
+concepts:
+  la.matrix-calculus: calc.matrix-calculus   # v0.2: урок переехал из I.12 в II.3
+lessons:
+  # v0.3: модели CS229 переехали из модуля V курса математики в курсы ML (docs/program/catalog.md)
+  foundations/bridge/logistic-regression: ml-basics/linear-models/logistic-regression
+  foundations/bridge/glm: ml-basics/linear-models/glm
+  foundations/bridge/gda-naive-bayes: ml-classic/generative/gda
+  foundations/bridge/kernels-svm: ml-classic/kernels-svm/kernels
+  foundations/bridge/backprop: deep-learning/nn-from-scratch/backprop
+  foundations/bridge/bias-variance-regularization: ml-basics/evaluation/bias-variance
+  foundations/bridge/kmeans-em: unsupervised/clustering-latent/kmeans
+  foundations/bridge/pca: unsupervised/representations/pca

@@ -1,0 +1,59 @@
+---
+// Оглавление курса: модули раскрываются кнопкой (открыт модуль текущего урока), у каждого урока — галочка «знаю».
+// Счётчик модуля — «знаю k из m» без уроков ★; когда отмечены все, вместо счётчика — зелёная галочка.
+import type { CourseTree, TocHeading } from "../../lib/content/catalog";
+import type { LessonKey } from "../../lib/content/types";
+import CheckMark from "./CheckMark.astro";
+import Icon from "./Icon.astro";
+import Know from "./Know.astro";
+
+interface Props {
+  course: CourseTree;
+  current?: LessonKey;
+  /** Разделы текущего урока (заголовки h2). */
+  headings?: TocHeading[];
+}
+const { course, current, headings = [] } = Astro.props;
+---
+<nav class="toc" id="toc" aria-label="Оглавление курса">
+  <p class="toc__hint"><CheckMark class="status status--passed" />Отметьте урок, если знаете тему. Отметку можно снять.</p>
+  {course.modules.map((m) => {
+    const open = m.lessons.some((l) => l.key === current);
+    const listId = `toc-${m.id}`;
+    return (
+      <div class="toc__part" data-module={m.id}>
+        <button class="toc__part-head" type="button" aria-expanded={open} aria-controls={listId}>
+          <span class="toc__chevron" aria-hidden="true"><Icon name="chevron" /></span>
+          <span class="n">{m.number}</span>
+          <span class="toc__title">{m.title}</span>
+          {m.required > 0 && (
+            <span class="count">
+              <span aria-hidden="true"><span data-known-count>0</span>/{m.required}</span>
+              <span class="visually-hidden">, знаю <span data-known-count>0</span> из {m.required}</span>
+            </span>
+          )}
+          <CheckMark class="status status--passed" data-module-done hidden />
+        </button>
+        <ol id={listId} hidden={!open}>
+          {m.lessons.map((l) => {
+            const isCurrent = l.key === current;
+            return (
+              <li class:list={[isCurrent && "is-current"]}>
+                <Know lesson={l} />
+                <a href={l.href} aria-current={isCurrent ? "page" : undefined}>
+                  <span class="n">{l.number}</span>
+                  <span class="toc__title">{l.title}{l.optional && " ★"}</span>
+                </a>
+                {isCurrent && headings.length > 0 && (
+                  <ol class="sub" aria-label="Разделы урока">
+                    {headings.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}
+                  </ol>
+                )}
+              </li>
+            );
+          })}
+        </ol>
+      </div>
+    );
+  })}
+</nav>

@@ -1,0 +1,142 @@
+/*
+ * Педагогические компоненты: блоки, правка красной ручкой, «Опирается на», карточка формулы, вкладки, вывод.
+ * Перенесено из прототипа (prototype/assets/proto.css и proto-extra.css). Только токены.
+ */
+@layer components {
+  /* ───────── Блоки ───────── */
+  .block { --block: var(--block-derivation); margin: var(--space-5) 0; padding: 1px 0 1px var(--space-4); border-left: 2px solid var(--block); }
+  .block > :last-child { margin-bottom: 0; }
+  /* заголовок «врезкой» в начале первого абзаца блока (Block.astro вставляет его в абзац) */
+  .block__title { margin-right: 4px; font-family: var(--font-ui); font-size: 0.86em; font-weight: 600; color: var(--block); }
+  .block--definition { --block: var(--block-definition); }
+  .block--theorem { --block: var(--block-theorem); border-left: 4px double var(--block); }
+  .block--derivation { --block: var(--block-derivation); border-left-style: dashed; }
+  .block--intuition { --block: var(--block-intuition); }
+  .block--pitfall { --block: var(--block-pitfall); }
+  .block--exercise { --block: var(--block-exercise); }
+
+  /* Правка красной ручкой: неверное зачёркнуто, исправление вписано рядом */
+  /* stylelint-disable-next-line function-disallowed-list -- росчерк красной ручкой: линия цвета токена, а не декоративный градиент */
+  .struck { background: linear-gradient(to top right, transparent calc(50% - 1px), var(--red-pen) calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px)); }
+  del.struck { text-decoration: none; }
+  .fix, .fix .sym { color: var(--red-pen); }
+  ins.fix { text-decoration: none; }
+  .note--teacher { color: var(--red-pen); font-style: italic; }
+  .note--teacher .label { color: var(--red-pen); font-style: normal; }
+
+  /* ───────── «Опирается на» ───────── */
+  .prereqs { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; margin: var(--space-5) 0 var(--space-6); padding: var(--space-3) 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); font-family: var(--font-ui); font-size: var(--text-sm); }
+  .prereqs__label { margin-right: var(--space-2); color: var(--ink-3); line-height: 1.9; }
+  .prereqs ul { display: flex; flex-wrap: wrap; list-style: none; margin: 0; padding: 0; }
+  .prereqs li { display: inline-flex; align-items: flex-start; gap: 5px; margin-right: var(--space-4); line-height: 1.9; }
+  .prereqs li > .know { margin-top: 1px; }
+  .prereqs .ref { color: var(--ink-3); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  /* ───────── Карточка формулы ───────── */
+  .formula-card { margin: var(--space-6) 0; border: 1px solid var(--rule); border-radius: var(--radius-panel); background: var(--surface); }
+  .formula-card__head { display: flex; align-items: baseline; gap: 10px; margin: 0; padding: var(--space-3) var(--space-4) 0; font-family: var(--font-ui); font-size: var(--text-sm); font-weight: 400; line-height: 1.4; }
+  .formula-card__head b { font-weight: 600; color: var(--ink); }
+  .formula-card__head .muted { font-variant-numeric: tabular-nums; }
+  /* прокручивается сама формула (.katex-display), а не карточка */
+  .formula-card__statement { position: relative; padding: var(--space-3) var(--space-4) var(--space-2); }
+  .formula-card__statement .katex-display { margin: 0; }
+  .formula-card__meta { display: grid; gap: 4px; padding: 0 var(--space-4) var(--space-4); font-family: var(--font-ui); font-size: 14px; color: var(--ink-2); }
+  .formula-card__meta p { margin: 0; }
+  .formula-card__meta .k { margin-right: 6px; color: var(--ink-3); }
+
+  /* Легенда символов: фраза «где X — …; θ — …», символы — кнопки (фокус подсвечивает символ в формулах) */
+  .sym-legend { margin: 0 0 var(--space-4); font-family: var(--font-ui); font-size: 14px; line-height: 1.6; color: var(--ink-2); }
+  .formula-card__meta .sym-legend { margin: 0; }
+  .sym-key {
+    display: inline-flex; align-items: baseline; margin: 0 1px; padding: 0 3px;
+    border: 0; border-bottom: 1px dotted currentColor; border-radius: 3px 3px 0 0; background: transparent;
+    font: inherit; font-size: 1.05em; color: var(--ink); cursor: help;
+  }
+  .sym-key.s1 { color: var(--sym-1-text); }
+  .sym-key.s2 { color: var(--sym-2-text); }
+  .sym-key.s3 { color: var(--sym-3-text); }
+  .sym-key.s4 { color: var(--ink-3); }
+  .sym-key:hover, .sym-key:focus-visible, .sym-key.is-lit { background: color-mix(in oklab, currentColor 12%, transparent); }
+  .sym-legend__shape { color: var(--ink-3); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  /* ───────── Вкладки ───────── */
+  .tabs { display: flex; gap: var(--space-4); padding: 0 var(--space-4); border-top: 1px solid var(--rule); font-family: var(--font-ui); font-size: 14px; overflow-x: auto; }
+  .tab { position: relative; flex: none; padding: 11px 0 10px; border: 0; background: none; color: var(--ink-2); font: inherit; cursor: pointer; }
+  .tab:hover { color: var(--ink); }
+  .tab[aria-selected="true"] { color: var(--ink); font-weight: 500; }
+  .tab[aria-selected="true"]::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; border-radius: 1px; background: var(--pen); }
+  .tab:focus-visible { outline-offset: -2px; }
+  /* Без JS вкладки не переключить: видны все разделы подряд, переключатели скрыты. Класс .js ставит скрипт в <head> */
+  .tabs { display: none; }
+  .js .tabs { display: flex; }
+  .js .tab-panel[data-inactive] { display: none; }
+
+  /* ───────── Вывод ───────── */
+  .plan { display: flex; flex-wrap: wrap; gap: 4px 6px; list-style: none; margin: 0; padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule); font-family: var(--font-ui); font-size: 13.5px; }
+  .plan li { display: inline-block; padding: 3px 10px; border-radius: var(--radius-control); color: var(--ink-3); }
+  .plan li.is-current { color: var(--pen); background: var(--pen-wash); font-weight: 500; }
+  .plan li:has(~ li.is-current) { color: var(--ink-2); }
+
+  .derivation { list-style: none; margin: 0; padding: var(--space-2) 0; border-top: 1px solid var(--rule); }
+  .step { display: grid; grid-template-columns: 1.6rem minmax(0, 1fr); gap: 2px var(--space-4); align-items: baseline; padding: 9px var(--space-4); transition: background var(--duration-ui) var(--ease-out); }
+  .step__n { font-family: var(--font-ui); font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  /* relative: скрытый MathML KaTeX остаётся внутри прокрутки */
+  .step__math { position: relative; overflow-x: auto; overflow-y: hidden; }
+  .step__math .katex { white-space: nowrap; }
+  .step__why { grid-column: 2; font-size: 14.5px; line-height: 1.45; font-style: italic; color: var(--ink-2); }
+  .step__why p { margin: 0; }
+  .step.is-current { background: var(--pen-wash); }
+  .step.is-current .step__n { color: var(--pen); font-weight: 600; }
+  .step.is-pending .step__n { color: var(--ink-3); }
+  /* Шаги после текущего: в режиме «предсказать» вместо них — приглашение; без JS видны все шаги */
+  .step__placeholder { display: none; grid-column: 2; margin: 0; font-family: var(--font-ui); font-size: 14px; font-style: normal; color: var(--ink-3); }
+  .js .step.is-masked .step__math, .js .step.is-masked .step__why { display: none; }
+  .js .step.is-masked .step__placeholder { display: block; }
+
+  /* Обоснование шага: ссылка на правило раскрывается на месте (не глубже двух уровней) */
+  .rule-ref { display: inline; font-style: normal; }
+  .rule-ref > summary { display: inline; list-style: none; font-family: var(--font-ui); font-size: 13.5px; color: var(--pen); text-decoration: underline dotted; text-underline-offset: 0.2em; cursor: pointer; }
+  .rule-ref > summary::-webkit-details-marker { display: none; }
+  .rule-ref[open] > summary { text-decoration-style: solid; }
+  .rule-ref__body { display: block; margin: 6px 0 4px; padding: var(--space-2) var(--space-3); border-left: 2px solid var(--rule); background: var(--paper-2); font-style: normal; font-family: var(--font-ui); font-size: 14px; color: var(--ink-2); }
+  .rule-ref__body .katex-display { margin: 2px 0 6px; text-align: left; }
+  .rule-ref__body .katex-display > .katex { text-align: left; }
+  .step__ref { font-family: var(--font-ui); font-style: normal; font-size: 13.5px; }
+  .step__more { display: block; margin-top: 2px; font-style: normal; }
+  .step__more > summary { font-family: var(--font-ui); font-size: 13.5px; color: var(--pen); cursor: pointer; }
+
+  .derivation__controls { display: none; }
+  .js .derivation__controls { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule); font-family: var(--font-ui); font-size: 14px; }
+  .derivation__controls .spacer { flex: 1; }
+  .switch { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-2); cursor: pointer; }
+  .switch input { appearance: none; -webkit-appearance: none; position: relative; flex: none; width: 30px; height: 18px; margin: 0; border: 1px solid var(--control-border); border-radius: 9px; background: var(--rule); cursor: pointer; transition: background var(--duration-ui) var(--ease-out); }
+  .switch input::after { content: ""; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: var(--surface); box-shadow: 0 0 0 1px var(--control-border); transition: transform var(--duration-ui) var(--ease-out); }
+  .switch input:checked { background: var(--pen); border-color: var(--pen); }
+  .switch input:checked::after { transform: translateX(12px); box-shadow: none; }
+  .switch input:focus-visible { outline: 2px solid var(--pen); outline-offset: 2px; }
+
+  /* Размерности и «Где используется» */
+  .dims { padding: var(--space-3) var(--space-4) var(--space-4); border-top: 1px solid var(--rule); font-family: var(--font-ui); font-size: 14px; color: var(--ink-2); }
+  .dims table { border-collapse: collapse; }
+  .dims th, .dims td { padding: 4px var(--space-4) 4px 0; text-align: left; vertical-align: baseline; }
+  .dims th { font-weight: 500; color: var(--ink-3); }
+  .dims td.num { font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink); }
+  .dims p { margin: var(--space-2) 0 0; color: var(--ink-3); }
+  .uses { margin: 0; padding: var(--space-3) var(--space-4) var(--space-4) var(--space-6); border-top: 1px solid var(--rule); font-size: 16px; }
+  .uses li + li { margin-top: 4px; }
+
+  @media (max-width: 900px) {
+    .prereqs { display: block; }
+    .prereqs__label { display: block; }
+    .prereqs ul { display: block; }
+    .prereqs li { display: grid; grid-template-columns: 24px minmax(0, 1fr); align-items: start; gap: 2px 4px; margin-right: 0; white-space: normal; }
+    .prereqs li .know { margin-top: 2px; }
+    .derivation__controls .spacer { display: none; }
+  }
+  @media (pointer: coarse) {
+    .sym-key { min-height: var(--target-touch); align-items: center; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .step, .switch input, .switch input::after { transition: none; }
+  }
+}

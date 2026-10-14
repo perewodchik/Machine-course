@@ -1,0 +1,382 @@
+/*
+ * Стили прототипа. Используют только токены из src/design-system/tokens/tokens.css.
+ * В проекте эти правила станут компонентами (design-system/primitives, components/*).
+ */
+@import url("../../src/design-system/tokens/tokens.css");
+@import url("./fonts.css");
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-size: var(--text-base);
+  line-height: var(--leading-text);
+  font-optical-sizing: auto;
+  font-kerning: normal;
+  hanging-punctuation: first;
+}
+img, svg { display: block; max-width: 100%; }
+[hidden] { display: none !important; }
+p { margin: 0 0 var(--space-4); }
+h1, h2, h3 { font-family: var(--font-ui); color: var(--ink); text-wrap: balance; }
+h1 { font-size: var(--text-3xl); line-height: var(--leading-tight); font-weight: 600; letter-spacing: -0.015em; margin: var(--space-2) 0 var(--space-4); }
+h2 { font-size: var(--text-xl); line-height: 1.25; font-weight: 600; letter-spacing: -0.005em; margin: var(--space-8) 0 var(--space-4); }
+h3 { font-size: var(--text-base); line-height: 1.3; font-weight: 600; margin: var(--space-6) 0 var(--space-3); }
+
+a {
+  color: var(--pen);
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  text-decoration-color: color-mix(in oklab, var(--pen) 40%, transparent);
+  transition: color var(--duration-ui) var(--ease-out), text-decoration-color var(--duration-ui) var(--ease-out);
+}
+a:hover { color: var(--pen-strong); text-decoration-color: currentColor; }
+:focus-visible { outline: 2px solid var(--pen); outline-offset: 2px; border-radius: 2px; }
+::selection { background: var(--highlighter); color: var(--ink); }
+
+.ui { font-family: var(--font-ui); }
+.muted { color: var(--ink-3); }
+.num { font-variant-numeric: tabular-nums; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+/* Маркер: полоса под нижней частью строки, как настоящим выделителем */
+mark, .marker { background: linear-gradient(to top, var(--highlighter) 0 45%, transparent 45%); color: inherit; padding: 0 0.1em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+code { font-family: var(--font-code); font-size: 0.86em; background: var(--paper-2); border: 1px solid var(--rule); border-radius: var(--radius-inline); padding: 0 0.3em; }
+
+/* Иконки: только функциональные, 16 px, наследуют цвет */
+.icon { width: 16px; height: 16px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ───────── Шапка ───────── */
+.site-header {
+  position: sticky; top: 0; z-index: 20;
+  background: color-mix(in oklab, var(--paper) 94%, transparent);
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--font-ui); font-size: var(--text-sm);
+}
+.site-header__inner { display: flex; align-items: center; gap: var(--space-5); height: 56px; padding: 0 var(--space-5); max-width: 1440px; margin: 0 auto; }
+.brand { display: flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; font-weight: 600; white-space: nowrap; }
+/* Каталог → текущий курс: знак и «Курсы ML» ведут в каталог, рядом название курса */
+.brand__name { color: var(--ink-2); font-weight: 500; }
+.crumb-sep { color: var(--ink-3); margin: 0 calc(-1 * var(--space-3)); }
+.course-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); font-weight: 600; text-decoration: none; }
+a.course-name:hover { color: var(--pen); }
+.brand:hover { color: var(--ink); }
+.brand__mark { flex: none; width: 22px; height: 22px; }
+.brand__mark .cell { stroke: var(--grid); }
+.brand__mark .frame { stroke: var(--ink-3); }
+.brand__mark .vec { stroke: var(--pen); }
+.brand__mark .dot { fill: var(--ink); }
+.header-progress { margin-left: auto; display: flex; align-items: center; gap: 10px; color: var(--ink-2); white-space: nowrap; }
+.show-narrow { display: none; }
+.progress { width: 96px; height: 4px; border-radius: 2px; background: var(--rule); overflow: hidden; }
+.progress > span { display: block; height: 100%; background: var(--green-pen); }
+.icon-button {
+  display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: var(--radius-control);
+  border: 1px solid var(--rule); background: var(--surface); color: var(--ink-2); cursor: pointer;
+}
+.icon-button:hover { color: var(--ink); border-color: var(--control-border); }
+.theme-toggle .moon { display: none; }
+:root[data-theme="dark"] .theme-toggle .sun { display: none; }
+:root[data-theme="dark"] .theme-toggle .moon { display: block; }
+
+/* ───────── Кнопки ───────── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 36px; padding: 0 14px; border-radius: var(--radius-control);
+  border: 1px solid var(--control-border); background: var(--surface); color: var(--ink);
+  font: 500 var(--text-sm) / 1 var(--font-ui); text-decoration: none; white-space: nowrap; cursor: pointer;
+  transition: background var(--duration-ui) var(--ease-out), border-color var(--duration-ui) var(--ease-out), color var(--duration-ui) var(--ease-out);
+}
+.btn:hover { background: var(--paper-2); border-color: var(--ink-2); color: var(--ink); }
+.btn--primary { background: var(--pen); border-color: var(--pen); color: var(--paper); }
+.btn--primary:hover { background: var(--pen-strong); border-color: var(--pen-strong); color: var(--paper); }
+.btn--quiet { border-color: transparent; background: transparent; color: var(--pen); padding: 0 8px; }
+.btn--quiet:hover { background: var(--pen-wash); border-color: transparent; color: var(--pen-strong); }
+.btn--sm { height: 30px; padding: 0 10px; font-size: 14px; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ───────── Раскладка урока ───────── */
+.page {
+  max-width: 1440px; margin: 0 auto; display: grid; grid-template-columns: var(--toc-width) minmax(0, 1fr);
+  /* фон оглавления тянется на всю высоту страницы */
+  background: linear-gradient(to right, var(--paper-2) calc(var(--toc-width) - 1px), var(--rule) calc(var(--toc-width) - 1px) var(--toc-width), transparent var(--toc-width));
+}
+.toc {
+  position: sticky; top: 56px; align-self: start; height: calc(100vh - 56px); overflow: auto;
+  padding: var(--space-6) var(--space-3) var(--space-7); border-right: 1px solid var(--rule); background: var(--paper-2);
+  font-family: var(--font-ui); font-size: var(--text-sm); line-height: 1.35;
+}
+.toc__part { margin-bottom: var(--space-2); }
+/* Левая колонка (24 px) — шеврон модуля или галочка «знаю» урока; номера модулей и уроков в одной колонке; у модуля справа — счётчик или галочка */
+.toc__part-head {
+  display: flex; align-items: center; gap: 4px; width: 100%; padding: 4px 8px 4px 0; border: 0; border-radius: var(--radius-control);
+  background: none; color: var(--ink-2); font: inherit; font-weight: 500; text-align: left; cursor: pointer;
+}
+.toc__part-head:hover { background: var(--surface); color: var(--ink); }
+.toc__part-head .n { margin-right: 4px; }
+.toc__chevron { flex: none; display: grid; place-items: center; width: 24px; height: 24px; color: var(--ink-3); }
+.toc__chevron .icon { width: 14px; height: 14px; transition: transform var(--duration-ui) var(--ease-out); }
+.toc__part-head[aria-expanded="true"] .toc__chevron .icon { transform: rotate(90deg); }
+.toc__part-head .count { color: var(--ink-3); font-weight: 400; font-variant-numeric: tabular-nums; }
+.toc__title { flex: 1; min-width: 0; }
+.toc ol { list-style: none; margin: 0; padding: 0; }
+.toc ol > li { display: flex; flex-wrap: wrap; align-items: flex-start; }
+.toc ol > li > .know { margin-top: 3px; }
+.toc a { flex: 1; min-width: 0; display: flex; gap: 8px; align-items: flex-start; padding: 6px 8px 6px 4px; border-radius: var(--radius-control); color: var(--ink-2); text-decoration: none; }
+.toc a:hover { background: var(--surface); color: var(--ink); }
+.toc a[aria-current="page"] { background: var(--pen-wash); color: var(--ink); font-weight: 500; }
+.toc .n { flex: none; min-width: 2.6em; color: var(--ink-3); font-variant-numeric: tabular-nums; font-weight: 400; }
+.toc .sub { flex-basis: 100%; }
+.toc .sub a { padding-left: calc(28px + 2.6em + 8px); font-size: 14px; }
+/* текущий раздел — синяя черта вплотную к тексту, а не у края колонки */
+.toc .sub a[aria-current="location"] { position: relative; color: var(--pen); }
+.toc .sub a[aria-current="location"]::before { content: ""; position: absolute; left: calc(28px + 2.6em); top: 5px; bottom: 5px; width: 2px; background: var(--pen); }
+.toc__hint { display: flex; gap: 6px; align-items: flex-start; margin: 0 0 var(--space-3); padding: 0 8px var(--space-3) 4px; border-bottom: 1px solid var(--rule); font-size: 13px; line-height: 1.4; color: var(--ink-3); }
+.status { width: 14px; height: 14px; flex: none; margin-top: 2px; }
+.status--passed { color: var(--green-pen); }
+.toc__part-head .status { margin-top: 0; }
+
+/* Галочка «знаю»: одна булева отметка урока. Пустая клетка — карандашом, отметка — зелёной ручкой; цель 24 px */
+.know { position: relative; flex: none; display: inline-flex; align-items: center; vertical-align: middle; cursor: pointer; }
+.know input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.know__ind { flex: none; display: grid; place-items: center; width: 24px; height: 24px; border-radius: var(--radius-control); }
+.know__ind::before { content: ""; grid-area: 1 / 1; width: 12px; height: 12px; border: 1.5px solid var(--control-border); border-radius: 3px; }
+.know__mark { grid-area: 1 / 1; width: 16px; height: 16px; color: var(--green-pen); visibility: hidden; }
+.know input:checked + .know__ind::before { visibility: hidden; }
+.know input:checked + .know__ind .know__mark { visibility: visible; }
+.know:hover .know__ind::before { border-color: var(--pen); }
+.know input:focus-visible + .know__ind { outline: 2px solid var(--pen); outline-offset: 0; }
+.know--text { gap: 2px; min-height: 30px; padding-right: 8px; border-radius: var(--radius-control); color: var(--pen); font: 500 var(--text-sm) / 1.2 var(--font-ui); white-space: nowrap; }
+.know--text:hover { background: var(--pen-wash); }
+
+.article-wrap { padding: var(--space-7) var(--space-6) var(--space-9); min-width: 0; }
+.article {
+  --gap: 2rem;
+  position: relative;
+  max-width: calc(var(--measure) + 2 * var(--gap) + var(--margin-width));
+}
+.article > * { max-width: var(--measure); }
+.article > .note { max-width: var(--margin-width); }
+/* Широкий блок: в обычном режиме остаётся в колонке текста и не заходит за линию полей;
+   в режиме «поля скрыты» расширяется симметрично до --wide-measure */
+.article > .wide { clear: both; }
+.article > .article-top { max-width: none; }
+.article-top { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+
+/* Режим «поля скрыты»: контент по центру, заметки свёрнуты в строки, раскрываются по клику */
+:root[data-margins="hidden"] .article { max-width: var(--wide-measure); margin-inline: auto; }
+:root[data-margins="hidden"] .article::after { display: none; }
+:root[data-margins="hidden"] .article > * { margin-inline: auto; }
+:root[data-margins="hidden"] .article > .wide { max-width: var(--wide-measure); }
+:root[data-margins="hidden"] .article > .article-top { max-width: var(--measure); }
+:root[data-margins="hidden"] .article > .note {
+  float: none; width: auto; max-width: var(--measure);
+  margin-block: var(--space-2) var(--space-4); padding-left: var(--space-3); border-left: 1px solid var(--margin-line);
+}
+:root[data-margins="hidden"] .note:not(.is-open) > .note__body { display: none; }
+:root[data-margins="hidden"] .note .label { display: inline-flex; align-items: center; gap: 6px; margin: 0; cursor: pointer; color: var(--ink-3); }
+:root[data-margins="hidden"] .note .label::before { content: ""; width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(-45deg); transition: transform var(--duration-ui) var(--ease-out); }
+:root[data-margins="hidden"] .note.is-open .label::before { transform: rotate(45deg); }
+:root[data-margins="hidden"] .note.is-open > .note__body { margin-top: 4px; }
+:root[data-margins="hidden"] .step { grid-template-columns: 1.6rem minmax(0, 1fr) 15rem; }
+:root[data-margins="hidden"] .step__why { grid-column: auto; }
+/* Поля тетради: красная линия, за ней — заметки */
+.article::after {
+  content: ""; position: absolute; top: 0; bottom: 0;
+  left: calc(var(--measure) + var(--gap)); width: 1px; background: var(--margin-line);
+}
+.note {
+  float: right; clear: right; width: var(--margin-width);
+  margin: 0.35rem 0 var(--space-4) var(--gap);
+  font-size: var(--text-sm); line-height: 1.5; color: var(--ink-2);
+}
+.note p { margin: 0 0 var(--space-2); }
+.note__term { font-style: italic; }
+.note .label { font-family: var(--font-ui); font-size: 13px; font-weight: 600; color: var(--ink-2); display: block; margin-bottom: 2px; }
+
+.breadcrumb { font-family: var(--font-ui); font-size: var(--text-sm); color: var(--ink-3); display: flex; gap: 8px; flex-wrap: wrap; }
+.breadcrumb a { color: var(--ink-3); text-decoration: none; }
+.breadcrumb a:hover { color: var(--pen); }
+.lead { font-size: var(--text-lg); line-height: 1.55; color: var(--ink-2); }
+
+/* «Опирается на» */
+.prereqs { font-family: var(--font-ui); font-size: var(--text-sm); margin: var(--space-5) 0 var(--space-6); padding: var(--space-3) 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+.prereqs__label { color: var(--ink-3); margin-right: var(--space-2); }
+.prereqs { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; }
+.prereqs__label { line-height: 1.9; }
+.prereqs ul { display: flex; flex-wrap: wrap; list-style: none; margin: 0; padding: 0; }
+.prereqs li { display: inline-flex; align-items: center; gap: 5px; margin-right: var(--space-4); white-space: nowrap; line-height: 1.9; }
+.prereqs .ref { color: var(--ink-3); font-variant-numeric: tabular-nums; }
+
+/* ───────── Символы в формулах ───────── */
+.s1 { color: var(--sym-1-text); }
+.s2 { color: var(--sym-2-text); }
+.s3 { color: var(--sym-3-text); }
+.s4 { color: var(--ink-3); } /* карандаш: остатки, шум */
+.sym { border-radius: 3px; cursor: help; transition: background var(--duration-ui) var(--ease-out), box-shadow var(--duration-ui) var(--ease-out); }
+.sym.is-lit { background: color-mix(in oklab, currentColor 9%, transparent); box-shadow: inset 0 -2px currentColor; }
+.changed { background: linear-gradient(to top, var(--highlighter) 0 42%, transparent 42%); }
+.math-display { margin: var(--space-5) 0; overflow-x: auto; overflow-y: hidden; position: relative; }
+.katex { font-size: 1.06em; }
+.katex-display { margin: 0; }
+
+.sym-pop {
+  position: absolute; z-index: 30; min-width: 220px; max-width: 280px;
+  padding: 10px 12px; border-radius: var(--radius-control);
+  background: var(--surface); border: 1px solid var(--rule); box-shadow: var(--shadow-popover);
+  font-family: var(--font-ui); font-size: 14px; line-height: 1.45; color: var(--ink-2);
+  opacity: 0; transform: translateY(4px); pointer-events: none;
+  transition: opacity var(--duration-ui) var(--ease-out), transform var(--duration-ui) var(--ease-out);
+}
+.sym-pop.is-open { opacity: 1; transform: none; }
+.sym-pop__head { display: flex; align-items: baseline; gap: 8px; color: var(--ink); font-weight: 500; }
+.sym-pop__shape { margin-left: auto; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+
+/* ───────── Рисунок ───────── */
+.figure { margin: var(--space-6) 0; border: 1px solid var(--rule); border-radius: var(--radius-panel); background: var(--surface); overflow: hidden; }
+.figure__plot { width: 100%; height: auto; }
+.plot .grid-line { stroke: var(--grid); stroke-width: 1; }
+.plot .axis { stroke: var(--ink-3); stroke-width: 1.25; }
+.plot .tick { fill: var(--ink-3); font: 12px var(--font-ui); font-variant-numeric: tabular-nums; }
+.plot .axis-label { fill: var(--ink-2); font: italic 16px var(--font-math); }
+.plot .pt { fill: var(--sym-1); stroke: var(--surface); stroke-width: 2; }
+.plot .fit { stroke: var(--sym-2); stroke-width: 2.5; stroke-linecap: round; }
+.plot .plot-area { fill: none; }
+.plot .resid { stroke: var(--ink-3); stroke-width: 1.5; stroke-dasharray: 4 3; }
+.plot .direct-label { font: 17px var(--font-math); fill: var(--sym-2-text); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
+.plot .direct-label--resid { fill: var(--ink-3); }
+.plot .sub { font-size: 0.7em; }
+.figure__controls {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)) auto; align-items: center; gap: var(--space-3) var(--space-5);
+  padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule);
+  font-family: var(--font-ui); font-size: var(--text-sm);
+}
+.figure__caption { padding: var(--space-3) var(--space-4) var(--space-4); border-top: 1px solid var(--rule); font-size: 15px; line-height: 1.5; color: var(--ink-2); }
+.figure__caption b { font-family: var(--font-ui); font-weight: 600; color: var(--ink); margin-right: 4px; }
+.loss { display: flex; align-items: center; gap: 10px; grid-column: 1 / -1; color: var(--ink-2); }
+.loss__value { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; min-width: 3.2em; }
+.meter { flex: 1; height: 6px; border-radius: 3px; background: var(--paper-2); border: 1px solid var(--rule); position: relative; overflow: hidden; }
+.meter > span { position: absolute; inset: 0 auto 0 0; background: var(--ink-3); border-radius: 3px; transition: width var(--duration-ui) var(--ease-out); }
+.meter > i { position: absolute; top: -2px; bottom: -2px; width: 2px; background: var(--ink); }
+
+/* Ползунок: бегунок окрашен в цвет параметра, который он двигает */
+.slider { display: grid; grid-template-columns: auto minmax(0, 1fr) 3.4em; align-items: center; gap: 10px; }
+.slider__value { text-align: right; font-variant-numeric: tabular-nums; color: var(--ink); font-weight: 500; }
+input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 22px; background: transparent; margin: 0; --thumb: var(--pen); }
+input[type="range"]::-webkit-slider-runnable-track { height: 2px; background: var(--control-border); border-radius: 1px; }
+input[type="range"]::-moz-range-track { height: 2px; background: var(--control-border); border-radius: 1px; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; margin-top: -7px; border-radius: 50%; background: var(--thumb); border: 2px solid var(--surface); box-shadow: 0 0 0 1px var(--thumb); cursor: grab; }
+input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--thumb); border: 2px solid var(--surface); box-shadow: 0 0 0 1px var(--thumb); cursor: grab; }
+input[type="range"].param { --thumb: var(--sym-2); }
+
+/* ───────── Карточка формулы ───────── */
+.formula-card { margin: var(--space-6) 0; border: 1px solid var(--rule); border-radius: var(--radius-panel); background: var(--surface); }
+.formula-card__head { display: flex; align-items: baseline; gap: 10px; padding: var(--space-3) var(--space-4) 0; font-family: var(--font-ui); font-size: var(--text-sm); }
+.formula-card__head b { font-weight: 600; color: var(--ink); }
+.formula-card__head .muted { font-variant-numeric: tabular-nums; }
+.formula-card__statement { padding: var(--space-3) var(--space-4) var(--space-2); font-size: 1.12em; overflow-x: auto; position: relative; }
+.formula-card__meta { display: grid; gap: 4px; padding: 0 var(--space-4) var(--space-4); font-family: var(--font-ui); font-size: 14px; color: var(--ink-2); }
+.formula-card__meta .k { color: var(--ink-3); margin-right: 6px; }
+.tabs { display: flex; gap: var(--space-4); padding: 0 var(--space-4); border-top: 1px solid var(--rule); font-family: var(--font-ui); font-size: 14px; }
+.tab { position: relative; padding: 11px 0 10px; border: 0; background: none; color: var(--ink-2); font: inherit; cursor: pointer; }
+.tab:hover { color: var(--ink); }
+.tab[aria-selected="true"] { color: var(--ink); font-weight: 500; }
+.tab[aria-selected="true"]::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--pen); border-radius: 1px; }
+.tab-panel[hidden] { display: none; }
+
+.derivation { list-style: none; margin: 0; padding: var(--space-2) 0; border-top: 1px solid var(--rule); counter-reset: step; }
+.step { display: grid; grid-template-columns: 1.6rem minmax(0, 1fr); gap: 2px var(--space-4); align-items: baseline; padding: 9px var(--space-4); transition: background var(--duration-ui) var(--ease-out); }
+.step__n { font-family: var(--font-ui); font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.step__math { overflow-x: auto; overflow-y: hidden; position: relative; } /* relative: скрытый MathML KaTeX остаётся внутри прокрутки */
+.step__math .katex { white-space: nowrap; }
+.step__why { grid-column: 2; font-size: 14.5px; line-height: 1.4; font-style: italic; color: var(--ink-2); }
+.step__why a { font-style: normal; font-family: var(--font-ui); font-size: 13.5px; }
+.step.is-current { background: var(--pen-wash); }
+.step.is-current .step__n { color: var(--pen); font-weight: 600; }
+.step.is-pending .step__math, .step.is-pending .step__why { color: var(--ink-3); font-family: var(--font-ui); font-style: normal; font-size: 14px; }
+.derivation__controls { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule); font-family: var(--font-ui); font-size: 14px; }
+.derivation__controls .spacer { flex: 1; }
+.switch { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-2); cursor: pointer; }
+.switch input { appearance: none; -webkit-appearance: none; width: 30px; height: 18px; margin: 0; border-radius: 9px; background: var(--rule); border: 1px solid var(--control-border); position: relative; cursor: pointer; transition: background var(--duration-ui) var(--ease-out); }
+.switch input::after { content: ""; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: var(--surface); box-shadow: 0 0 0 1px var(--control-border); transition: transform var(--duration-ui) var(--ease-out); }
+.switch input:checked { background: var(--pen); border-color: var(--pen); }
+.switch input:checked::after { transform: translateX(12px); box-shadow: none; }
+.dims { padding: var(--space-4); border-top: 1px solid var(--rule); }
+.uses { margin: 0; padding: var(--space-3) var(--space-4) var(--space-4) var(--space-6); border-top: 1px solid var(--rule); font-size: 16px; }
+
+/* ───────── Педагогические блоки ───────── */
+.block { --block: var(--block-derivation); margin: var(--space-5) 0; padding: 1px 0 1px var(--space-4); border-left: 2px solid var(--block); }
+.block > :last-child { margin-bottom: 0; }
+.block__title { font-family: var(--font-ui); font-size: 0.86em; font-weight: 600; color: var(--block); margin-right: 4px; }
+.block--definition { --block: var(--block-definition); }
+.block--theorem { --block: var(--block-theorem); border-left: 4px double var(--block); }
+.block--derivation { --block: var(--block-derivation); border-left-style: dashed; }
+.block--intuition { --block: var(--block-intuition); }
+.block--pitfall { --block: var(--block-pitfall); }
+.block--exercise { --block: var(--block-exercise); }
+
+/* ───────── Ячейка кода ───────── */
+.code-cell { margin: var(--space-6) 0; border: 1px solid var(--rule); border-radius: var(--radius-panel); background: var(--paper-2); overflow: hidden; }
+.code-cell__bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); padding: 7px 8px 7px var(--space-4); border-bottom: 1px solid var(--rule); background: var(--surface); font-family: var(--font-ui); font-size: 14px; color: var(--ink-2); }
+.code-cell__title { margin-right: auto; display: flex; align-items: center; gap: 8px; }
+.code-cell__title b { color: var(--ink); font-weight: 500; }
+pre.code { margin: 0; padding: var(--space-3) var(--space-4); font: 14px/1.65 var(--font-code); color: var(--code-text); overflow-x: auto; tab-size: 4; }
+.tok-k { color: var(--code-text); }
+.tok-s, .tok-n { color: var(--code-literal); }
+.tok-c { color: var(--code-comment); }
+.code-cell__out { border-top: 1px dashed var(--control-border); background: var(--surface); padding: var(--space-2) var(--space-4) var(--space-3); }
+.code-cell__out .label { display: flex; justify-content: space-between; font-family: var(--font-ui); font-size: 13px; color: var(--ink-3); margin-bottom: 2px; }
+.code-cell__out pre { margin: 0; font: 14px/1.6 var(--font-code); color: var(--ink); }
+
+/* ───────── Упражнение ───────── */
+.field { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); margin-top: var(--space-3); font-family: var(--font-ui); font-size: var(--text-sm); }
+.input { height: 36px; width: 7.5rem; padding: 0 10px; border: 1px solid var(--control-border); border-radius: var(--radius-control); background: var(--surface); color: var(--ink); font: 500 var(--text-sm) var(--font-ui); font-variant-numeric: tabular-nums; }
+.input:focus-visible { outline: 2px solid var(--pen); outline-offset: 1px; border-color: var(--pen); }
+.input.is-right { border-color: var(--green-pen); }
+.input.is-wrong { border-color: var(--red-pen); }
+.feedback { display: flex; gap: 8px; align-items: flex-start; margin-top: var(--space-3); font-family: var(--font-ui); font-size: var(--text-sm); line-height: 1.45; }
+.feedback--right { color: var(--green-pen); }
+.feedback--wrong { color: var(--red-pen); }
+.feedback .icon { margin-top: 2px; }
+.feedback > span { color: var(--ink-2); }
+
+/* ───────── Адаптивность ───────── */
+@media (max-width: 1260px) {
+  .article { max-width: var(--measure); }
+  .article::after { display: none; }
+  .note { float: none; width: auto; max-width: none; margin: var(--space-4) 0; padding-left: var(--space-4); border-left: 1px solid var(--margin-line); }
+  :root[data-margins="hidden"] .step { grid-template-columns: 1.6rem minmax(0, 1fr); }
+  :root[data-margins="hidden"] .step__why { grid-column: 2; }
+}
+@media (max-width: 900px) {
+  .page { grid-template-columns: minmax(0, 1fr); background: none; }
+  .prereqs li { white-space: normal; display: grid; grid-template-columns: 24px minmax(0, 1fr); align-items: start; gap: 2px 4px; margin-right: 0; }
+  .prereqs li .know { margin-top: 2px; }
+  .prereqs { display: block; }
+  .prereqs__label { display: block; }
+  .prereqs ul { display: block; }
+  .step__math { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent); }
+  .toc.is-open { display: block; position: fixed; inset: 56px 0 0 0; z-index: 15; height: auto; align-self: auto; box-shadow: var(--shadow-popover); }
+  .toc-toggle { display: inline-flex; }
+  .toc { display: none; }
+  .article-wrap { padding: var(--space-5) var(--space-4) var(--space-8); }
+  .hide-narrow, .header-progress .progress { display: none; }
+  .brand__name, .crumb-sep { display: none; }
+  .show-narrow { display: inline-flex; align-items: center; gap: 4px; }
+  .site-header__inner { padding: 0 var(--space-4); gap: var(--space-3); }
+  .figure__controls { grid-template-columns: minmax(0, 1fr); }
+  h1 { font-size: var(--text-2xl); }
+  .formula-card__statement { font-size: 1em; }
+}
+
+@media (min-width: 901px) { .toc-toggle { display: none; } }
+@media (pointer: coarse) {
+  .btn--sm, .stepper, .levels span, .choices button, .icon-button { min-height: var(--target-touch); }
+  .toc__part-head, .toc a { min-height: var(--target-touch); align-items: center; }
+  .toc ol > li { align-items: center; }
+  .toc ol > li > .know { margin-top: 0; }
+  .icon-button { min-width: var(--target-touch); }
+}

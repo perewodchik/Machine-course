@@ -1,0 +1,19 @@
+---
+// Галочка «знаю» у урока: булева отметка (docs/conventions/pedagogy.md, «Прогресс: галочка „знаю“»).
+// Все чекбоксы одного урока несут одинаковый data-know (LessonKey); синхронизацию и хранение добавляет S2.04.
+import type { LessonEntry } from "../../lib/content/catalog";
+import CheckMark from "./CheckMark.astro";
+
+interface Props {
+  lesson: LessonEntry;
+  /** Подпись рядом с клеткой («Знаю эту тему»); без неё имя чекбокса — aria-label с номером и названием урока. */
+  text?: string;
+}
+const { lesson, text } = Astro.props;
+const label = text ? undefined : `Знаю: ${lesson.number} ${lesson.title}${lesson.optional ? " ★" : ""}`;
+---
+<label class:list={["know", text && "know--text"]}>
+  <input type="checkbox" data-know={lesson.key} data-optional={lesson.optional ? "" : undefined} aria-label={label} />
+  <span class="know__ind" aria-hidden="true"><CheckMark class="know__mark" /></span>
+  {text && <span>{text}</span>}
+</label>

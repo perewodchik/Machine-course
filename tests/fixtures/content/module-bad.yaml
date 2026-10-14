@@ -1,0 +1,10 @@
+# Битый модуль: часы не парой, slug с заглавной буквой и номером
+id: start
+number: '0'
+title:
+  ru: 'Старт'
+hours: 8
+lessons:
+  - slug: 01-Intro
+    number: '0.1'
+    title: 'Введение'

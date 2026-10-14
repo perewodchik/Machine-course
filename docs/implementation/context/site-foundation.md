@@ -1,0 +1,52 @@
+# Пакет: каркас сайта
+
+Для задач S1.01, S1.03, S1.05, S1.12, S3.02.
+
+## Главное
+
+- **Astro 7.3** (Node ≥ 22.12), интеграции: `@astrojs/react`, `@astrojs/mdx`. TypeScript `strict`. Менеджер пакетов — npm, `package-lock.json` в git.
+- **Версии** (сверены с npm 14.10.2026; ставить не ниже):
+
+  | Пакет | Версия | Почему так |
+  |---|---|---|
+  | `astro` | 7.3.8 | |
+  | `@astrojs/react`, `@astrojs/mdx` | 7.0.1, 8.0.3 | |
+  | `@astrojs/check` (devDependencies) | 0.9.10 | нужен для `astro check` |
+  | `react`, `react-dom` | 19.3.0 | |
+  | `typescript` | `~6.0.3` | **не 7**: `@astrojs/check` и `typescript-eslint` требуют `^5 \|\| ^6` |
+  | `tailwindcss`, `@tailwindcss/vite` | 4.3.3 | |
+  | `katex` | 0.19.0 | ≥ 0.16.21 из-за CVE-2025-23207 |
+  | `vitest` | 5.0.4 | |
+  | `@playwright/test` | **ровно 1.56.1** | совпадает с Chromium в `/opt/pw-browsers` (chromium-1194) |
+  | `@axe-core/playwright` | 4.13.0 | |
+- **React 19 только в островах** (`client:visible`): виджеты, игры, Python. Шапка, оглавление, раскладка урока — `.astro` без React.
+- **Tailwind CSS 4.3** через `@tailwindcss/vite`; подключить `src/design-system/tokens/theme.css` (он импортирует `tokens.css` и отключает дефолтные палитру, тени, скругления, шрифты). Проверка: класс `bg-indigo-500` не генерируется.
+- **Шрифты** — Fontsource: `@fontsource-variable/literata`, `@fontsource/ibm-plex-sans` (400, 500, 600, 400-italic), `@fontsource/ibm-plex-mono` (400); подмножества латиница, кириллица, греческий.
+- **Тема без мигания:** инлайн-скрипт в `<head>` ставит `data-theme` из `localStorage` до отрисовки; так же — `data-margins`.
+- **Раскладка урока** повторяет прототип (`prototype/assets/proto.css`, разделы «Раскладка урока», «Режим „поля скрыты“», «Адаптивность»):
+  - ≥ 1260 px: оглавление 17rem | текст `--measure` (40rem) | поля `--margin-width` (15rem), красная линия полей;
+  - рисунки и карточки формул (`.wide`) не заходят за линию полей; при скрытых полях расширяются до `--wide-measure` (54rem) симметрично;
+  - кнопка «Скрыть поля» (состояние в `localStorage`), заметки сворачиваются в строки с подписью;
+  - 900–1260 px: заметки в тексте; < 900 px: оглавление — выдвижная панель.
+- **Маршруты (несколько курсов, ADR 0004):** `/` — каталог курсов и маршруты; `/[course]` — страница курса (модули, прогресс, проекты); `/[course]/[module]/[lesson]` — урок (слаги из `module.yaml`, без номеров); `/concepts/[id]`, `/map`, `/lab`, `/games/[id]`. В шапке — текущий курс и прогресс по нему; переключение курсов — через каталог.
+- **Хостинг:** Cloudflare Workers со статическими ассетами (ADR 0005): `wrangler.jsonc` отдаёт `dist/`; заголовки — `public/_headers`:
+  ```
+  /*
+    Cross-Origin-Opener-Policy: same-origin
+    Cross-Origin-Embedder-Policy: require-corp
+  /py/*
+    Cache-Control: public, max-age=31536000, immutable
+  ```
+- **COEP ломает чужие ресурсы:** с `require-corp` не загрузятся картинки, шрифты и бейджи с других доменов. Всё — со своего домена; «Открыть в Colab» — обычная ссылка-кнопка, не картинка-бейдж с github.com.
+
+## Источники (только если нужно)
+
+- `docs/adr/0001-site-stack.md`, `docs/adr/0003-hosting.md` — почему так.
+- `src/README.md` — каталоги и правила зависимостей между слоями.
+- `src/design-system/README.md` — раздел «Раскладка урока».
+
+## Не делать
+
+- React-провайдеры вокруг всей страницы; глобальный клиентский роутер.
+- Сырые цвета и размеры в компонентах (только токены).
+- Импорт `lib/content`, `lib/katex`, `src/markdown` из клиентского кода.

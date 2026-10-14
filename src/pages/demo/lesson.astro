@@ -1,0 +1,62 @@
+---
+// Демо-урок: раскладка и педагогические компоненты на настоящих данных реестра (e2e, скриншоты). Не индексируется.
+// Есть всё, что проверяют тесты: заметки на полях, широкие блоки (.wide), разделы в оглавлении, формула с выводом.
+import LessonLayout from "../../layouts/LessonLayout.astro";
+import { Block, Formula, Note, Prereqs } from "../../components/pedagogy";
+import Tex from "../../components/pedagogy/Tex.astro";
+import { loadCourse } from "../../lib/content/collections";
+import { loadRegistry } from "../../lib/content/registry";
+
+const course = await loadCourse("foundations");
+const lesson = course.lessons.find((l) => l.key === "foundations/bridge/linear-regression");
+if (!lesson) throw new Error("демо-урок: нет урока foundations/bridge/linear-regression");
+const symbols = (await loadRegistry()).formulas.get("f.normal-equations")!.symbols;
+
+const headings = [
+  { slug: "task", text: "Задача и данные" },
+  { slug: "figure", text: "Рисунок во всю колонку" },
+  { slug: "formula", text: "Карточка формулы" },
+  { slug: "summary", text: "Итог" },
+];
+const grid = Array.from({ length: 13 }, (_, i) => i * 81);
+---
+<LessonLayout course={course} lesson={lesson} title="Демо-урок: раскладка" headings={headings} meta="Около 10 минут: страница для проверки раскладки." noindex>
+  <Note label="В CS229" slot="intro">Раздел «Linear regression»: <span class="note__term">the normal equations</span>.</Note>
+  <p class="lead" slot="intro">Демонстрационная страница: заглушечный текст в&nbsp;колонке, заметки на&nbsp;полях, рисунок и&nbsp;карточка формулы во&nbsp;всю ширину колонки.</p>
+
+  <Prereqs lessons={["foundations/linear-algebra/orthogonality-projections", "foundations/calculus/matrix-calculus", "foundations/calculus/convexity", "ml-basics/evaluation/regularization"]} course="foundations" />
+
+  <h2 id="task">Задача и данные</h2>
+  <Note label="Термин">Заметка на&nbsp;полях стоит рядом с&nbsp;абзацем, к&nbsp;которому относится. Когда поля скрыты, она сворачивается в&nbsp;строку с&nbsp;подписью.</Note>
+  <p>Колонка текста держит строку около семидесяти знаков: так глазу легко найти начало следующей строки. Справа от&nbsp;красной линии&nbsp;— поля тетради: термины, ссылки на&nbsp;конспект и&nbsp;короткие пояснения, которые не&nbsp;должны прерывать основной текст.</p>
+  <p>Абзацы здесь&nbsp;— заглушка. Настоящий урок состоит из&nbsp;коротких циклов: вопрос, объяснение, проверка. На&nbsp;этой странице проверяется только раскладка: ширина колонки, линия полей, положение широких блоков и&nbsp;поведение оглавления на&nbsp;узком экране.</p>
+
+  <h2 id="figure">Рисунок во всю колонку</h2>
+  <figure class="figure wide">
+    <svg class="figure__plot plot" viewBox="0 0 972 300" role="img" aria-label="Пустая клетчатая область графика">
+      {grid.map((x) => <line class="grid-line" x1={x + 0.5} y1="0" x2={x + 0.5} y2="300" />)}
+      {[0, 75, 150, 225].map((y) => <line class="grid-line" x1="0" y1={y + 0.5} x2="972" y2={y + 0.5} />)}
+      <line class="axis" x1="40" y1="260" x2="940" y2="260" />
+      <line class="axis" x1="40" y1="20" x2="40" y2="260" />
+    </svg>
+    <figcaption class="figure__caption"><b>Рисунок 1.</b> Широкий блок не&nbsp;заходит за&nbsp;линию полей. Когда поля скрыты, он&nbsp;расширяется симметрично до&nbsp;ширины рисунка.</figcaption>
+  </figure>
+  <p>После рисунка текст продолжается в&nbsp;колонке. Заметка рядом с&nbsp;рисунком остаётся на&nbsp;полях и&nbsp;не&nbsp;сдвигает его вниз.</p>
+
+  <h2 id="formula">Карточка формулы</h2>
+  <Block kind="definition" n={1}>
+    <p>Оценка методом наименьших квадратов&nbsp;— вектор весов <Tex tex={String.raw`\sym{theta}{\theta}^{\star}`} symbols={symbols} />, при котором сумма квадратов остатков минимальна.</p>
+  </Block>
+  <Note label="Почему так">Карточка строится из&nbsp;реестра <code>content/formulas</code>: каждый шаг вывода проверен численно.</Note>
+  <Formula formula="f.normal-equations" n={1} start={2} />
+  <Block kind="pitfall">
+    <p>Забыть, что транспонирование меняет порядок множителей:</p>
+    <Tex display tex={String.raw`(\sym{X}{X}\sym{theta}{\theta})^\top = \struck{\;\sym{X}{X}^\top \sym{theta}{\theta}^\top\;}\;\; \fix{\sym{theta}{\theta}^\top \sym{X}{X}^\top}`} symbols={symbols} />
+    <p>Размерности ловят ошибку сразу: <Tex tex={String.raw`\sym{X}{X}^\top \sym{theta}{\theta}^\top`} symbols={symbols} />&nbsp;— это <Tex tex={String.raw`d \times n`} /> на&nbsp;<Tex tex={String.raw`1 \times d`} />, такое произведение не&nbsp;определено.</p>
+  </Block>
+  <Note label="Учитель" teacher>Проверяйте размерности до&nbsp;того, как раскрывать скобки.</Note>
+  <p>Последний абзац перед итогом. Если поля скрыты, колонка текста стоит по&nbsp;центру, а&nbsp;заметки свёрнуты в&nbsp;строки и&nbsp;раскрываются по&nbsp;щелчку.</p>
+
+  <h2 id="summary">Итог</h2>
+  <p>Раскладка урока готова к&nbsp;настоящим текстам: заметки, рисунки и&nbsp;формулы займут свои места без правок вёрстки.</p>
+</LessonLayout>

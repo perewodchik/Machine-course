@@ -1,0 +1,37 @@
+---
+// Урок курса: текст из content/courses/<курс>/<модуль>/<slug>.mdx, компоненты передаёт сайт (в MDX импортов нет).
+// У урока без текста — страница-заглушка с настоящей раскладкой, чтобы ссылки оглавления вели на существующие страницы.
+import type { GetStaticPaths } from "astro";
+import { getEntry, render } from "astro:content";
+import LessonLayout from "../../../layouts/LessonLayout.astro";
+import { lessonComponents } from "../../../components/pedagogy";
+import { loadCatalog } from "../../../lib/content/collections";
+import type { CourseTree, LessonEntry } from "../../../lib/content/catalog";
+import { plural } from "../../../i18n/ru";
+
+export const getStaticPaths = (async () =>
+  (await loadCatalog()).flatMap((course) =>
+    course.lessons.map((lesson) => ({
+      params: { course: course.id, module: lesson.module, lesson: lesson.slug },
+      props: { course, lesson },
+    })),
+  )) satisfies GetStaticPaths;
+
+interface Props {
+  course: CourseTree;
+  lesson: LessonEntry;
+}
+const { course, lesson } = Astro.props;
+const entry = await getEntry("lessons", lesson.key);
+const rendered = entry ? await render(entry) : undefined;
+const headings = rendered?.headings.filter((h) => h.depth === 2).map((h) => ({ slug: h.slug, text: h.text }));
+const minutes = entry?.data.minutes;
+const meta = minutes ? `Около ${minutes}\u00a0${plural(minutes, "минуты", "минут", "минут")}.` : undefined;
+---
+<LessonLayout course={course} lesson={lesson} headings={headings} meta={meta} noindex={!rendered}>
+  {rendered ? (
+    <rendered.Content components={lessonComponents} />
+  ) : (
+    <p class="lead" slot="intro">Текст этого урока ещё пишется. Соседние уроки&nbsp;— ниже и&nbsp;в&nbsp;оглавлении.</p>
+  )}
+</LessonLayout>

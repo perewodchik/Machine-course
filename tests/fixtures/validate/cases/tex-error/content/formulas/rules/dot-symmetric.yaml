@@ -1,0 +1,11 @@
+id: rule.dot-symmetric
+kind: rule
+title:
+  ru: 'Симметрия скалярного произведения'
+statement: 'x^\top y = \frac{y^\top x'
+symbols: []
+concept: la.dot
+checks:
+  - kind: identity
+    lhs: 'x @ y'
+    rhs: 'y @ x'

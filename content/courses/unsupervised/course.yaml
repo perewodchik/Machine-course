@@ -1,0 +1,14 @@
+# Курс «Обучение без учителя и представления». Порядок модулей задаётся здесь. Каталог курсов — docs/program/catalog.md.
+id: unsupervised
+# Номер в каталоге курсов (docs/program/catalog.md)
+number: 5
+title:
+  ru: 'Обучение без учителя и представления'
+summary:
+  ru: 'Кластеризация, смеси и EM, снижение размерности и самообучение: как найти структуру в данных без разметки'
+cs229Edition: main-notes-2026-spring
+# Курсы, на уроки которых ссылаются строки «Опирается на» (ключ урока — <курс>/<модуль>/<slug>).
+requires: [foundations, ml-basics]
+modules:
+  - clustering-latent
+  - representations

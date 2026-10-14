@@ -1,0 +1,15 @@
+id: basics
+number: '1'
+title:
+  ru: 'Основы'
+hours: [1, 2]
+lessons:
+  - slug: intro
+    number: '1.1'
+    title: 'Введение'
+  - slug: next
+    number: '1.1'
+    title: 'Дальше'
+  - slug: intro
+    number: '1.3'
+    title: 'Введение ещё раз'

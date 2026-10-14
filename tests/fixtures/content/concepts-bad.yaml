@@ -1,0 +1,35 @@
+# Битые понятия: неверный префикс ID, нет урока, пререквизиты строкой, повтор ID
+- id: linalg.matmul
+  title:
+    ru: 'Умножение матриц'
+    en: 'matrix multiplication'
+  summary: 'Сумма произведений.'
+  lesson: matrix-multiplication
+  prerequisites: []
+  core: true
+
+- id: la.rank
+  title:
+    ru: 'Ранг'
+    en: 'rank'
+  summary: 'Число независимых столбцов.'
+  prerequisites: la.span
+  core: true
+
+- id: la.ok
+  title:
+    ru: 'Понятие'
+    en: 'concept'
+  summary: 'Без ошибок.'
+  lesson: some-lesson
+  prerequisites: []
+  core: false
+
+- id: la.ok
+  title:
+    ru: 'Понятие ещё раз'
+    en: 'concept again'
+  summary: 'Тот же ID.'
+  lesson: some-lesson
+  prerequisites: []
+  core: false

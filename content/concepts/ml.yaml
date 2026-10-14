@@ -1,0 +1,25 @@
+# Понятия машинного обучения, на которые ссылаются формулы курса математики («Где используется»).
+# Основной граф понятий курсов ML появится вместе с их уроками (docs/program/catalog.md).
+- id: ml.linear-regression-probabilistic
+  title:
+    ru: 'Вероятностная модель линейной регрессии'
+    en: 'probabilistic interpretation of linear regression'
+  summary: 'При гауссовом шуме максимум правдоподобия совпадает с минимумом суммы квадратов остатков.'
+  lesson: linear-regression
+  prerequisites: [la.projection, calc.matrix-calculus]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Linear regression / Probabilistic interpretation'
+
+- id: ml.ridge
+  title:
+    ru: 'Гребневая регрессия'
+    en: 'ridge regression'
+  summary: 'Штраф ½λ‖θ‖² к сумме квадратов; решение (XᵀX + λI)⁻¹Xᵀy существует и при неполном ранге X.'
+  lesson: regularization
+  prerequisites: [la.inverse, la.psd]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Regularization and model selection'

@@ -1,0 +1,16 @@
+# Модуль 1. Нейросети с нуля. Порядок уроков задаётся здесь, а не именами файлов.
+id: nn-from-scratch
+number: '1'
+title:
+  ru: 'Нейросети с нуля'
+hours: [10, 12]
+lessons:
+  - slug: neural-networks
+    number: '1.1'
+    title: 'Нейросеть: от нейрона к многослойной сети'
+  - slug: backprop
+    number: '1.2'
+    title: 'Обратное распространение и автодифференцирование'
+  - slug: vectorization-init
+    number: '1.3'
+    title: 'Векторизация, мини-батчи и инициализация'

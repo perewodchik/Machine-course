@@ -1,0 +1,19 @@
+id: rule.transpose-product
+kind: rule
+title:
+  ru: 'Транспонирование произведения'
+  en: 'transpose of a product'
+statement: '(AB)^\top = B^\top A^\top'
+symbols:
+  - name: A
+    tex: 'A'
+    shape: [m, k]
+  - name: B
+    tex: 'B'
+    shape: [k, p]
+concept: la.transpose
+pitfall: 'Порядок множителей меняется: (AB)ᵀ ≠ AᵀBᵀ. Подсказка — размерности: AᵀBᵀ это (k×m)(p×k), такое произведение обычно не определено.'
+checks:
+  - kind: identity
+    lhs: '(A @ B).T'
+    rhs: 'B.T @ A.T'

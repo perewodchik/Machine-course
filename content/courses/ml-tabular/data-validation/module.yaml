@@ -1,0 +1,16 @@
+# Модуль 1. Данные и валидация. Порядок уроков задаётся здесь, а не именами файлов.
+id: data-validation
+number: '1'
+title:
+  ru: 'Данные и валидация'
+hours: [10, 12]
+lessons:
+  - slug: validation-schemes
+    number: '1.1'
+    title: 'Схемы валидации: группы, время, вложенная кросс-валидация'
+  - slug: feature-engineering
+    number: '1.2'
+    title: 'Признаки: категории, пропуски, даты, кодирование целевой'
+  - slug: imbalanced-costs
+    number: '1.3'
+    title: 'Несбалансированные классы и цена ошибок'

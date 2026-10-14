@@ -1,0 +1,39 @@
+# Понятия анализа и оптимизации. Формат — content/concepts/la.yaml; программа — docs/program/02-calculus.md.
+- id: calc.gradient
+  title:
+    ru: 'Градиент'
+    en: 'gradient'
+  summary: 'Вектор частных производных той же формы, что аргумент; показывает направление быстрейшего роста.'
+  lesson: gradient
+  prerequisites: []
+  core: true
+
+- id: calc.matrix-calculus
+  title:
+    ru: 'Матричное дифференцирование'
+    en: 'matrix calculus'
+  summary: 'Градиенты выражений с векторами и матрицами без покоординатных выкладок: ∇ₓ aᵀx = a, ∇ₓ xᵀAx = (A + Aᵀ)x.'
+  lesson: matrix-calculus
+  prerequisites: [calc.gradient, la.matmul, la.transpose]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Linear regression / The normal equations'
+
+- id: calc.stationary-point
+  title:
+    ru: 'Критическая точка'
+    en: 'stationary (critical) point'
+  summary: 'Точка, где градиент равен нулю: кандидат в минимум, максимум или седло.'
+  lesson: hessian-taylor
+  prerequisites: [calc.gradient]
+  core: true
+
+- id: calc.convexity
+  title:
+    ru: 'Выпуклость'
+    en: 'convexity'
+  summary: 'График лежит не выше хорды; у выпуклой функции любая критическая точка — глобальный минимум.'
+  lesson: convexity
+  prerequisites: [calc.stationary-point, la.psd]
+  core: true

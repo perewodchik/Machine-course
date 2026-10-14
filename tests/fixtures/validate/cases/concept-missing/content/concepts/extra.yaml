@@ -1,0 +1,8 @@
+- id: la.matrix
+  title:
+    ru: 'Матрица'
+    en: 'matrix'
+  summary: 'Таблица чисел.'
+  lesson: no-such-lesson
+  prerequisites: [la.tensor]
+  core: true

@@ -1,0 +1,15 @@
+# Курс «ML на табличных данных». Порядок модулей задаётся здесь. Каталог курсов — docs/program/catalog.md.
+id: ml-tabular
+# Номер в каталоге курсов (docs/program/catalog.md)
+number: 3
+title:
+  ru: 'ML на табличных данных'
+summary:
+  ru: 'Валидация без утечек, признаки, деревья и градиентный бустинг, интерпретация и передача модели — то, чем ML-инженер занят большую часть времени'
+cs229Edition: main-notes-2026-spring
+# Курсы, на уроки которых ссылаются строки «Опирается на» (ключ урока — <курс>/<модуль>/<slug>).
+requires: [foundations, ml-basics]
+modules:
+  - data-validation
+  - trees-ensembles
+  - delivery

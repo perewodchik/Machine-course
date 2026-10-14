@@ -1,0 +1,32 @@
+# Модуль IV. Статистика. Порядок уроков задаётся здесь, а не именами файлов.
+id: statistics
+number: 'IV'
+title:
+  ru: 'Статистика'
+hours: [18, 22]
+lessons:
+  - slug: descriptive
+    number: 'IV.1'
+    title: 'Выборка и описательная статистика'
+  - slug: estimators
+    number: 'IV.2'
+    title: 'Оценки: смещение, разброс, MSE'
+  - slug: mle
+    number: 'IV.3'
+    title: 'Метод максимального правдоподобия'
+  - slug: multivariate-mle
+    number: 'IV.4'
+    title: 'Многомерный MLE'
+  - slug: exponential-family
+    number: 'IV.5'
+    title: 'Экспоненциальное семейство'
+  - slug: bayes-map
+    number: 'IV.6'
+    title: 'Байесовский подход и MAP'
+  - slug: risk-generalization
+    number: 'IV.7'
+    title: 'Риск, обобщение, кросс-валидация'
+  - slug: intervals-tests
+    number: 'IV.8'
+    title: 'Доверительные интервалы и проверка гипотез'
+    optional: true  # углубление: не блокирует прогресс

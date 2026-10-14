@@ -1,0 +1,43 @@
+# Модуль I. Линейная алгебра. Порядок уроков задаётся здесь, а не именами файлов.
+id: linear-algebra
+number: 'I'
+title:
+  ru: 'Линейная алгебра'
+hours: [28, 34]
+lessons:
+  - slug: vectors-span
+    number: 'I.1'
+    title: 'Векторы, линейные комбинации, оболочка'
+  - slug: dot-product-norms
+    number: 'I.2'
+    title: 'Скалярное произведение и нормы'
+  - slug: matrix-multiplication
+    number: 'I.3'
+    title: 'Умножение матриц: четыре взгляда'
+  - slug: matrix-as-map
+    number: 'I.4'
+    title: 'Матрица как линейное отображение'
+  - slug: transpose-trace
+    number: 'I.5'
+    title: 'Транспонирование, симметрия, след'
+  - slug: systems-rank
+    number: 'I.6'
+    title: 'Системы уравнений и ранг'
+  - slug: inverse-determinant
+    number: 'I.7'
+    title: 'Обратная матрица и определитель'
+  - slug: orthogonality-projections
+    number: 'I.8'
+    title: 'Ортогональность и проекции'
+  - slug: eigen
+    number: 'I.9'
+    title: 'Собственные значения и векторы'
+  - slug: quadratic-forms
+    number: 'I.10'
+    title: 'Квадратичные формы и знакоопределённость'
+  - slug: svd-pseudoinverse
+    number: 'I.11'
+    title: 'Сингулярное разложение и псевдообратная'
+  - slug: capstone-least-squares
+    number: 'I.12'
+    title: 'Капстоун: МНК как проекция'

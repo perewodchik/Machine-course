@@ -1,0 +1,16 @@
+# Модуль 3. Архитектуры. Порядок уроков задаётся здесь, а не именами файлов.
+id: architectures
+number: '3'
+title:
+  ru: 'Архитектуры'
+hours: [10, 13]
+lessons:
+  - slug: convnets
+    number: '3.1'
+    title: 'Свёрточные сети'
+  - slug: residual-normalization
+    number: '3.2'
+    title: 'Остаточные связи и нормализация слоя'
+  - slug: transfer-learning
+    number: '3.3'
+    title: 'Перенос обучения: предобученные сети и дообучение'

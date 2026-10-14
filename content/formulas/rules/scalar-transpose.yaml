@@ -1,0 +1,21 @@
+id: rule.scalar-transpose
+kind: rule
+title:
+  ru: 'Число равно своему транспонированию'
+  en: 'a scalar equals its transpose'
+statement: 'u^\top M v = v^\top M^\top u'
+symbols:
+  - name: u
+    tex: 'u'
+    shape: [m, 1]
+  - name: M
+    tex: 'M'
+    shape: [m, k]
+  - name: v
+    tex: 'v'
+    shape: [k, 1]
+concept: la.transpose
+checks:
+  - kind: identity
+    lhs: 'u @ M @ v'
+    rhs: 'v @ M.T @ u'

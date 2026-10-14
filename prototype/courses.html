@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Каталог курсов — Курсы ML</title>
+  <link rel="stylesheet" href="vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="assets/proto.css">
+  <link rel="stylesheet" href="assets/proto-extra.css">
+  <link rel="stylesheet" href="assets/ml.css">
+  <script defer src="vendor/katex/katex.min.js"></script>
+  <script defer src="vendor/katex/contrib/auto-render.min.js"></script>
+  <script defer src="assets/catalog.js"></script>
+  <script defer src="assets/proto.js"></script>
+</head>
+<body>
+<!-- SPRITE:BEGIN -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-sun" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3"/><path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1 1M11.6 11.6l1 1M3.4 12.6l1-1M11.6 4.4l1-1"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 16 16"><path d="M13.5 9.5A5.5 5.5 0 0 1 6.5 2.5a5.5 5.5 0 1 0 7 7Z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 16 16"><path d="M2.5 4h11M2.5 8h11M2.5 12h7"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></symbol>
+  <symbol id="st-passed" viewBox="0 0 14 14"><path d="m2.4 7.6 3 3 6.2-7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+<!-- SPRITE:END -->
+<!-- HEADER:BEGIN -->
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="courses.html" aria-label="Каталог курсов">
+      <svg class="brand__mark" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+        <path class="cell" d="M1 6h20M1 11h20M1 16h20M6 1v20M11 1v20M16 1v20" stroke-width="1"/>
+        <rect class="frame" x="1" y="1" width="20" height="20" rx="3" stroke-width="1.2"/>
+        <path class="vec" d="M3.5 17.5 18.5 5" stroke-width="1.8" stroke-linecap="round"/>
+        <circle class="dot" cx="6" cy="12.5" r="1.7"/><circle class="dot" cx="11" cy="12" r="1.7"/><circle class="dot" cx="15.5" cy="6.5" r="1.7"/>
+      </svg>
+      <span class="brand__name">Курсы ML</span>
+    </a>
+    <span class="crumb-sep" aria-hidden="true">/</span><span class="course-name" aria-current="page">Каталог</span>
+    <div class="header-progress">
+      <button class="icon-button theme-toggle" data-theme-toggle aria-label="Сменить тему">
+        <svg class="icon sun"><use href="#i-sun"/></svg><svg class="icon moon"><use href="#i-moon"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+<!-- HEADER:END -->
+
+<main class="catalog-page">
+  <h1>Курсы по машинному обучению</h1>
+  <p class="lead">Математика&nbsp;— предисловие. Машинное обучение разбито на&nbsp;восемь курсов по&nbsp;20–45 часов, и&nbsp;каждый заканчивается проектом, который можно показать работодателю.</p>
+
+  <section class="catalog-map" aria-labelledby="map-title">
+    <h2 id="map-title" class="visually-hidden">Карта курсов</h2>
+    <fieldset class="routes ui" data-routes>
+      <legend>Маршрут</legend>
+      <label><input type="radio" name="route" value="all" checked>Все курсы</label>
+      <label><input type="radio" name="route" value="cs229">Пройти CS229 целиком</label>
+      <label><input type="radio" name="route" value="tabular">ML-инженер на&nbsp;табличных данных</label>
+      <label><input type="radio" name="route" value="nn">Нейросети и&nbsp;LLM</label>
+    </fieldset>
+    <div class="map-scroll" role="region" aria-label="Карта курсов: прокручивается по горизонтали" tabindex="0">
+      <svg class="course-map" viewBox="0 0 770 344" role="img" aria-labelledby="map-desc" data-map>
+        <desc id="map-desc">Математика ведёт к «Основам ML». От «Основ» — к курсам «Классические методы», «Табличные данные», «Глубокое обучение», «Без учителя», «С подкреплением» и к «Практикуму». От «Глубокого обучения» — к LLM. Начаты математика (знаю 47 из 52 уроков) и «Основы ML» (знаю 6 из 11).</desc>
+        <defs>
+          <pattern id="map-cells" width="20" height="20" patternUnits="userSpaceOnUse"><path class="grid-line" d="M20 0H0V20" fill="none"/></pattern>
+          <marker id="map-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 1 9 5 0 9z"/></marker>
+        </defs>
+        <rect width="770" height="344" fill="url(#map-cells)"/>
+        <g class="edges">
+          <path class="edge" data-edge="math ml-basics" d="M168 165 H198"/>
+          <path class="edge" data-edge="ml-basics ml-classic" d="M358 165 C 380 165, 380 36, 398 36"/>
+          <path class="edge" data-edge="ml-basics ml-tabular" d="M358 165 C 380 165, 380 100, 398 100"/>
+          <path class="edge" data-edge="ml-basics deep-learning" d="M358 165 H398"/>
+          <path class="edge" data-edge="ml-basics unsupervised" d="M358 165 C 380 165, 380 230, 398 230"/>
+          <path class="edge" data-edge="ml-basics rl" d="M358 165 C 380 165, 380 294, 398 294"/>
+          <path class="edge" data-edge="ml-basics ml-project" d="M279 191 V296 H170"/>
+          <path class="edge" data-edge="deep-learning llm" d="M558 165 H598"/>
+          <path class="edge edge--soft" data-edge="deep-learning unsupervised" d="M440 191 V202"/>
+          <path class="edge edge--soft" data-edge="deep-learning rl" d="M558 180 C 590 180, 590 284, 560 284"/>
+          <path class="edge edge--soft" data-edge="rl llm" d="M558 306 C 650 306, 679 262, 679 193"/>
+        </g>
+        <g class="nodes">
+          <g class="node is-started" data-node="math" transform="translate(10 139)"><rect class="box" width="158" height="52" rx="6"/><text x="12" y="21">Математика</text><text class="sub" x="12" y="36">54 урока</text><rect class="bar-bg" x="12" y="42" width="134" height="3" rx="1.5"/><rect class="bar" x="12" y="42" width="121" height="3" rx="1.5"/></g>
+          <g class="node is-started is-now" data-node="ml-basics" transform="translate(200 139)"><rect class="box" width="158" height="52" rx="6"/><text x="12" y="21">Основы ML</text><text class="sub" x="12" y="36">11 уроков</text><rect class="bar-bg" x="12" y="42" width="134" height="3" rx="1.5"/><rect class="bar" x="12" y="42" width="74" height="3" rx="1.5"/></g>
+          <g class="node" data-node="ml-classic" transform="translate(400 10)"><rect class="box" width="158" height="52" rx="6"/><text x="12" y="23">Классические методы</text><text class="sub" x="12" y="40">8 уроков</text></g>
+          <g class="node" data-node="ml-tabular" transform="translate(400 74)"><rect class="box" width="158" height="52" rx="6"/><text x="12" y="23">Табличные данные</text><text class="sub" x="12" y="40">9 уроков</text></g>
+          <g class="node" data-node="deep-learning" transform="translate(400 139)"><rect class="box" width="158" height="52" rx="6"/><text x="12" y="23">Глубокое обучение</text><text class="sub" x="12" y="40">9 уроков</text></g>
+          <g class="node" data-node="unsupervised" transform="translate(400 204)"><rect class="box" width="158" height="52" rx="6"/><text x="12" y="23">Без учителя</text><text class="sub" x="12" y="40">7 уроков</text></g>
+          <g class="node" data-node="rl" transform="translate(400 268)"><rect class="box" width="158" height="52" rx="6"/><text x="12" y="23">С подкреплением</text><text class="sub" x="12" y="40">6 уроков</text></g>
+          <g class="node" data-node="llm" transform="translate(600 139)"><rect class="box" width="158" height="52" rx="6"/><text x="12" y="23">LLM</text><text class="sub" x="12" y="40">7 уроков</text></g>
+          <g class="node" data-node="ml-project" transform="translate(10 270)"><rect class="box" width="158" height="52" rx="6"/><text x="12" y="23">Практикум</text><text class="sub" x="12" y="40">свой проект</text></g>
+        </g>
+      </svg>
+    </div>
+    <p class="map-legend ui">Сплошная стрелка&nbsp;— курс нужен до начала, пунктир&nbsp;— рекомендуется. Полоска&nbsp;— доля уроков с&nbsp;галочкой «знаю».</p>
+  </section>
+
+  <section aria-labelledby="list-title">
+    <h2 id="list-title">Все курсы</h2>
+    <ol class="catalog">
+      <li class="catalog__row" id="math" data-course-row="math">
+        <div class="catalog__main"><h3><a href="index.html">Математика для машинного обучения</a></h3><p>Линейная алгебра, анализ, вероятность и&nbsp;статистика на&nbsp;уровне, нужном для&nbsp;CS229. Предисловие ко&nbsp;всем курсам.</p></div>
+        <dl class="catalog__facts ui"><div><dt>Уроков</dt><dd>54</dd></div><div><dt>Часов</dt><dd>106–128</dd></div><div><dt>Практика</dt><dd>8 лабораторных, 19 игр</dd></div><div><dt>Нужно до начала</dt><dd>школьная алгебра, Python</dd></div></dl>
+        <div class="catalog__progress ui"><span>Знаю 47 из&nbsp;52</span><span class="progress" aria-hidden="true"><span style="width:90%"></span></span><a class="btn btn--sm btn--primary" href="lesson.html">Продолжить: V.1</a></div>
+      </li>
+      <li class="catalog__row" id="ml-basics" data-course-row="ml-basics">
+        <div class="catalog__main"><h3><a href="ml-lesson.html">Основы машинного обучения</a></h3><p>Линейные модели, классификация, метрики и&nbsp;выбор модели. База для&nbsp;остальных курсов.</p></div>
+        <dl class="catalog__facts ui"><div><dt>Уроков</dt><dd>11</dd></div><div><dt>Часов</dt><dd>38–46</dd></div><div><dt>Проекты</dt><dd>«Цена квартиры», «Отклик на&nbsp;предложение банка»</dd></div><div><dt>Нужно до начала</dt><dd>математика</dd></div></dl>
+        <div class="catalog__progress ui"><span>Знаю 6 из&nbsp;11</span><span class="progress" aria-hidden="true"><span style="width:55%"></span></span><a class="btn btn--sm btn--primary" href="ml-lesson.html">Продолжить: 2.1</a></div>
+      </li>
+      <li class="catalog__row" id="ml-classic" data-course-row="ml-classic">
+        <div class="catalog__main"><h3><a href="#">Классические методы: генеративные модели, ядра и&nbsp;SVM</a></h3><p>Вторая половина части&nbsp;I конспекта CS229 и&nbsp;теория обучения: почему методы работают.</p></div>
+        <dl class="catalog__facts ui"><div><dt>Уроков</dt><dd>8</dd></div><div><dt>Часов</dt><dd>25–32</dd></div><div><dt>Проект</dt><dd>«Фильтр сообщений»</dd></div><div><dt>Нужно до начала</dt><dd>основы ML</dd></div></dl>
+        <div class="catalog__progress ui"><span class="muted">Не начат</span><a class="btn btn--sm" href="#">Программа курса</a></div>
+      </li>
+      <li class="catalog__row" id="ml-tabular" data-course-row="ml-tabular">
+        <div class="catalog__main"><h3><a href="#">ML на табличных данных</a></h3><p>Валидация без утечек, признаки, градиентный бустинг, интерпретация. Так делают модели в&nbsp;продукте.</p></div>
+        <dl class="catalog__facts ui"><div><dt>Уроков</dt><dd>9</dd></div><div><dt>Часов</dt><dd>28–35</dd></div><div><dt>Проект</dt><dd>«Кредитный скоринг»</dd></div><div><dt>Нужно до начала</dt><dd>основы ML</dd></div></dl>
+        <div class="catalog__progress ui"><span class="muted">Не начат</span><a class="btn btn--sm" href="#">Программа курса</a></div>
+      </li>
+      <li class="catalog__row" id="deep-learning" data-course-row="deep-learning">
+        <div class="catalog__main"><h3><a href="#">Глубокое обучение</a></h3><p>Нейросеть с&nbsp;нуля на&nbsp;NumPy, обучение сетей, PyTorch, свёрточные сети и&nbsp;перенос обучения.</p></div>
+        <dl class="catalog__facts ui"><div><dt>Уроков</dt><dd>9</dd></div><div><dt>Часов</dt><dd>30–37</dd></div><div><dt>Проект</dt><dd>«Цифры с&nbsp;нуля»</dd></div><div><dt>Нужно до начала</dt><dd>основы ML</dd></div></dl>
+        <div class="catalog__progress ui"><span class="muted">Не начат</span><a class="btn btn--sm" href="#">Программа курса</a></div>
+      </li>
+      <li class="catalog__row" id="unsupervised" data-course-row="unsupervised">
+        <div class="catalog__main"><h3><a href="#">Обучение без учителя и&nbsp;представления</a></h3><p>Кластеризация, смеси и&nbsp;EM, метод главных компонент, самообучение.</p></div>
+        <dl class="catalog__facts ui"><div><dt>Уроков</dt><dd>7</dd></div><div><dt>Часов</dt><dd>21–27</dd></div><div><dt>Проект</dt><dd>«Сегменты клиентов»</dd></div><div><dt>Нужно до начала</dt><dd>основы ML</dd></div></dl>
+        <div class="catalog__progress ui"><span class="muted">Не начат</span><a class="btn btn--sm" href="#">Программа курса</a></div>
+      </li>
+      <li class="catalog__row" id="llm" data-course-row="llm">
+        <div class="catalog__main"><h3><a href="#">Языковые модели и&nbsp;LLM</a></h3><p>Трансформер, дообучение, обучение в&nbsp;контексте, поиск с&nbsp;генерацией и&nbsp;честная оценка качества.</p></div>
+        <dl class="catalog__facts ui"><div><dt>Уроков</dt><dd>7</dd></div><div><dt>Часов</dt><dd>23–29</dd></div><div><dt>Проект</dt><dd>«Умный поиск по&nbsp;курсу»</dd></div><div><dt>Нужно до начала</dt><dd>глубокое обучение</dd></div></dl>
+        <div class="catalog__progress ui"><span class="muted">Сначала&nbsp;— глубокое обучение</span><a class="btn btn--sm" href="#">Программа курса</a></div>
+      </li>
+      <li class="catalog__row" id="rl" data-course-row="rl">
+        <div class="catalog__main"><h3><a href="#">Обучение с&nbsp;подкреплением</a></h3><p>Марковские процессы принятия решений, итерация по&nbsp;ценности, Q-обучение, градиент стратегии.</p></div>
+        <dl class="catalog__facts ui"><div><dt>Уроков</dt><dd>6</dd></div><div><dt>Часов</dt><dd>19–25</dd></div><div><dt>Проект</dt><dd>«Агент»</dd></div><div><dt>Нужно до начала</dt><dd>основы ML</dd></div></dl>
+        <div class="catalog__progress ui"><span class="muted">Не начат</span><a class="btn btn--sm" href="#">Программа курса</a></div>
+      </li>
+      <li class="catalog__row" id="ml-project" data-course-row="ml-project">
+        <div class="catalog__main"><h3><a href="#">Практикум: свой ML-проект</a></h3><p>Своя задача от&nbsp;постановки до&nbsp;защиты: метрика, бейзлайн, эксперименты, отчёт по&nbsp;рубрике.</p></div>
+        <dl class="catalog__facts ui"><div><dt>Уроков</dt><dd>3</dd></div><div><dt>Часов</dt><dd>20–40</dd></div><div><dt>Проект</dt><dd>своя задача</dd></div><div><dt>Нужно до начала</dt><dd>основы ML и&nbsp;ещё один курс</dd></div></dl>
+        <div class="catalog__progress ui"><span class="muted">Не начат</span><a class="btn btn--sm" href="#">Программа курса</a></div>
+      </li>
+    </ol>
+  </section>
+</main>
+</body>
+</html>

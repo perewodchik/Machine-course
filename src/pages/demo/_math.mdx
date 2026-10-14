@@ -1,0 +1,48 @@
+---
+# Демо формул: роли символов из frontmatter, подсветка, типограф. Подключается страницей demo/math.astro.
+symbols:
+  - name: X
+    tex: 'X'
+    meaning: 'матрица признаков'
+    shape: [n, d]
+    role: data
+  - name: theta
+    tex: '\theta'
+    meaning: 'вектор весов'
+    shape: [d, 1]
+    role: param
+  - name: y
+    tex: 'y'
+    meaning: 'вектор ответов'
+    shape: [n, 1]
+    role: target
+  - name: eps
+    tex: '\varepsilon'
+    meaning: 'остатки'
+    shape: [n, 1]
+    role: aux
+---
+
+## Роли символов
+
+Модель предсказывает ответы произведением $\sym{X}{X}\sym{theta}{\theta}$, а остатки $\sym{eps}{\varepsilon} = \sym{y}{y} - \sym{X}{X}\sym{theta}{\theta}$ показывают, насколько она ошибается. Наведите указатель на символ: подсветятся все его вхождения на странице.
+
+$$
+\sym{theta}{\theta}^{\star} = (\sym{X}{X}\T \sym{X}{X})^{-1} \sym{X}{X}\T \sym{y}{y}
+$$
+
+<SymbolLegend symbols={frontmatter.symbols} />
+
+С клавиатуры: перейдите клавишей Tab на кнопку легенды&nbsp;— символ подсветится в формулах.
+
+## Шаг вывода
+
+Изменившаяся часть шага выделена маркером:
+
+$$
+J(\sym{theta}{\theta}) = \tfrac12 \left(\sym{theta}{\theta}\T \sym{X}{X}\T \sym{X}{X} \sym{theta}{\theta} - \changed{2\, \sym{y}{y}\T \sym{X}{X} \sym{theta}{\theta}} + \sym{y}{y}\T \sym{y}{y}\right)
+$$
+
+## Типограф
+
+Типограф ставит "кавычки-ёлочки", тире - как здесь, и неразрывные пробелы после коротких слов в тексте. Числа не трогает: шаг 0.05 и seed 12345 остаются как в коде, `x = "a - b"` в коде тоже.

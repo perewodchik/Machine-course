@@ -1,0 +1,14 @@
+# Модуль V. Мост к ML. Порядок уроков задаётся здесь, а не именами файлов.
+# Модели CS229 (логистическая регрессия, GLM, GDA, SVM, нейросети, k-means, EM, PCA) — в курсах ML (docs/program/catalog.md).
+id: bridge
+number: 'V'
+title:
+  ru: 'Мост к ML'
+hours: [4, 6]
+lessons:
+  - slug: linear-regression
+    number: 'V.1'
+    title: 'Линейная регрессия тремя способами'
+  - slug: math-in-ml
+    number: 'V.2'
+    title: 'Итоговая проверка: математика в выводах ML'

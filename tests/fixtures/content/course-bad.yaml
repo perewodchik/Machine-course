@@ -1,0 +1,9 @@
+# Битый курс: лишнее поле, пустой список модулей
+id: demo
+title:
+  ru: 'Демо'
+summary:
+  ru: 'Курс'
+cs229Edition: main-notes-2026-spring
+modulesOrder: [a]
+modules: []

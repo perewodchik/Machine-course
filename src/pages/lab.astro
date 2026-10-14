@@ -1,0 +1,182 @@
+---
+// Витрина дизайн-системы /lab (эталон — prototype/design-system.html): токены обеих тем с контрастом, символы,
+// типографика, компоненты в разных состояниях. Визуальные эталоны снимаются в CI (tests/visual/lab.spec.ts).
+import "../styles/lab.css";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Know from "../components/layout/Know.astro";
+import CheckMark from "../components/layout/CheckMark.astro";
+import Icon from "../components/layout/Icon.astro";
+import { Block, Formula, Note, Prereqs } from "../components/pedagogy";
+import SymbolLegend from "../components/pedagogy/SymbolLegend.astro";
+import Tex from "../components/pedagogy/Tex.astro";
+import { contrast, readTokens, resolve } from "../design-system/tokens/read";
+import { loadCourse } from "../lib/content/collections";
+import { loadRegistry } from "../lib/content/registry";
+
+const themes = readTokens();
+// фоны и линии: контраст к бумаге для них не требуется
+const DECOR = new Set(["paper", "paper-2", "surface", "grid", "rule", "pen-wash", "margin-line", "highlighter", "sym-1", "sym-2", "sym-3"]);
+const NEED: Record<string, number> = { "control-border": 3 };
+const groups = [
+  { title: "Бумага и чернила", tokens: ["paper", "paper-2", "surface", "grid", "ink", "ink-2", "ink-3", "rule", "control-border"] },
+  { title: "Ручки и маркер", tokens: ["pen", "pen-strong", "pen-wash", "red-pen", "margin-line", "green-pen", "highlighter"] },
+  { title: "Символы", tokens: ["sym-1", "sym-1-text", "sym-2", "sym-2-text", "sym-3", "sym-3-text"] },
+];
+const swatch = (name: string) => {
+  const light = resolve(themes.light, name);
+  const dark = resolve(themes.dark, name);
+  const need = DECOR.has(name) ? undefined : (NEED[name] ?? 4.5);
+  const ratio = (v: string, t: "light" | "dark") => contrast(v, resolve(themes[t], "paper")).toFixed(1);
+  return { name, light, dark, need, lightRatio: ratio(light, "light"), darkRatio: ratio(dark, "dark") };
+};
+
+const course = await loadCourse("foundations");
+const reg = await loadRegistry();
+const symbols = reg.formulas.get("f.normal-equations")!.symbols;
+const stats = course.modules.find((m) => m.id === "statistics")!;
+const sample = stats.lessons.slice(5, 8);
+const regression = course.lessons.find((l) => l.key === "foundations/bridge/linear-regression")!;
+---
+<BaseLayout title="Витрина дизайн-системы" description="Токены, символы, типографика и компоненты курса." noindex>
+  <main class="shell lab" id="content">
+    <h1>Дизайн-система «Тетрадь в&nbsp;клетку»</h1>
+    <p class="lead intro">Курс выглядит как аккуратная рабочая тетрадь: белая бумага, клетка там, где есть координаты, поля с&nbsp;красной линией для заметок и&nbsp;три ручки для того, что делает ученик.</p>
+    <ol class="rules">
+      <li><b>Бумага, а&nbsp;не&nbsp;экран.</b> Холодный белый фон без крема и&nbsp;градиентов. Клетка появляется только внутри рисунков, где у&nbsp;неё есть смысл.</li>
+      <li><b>Поля тетради.</b> Красная линия отделяет текст от&nbsp;заметок, английских терминов и&nbsp;ссылок на&nbsp;CS229. На&nbsp;узком экране заметки встают в&nbsp;текст.</li>
+      <li><b>Синяя ручка&nbsp;— то, что делает ученик:</b> ссылки, кнопки, ползунки, ввод, упражнения. Красная&nbsp;— ошибки и&nbsp;поправки, зелёная&nbsp;— «верно» и&nbsp;галочка «знаю».</li>
+      <li><b>Цвет символа закреплён за&nbsp;ролью</b> и&nbsp;совпадает в&nbsp;формуле и&nbsp;на&nbsp;рисунке. Цветов три, вспомогательное&nbsp;— карандашом.</li>
+      <li><b>Текст важнее интерфейса.</b> Literata для чтения, IBM Plex Sans для управления. Без заглавных меток, эмодзи и&nbsp;декоративных иконок.</li>
+      <li><b>Скругление растёт с&nbsp;размером:</b> 3&nbsp;px у&nbsp;метки, 6&nbsp;px у&nbsp;кнопки, 10&nbsp;px у&nbsp;рисунка. Теней нет, кроме всплывающих слоёв.</li>
+    </ol>
+
+    <section aria-labelledby="lab-color">
+      <h2 id="lab-color">Цвет</h2>
+      <p class="intro">Значения прочитаны из&nbsp;<code>tokens.css</code> при сборке: слева светлая тема, справа тёмная. Контраст посчитан к&nbsp;бумаге своей темы: тексту нужно не&nbsp;меньше 4.5:1, рамкам контролов&nbsp;— 3:1. Тот&nbsp;же расчёт проверяет тест <code>tests/unit/tokens.test.ts</code>.</p>
+      {groups.map((g) => (
+        <>
+          <h3>{g.title}</h3>
+          <div class="swatches">
+            {g.tokens.map(swatch).map((s) => (
+              <figure class="swatch">
+                {/* образцы показывают сами значения токенов: это единственное место, где цвет задан не переменной */}
+                <div class="swatch__chips" aria-hidden="true"><span style={`background:${s.light}`}></span><span style={`background:${s.dark}`}></span></div>
+                <figcaption>
+                  <b>--{s.name}</b>
+                  <dl>
+                    <dt>светлая</dt><dd><code>{s.light}</code>{s.need && `, ${s.lightRatio}:1`}</dd>
+                    <dt>тёмная</dt><dd><code>{s.dark}</code>{s.need && `, ${s.darkRatio}:1`}</dd>
+                  </dl>
+                  {s.need ? <span>нужно ≥&nbsp;{s.need}:1</span> : <span>фон или линия</span>}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </>
+      ))}
+    </section>
+
+    <section aria-labelledby="lab-symbols">
+      <h2 id="lab-symbols">Символы</h2>
+      <p class="intro">Три цвета, попарно различимые при дальтонизме в&nbsp;обеих темах и&nbsp;заметно отличные от&nbsp;ручек интерфейса. Урок назначает роли; наведение на&nbsp;символ или фокус на&nbsp;кнопке легенды подсвечивает все его вхождения.</p>
+      <div class="sym-row">
+        <div class="sym-card"><div class="glyph s1"><Tex tex="X" /></div><div class="bar bar--1"></div>sym-1, бирюза: данные</div>
+        <div class="sym-card"><div class="glyph s2"><Tex tex={String.raw`\theta`} /></div><div class="bar bar--2"></div>sym-2, оранжевый: параметры</div>
+        <div class="sym-card"><div class="glyph s3"><Tex tex="y" /></div><div class="bar bar--3"></div>sym-3, пурпур: ответы</div>
+        <div class="sym-card"><div class="glyph s4"><Tex tex={String.raw`\varepsilon`} /></div><div class="bar bar--4"></div>карандаш: остатки, шум</div>
+      </div>
+      <Tex display tex={String.raw`\sym{theta}{\theta}^{\star} = (\sym{X}{X}^\top \sym{X}{X})^{-1} \sym{X}{X}^\top \sym{y}{y}`} symbols={symbols} />
+      <SymbolLegend symbols={symbols} />
+    </section>
+
+    <section aria-labelledby="lab-type">
+      <h2 id="lab-type">Типографика</h2>
+      <div class="type-row"><div class="spec">H1, Plex Sans 600<br />40 / 46</div><div class="sample-h1">Собственные векторы</div></div>
+      <div class="type-row"><div class="spec">H2, Plex Sans 600<br />25 / 31</div><div class="sample-h2">Способ 2. Минимум функции потерь</div></div>
+      <div class="type-row"><div class="spec">Лид, Literata 400<br />21 / 33</div><p class="lead" style="margin:0">Одна и&nbsp;та&nbsp;же формула весов получается из&nbsp;геометрии, из&nbsp;анализа и&nbsp;из&nbsp;теории вероятностей.</p></div>
+      <div class="type-row"><div class="spec">Текст, Literata 400<br />18 / 30, до&nbsp;70 знаков</div><p style="margin:0;max-width:var(--measure)">Матрица переводит каждый вектор в&nbsp;новый, и&nbsp;прямые остаются прямыми. Собственный вектор она только растягивает: направление не&nbsp;меняется.</p></div>
+      <div class="type-row"><div class="spec">Заметка на&nbsp;полях<br />Literata 15 / 22</div><div class="note" role="note"><span class="label">По-английски</span><div class="note__body"><span class="note__term">eigenvector</span>&nbsp;— собственный вектор.</div></div></div>
+      <div class="type-row"><div class="spec">Интерфейс, Plex Sans<br />15 / 22</div><div class="ui" style="font-size:var(--text-sm)">Знаю 39 из&nbsp;52 уроков. Следующий шаг откроется после ответа.</div></div>
+      <div class="type-row"><div class="spec">Код, Plex Mono<br />14 / 23</div><code style="font-size:14px">theta = np.linalg.solve(X.T @ X, X.T @ y)</code></div>
+    </section>
+
+    <section aria-labelledby="lab-components">
+      <h2 id="lab-components">Компоненты</h2>
+      <div class="ds-grid">
+        <div>
+          <h3>Кнопки</h3>
+          <div class="ds-row">
+            <button class="btn btn--primary" type="button">Следующий шаг</button>
+            <button class="btn" type="button">Показать минимум</button>
+            <button class="btn btn--quiet" type="button">Подсказка</button>
+            <button class="btn" type="button" disabled>Недоступно</button>
+          </div>
+          <div class="ds-row">
+            <button class="btn is-hover" type="button">Наведение</button>
+            <button class="btn is-focus" type="button">Фокус с&nbsp;клавиатуры</button>
+            <button class="btn btn--sm btn--quiet" type="button"><Icon name="margin" />Скрыть поля</button>
+            <button class="icon-button" type="button" aria-label="Оглавление"><Icon name="menu" /></button>
+          </div>
+          <h3 style="margin-top:var(--space-6)">Переключатель</h3>
+          <div class="ds-row">
+            <label class="switch"><input type="checkbox" checked />Сначала предсказать шаг</label>
+            <label class="switch"><input type="checkbox" />Выключено</label>
+          </div>
+          <p class="ui muted" style="font-size:14px">Ввод ответа и&nbsp;ползунки появятся здесь вместе с&nbsp;движком упражнений и&nbsp;набором виджетов.</p>
+        </div>
+        <div>
+          <h3>Галочка «знаю»</h3>
+          <Prereqs lessons={["foundations/linear-algebra/orthogonality-projections", "foundations/calculus/gradient"]} course="foundations" />
+          <nav class="toc toc--sample" aria-label="Пример оглавления">
+            <div class="toc__part">
+              <button class="toc__part-head" type="button" aria-expanded="true" aria-controls="lab-toc-sample">
+                <span class="toc__chevron" aria-hidden="true"><Icon name="chevron" /></span><span class="n">{stats.number}</span><span class="toc__title">{stats.title}</span>
+                <CheckMark class="status status--passed" data-module-done hidden />
+              </button>
+              <ol id="lab-toc-sample">
+                {sample.map((l) => <li><Know lesson={l} /><a href={l.href}><span class="n">{l.number}</span><span class="toc__title">{l.title}{l.optional && " ★"}</span></a></li>)}
+              </ol>
+            </div>
+          </nav>
+          <p style="margin-top:12px"><Know lesson={regression} text="Знаю эту тему" /></p>
+          <p class="ui muted" style="font-size:14px">Одна булева отметка на&nbsp;урок: знаю или нет. Ставит и&nbsp;снимает ученик; итоговая проверка урока ставит её сама.</p>
+        </div>
+      </div>
+
+      <h3 style="margin-top:var(--space-7)">Педагогические блоки</h3>
+      <div class="ds-grid" style="margin-top:0">
+        <div>
+          <Block kind="definition" n={4}><p>Ненулевой вектор <Tex tex="v" /> называется <i>собственным</i> для матрицы <Tex tex="A" />, если <Tex tex={String.raw`Av = \lambda v`} />.</p></Block>
+          <Block kind="theorem" n={3}><p>У&nbsp;симметричной матрицы собственные значения вещественны, а&nbsp;собственные векторы можно выбрать ортонормированными.</p></Block>
+          <Block kind="intuition"><p>Собственный вектор матрица только растягивает: направление остаётся тем&nbsp;же.</p></Block>
+        </div>
+        <div>
+          <Block kind="pitfall"><p>Транспонирование меняет порядок множителей: <Tex tex={String.raw`(AB)^\top = \struck{\,A^\top B^\top\,}\; \fix{B^\top A^\top}`} />.</p></Block>
+          <Block kind="exercise" n={2}><p>Найдите собственные значения матрицы <Tex tex={String.raw`\begin{pmatrix}2&1\\1&2\end{pmatrix}`} />.</p></Block>
+          <Block kind="derivation"><p>Пунктирная линейка отмечает рассуждение, которое можно пропустить при повторении.</p></Block>
+        </div>
+      </div>
+
+      <h3 style="margin-top:var(--space-7)">Заметки на&nbsp;полях</h3>
+      <div class="ds-grid" style="margin-top:0">
+        <Note label="В CS229">Раздел «Linear regression»: <span class="note__term">the normal equations</span>.</Note>
+        <Note label="Учитель" teacher>Проверяйте размерности до&nbsp;того, как раскрывать скобки.</Note>
+      </div>
+
+      <h3 style="margin-top:var(--space-7)">Карточка формулы с&nbsp;выводом</h3>
+      <Formula formula="f.normal-equations" n={4} start={2} />
+    </section>
+
+    <section aria-labelledby="lab-dont">
+      <h2 id="lab-dont">Чего не&nbsp;делаем</h2>
+      <ol class="rules">
+        <li>Кремовый фон, контрастные засечки в&nbsp;заголовках и&nbsp;терракотовый акцент&nbsp;— это самый узнаваемый шаблон сгенерированных страниц.</li>
+        <li>Градиенты, стекло, тени у&nbsp;карточек, одинаковые карточки вместо текста.</li>
+        <li>Метки капслоком над заголовками и&nbsp;строки через средние точки.</li>
+        <li>Эмодзи и&nbsp;иконки у&nbsp;каждого пункта; стрелка в&nbsp;конце ссылок.</li>
+        <li>Анимация при прокрутке. Движение только там, где оно объясняет математику.</li>
+        <li>Дефолтная палитра Tailwind: она отключена в&nbsp;теме, классы вроде <code>bg-indigo-500</code> не&nbsp;существуют.</li>
+      </ol>
+    </section>
+  </main>
+</BaseLayout>

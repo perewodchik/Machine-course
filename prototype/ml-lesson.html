@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Метрики классификации — Основы машинного обучения</title>
+  <link rel="stylesheet" href="vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="assets/proto.css">
+  <link rel="stylesheet" href="assets/proto-extra.css">
+  <link rel="stylesheet" href="assets/ml.css">
+  <script defer src="vendor/katex/katex.min.js"></script>
+  <script defer src="vendor/katex/contrib/auto-render.min.js"></script>
+  <script defer src="assets/data/threshold.js"></script>
+  <script defer src="assets/ml.js"></script>
+  <script defer src="assets/proto.js"></script>
+</head>
+<body>
+<!-- SPRITE:BEGIN -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-sun" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3"/><path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1 1M11.6 11.6l1 1M3.4 12.6l1-1M11.6 4.4l1-1"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 16 16"><path d="M13.5 9.5A5.5 5.5 0 0 1 6.5 2.5a5.5 5.5 0 1 0 7 7Z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 16 16"><path d="M2.5 4h11M2.5 8h11M2.5 12h7"/></symbol>
+  <symbol id="i-play" viewBox="0 0 16 16"><path d="M5 3.5v9l7-4.5-7-4.5Z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 16 16"><path d="m3.5 8.5 3 3 6-7"/></symbol>
+  <symbol id="i-x" viewBox="0 0 16 16"><path d="m4 4 8 8M12 4l-8 8"/></symbol>
+  <symbol id="i-margin" viewBox="0 0 16 16"><rect x="2" y="2.5" width="12" height="11" rx="1.5"/><path d="M10 2.5v11"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></symbol>
+  <symbol id="st-passed" viewBox="0 0 14 14"><path d="m2.4 7.6 3 3 6.2-7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+<!-- SPRITE:END -->
+<!-- HEADER:BEGIN -->
+<header class="site-header">
+  <div class="site-header__inner">
+    <button class="icon-button toc-toggle" data-toc-toggle aria-expanded="false" aria-label="Оглавление курса"><svg class="icon"><use href="#i-menu"/></svg></button>
+    <a class="brand" href="courses.html" aria-label="Каталог курсов">
+      <svg class="brand__mark" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+        <path class="cell" d="M1 6h20M1 11h20M1 16h20M6 1v20M11 1v20M16 1v20" stroke-width="1"/>
+        <rect class="frame" x="1" y="1" width="20" height="20" rx="3" stroke-width="1.2"/>
+        <path class="vec" d="M3.5 17.5 18.5 5" stroke-width="1.8" stroke-linecap="round"/>
+        <circle class="dot" cx="6" cy="12.5" r="1.7"/><circle class="dot" cx="11" cy="12" r="1.7"/><circle class="dot" cx="15.5" cy="6.5" r="1.7"/>
+      </svg>
+      <span class="brand__name">Курсы ML</span>
+    </a>
+    <span class="crumb-sep" aria-hidden="true">/</span><a class="course-name" href="courses.html#ml-basics">Основы машинного обучения</a>
+    <div class="header-progress" data-course="ml-basics">
+      <span class="label"><span class="hide-narrow">Знаю <span data-known-total>6</span> из <span data-known-of>11</span> уроков курса</span><span class="show-narrow"><svg class="status status--passed" aria-hidden="true"><use href="#st-passed"/></svg><span class="visually-hidden">Знаю </span><span data-known-total>6</span> из 11<span class="visually-hidden"> уроков курса</span></span></span>
+      <span class="progress" aria-hidden="true"><span data-known-bar style="width:55%"></span></span>
+      <button class="icon-button theme-toggle" data-theme-toggle aria-label="Сменить тему">
+        <svg class="icon sun"><use href="#i-sun"/></svg><svg class="icon moon"><use href="#i-moon"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+<!-- HEADER:END -->
+
+<div class="page">
+  <nav class="toc" aria-label="Оглавление курса">
+    <p class="toc__hint"><svg class="status status--passed" aria-hidden="true"><use href="#st-passed"/></svg>Отметьте урок, если знаете тему. Отметку можно снять.</p>
+    <div class="toc__part">
+      <button class="toc__part-head" aria-expanded="true" aria-controls="toc-ml-basics-linear-models"><span class="toc__chevron" aria-hidden="true"><svg class="icon"><use href="#i-chevron"/></svg></span><span class="n">1</span><span class="toc__title">Линейные модели</span><span class="count" hidden><span aria-hidden="true"><span data-known-count>6</span>/6</span><span class="visually-hidden">знаю <span data-known-count>6</span> из 6</span></span><svg class="status status--passed" role="img" aria-label="все уроки модуля отмечены" data-module-done><use href="#st-passed"/></svg></button>
+      <ol id="toc-ml-basics-linear-models">
+        <li><label class="know"><input type="checkbox" data-know="ml-basics:1.1" checked aria-label="Знаю: 1.1 Задача обучения: данные, модель, потери, обобщение"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">1.1</span><span class="toc__title">Задача обучения: данные, модель, потери, обобщение</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="ml-basics:1.2" checked aria-label="Знаю: 1.2 Линейная регрессия и LMS: пакетный и стохастический спуск"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">1.2</span><span class="toc__title">Линейная регрессия и LMS: пакетный и стохастический спуск</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="ml-basics:1.3" checked aria-label="Знаю: 1.3 Признаки, полиномы и локально взвешенная регрессия"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">1.3</span><span class="toc__title">Признаки, полиномы и локально взвешенная регрессия</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="ml-basics:1.4" checked aria-label="Знаю: 1.4 Логистическая регрессия и метод Ньютона"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">1.4</span><span class="toc__title">Логистическая регрессия и метод Ньютона</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="ml-basics:1.5" checked aria-label="Знаю: 1.5 Перцептрон и многоклассовая классификация"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">1.5</span><span class="toc__title">Перцептрон и многоклассовая классификация</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="ml-basics:1.6" checked aria-label="Знаю: 1.6 Обобщённые линейные модели"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">1.6</span><span class="toc__title">Обобщённые линейные модели</span></a></li>
+      </ol>
+    </div>
+    <div class="toc__part">
+      <button class="toc__part-head" aria-expanded="true" aria-controls="toc-ml-basics-evaluation"><span class="toc__chevron" aria-hidden="true"><svg class="icon"><use href="#i-chevron"/></svg></span><span class="n">2</span><span class="toc__title">Оценка и обобщение</span><span class="count"><span aria-hidden="true"><span data-known-count>0</span>/5</span><span class="visually-hidden">знаю <span data-known-count>0</span> из 5</span></span><svg class="status status--passed" role="img" aria-label="все уроки модуля отмечены" hidden data-module-done><use href="#st-passed"/></svg></button>
+      <ol id="toc-ml-basics-evaluation">
+        <li class="is-current"><label class="know"><input type="checkbox" data-know="ml-basics:2.1" aria-label="Знаю: 2.1 Метрики классификации: порог, ROC, PR, калибровка"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="ml-lesson.html" aria-current="page"><span class="n">2.1</span><span class="toc__title">Метрики классификации: порог, ROC, PR, калибровка</span></a>
+          <ol class="sub">
+            <li><a href="#" aria-current="location">Порог превращает вероятность в решение</a></li>
+            <li><a href="#">ROC и цена ошибок</a></li>
+            <li><a href="#">PR-кривая при дисбалансе</a></li>
+            <li><a href="#">Калибровка</a></li>
+            <li><a href="#">Итоговая проверка</a></li>
+          </ol>
+        </li>
+        <li><label class="know"><input type="checkbox" data-know="ml-basics:2.2" aria-label="Знаю: 2.2 Смещение и разброс"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">2.2</span><span class="toc__title">Смещение и разброс</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="ml-basics:2.3" aria-label="Знаю: 2.3 Регуляризация: L2 и L1"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">2.3</span><span class="toc__title">Регуляризация: L2 и L1</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="ml-basics:2.4" aria-label="Знаю: 2.4 Выбор модели и кросс-валидация"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">2.4</span><span class="toc__title">Выбор модели и кросс-валидация</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="ml-basics:2.5" aria-label="Знаю: 2.5 Кривые обучения, анализ ошибок и утечки"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">2.5</span><span class="toc__title">Кривые обучения, анализ ошибок и утечки</span></a></li>
+      </ol>
+    </div>
+  </nav>
+
+  <main class="article-wrap">
+    <article class="article">
+      <div class="article-top">
+        <nav class="breadcrumb" aria-label="Путь"><a href="courses.html#ml-basics">Основы ML</a><span aria-hidden="true">/</span><span>Оценка и обобщение</span><span aria-hidden="true">/</span><span>Урок 2.1</span></nav>
+        <button class="btn btn--quiet btn--sm margin-toggle" data-margin-toggle aria-pressed="false"><svg class="icon"><use href="#i-margin"/></svg><span data-label>Скрыть поля</span></button>
+      </div>
+      <h1>Метрики классификации: порог, ROC, PR, калибровка</h1>
+
+      <div class="note" role="note">
+        <span class="label">В CS229</span>
+        <div class="note__body">В конспекте этой темы нет: метрики и выбор порога разбирают на лекции <span class="note__term">ML advice</span>. Без них модель нельзя отдавать в работу.</div>
+      </div>
+      <p class="lead">Модель выдаёт вероятность, а решение принимает порог. Выберем порог по цене ошибок и увидим, почему доля верных ответов здесь обманывает.</p>
+      <div class="lesson-meta ui"><span>Около 50 минут: четыре цикла, восемь вопросов и&nbsp;задача «Цена ошибки».</span><label class="know know--text"><input type="checkbox" data-know="ml-basics:2.1"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span><span>Знаю эту тему</span></label></div>
+
+      <div class="prereqs prereqs--courses">
+        <span class="prereqs__label">Опирается на</span>
+        <ul>
+          <li><label class="know"><input type="checkbox" data-know="foundations:III.2" checked aria-label="Знаю: математика, III.2 Условная вероятность и независимость"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span><a href="lesson.html">Условная вероятность</a> <span class="ref">математика, III.2</span></span></li>
+          <li><label class="know"><input type="checkbox" data-know="foundations:IV.7" checked aria-label="Знаю: математика, IV.7 Риск, обобщение, кросс-валидация"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span><a href="lesson.html">Риск и кросс-валидация</a> <span class="ref">математика, IV.7</span></span></li>
+          <li><label class="know"><input type="checkbox" data-know="ml-basics:1.4" checked aria-label="Знаю: основы ML, 1.4 Логистическая регрессия"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span><a href="#">Логистическая регрессия</a> <span class="ref">основы ML, 1.4</span></span></li>
+        </ul>
+      </div>
+
+      <h2>Порог превращает вероятность в&nbsp;решение</h2>
+      <p>Банк рассматривает 300 заявок на&nbsp;кредит. Модель из&nbsp;урока&nbsp;1.4 выдаёт для каждой заявки вероятность дефолта \(\sc\). Решений два: выдать кредит или отказать. Правило с&nbsp;порогом \(\thr\) отказывает, если вероятность не&nbsp;меньше порога:</p>
+      <div class="math-display">$$\hat\y = 1\{\sc \ge \thr\}.$$</div>
+      <div class="note" role="note">
+        <span class="label">Честные вероятности</span>
+        <div class="note__body">Здесь модель откалибрована: среди заявок с&nbsp;\(\sc \approx 0.2\) дефолтов около 20%. Как это проверить, разберём в&nbsp;цикле&nbsp;4.</div>
+      </div>
+      <p>В выборке 84 дефолта из&nbsp;300, то&nbsp;есть 28%. Если выдавать кредит всем, решение будет верным в&nbsp;72% случаев.</p>
+
+      <div class="block block--exercise checkpoint" data-choice>
+        <p><span class="block__title">Сначала предскажите.</span> С&nbsp;порогом 0.5 модель права в&nbsp;80% случаев, а&nbsp;правило «выдавать всем»&nbsp;— в&nbsp;72%. Значит, порог 0.5&nbsp;— хороший выбор?</p>
+        <div class="choices">
+          <button data-why="Доля верных ответов считает все ошибки одинаковыми. Посмотрим, сколько стоит каждая.">Да: 80% больше 72%</button>
+          <button data-ok="1" data-why="Именно. Пропущенный дефолт обходится банку дороже, чем отказ хорошему клиенту, а доля верных ответов этого не&nbsp;видит.">Смотря сколько стоит каждая ошибка</button>
+          <button data-why="По доле верных ответов модель лучше. Вопрос в&nbsp;том, правильная&nbsp;ли это мера.">Нет: модель хуже, чем выдавать всем</button>
+        </div>
+        <p class="feedback" data-feedback hidden><svg class="icon"><use href="#i-check"/></svg><b></b> <span></span></p>
+      </div>
+
+      <figure class="figure wide thr" data-threshold>
+        <svg class="figure__plot plot thr__strip" data-strip viewBox="0 0 640 220" role="img" aria-label="300 заявок на оси вероятности дефолта: верхний ряд — дефолты, нижний — вернувшие кредит; вертикальная линия — порог"></svg>
+        <div class="thr__panel">
+          <div class="thr__controls">
+            <label class="slider"><span>\(\thr\)</span><input class="param" type="range" min="0" max="1" step="0.005" value="0.5" data-t aria-label="Порог"><span class="slider__value" data-t-value>0.50</span></label>
+            <p class="thr__hint ui">Перетащите линию порога или&nbsp;двигайте ползунок. Красным обведены ошибки.</p>
+            <dl class="metrics ui">
+              <div><dt>Точность (precision)</dt><dd data-m="precision"></dd></div>
+              <div><dt>Полнота (recall)</dt><dd data-m="recall"></dd></div>
+              <div><dt>Доля ложных отказов (FPR)</dt><dd data-m="fpr"></dd></div>
+              <div><dt>Доля верных (accuracy)</dt><dd data-m="accuracy"></dd></div>
+            </dl>
+          </div>
+          <table class="cm ui">
+            <caption class="visually-hidden">Матрица ошибок при выбранном пороге</caption>
+            <thead><tr><td></td><th scope="col">Отказ<br><span class="cm__sub">\(\sc \ge \thr\)</span></th><th scope="col">Выдача<br><span class="cm__sub">\(\sc &lt; \thr\)</span></th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Дефолт<br><span class="cm__sub">\(\y = 1\)</span></th><td><b data-c="tp"></b><span>верный отказ</span></td><td class="cm__err"><b data-c="fn"></b><span>пропущенный дефолт</span></td></tr>
+              <tr><th scope="row">Вернул<br><span class="cm__sub">\(\y = 0\)</span></th><td class="cm__err"><b data-c="fp"></b><span>лишний отказ</span></td><td><b data-c="tn"></b><span>верная выдача</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="visually-hidden" aria-live="polite" data-live></p>
+        <figcaption class="figure__caption"><b>Рисунок 1.</b> 300 заявок на&nbsp;оси вероятности дефолта \(\sc\). Закрашенные точки&nbsp;— дефолты (\(\y = 1\)), пустые&nbsp;— вернувшие кредит. Справа от&nbsp;порога \(\thr\)&nbsp;— отказы.</figcaption>
+      </figure>
+
+      <p>Матрица ошибок раскладывает 300 решений на&nbsp;четыре клетки. Ошибок два вида: лишний отказ (ложноположительный, FP) и&nbsp;пропущенный дефолт (ложноотрицательный, FN). Две главные доли:</p>
+      <div class="math-display">$$\text{precision} = \frac{TP}{TP + FP}, \qquad \text{recall} = \frac{TP}{TP + FN}.$$</div>
+      <div class="note" role="note">
+        <span class="label">Термины</span>
+        <div class="note__body"><span class="note__term">Precision</span>&nbsp;— «точность»: доля дефолтов среди отказов. <span class="note__term">Recall</span>&nbsp;— «полнота»: доля пойманных дефолтов. Не&nbsp;путайте точность с&nbsp;долей верных ответов (<span class="note__term">accuracy</span>).</div>
+      </div>
+
+      <div class="block block--exercise checkpoint" data-choice>
+        <p><span class="block__title">Проверка.</span> Порог подняли с&nbsp;0.5 до&nbsp;0.7. Что произойдёт с&nbsp;точностью и&nbsp;полнотой?</p>
+        <div class="choices">
+          <button data-ok="1" data-why="Отказов меньше, и&nbsp;остаются самые уверенные: точность растёт с&nbsp;0.773 до&nbsp;0.846, а&nbsp;полнота падает с&nbsp;0.405 до&nbsp;0.131.">Точность вырастет, полнота упадёт</button>
+          <button data-why="Выше порог&nbsp;— меньше отказов, значит, пойманных дефолтов не&nbsp;больше, чем было: полнота не&nbsp;может вырасти.">Обе вырастут</button>
+          <button data-why="Проверьте на&nbsp;рисунке: справа от&nbsp;порога 0.7 почти одни дефолты.">Точность упадёт, полнота вырастет</button>
+        </div>
+        <p class="feedback" data-feedback hidden><svg class="icon"><use href="#i-check"/></svg><b></b> <span></span></p>
+      </div>
+
+      <h2>ROC и цена ошибок</h2>
+      <p>Каждый порог даёт точку: доля ложных отказов по&nbsp;горизонтали, полнота по&nbsp;вертикали. Все пороги вместе&nbsp;— ROC-кривая. Площадь под ней (AUC) равна 0.848: с&nbsp;такой вероятностью случайный дефолт получает оценку выше, чем случайный вернувший кредит. AUC не&nbsp;зависит от&nbsp;порога, поэтому порог она не&nbsp;выбирает.</p>
+
+      <figure class="figure wide thr-roc" data-threshold-roc>
+        <div class="thr-roc__grid">
+          <svg class="figure__plot plot" data-roc viewBox="0 0 360 340" role="img" aria-label="ROC-кривая модели с точкой текущего порога"></svg>
+          <div class="thr-roc__side">
+            <label class="slider"><span>\(\thr\)</span><input class="param" type="range" min="0" max="1" step="0.005" value="0.5" data-t aria-label="Порог"><span class="slider__value" data-t-value>0.50</span></label>
+            <div class="cost ui">
+              <p class="cost__title">Цена ошибок при&nbsp;этом пороге</p>
+              <p class="cost__formula"><span>5 × <b data-c="fn"></b> + 1 × <b data-c="fp"></b> =</span> <b class="cost__value" data-cost></b></p>
+              <p class="muted">Пропущенный дефолт стоит 5, лишний отказ&nbsp;— 1 (условные единицы).</p>
+            </div>
+            <svg class="plot cost-curve" data-cost-curve viewBox="0 0 240 156" role="img" aria-label="Цена ошибок в зависимости от порога; минимум отмечен" hidden></svg>
+          </div>
+        </div>
+        <figcaption class="figure__caption"><b>Рисунок 2.</b> ROC-кривая и&nbsp;цена ошибок. Ползунок связан с&nbsp;рисунком&nbsp;1: точка на&nbsp;кривой&nbsp;— текущий порог.</figcaption>
+      </figure>
+
+      <div class="block block--exercise" data-cost-exercise>
+        <p><span class="block__title">Задача «Цена ошибки».</span> Найдите порог, при&nbsp;котором цена ошибок минимальна. Можно двигать ползунок, а&nbsp;можно посчитать.</p>
+        <form class="field">
+          <label for="thr-answer">\(\thr =\)</label>
+          <input class="input" id="thr-answer" inputmode="decimal" autocomplete="off" placeholder="0.5">
+          <button class="btn btn--sm" type="submit">Проверить</button>
+          <button class="btn btn--sm btn--quiet" type="button" data-hint>Подсказка</button>
+        </form>
+        <p class="hint ui" data-hint-text hidden>Отказ выгоден, если ожидаемая потеря от&nbsp;выдачи \(5\sc\) больше потери от&nbsp;отказа \(1 \cdot (1 - \sc)\).</p>
+        <p class="feedback" data-feedback hidden><svg class="icon"><use href="#i-check"/></svg><b></b> <span></span></p>
+      </div>
+      <div class="note" role="note">
+        <span class="label">Почему 1/6</span>
+        <div class="note__body">Для честных вероятностей отказ выгоден, когда \(5\sc &gt; 1 - \sc\), то&nbsp;есть \(\sc &gt; 1/6 \approx 0.167\). В&nbsp;общем виде \(\thr^\star = \dfrac{c_{FP}}{c_{FP} + c_{FN}}\).</div>
+      </div>
+
+      <div class="block block--pitfall"><p><span class="block__title">Типичная ошибка.</span> Подбирать порог на&nbsp;тестовой выборке. Порог&nbsp;— такой&nbsp;же параметр, как веса: его выбирают на&nbsp;валидации, а&nbsp;тест открывают один раз.</p></div>
+
+      <h2>В коде</h2>
+      <p>Те&nbsp;же 300 заявок. Перебираем пороги и&nbsp;сравниваем лучший с&nbsp;теоретическим.</p>
+      <div class="code-cell">
+        <div class="code-cell__bar">
+          <span class="code-cell__title"><b>Python</b><span class="muted">выполняется в&nbsp;браузере</span></span>
+          <button class="btn btn--sm btn--primary"><svg class="icon"><use href="#i-play"/></svg>Запустить</button>
+          <a class="btn btn--sm" href="#">Открыть в&nbsp;Colab</a>
+        </div>
+<pre class="code"><span class="tok-k">import</span> numpy <span class="tok-k">as</span> np
+<span class="tok-k">from</span> ml_basics.threshold <span class="tok-k">import</span> make_scores
+
+p, y = make_scores()   <span class="tok-c"># те же 300 заявок, что на рисунках</span>
+
+<span class="tok-k">def</span> total_cost(p, y, t, c_fp=<span class="tok-n">1</span>, c_fn=<span class="tok-n">5</span>):
+    reject = p &gt;= t
+    fp = np.sum(reject &amp; (y == <span class="tok-n">0</span>))   <span class="tok-c"># лишние отказы</span>
+    fn = np.sum(~reject &amp; (y == <span class="tok-n">1</span>))  <span class="tok-c"># пропущенные дефолты</span>
+    <span class="tok-k">return</span> c_fp * fp + c_fn * fn
+
+thresholds = np.append(np.unique(p), <span class="tok-n">1.001</span>)
+costs = [total_cost(p, y, t) <span class="tok-k">for</span> t <span class="tok-k">in</span> thresholds]
+best = thresholds[np.argmin(costs)]
+<span class="tok-k">print</span>(<span class="tok-s">"лучший порог:"</span>, best, <span class="tok-s">"цена:"</span>, <span class="tok-k">min</span>(costs))
+<span class="tok-k">print</span>(<span class="tok-s">"теория 1/6:"</span>, total_cost(p, y, <span class="tok-n">1</span> / <span class="tok-n">6</span>), <span class="tok-s">" порог 0.5:"</span>, total_cost(p, y, <span class="tok-n">0.5</span>))</pre>
+        <div class="code-cell__out">
+          <div class="label"><span>Результат</span><span class="num">0.1 с</span></div>
+<pre>лучший порог: 0.181 цена: 121
+теория 1/6: 125  порог 0.5: 260</pre>
+        </div>
+      </div>
+
+      <nav class="lesson-nav ui" aria-label="Соседние разделы">
+        <a class="btn" href="#">1.6. Обобщённые линейные модели</a>
+        <a class="btn btn--primary" href="#">PR-кривая при&nbsp;дисбалансе</a>
+      </nav>
+    </article>
+  </main>
+</div>
+</body>
+</html>

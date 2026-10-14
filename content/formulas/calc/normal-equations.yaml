@@ -1,0 +1,96 @@
+id: f.normal-equations
+kind: formula
+title:
+  ru: 'Нормальные уравнения'
+  en: 'normal equations'
+statement: '\sym{theta}{\theta}^{\star} = (\sym{X}{X}^\top \sym{X}{X})^{-1} \sym{X}{X}^\top \sym{y}{y}'
+
+# Смысл, размерность и роль (цвет sym-N) каждого символа. Вектор-столбец [d, 1] в проверках — одномерный массив.
+symbols:
+  - name: X
+    tex: 'X'
+    meaning: 'матрица признаков со столбцом единиц; строка — объект'
+    shape: [n, d]
+    role: data
+  - name: theta
+    tex: '\theta'
+    meaning: 'вектор весов модели'
+    shape: [d, 1]
+    role: param
+  - name: y
+    tex: 'y'
+    meaning: 'вектор правильных ответов'
+    shape: [n, 1]
+    role: target
+
+dependsOn:
+  concepts: [la.matmul, la.transpose, la.inverse, la.rank, calc.gradient, calc.matrix-calculus, calc.convexity]
+  rules: [rule.transpose-product, rule.scalar-transpose, rule.grad-linear, rule.grad-quadratic]
+
+conditions:
+  - tex: '\operatorname{rank} \sym{X}{X} = d'
+    why: 'Нужно для единственности решения. Без полного ранга любое решение XᵀXθ = Xᵀy всё равно глобальный минимум.'
+    concept: la.rank
+
+derivation:
+  plan:
+    - 'Записать J через матрицы'
+    - 'Раскрыть скобки'
+    - 'Взять градиент'
+    - 'Приравнять к нулю и решить'
+  steps:
+    - goal: 0
+      tex: 'J(\sym{theta}{\theta}) = \tfrac12 (\sym{X}{X}\sym{theta}{\theta} - \sym{y}{y})^\top (\sym{X}{X}\sym{theta}{\theta} - \sym{y}{y})'
+      by: [la.norm]
+      note: 'Квадрат нормы — скалярное произведение вектора на себя.'
+      check:
+        kind: same
+        py: '0.5 * (X @ theta - y) @ (X @ theta - y)'
+    - goal: 1
+      tex: '= \tfrac12 \left(\sym{theta}{\theta}^\top \sym{X}{X}^\top \sym{X}{X} \sym{theta}{\theta} - \sym{theta}{\theta}^\top \sym{X}{X}^\top \sym{y}{y} - \sym{y}{y}^\top \sym{X}{X} \sym{theta}{\theta} + \sym{y}{y}^\top \sym{y}{y}\right)'
+      by: [rule.transpose-product]
+      note: 'Раскрыли скобки, (Xθ)ᵀ = θᵀXᵀ.'
+      check:
+        kind: same
+        py: '0.5 * (theta @ X.T @ X @ theta - theta @ X.T @ y - y @ X @ theta + y @ y)'
+    - goal: 1
+      tex: '= \tfrac12 \left(\sym{theta}{\theta}^\top \sym{X}{X}^\top \sym{X}{X} \sym{theta}{\theta} - \changed{2\, \sym{y}{y}^\top \sym{X}{X} \sym{theta}{\theta}} + \sym{y}{y}^\top \sym{y}{y}\right)'
+      by: [rule.scalar-transpose]
+      note: 'θᵀXᵀy — число, а число равно своему транспонированию.'
+      check:
+        kind: same
+        py: '0.5 * (theta @ X.T @ X @ theta - 2 * y @ X @ theta + y @ y)'
+    - goal: 2
+      tex: '\nabla_{\sym{theta}{\theta}} J = \sym{X}{X}^\top \sym{X}{X} \sym{theta}{\theta} - \sym{X}{X}^\top \sym{y}{y}'
+      by: [rule.grad-quadratic, rule.grad-linear]
+      note: 'XᵀX симметрична, поэтому ∇(θᵀAθ) = 2Aθ.'
+      check:
+        kind: gradient
+        py: 'X.T @ X @ theta - X.T @ y'
+        wrt: theta
+    - goal: 3
+      tex: '\sym{X}{X}^\top \sym{X}{X} \sym{theta}{\theta} = \sym{X}{X}^\top \sym{y}{y}'
+      by: [calc.stationary-point, calc.convexity]
+      note: 'Градиент в минимуме равен нулю; J выпукла, поэтому любое решение — глобальный минимум.'
+      check:
+        kind: stationary
+        lhs: 'X.T @ X @ theta'
+        rhs: 'X.T @ y'
+    - goal: 3
+      tex: '\sym{theta}{\theta}^{\star} = (\sym{X}{X}^\top \sym{X}{X})^{-1} \sym{X}{X}^\top \sym{y}{y}'
+      by: [la.inverse, la.rank]
+      note: 'Решение единственно, когда XᵀX обратима, то есть rank X = d.'
+      check:
+        kind: solution
+        py: 'np.linalg.solve(X.T @ X, X.T @ y)'
+        wrt: theta
+
+pitfalls:
+  - 'Писать (Xθ)ᵀ = Xᵀθᵀ: транспонирование меняет порядок множителей.'
+  - 'Считать через np.linalg.inv: решать систему (solve, lstsq) быстрее и точнее.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Linear regression / The normal equations'
+
+usedIn: [ml.ridge, ml.linear-regression-probabilistic]

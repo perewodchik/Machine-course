@@ -1,0 +1,38 @@
+# Модуль II. Анализ и оптимизация. Порядок уроков задаётся здесь, а не именами файлов.
+id: calculus
+number: 'II'
+title:
+  ru: 'Анализ и оптимизация'
+hours: [22, 26]
+lessons:
+  - slug: gradient
+    number: 'II.1'
+    title: 'Частные производные и градиент'
+  - slug: chain-rule-jacobian
+    number: 'II.2'
+    title: 'Многомерное правило цепочки и якобиан'
+  - slug: matrix-calculus
+    number: 'II.3'
+    title: 'Матричное дифференцирование'
+  - slug: hessian-taylor
+    number: 'II.4'
+    title: 'Гессиан, ряд Тейлора, критические точки'
+  - slug: convexity
+    number: 'II.5'
+    title: 'Выпуклость'
+  - slug: gradient-descent
+    number: 'II.6'
+    title: 'Градиентный спуск и SGD'
+  - slug: newton
+    number: 'II.7'
+    title: 'Метод Ньютона'
+  - slug: lagrange
+    number: 'II.8'
+    title: 'Множители Лагранжа'
+  - slug: duality-kkt
+    number: 'II.9'
+    title: 'Двойственность и условия KKT'
+    optional: true  # углубление: не блокирует прогресс
+  - slug: multiple-integrals
+    number: 'II.10'
+    title: 'Кратные интегралы и замена переменных'

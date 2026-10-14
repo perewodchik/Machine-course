@@ -1,0 +1,51 @@
+---
+// Каркас страницы: <head>, тема и поля без мигания, шапка, ссылка «К содержимому», общий клиентский скрипт.
+import "../styles/global.css";
+import SiteHeader from "../components/layout/SiteHeader.astro";
+import type { CourseTree } from "../lib/content/catalog";
+
+interface Props {
+  title: string;
+  description?: string;
+  course?: CourseTree;
+  withToc?: boolean;
+  /** Служебные страницы (демо-урок) не индексируются. */
+  noindex?: boolean;
+}
+const { title, description, course, withToc = false, noindex = false } = Astro.props;
+const fullTitle = course ? `${title} — ${course.title}` : title;
+---
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    {description && <meta name="description" content={description} />}
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="color-scheme" content="light dark" />
+    <!-- Тема и поля — до первой отрисовки, иначе страница мигнёт светлой темой и полями -->
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        root.classList.add("js"); // компоненты с поведением прячут лишнее до отрисовки, без JS видно всё
+        let theme, margins;
+        try { theme = localStorage.getItem("theme"); margins = localStorage.getItem("margins"); } catch { /* приватный режим */ }
+        if (theme === "light" || theme === "dark") root.dataset.theme = theme;
+        if (margins === "hidden") root.dataset.margins = "hidden";
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#content">К содержимому</a>
+    <SiteHeader course={course} withToc={withToc} />
+    <slot />
+    <script>
+      import "../client/layout";
+      import "../client/symbols";
+      import "../client/scrollable";
+      import "../client/tabs";
+      import "../client/derivation";
+    </script>
+  </body>
+</html>

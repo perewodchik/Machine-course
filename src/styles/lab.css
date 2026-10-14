@@ -1,0 +1,52 @@
+/* Витрина /lab: образцы токенов, символов, типографики. Подключается только страницей /lab. */
+
+/* Порядок слоёв как в Tailwind (theme.css). Astro встраивает маленький файл <style> раньше общей таблицы,
+   и без этой строки слой components объявился бы первым — base (сброс отступов) перекрыл бы компоненты */
+@layer properties, theme, base, components, utilities;
+
+@layer components {
+  .lab h2 { margin-top: var(--space-8); }
+  .lab .intro { max-width: 46rem; color: var(--ink-2); }
+  .rules { columns: 2; column-gap: var(--space-7); padding-left: 1.2em; font-size: 16px; }
+  .rules li { margin-bottom: 6px; break-inside: avoid; }
+
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(11.5rem, 1fr)); gap: var(--space-4); margin-top: var(--space-4); }
+  .swatch { margin: 0; font-family: var(--font-ui); font-size: 13px; color: var(--ink-2); }
+  .swatch__chips { display: grid; grid-template-columns: 1fr 1fr; height: 52px; margin-bottom: 6px; overflow: hidden; border: 1px solid var(--rule); border-radius: var(--radius-control); }
+  .swatch b { display: block; font-size: 14px; font-weight: 500; color: var(--ink); }
+  .swatch dl { display: grid; grid-template-columns: auto 1fr; gap: 0 8px; margin: 2px 0 0; }
+  .swatch dt { color: var(--ink-3); }
+  .swatch dd { margin: 0; font-variant-numeric: tabular-nums; }
+
+  .sym-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-3); margin-top: var(--space-4); }
+  .sym-card { padding: 10px 12px; border: 1px solid var(--rule); border-radius: var(--radius-control); background: var(--surface); font-family: var(--font-ui); font-size: 13px; color: var(--ink-3); }
+  .sym-card .glyph { font-size: 26px; line-height: 1.2; }
+  .sym-card .bar { height: 4px; margin: 8px 0 6px; border-radius: 2px; }
+  .sym-card .bar--1 { background: var(--sym-1); }
+  .sym-card .bar--2 { background: var(--sym-2); }
+  .sym-card .bar--3 { background: var(--sym-3); }
+  .sym-card .bar--4 { background: var(--ink-3); }
+
+  .type-row { display: grid; grid-template-columns: 11rem minmax(0, 1fr); gap: var(--space-5); align-items: baseline; padding: var(--space-3) 0; border-bottom: 1px solid var(--rule); }
+  .type-row .spec { font-family: var(--font-ui); font-size: 13px; line-height: 1.4; color: var(--ink-3); }
+  .type-row .sample-h1 { font: 600 var(--text-3xl) / var(--leading-tight) var(--font-ui); letter-spacing: -0.015em; }
+  .type-row .sample-h2 { font: 600 var(--text-xl) / 1.25 var(--font-ui); }
+  .type-row .note { float: none; width: auto; max-width: var(--margin-width); margin: 0; }
+
+  .ds-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-6) var(--space-7); margin-top: var(--space-4); }
+  .ds-grid > div > h3 { margin-top: 0; font-size: var(--text-sm); font-weight: 500; color: var(--ink-3); }
+  .ds-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+  .ds-row + .ds-row { margin-top: var(--space-3); }
+  /* состояния кнопок для витрины: наведение и фокус показаны без мыши */
+  .btn.is-hover { background: var(--paper-2); border-color: var(--ink-2); }
+  .btn--primary.is-hover { background: var(--pen-strong); border-color: var(--pen-strong); }
+  .btn.is-focus { outline: 2px solid var(--pen); outline-offset: 2px; }
+  .toc.toc--sample { display: block; position: static; height: auto; overflow: visible; margin-top: var(--space-4); padding: var(--space-2); border: 1px solid var(--rule); border-radius: var(--radius-panel); background: var(--paper-2); }
+
+  @media (max-width: 900px) {
+    .ds-grid, .type-row { grid-template-columns: minmax(0, 1fr); }
+    .type-row { gap: 4px; }
+    .rules { columns: 1; }
+    .sym-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+}

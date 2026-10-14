@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Линейная регрессия тремя способами — Математика для ML</title>
+  <link rel="stylesheet" href="vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="assets/proto.css">
+  <link rel="stylesheet" href="assets/proto-extra.css">
+  <script defer src="vendor/katex/katex.min.js"></script>
+  <script defer src="vendor/katex/contrib/auto-render.min.js"></script>
+  <script defer src="assets/proto.js"></script>
+</head>
+<body>
+<!-- SPRITE:BEGIN -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-sun" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3"/><path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1 1M11.6 11.6l1 1M3.4 12.6l1-1M11.6 4.4l1-1"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 16 16"><path d="M13.5 9.5A5.5 5.5 0 0 1 6.5 2.5a5.5 5.5 0 1 0 7 7Z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 16 16"><path d="M2.5 4h11M2.5 8h11M2.5 12h7"/></symbol>
+  <symbol id="i-play" viewBox="0 0 16 16"><path d="M5 3.5v9l7-4.5-7-4.5Z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 16 16"><path d="m3.5 8.5 3 3 6-7"/></symbol>
+  <symbol id="i-x" viewBox="0 0 16 16"><path d="m4 4 8 8M12 4l-8 8"/></symbol>
+  <symbol id="i-margin" viewBox="0 0 16 16"><rect x="2" y="2.5" width="12" height="11" rx="1.5"/><path d="M10 2.5v11"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 16 16"><path d="m6 4 4 4-4 4"/></symbol>
+  <symbol id="st-passed" viewBox="0 0 14 14"><path d="m2.4 7.6 3 3 6.2-7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+<!-- SPRITE:END -->
+<!-- HEADER:BEGIN -->
+<header class="site-header">
+  <div class="site-header__inner">
+    <button class="icon-button toc-toggle" data-toc-toggle aria-expanded="false" aria-label="Оглавление курса"><svg class="icon"><use href="#i-menu"/></svg></button>
+    <a class="brand" href="courses.html" aria-label="Каталог курсов">
+      <svg class="brand__mark" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+        <path class="cell" d="M1 6h20M1 11h20M1 16h20M6 1v20M11 1v20M16 1v20" stroke-width="1"/>
+        <rect class="frame" x="1" y="1" width="20" height="20" rx="3" stroke-width="1.2"/>
+        <path class="vec" d="M3.5 17.5 18.5 5" stroke-width="1.8" stroke-linecap="round"/>
+        <circle class="dot" cx="6" cy="12.5" r="1.7"/><circle class="dot" cx="11" cy="12" r="1.7"/><circle class="dot" cx="15.5" cy="6.5" r="1.7"/>
+      </svg>
+      <span class="brand__name">Курсы ML</span>
+    </a>
+    <span class="crumb-sep" aria-hidden="true">/</span><a class="course-name" href="index.html">Математика для ML</a>
+    <div class="header-progress" data-course="foundations">
+      <span class="label"><span class="hide-narrow">Знаю <span data-known-total>47</span> из <span data-known-of>52</span> уроков курса</span><span class="show-narrow"><svg class="status status--passed" aria-hidden="true"><use href="#st-passed"/></svg><span class="visually-hidden">Знаю </span><span data-known-total>47</span> из 52<span class="visually-hidden"> уроков курса</span></span></span>
+      <span class="progress" aria-hidden="true"><span data-known-bar style="width:90%"></span></span>
+      <button class="icon-button theme-toggle" data-theme-toggle aria-label="Сменить тему">
+        <svg class="icon sun"><use href="#i-sun"/></svg><svg class="icon moon"><use href="#i-moon"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+<!-- HEADER:END -->
+
+<div class="page">
+  <nav class="toc" aria-label="Оглавление курса">
+    <p class="toc__hint"><svg class="status status--passed" aria-hidden="true"><use href="#st-passed"/></svg>Отметьте урок, если знаете тему. Отметку можно снять.</p>
+    <div class="toc__part">
+      <button class="toc__part-head" aria-expanded="false" aria-controls="toc-foundations-start"><span class="toc__chevron" aria-hidden="true"><svg class="icon"><use href="#i-chevron"/></svg></span><span class="n">0</span><span class="toc__title">Старт</span><span class="count" hidden><span aria-hidden="true"><span data-known-count>9</span>/9</span><span class="visually-hidden">знаю <span data-known-count>9</span> из 9</span></span><svg class="status status--passed" role="img" aria-label="все уроки модуля отмечены" data-module-done><use href="#st-passed"/></svg></button>
+      <ol id="toc-foundations-start" hidden>
+        <li><label class="know"><input type="checkbox" data-know="foundations:0.1" checked aria-label="Знаю: 0.1 Регрессия руками за 15 минут"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">0.1</span><span class="toc__title">Регрессия руками за 15 минут</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:0.2" checked aria-label="Знаю: 0.2 Как устроен курс и входная диагностика"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">0.2</span><span class="toc__title">Как устроен курс и входная диагностика</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:0.3" checked aria-label="Знаю: 0.3 Язык математики: множества, отображения, кванторы"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">0.3</span><span class="toc__title">Язык математики: множества, отображения, кванторы</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:0.4" checked aria-label="Знаю: 0.4 Суммы, произведения, индикатор"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">0.4</span><span class="toc__title">Суммы, произведения, индикатор</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:0.5" checked aria-label="Знаю: 0.5 Экспонента, логарифм, сигмоида"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">0.5</span><span class="toc__title">Экспонента, логарифм, сигмоида</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:0.6" checked aria-label="Знаю: 0.6 Производная и правило цепочки"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">0.6</span><span class="toc__title">Производная и правило цепочки</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:0.7" checked aria-label="Знаю: 0.7 Интеграл"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">0.7</span><span class="toc__title">Интеграл</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:0.8" checked aria-label="Знаю: 0.8 Минимум NumPy: массивы, формы, векторизация"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">0.8</span><span class="toc__title">Минимум NumPy: массивы, формы, векторизация</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:0.9" checked aria-label="Знаю: 0.9 Обозначения курса и CS229"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">0.9</span><span class="toc__title">Обозначения курса и CS229</span></a></li>
+      </ol>
+    </div>
+    <div class="toc__part">
+      <button class="toc__part-head" aria-expanded="false" aria-controls="toc-foundations-linear-algebra"><span class="toc__chevron" aria-hidden="true"><svg class="icon"><use href="#i-chevron"/></svg></span><span class="n">I</span><span class="toc__title">Линейная алгебра</span><span class="count" hidden><span aria-hidden="true"><span data-known-count>12</span>/12</span><span class="visually-hidden">знаю <span data-known-count>12</span> из 12</span></span><svg class="status status--passed" role="img" aria-label="все уроки модуля отмечены" data-module-done><use href="#st-passed"/></svg></button>
+      <ol id="toc-foundations-linear-algebra" hidden>
+        <li><label class="know"><input type="checkbox" data-know="foundations:I.1" checked aria-label="Знаю: I.1 Векторы, линейные комбинации, оболочка"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">I.1</span><span class="toc__title">Векторы, линейные комбинации, оболочка</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:I.2" checked aria-label="Знаю: I.2 Скалярное произведение и нормы"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">I.2</span><span class="toc__title">Скалярное произведение и нормы</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:I.3" checked aria-label="Знаю: I.3 Умножение матриц: четыре взгляда"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">I.3</span><span class="toc__title">Умножение матриц: четыре взгляда</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:I.4" checked aria-label="Знаю: I.4 Матрица как линейное отображение"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">I.4</span><span class="toc__title">Матрица как линейное отображение</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:I.5" checked aria-label="Знаю: I.5 Транспонирование, симметрия, след"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">I.5</span><span class="toc__title">Транспонирование, симметрия, след</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:I.6" checked aria-label="Знаю: I.6 Системы уравнений и ранг"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">I.6</span><span class="toc__title">Системы уравнений и ранг</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:I.7" checked aria-label="Знаю: I.7 Обратная матрица и определитель"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">I.7</span><span class="toc__title">Обратная матрица и определитель</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:I.8" checked aria-label="Знаю: I.8 Ортогональность и проекции"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">I.8</span><span class="toc__title">Ортогональность и проекции</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:I.9" checked aria-label="Знаю: I.9 Собственные значения и векторы"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">I.9</span><span class="toc__title">Собственные значения и векторы</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:I.10" checked aria-label="Знаю: I.10 Квадратичные формы и знакоопределённость"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">I.10</span><span class="toc__title">Квадратичные формы и знакоопределённость</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:I.11" checked aria-label="Знаю: I.11 Сингулярное разложение и псевдообратная"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">I.11</span><span class="toc__title">Сингулярное разложение и псевдообратная</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:I.12" checked aria-label="Знаю: I.12 Капстоун: МНК как проекция"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">I.12</span><span class="toc__title">Капстоун: МНК как проекция</span></a></li>
+      </ol>
+    </div>
+    <div class="toc__part">
+      <button class="toc__part-head" aria-expanded="false" aria-controls="toc-foundations-calculus"><span class="toc__chevron" aria-hidden="true"><svg class="icon"><use href="#i-chevron"/></svg></span><span class="n">II</span><span class="toc__title">Анализ и оптимизация</span><span class="count" hidden><span aria-hidden="true"><span data-known-count>9</span>/9</span><span class="visually-hidden">знаю <span data-known-count>9</span> из 9</span></span><svg class="status status--passed" role="img" aria-label="все уроки модуля отмечены" data-module-done><use href="#st-passed"/></svg></button>
+      <ol id="toc-foundations-calculus" hidden>
+        <li><label class="know"><input type="checkbox" data-know="foundations:II.1" checked aria-label="Знаю: II.1 Частные производные и градиент"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">II.1</span><span class="toc__title">Частные производные и градиент</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:II.2" checked aria-label="Знаю: II.2 Многомерное правило цепочки и якобиан"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">II.2</span><span class="toc__title">Многомерное правило цепочки и якобиан</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:II.3" checked aria-label="Знаю: II.3 Матричное дифференцирование"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">II.3</span><span class="toc__title">Матричное дифференцирование</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:II.4" checked aria-label="Знаю: II.4 Гессиан, ряд Тейлора, критические точки"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">II.4</span><span class="toc__title">Гессиан, ряд Тейлора, критические точки</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:II.5" checked aria-label="Знаю: II.5 Выпуклость"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">II.5</span><span class="toc__title">Выпуклость</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:II.6" checked aria-label="Знаю: II.6 Градиентный спуск и SGD"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">II.6</span><span class="toc__title">Градиентный спуск и SGD</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:II.7" checked aria-label="Знаю: II.7 Метод Ньютона"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">II.7</span><span class="toc__title">Метод Ньютона</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:II.8" checked aria-label="Знаю: II.8 Множители Лагранжа"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">II.8</span><span class="toc__title">Множители Лагранжа</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:II.9" checked data-optional aria-label="Знаю: II.9 Двойственность и условия KKT ★"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">II.9</span><span class="toc__title">Двойственность и условия KKT ★</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:II.10" checked aria-label="Знаю: II.10 Кратные интегралы и замена переменных"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">II.10</span><span class="toc__title">Кратные интегралы и замена переменных</span></a></li>
+      </ol>
+    </div>
+    <div class="toc__part">
+      <button class="toc__part-head" aria-expanded="false" aria-controls="toc-foundations-probability"><span class="toc__chevron" aria-hidden="true"><svg class="icon"><use href="#i-chevron"/></svg></span><span class="n">III</span><span class="toc__title">Вероятность</span><span class="count"><span aria-hidden="true"><span data-known-count>11</span>/13</span><span class="visually-hidden">знаю <span data-known-count>11</span> из 13</span></span><svg class="status status--passed" role="img" aria-label="все уроки модуля отмечены" hidden data-module-done><use href="#st-passed"/></svg></button>
+      <ol id="toc-foundations-probability" hidden>
+        <li><label class="know"><input type="checkbox" data-know="foundations:III.1" checked aria-label="Знаю: III.1 Вероятностное пространство"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">III.1</span><span class="toc__title">Вероятностное пространство</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:III.2" checked aria-label="Знаю: III.2 Условная вероятность и независимость"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">III.2</span><span class="toc__title">Условная вероятность и независимость</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:III.3" checked aria-label="Знаю: III.3 Формула полной вероятности и Байес"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">III.3</span><span class="toc__title">Формула полной вероятности и Байес</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:III.4" checked aria-label="Знаю: III.4 Случайные величины: PMF, PDF, CDF"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">III.4</span><span class="toc__title">Случайные величины: PMF, PDF, CDF</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:III.5" checked aria-label="Знаю: III.5 Матожидание, дисперсия, неравенство Йенсена"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">III.5</span><span class="toc__title">Матожидание, дисперсия, неравенство Йенсена</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:III.6" checked aria-label="Знаю: III.6 Дискретные распределения"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">III.6</span><span class="toc__title">Дискретные распределения</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:III.7" checked aria-label="Знаю: III.7 Непрерывные распределения"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">III.7</span><span class="toc__title">Непрерывные распределения</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:III.8" checked aria-label="Знаю: III.8 Предельные теоремы и метод Монте-Карло"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">III.8</span><span class="toc__title">Предельные теоремы и метод Монте-Карло</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:III.9" checked aria-label="Знаю: III.9 Совместные распределения и ковариация"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">III.9</span><span class="toc__title">Совместные распределения и ковариация</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:III.10" checked aria-label="Знаю: III.10 Случайные векторы и линейные преобразования"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">III.10</span><span class="toc__title">Случайные векторы и линейные преобразования</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:III.11" checked aria-label="Знаю: III.11 Многомерное нормальное распределение"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">III.11</span><span class="toc__title">Многомерное нормальное распределение</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:III.12" aria-label="Знаю: III.12 Смеси и скрытые переменные"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">III.12</span><span class="toc__title">Смеси и скрытые переменные</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:III.13" aria-label="Знаю: III.13 Энтропия, кросс-энтропия, KL"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">III.13</span><span class="toc__title">Энтропия, кросс-энтропия, KL</span></a></li>
+      </ol>
+    </div>
+    <div class="toc__part">
+      <button class="toc__part-head" aria-expanded="true" aria-controls="toc-foundations-statistics"><span class="toc__chevron" aria-hidden="true"><svg class="icon"><use href="#i-chevron"/></svg></span><span class="n">IV</span><span class="toc__title">Статистика</span><span class="count"><span aria-hidden="true"><span data-known-count>6</span>/7</span><span class="visually-hidden">знаю <span data-known-count>6</span> из 7</span></span><svg class="status status--passed" role="img" aria-label="все уроки модуля отмечены" hidden data-module-done><use href="#st-passed"/></svg></button>
+      <ol id="toc-foundations-statistics">
+        <li><label class="know"><input type="checkbox" data-know="foundations:IV.1" checked aria-label="Знаю: IV.1 Выборка и описательная статистика"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">IV.1</span><span class="toc__title">Выборка и описательная статистика</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:IV.2" checked aria-label="Знаю: IV.2 Оценки: смещение, разброс, MSE"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">IV.2</span><span class="toc__title">Оценки: смещение, разброс, MSE</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:IV.3" checked aria-label="Знаю: IV.3 Метод максимального правдоподобия"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">IV.3</span><span class="toc__title">Метод максимального правдоподобия</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:IV.4" checked aria-label="Знаю: IV.4 Многомерный MLE"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">IV.4</span><span class="toc__title">Многомерный MLE</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:IV.5" checked aria-label="Знаю: IV.5 Экспоненциальное семейство"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">IV.5</span><span class="toc__title">Экспоненциальное семейство</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:IV.6" checked aria-label="Знаю: IV.6 Байесовский подход и MAP"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">IV.6</span><span class="toc__title">Байесовский подход и MAP</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:IV.7" aria-label="Знаю: IV.7 Риск, обобщение, кросс-валидация"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">IV.7</span><span class="toc__title">Риск, обобщение, кросс-валидация</span></a></li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:IV.8" data-optional aria-label="Знаю: IV.8 Доверительные интервалы и проверка гипотез ★"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">IV.8</span><span class="toc__title">Доверительные интервалы и проверка гипотез ★</span></a></li>
+      </ol>
+    </div>
+    <div class="toc__part">
+      <button class="toc__part-head" aria-expanded="true" aria-controls="toc-foundations-bridge"><span class="toc__chevron" aria-hidden="true"><svg class="icon"><use href="#i-chevron"/></svg></span><span class="n">V</span><span class="toc__title">Мост к ML</span><span class="count"><span aria-hidden="true"><span data-known-count>0</span>/2</span><span class="visually-hidden">знаю <span data-known-count>0</span> из 2</span></span><svg class="status status--passed" role="img" aria-label="все уроки модуля отмечены" hidden data-module-done><use href="#st-passed"/></svg></button>
+      <ol id="toc-foundations-bridge">
+        <li class="is-current"><label class="know"><input type="checkbox" data-know="foundations:V.1" aria-label="Знаю: V.1 Линейная регрессия тремя способами"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="lesson.html" aria-current="page"><span class="n">V.1</span><span class="toc__title">Линейная регрессия тремя способами</span></a>
+          <ol class="sub">
+            <li><a href="#">Задача и данные</a></li>
+            <li><a href="#">Способ 1. Проекция</a></li>
+            <li><a href="#" aria-current="location">Способ 2. Минимум функции потерь</a></li>
+            <li><a href="#">Способ 3. Правдоподобие</a></li>
+            <li><a href="#">В коде</a></li>
+            <li><a href="#">Итоговая проверка</a></li>
+          </ol>
+        </li>
+        <li><label class="know"><input type="checkbox" data-know="foundations:V.2" aria-label="Знаю: V.2 Итоговая проверка: математика в ML"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><a href="#"><span class="n">V.2</span><span class="toc__title">Итоговая проверка: математика в ML</span></a></li>
+      </ol>
+    </div>
+  </nav>
+
+  <main class="article-wrap">
+    <article class="article">
+      <div class="article-top">
+        <nav class="breadcrumb" aria-label="Путь"><a href="#">Мост к ML</a><span aria-hidden="true">/</span><span>Урок V.1</span></nav>
+        <button class="btn btn--quiet btn--sm margin-toggle" data-margin-toggle aria-pressed="false"><svg class="icon"><use href="#i-margin"/></svg><span data-label>Скрыть поля</span></button>
+      </div>
+      <h1>Линейная регрессия тремя способами</h1>
+
+      <div class="note" role="note">
+        <span class="label">В CS229</span>
+        <div class="note__body">Раздел «Linear regression»: <span class="note__term">the normal equations</span> и <span class="note__term">probabilistic interpretation</span>.</div>
+      </div>
+      <p class="lead">Одна и та же формула весов получается из геометрии, из анализа и из теории вероятностей. Выведем её всеми тремя путями и проверим в&nbsp;коде.</p>
+      <div class="lesson-meta ui"><span>Около 45 минут: четыре коротких цикла, девять вопросов и&nbsp;лабораторная работа.</span><label class="know know--text"><input type="checkbox" data-know="foundations:V.1"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span><span>Знаю эту тему</span></label></div>
+
+      <div class="prereqs">
+        <span class="prereqs__label">Опирается на</span>
+        <ul>
+          <li><label class="know"><input type="checkbox" data-know="foundations:I.8" checked aria-label="Знаю: I.8 Проекция на подпространство"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span><a href="#">Проекция на подпространство</a> <span class="ref">I.8</span></span></li>
+          <li><label class="know"><input type="checkbox" data-know="foundations:II.3" checked aria-label="Знаю: II.3 Матричное дифференцирование"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span><a href="#">Матричное дифференцирование</a> <span class="ref">II.3</span></span></li>
+          <li><label class="know"><input type="checkbox" data-know="foundations:II.5" checked aria-label="Знаю: II.5 Выпуклость"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span><a href="#">Выпуклость</a> <span class="ref">II.5</span></span></li>
+          <li><label class="know"><input type="checkbox" data-know="foundations:IV.3" checked aria-label="Знаю: IV.3 Метод максимального правдоподобия"><span class="know__ind" aria-hidden="true"><svg class="know__mark"><use href="#st-passed"/></svg></span></label><span><a href="#">Метод максимального правдоподобия</a> <span class="ref">IV.3</span></span></li>
+        </ul>
+      </div>
+
+      <h2>Способ 2. Минимум функции потерь</h2>
+      <div class="note" role="note">
+        <span class="label">Как читать формулы</span>
+        <div class="note__body">Наведите курсор на символ или выберите его в&nbsp;легенде формулы: подсветятся все его вхождения на странице.
+        <p style="margin-top:8px">Цвет закреплён за ролью: <span class="s1">данные</span>, <span class="s2">веса</span>, <span class="s3">ответы</span>; остатки&nbsp;— карандашом.</p></div>
+      </div>
+      <p>Возьмём \(n\) объектов с&nbsp;\(d\) признаками. Признаки сложим в&nbsp;матрицу&nbsp;\(\X\), ответы&nbsp;— в&nbsp;вектор&nbsp;\(\y\), веса модели&nbsp;— в&nbsp;вектор&nbsp;\(\th\). Модель предсказывает \(\X\th\), а&nbsp;разница с&nbsp;ответами&nbsp;— это остатки \(\res = \y - \X\th\). Хорошие веса делают остатки маленькими сразу у&nbsp;всех объектов, поэтому минимизируем сумму их квадратов:</p>
+      <div class="math-display" id="lead-formula">$$J(\th) = \tfrac12 \sum_{i=1}^{n} \res_i^{2} = \tfrac12\,\lVert \X\th - \y \rVert^{2}$$</div>
+
+      <div class="block block--intuition">
+        <p><span class="block__title">Сначала попробуйте сами.</span> Подберите \(\th_0\) и&nbsp;\(\th_1\) так, чтобы \(J(\th)\) стала как можно меньше. Риска на шкале&nbsp;— минимум, которого можно достичь.</p>
+      </div>
+
+      <figure class="figure wide">
+        <svg class="figure__plot plot" data-regression viewBox="0 0 972 300" role="img" aria-label="Точки данных, прямая модели и остатки"></svg>
+        <div class="figure__controls">
+          <label class="slider"><span>\(\th_0\)</span><input id="t0" class="param" type="range" min="-1" max="4" step="0.01" value="2.5"><span class="slider__value" id="t0v"></span></label>
+          <label class="slider"><span>\(\th_1\)</span><input id="t1" class="param" type="range" min="-0.2" max="1.2" step="0.005" value="0.25"><span class="slider__value" id="t1v"></span></label>
+          <button class="btn btn--sm" data-solve>Показать минимум</button>
+          <div class="loss"><span>\(J(\th)\) =</span><span class="loss__value" id="jv"></span><span class="meter" aria-hidden="true"><span></span><i></i></span></div>
+          <p class="visually-hidden" aria-live="polite"></p>
+        </div>
+        <figcaption class="figure__caption"><b>Рисунок 1.</b> Двенадцать объектов и&nbsp;прямая с&nbsp;весами \(\th\). Пунктир&nbsp;— остатки \(\res_i\), а&nbsp;\(J(\th)\)&nbsp;— половина суммы их квадратов.</figcaption>
+      </figure>
+
+      <p>Для двух весов минимум можно найти на&nbsp;глаз, для тысячи&nbsp;— нет. Найдём его аналитически: возьмём градиент \(J\) и&nbsp;приравняем его к&nbsp;нулю.</p>
+
+      <section class="formula-card wide" data-derivation data-start="2" aria-labelledby="f4">
+        <div class="formula-card__head"><span class="muted">Формула 4</span><b id="f4">Нормальные уравнения</b></div>
+        <div class="formula-card__statement">$$\th^{\star} = (\X\T\X)^{-1}\X\T\y$$</div>
+        <div class="formula-card__meta">
+          <div class="sym-legend">где <button class="sym-key s1" data-sym-key="X" aria-label="X">\(X\)</button>&nbsp;— признаки вместе со столбцом единиц, \(n\times d\); <button class="sym-key s3" data-sym-key="y" aria-label="y">\(y\)</button>&nbsp;— ответы, \(n\times 1\); <button class="sym-key s2" data-sym-key="theta" aria-label="тета">\(\theta\)</button>&nbsp;— веса, \(d\times 1\).</div>
+          <div><span class="k">Опирается на</span><a href="#">транспонирование произведения</a>, <a href="#">градиент квадратичной формы</a>, <a href="#">ранг матрицы</a></div>
+          <div><span class="k">Условие</span>для единственности решения столбцы \(\X\) линейно независимы: \(\operatorname{rank}\X = d\)</div>
+        </div>
+        <div class="tabs" role="tablist">
+          <button class="tab" role="tab" aria-selected="true" aria-controls="p-deriv">Вывод</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="p-dims">Размерности</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="p-uses">Где используется</button>
+        </div>
+        <div class="tab-panel" id="p-deriv" role="tabpanel">
+          <ol class="plan" aria-label="План вывода">
+            <li>Записать \(J\) через матрицы</li>
+            <li>Раскрыть скобки</li>
+            <li>Взять градиент</li>
+            <li>Приравнять к нулю и решить</li>
+          </ol>
+          <ol class="derivation">
+            <li class="step" data-goal="0"><span class="step__n">1</span>
+              <div class="step__math">\(J(\th) = \tfrac12 (\X\th - \y)\T(\X\th - \y)\)</div>
+              <div class="step__why">Квадрат нормы&nbsp;— скалярное произведение вектора на себя. <a href="#">Норма, I.2</a></div></li>
+            <li class="step" data-goal="1"><span class="step__n">2</span>
+              <div class="step__math">\(\phantom{J(\th)} = \tfrac12\left(\th\T\X\T\X\th - \th\T\X\T\y - \y\T\X\th + \y\T\y\right)\)</div>
+              <div class="step__why">Раскрыли скобки, \((\X\th)\T = \th\T\X\T\). <a href="#">Транспонирование произведения</a></div></li>
+            <li class="step" data-goal="1"><span class="step__n">3</span>
+              <div class="step__math">\(\phantom{J(\th)} = \tfrac12\left(\th\T\X\T\X\th - \changed{2\,\y\T\X\th} + \y\T\y\right)\)</div>
+              <div class="step__why">\(\th\T\X\T\y\)&nbsp;— число, а&nbsp;число равно своему транспонированию. <a href="#">Скаляр и транспонирование</a></div></li>
+            <li class="step" data-goal="2"><span class="step__n">4</span>
+              <div class="step__math"><span data-reveal>\(\nabla_{\th} J = \X\T\X\th - \X\T\y\)</span><span data-placeholder>Какой градиент получится? Запишите сами, затем откройте шаг.</span></div>
+              <div class="step__why"><span data-reveal>\(\X\T\X\) симметрична, поэтому \(\nabla(\th\T A\th) = 2A\th\). <a href="#">Градиент квадратичной формы, II.3</a></span></div></li>
+            <li class="step" data-goal="3"><span class="step__n">5</span>
+              <div class="step__math"><span data-reveal>\(\X\T\X\th = \X\T\y\)</span><span data-placeholder>Откроется после предыдущего шага</span></div>
+              <div class="step__why"><span data-reveal>Градиент в минимуме равен нулю; \(J\) выпукла, поэтому любое решение&nbsp;— глобальный минимум. <a href="#">Выпуклость, II.5</a></span></div></li>
+            <li class="step" data-goal="3"><span class="step__n">6</span>
+              <div class="step__math"><span data-reveal>\(\th^{\star} = (\X\T\X)^{-1}\X\T\y\)</span><span data-placeholder>Откроется после предыдущего шага</span></div>
+              <div class="step__why"><span data-reveal>Решение единственно, когда \(\X\T\X\) обратима, то есть \(\operatorname{rank}\X = d\). <a href="#">Ранг, I.6</a></span></div></li>
+          </ol>
+          <div class="derivation__controls">
+            <button class="btn btn--sm" data-prev>Назад</button>
+            <button class="btn btn--sm btn--primary" data-next>Следующий шаг</button>
+            <button class="btn btn--sm btn--quiet" data-all>Показать все шаги</button>
+            <span class="spacer"></span>
+            <label class="switch"><input type="checkbox" checked>Сначала предсказать шаг</label>
+            <span class="muted num" data-pos></span>
+          </div>
+        </div>
+        <div class="tab-panel dims" id="p-dims" role="tabpanel" hidden>
+          $$\underbrace{\X\T}_{d\times n}\,\underbrace{\X}_{n\times d}\,\underbrace{\th}_{d\times 1} \;=\; \underbrace{\X\T}_{d\times n}\,\underbrace{\y}_{n\times 1}$$
+          <p class="ui muted" style="font-size:14px;margin:8px 0 0">Обе части&nbsp;— векторы \(d\times 1\). Каждый шаг вывода курс проверяет численно на&nbsp;случайных матрицах этих размеров.</p>
+        </div>
+        <div class="tab-panel" id="p-uses" role="tabpanel" hidden>
+          <ul class="uses">
+            <li>V.7. Ридж-регрессия: \((\X\T\X + \lambda I)\th = \X\T\y\)</li>
+            <li>V.1, способ 3: та же формула как оценка максимального правдоподобия</li>
+            <li>CS229, раздел «The normal equations»</li>
+          </ul>
+        </div>
+      </section>
+
+      <div class="note" role="note">
+        <span class="label">По-английски</span>
+        <div class="note__body"><span class="note__term">normal equations</span>. Название не про «нормальное распределение»: вектор остатков нормален, то есть перпендикулярен, столбцам \(\X\).</div>
+      </div>
+      <div class="block block--exercise checkpoint" data-choice>
+        <p><span class="block__title">Проверка.</span> Почему при раскрытии скобок \(\th\T\X\T\y\) и&nbsp;\(\y\T\X\th\) можно сложить в&nbsp;одно слагаемое?</p>
+        <div class="choices">
+          <button data-ok="1" data-demo-click data-why="Оба выражения — матрицы \(1\times 1\), а транспонирование числа не меняет.">Это одно и то же число: второе&nbsp;— транспонирование первого</button>
+          <button data-why="Произведение матриц в общем случае не коммутативно, здесь работает другое правило.">Матрицы \(\X\) и&nbsp;\(\X\T\) коммутируют</button>
+          <button data-why="Слева вектор \(d\times 1\), справа строка \(1\times d\): это разные объекты.">Потому что \(\X\T\y = \y\T\X\)</button>
+        </div>
+        <p class="feedback" data-feedback hidden><svg class="icon"><use href="#i-check"/></svg><b></b> <span></span></p>
+      </div>
+
+      <div class="note note--teacher" role="note">
+        <span class="label">Пометка на полях</span>
+        <div class="note__body">Порядок! Транспонирование переставляет множители.</div>
+      </div>
+      <div class="block block--pitfall">
+        <p><span class="block__title">Типичная ошибка.</span> Забыть, что транспонирование меняет порядок множителей:</p>
+        <div class="math-display">$$(\X\th)\T = \htmlClass{struck}{\;\X\T\th\T\;}\;\;\htmlClass{fix}{\th\T\X\T}$$</div>
+        <p>Размерности ловят ошибку сразу: \(\X\T\th\T\)&nbsp;— это \(d\times n\) на \(1\times d\), такое произведение не&nbsp;определено.</p>
+      </div>
+
+      <h2>В коде</h2>
+      <div class="note" role="note">
+        <span class="label">Почему solve, а не inv</span>
+        <div class="note__body">Решить систему быстрее и&nbsp;точнее, чем обращать матрицу явно.
+        <p style="margin-top:8px">Лабораторная «Нормальные уравнения» открывается в&nbsp;браузере (JupyterLite) или в&nbsp;Google Colab.</p></div>
+      </div>
+      <p>Те же двенадцать точек, что на рисунке&nbsp;1. Решаем систему \(\X\T\X\th = \X\T\y\) и&nbsp;сверяем ответ с&nbsp;библиотечной функцией.</p>
+      <div class="code-cell">
+        <div class="code-cell__bar">
+          <span class="code-cell__title"><b>Python</b><span class="muted">выполняется в браузере</span></span>
+          <button class="btn btn--sm btn--primary"><svg class="icon"><use href="#i-play"/></svg>Запустить</button>
+          <a class="btn btn--sm" href="#">Открыть лабораторную</a>
+        </div>
+<pre class="code"><span class="tok-k">import</span> numpy <span class="tok-k">as</span> np
+
+rng = np.random.default_rng(seed=<span class="tok-n">7</span>)
+n = <span class="tok-n">12</span>
+x = rng.uniform(<span class="tok-n">0.5</span>, <span class="tok-n">9.5</span>, size=n)
+y = <span class="tok-n">1.2</span> + <span class="tok-n">0.55</span> * x + rng.normal(<span class="tok-n">0</span>, <span class="tok-n">0.6</span>, size=n)
+
+<span class="tok-c"># X: n × 2, столбец единиц и признак</span>
+X = np.column_stack([np.ones(n), x])
+<span class="tok-c"># нормальные уравнения: решаем систему</span>
+theta = np.linalg.solve(X.T @ X, X.T @ y)
+
+<span class="tok-k">print</span>(<span class="tok-s">"θ ="</span>, theta.round(<span class="tok-n">3</span>))
+ref = np.linalg.lstsq(X, y, rcond=<span class="tok-k">None</span>)[<span class="tok-n">0</span>]
+<span class="tok-k">print</span>(<span class="tok-s">"совпадает с lstsq:"</span>, np.allclose(theta, ref))</pre>
+        <div class="code-cell__out">
+          <div class="label"><span>Результат</span><span class="num">0.4 с</span></div>
+<pre>θ = [0.798 0.548]
+совпадает с lstsq: True</pre>
+        </div>
+      </div>
+
+      <div class="note" role="note">
+        <span class="label">Игра «Подгони прямую»</span>
+        <div class="note__body">Пять наборов данных: проводите прямую на глаз и&nbsp;сравнивайте с&nbsp;МНК. Около трёх минут.
+        <p style="margin-top:8px"><a href="game.html">Открыть игру</a></p></div>
+      </div>
+      <div class="block block--exercise" data-exercise data-answer="0.5"
+           data-right="\(\th_1 = 0.5\): в среднем каждый следующий объект на полшага выше предыдущего."
+           data-wrong="Составьте \(\X\T\X\) и \(\X\T\y\), затем решите систему \(2\times 2\).">
+        <p><span class="block__title">Упражнение 3.</span> Три объекта с&nbsp;одним признаком. Найдите наклон \(\th_1\).</p>
+        <div class="math-display">$$\X = \begin{pmatrix}1&1\\1&2\\1&3\end{pmatrix},\qquad \y = \begin{pmatrix}1\\2\\2\end{pmatrix}$$</div>
+        <form class="field">
+          <label for="ex3">\(\th_1 =\)</label>
+          <input class="input" id="ex3" aria-label="тета 1" inputmode="decimal" value="0.5" autocomplete="off">
+          <button class="btn btn--sm" type="submit" data-demo-click>Проверить</button>
+          <button class="btn btn--sm btn--quiet" type="button">Подсказка</button>
+        </form>
+        <p class="feedback" data-feedback hidden><svg class="icon"><use href="#i-check"/></svg><b></b> <span></span></p>
+      </div>
+
+      <nav class="lesson-nav ui" aria-label="Соседние разделы">
+        <a class="btn" href="#">Способ 1. Проекция</a>
+        <a class="btn btn--primary" href="#">Способ 3. Правдоподобие</a>
+      </nav>
+    </article>
+  </main>
+</div>
+</body>
+</html>

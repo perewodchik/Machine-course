@@ -1,0 +1,17 @@
+- id: la.vector
+  title:
+    ru: 'Вектор'
+    en: 'vector'
+  summary: 'Упорядоченный набор чисел.'
+  lesson: intro
+  prerequisites: [la.dot]
+  core: true
+
+- id: la.dot
+  title:
+    ru: 'Скалярное произведение'
+    en: 'dot product'
+  summary: 'Сумма произведений координат.'
+  lesson: next
+  prerequisites: [la.vector]
+  core: true

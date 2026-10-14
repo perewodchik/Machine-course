@@ -1,0 +1,16 @@
+# Модуль 2. Обучение сетей. Порядок уроков задаётся здесь, а не именами файлов.
+id: training
+number: '2'
+title:
+  ru: 'Обучение сетей'
+hours: [10, 12]
+lessons:
+  - slug: optimizers-regularization
+    number: '2.1'
+    title: 'Оптимизаторы, нормализация и dropout'
+  - slug: double-descent
+    number: '2.2'
+    title: 'Двойной спуск и неявная регуляризация'
+  - slug: pytorch
+    number: '2.3'
+    title: 'От NumPy к PyTorch'

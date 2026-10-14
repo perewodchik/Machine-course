@@ -1,0 +1,121 @@
+# Понятия линейной алгебры. Добавляются вместе с уроками (скилл new-lesson); программа — docs/program/01-linear-algebra.md.
+# Обязательные поля: id, title, lesson, prerequisites. ID стабильны: переименование — только через redirects.yaml.
+- id: la.matmul
+  title:
+    ru: 'Умножение матриц'
+    en: 'matrix multiplication'
+  summary: '(AB)_{ij} = сумма по k произведений A_{ik} B_{kj}; определено, когда столбцов у A столько же, сколько строк у B.'
+  lesson: matrix-multiplication
+  prerequisites: [nota.sums, la.dot-product]
+  core: true
+
+- id: la.transpose
+  title:
+    ru: 'Транспонирование'
+    en: 'transpose'
+  summary: 'Строки становятся столбцами; (AB)ᵀ = BᵀAᵀ.'
+  lesson: transpose-trace
+  prerequisites: [la.matmul]
+  core: true
+
+- id: la.rank
+  title:
+    ru: 'Ранг матрицы'
+    en: 'rank'
+  summary: 'Число линейно независимых столбцов (равно числу независимых строк).'
+  lesson: systems-rank
+  prerequisites: [la.span, la.linear-independence]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Linear regression / The normal equations'
+
+- id: la.projection
+  title:
+    ru: 'Проекция на подпространство'
+    en: 'orthogonal projection'
+  summary: 'Ближайшая к вектору точка подпространства; остаток перпендикулярен подпространству.'
+  lesson: orthogonality-projections
+  prerequisites: [la.dot-product, la.span, la.transpose]
+  core: true
+
+- id: la.psd
+  title:
+    ru: 'Положительно полуопределённая матрица'
+    en: 'positive semidefinite matrix'
+  summary: 'Симметричная A, для которой xᵀAx ≥ 0 при всех x; все собственные значения неотрицательны.'
+  lesson: quadratic-forms
+  prerequisites: [la.symmetric, la.eigen, la.quadratic-form]
+  core: true
+
+- id: la.dot-product
+  title:
+    ru: 'Скалярное произведение'
+    en: 'dot product'
+  summary: 'xᵀy — сумма произведений координат; ноль у перпендикулярных векторов.'
+  lesson: dot-product-norms
+  prerequisites: [nota.sums]
+  core: true
+
+- id: la.norm
+  title:
+    ru: 'Норма вектора'
+    en: 'norm'
+  summary: 'Длина вектора; евклидова норма — корень из скалярного квадрата, ‖x‖² = xᵀx.'
+  lesson: dot-product-norms
+  prerequisites: [la.dot-product]
+  core: true
+
+- id: la.span
+  title:
+    ru: 'Линейная оболочка'
+    en: 'span'
+  summary: 'Все линейные комбинации набора векторов.'
+  lesson: vectors-span
+  prerequisites: []
+  core: true
+
+- id: la.linear-independence
+  title:
+    ru: 'Линейная независимость'
+    en: 'linear independence'
+  summary: 'Ни один вектор набора не выражается через остальные: нулевая комбинация только с нулевыми коэффициентами.'
+  lesson: vectors-span
+  prerequisites: [la.span]
+  core: true
+
+- id: la.symmetric
+  title:
+    ru: 'Симметричная матрица'
+    en: 'symmetric matrix'
+  summary: 'Квадратная матрица, равная своей транспонированной: Aᵀ = A.'
+  lesson: transpose-trace
+  prerequisites: [la.transpose]
+  core: true
+
+- id: la.inverse
+  title:
+    ru: 'Обратная матрица'
+    en: 'inverse matrix'
+  summary: 'A⁻¹ с AA⁻¹ = A⁻¹A = I; существует, когда квадратная A полного ранга.'
+  lesson: inverse-determinant
+  prerequisites: [la.matmul, la.rank]
+  core: true
+
+- id: la.eigen
+  title:
+    ru: 'Собственные значения и векторы'
+    en: 'eigenvalues and eigenvectors'
+  summary: 'Av = λv: направление v матрица только растягивает в λ раз.'
+  lesson: eigen
+  prerequisites: [la.matmul]
+  core: true
+
+- id: la.quadratic-form
+  title:
+    ru: 'Квадратичная форма'
+    en: 'quadratic form'
+  summary: 'xᵀAx — число, квадратичное по x; матрицу A можно считать симметричной.'
+  lesson: quadratic-forms
+  prerequisites: [la.symmetric, la.dot-product]
+  core: true

@@ -1,0 +1,19 @@
+# Модуль 1. Языковые модели. Порядок уроков задаётся здесь, а не именами файлов.
+id: language-models
+number: '1'
+title:
+  ru: 'Языковые модели'
+hours: [12, 15]
+lessons:
+  - slug: language-modeling
+    number: '1.1'
+    title: 'Языковые модели: токены, авторегрессия, перплексия'
+  - slug: embeddings
+    number: '1.2'
+    title: 'Эмбеддинги слов и текстов'
+  - slug: transformer
+    number: '1.3'
+    title: 'Трансформер и внимание'
+  - slug: pretraining
+    number: '1.4'
+    title: 'Предобучение и масштабирование'

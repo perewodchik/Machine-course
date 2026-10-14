@@ -1,0 +1,18 @@
+id: rule.grad-log-det
+kind: rule
+title:
+  ru: 'Градиент логарифма модуля определителя'
+  en: 'gradient of log |det A|'
+statement: '\nabla_A \log\lvert\det A\rvert = A^{-\top}'
+symbols:
+  - name: A
+    tex: 'A'
+    shape: [d, d]
+    sample: invertible
+concept: calc.matrix-calculus
+pitfall: 'Без модуля формула верна только при det A > 0. Если A ограничена симметричными матрицами, «симметричная» производная другая; CS229 это ограничение игнорирует, и точка минимума от этого не меняется.'
+checks:
+  - kind: gradient
+    f: 'np.log(abs(np.linalg.det(A)))'
+    grad: 'np.linalg.inv(A).T'
+    wrt: A

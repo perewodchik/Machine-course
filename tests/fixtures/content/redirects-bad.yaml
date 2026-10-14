@@ -1,0 +1,3 @@
+# Битые переименования: ключ урока без курса
+lessons:
+  bridge/pca: unsupervised/representations/pca

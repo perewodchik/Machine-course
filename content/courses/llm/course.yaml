@@ -1,0 +1,14 @@
+# Курс «Языковые модели и LLM». Порядок модулей задаётся здесь. Каталог курсов — docs/program/catalog.md.
+id: llm
+# Номер в каталоге курсов (docs/program/catalog.md)
+number: 6
+title:
+  ru: 'Языковые модели и LLM'
+summary:
+  ru: 'От языковой модели и трансформера до дообучения, обучения в контексте и систем с поиском (RAG) с честной оценкой качества'
+cs229Edition: main-notes-2026-spring
+# Курсы, на уроки которых ссылаются строки «Опирается на» (ключ урока — <курс>/<модуль>/<slug>).
+requires: [foundations, ml-basics, deep-learning]
+modules:
+  - language-models
+  - working-with-llm
