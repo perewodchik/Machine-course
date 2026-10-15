@@ -22,3 +22,17 @@ def test_minimum_is_global():
     theta = normal_equations(X, y)
     rng = np.random.default_rng(0)
     assert all(loss(theta, X, y) <= loss(theta + rng.normal(size=2), X, y) for _ in range(100))
+
+
+def test_widget_export_matches_generator():
+    """Виджет «Подгонка прямой» рисует ровно эти точки: экспорт не разошёлся с make_data.
+
+    Если тест упал — перегенерировать: python scripts/export_widget_data.py
+    """
+    import json
+    from pathlib import Path
+
+    data = json.loads((Path(__file__).resolve().parents[2] / "src/widgets/la/fit-line/data.json").read_text())
+    X, y = make_data()
+    assert np.allclose(data["x"], X[:, 1], rtol=0, atol=1e-12)
+    assert np.allclose(data["y"], y, rtol=0, atol=1e-12)

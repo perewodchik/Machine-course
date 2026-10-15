@@ -10,6 +10,7 @@ export { Readout } from "./Readout";
 export { Scrub } from "./Scrub";
 export { Vector } from "./Vector";
 export { useLiveText, useLit, useWidth } from "./hooks";
+export { usePlane } from "./context";
 export { clipLine, clipSegment, labelAnchor, type Box, type Pt } from "./clip";
 export { fmt, labelParts, plainLabel } from "./format";
 export { planeLayout, niceStep, ticks, type PlaneLayout, type PlaneOptions } from "./layout";

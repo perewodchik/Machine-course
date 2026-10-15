@@ -41,7 +41,7 @@ export function Line(props: Props) {
   let ly = anchor ? layout.sy(anchor[1]) + (labelAbove ? -12 - rise : 26 + rise) : 0;
   // подпись не выходит за область графика
   const top = layout.inner.y + 16;
-  const bottom = layout.inner.y + layout.inner.h - 8;
+  const bottom = layout.inner.y + layout.inner.h - 12; // индекс опускается ниже базовой линии
   if (ly > bottom) ly = anchor ? layout.sy(anchor[1]) - 12 : ly;
   ly = Math.min(bottom, Math.max(top, ly));
   return (

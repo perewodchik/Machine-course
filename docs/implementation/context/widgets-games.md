@@ -6,6 +6,8 @@
 
 - **Виджет = чистая модель + тонкое представление** (`src/widgets/<раздел>/<имя>/`: `model.ts`, `model.test.ts`, `<Имя>.tsx`, `index.ts` с `meta`, `README.md`). Пропсы: `initial`, `lock`, `show`, `seed` — только сериализуемые.
 - **`widgets/_kit`** (готов, S2.01; таблица элементов — `src/widgets/_kit/README.md`, стили — `src/styles/kit.css`) — свой SVG-слой на `d3-scale`: `Plane` (клетка совпадает с делениями осей), `Axis`, `Point`, `Line` и `Ellipse` с `clipPath` по области графика, `Vector`, `ParamSlider` (бегунок цвета роли), `Readout`, `Scrub` (живое число в тексте). `viewBox` пересчитывается по ширине (ResizeObserver).
+- **Виджет в уроке:** обёртка `src/components/widgets/<Имя>.astro` (рисунок `figure.wide` с номером и подписью, остров `client:visible`) регистрируется в `lessonComponents` (`src/components/pedagogy/index.ts`): в MDX нет импортов, а директиву `client:*` можно поставить только в `.astro`. Образец — `FitLine`.
+- **Данные виджета** — экспорт сниппета урока: `python scripts/export_widget_data.py` пишет `src/widgets/<раздел>/<имя>/data.json`; pytest сверяет экспорт с генератором (`test_widget_export_matches_generator`).
 - **Подписи на рисунке** — шрифт формул (`--font-math`) с подложкой цвета фона; индексы 0.7em; подпись у видимого конца линии, если линия вне графика — скрыта.
 - **Цвета** — роли урока (`--sym-1…3`), вспомогательное — карандаш `--ink-3` пунктиром.
 - **Детерминизм и SSR:** состояние из `seed`, без `Math.random` и `Date`.

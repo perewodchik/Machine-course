@@ -90,3 +90,11 @@
   .kit-demo__controls .kit-readout { grid-column: 1 / -1; }
   @media (max-width: 900px) { .kit-demo__controls { grid-template-columns: minmax(0, 1fr); } }
 }
+
+@layer components {
+  /* «Подгонка прямой»: два ползунка в строку, ниже — действия и J */
+  .fit-line__controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: var(--space-3) var(--space-5); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule); }
+  .fit-line__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .fit-line__controls .kit-readout { justify-self: stretch; }
+  @media (max-width: 900px) { .fit-line__controls { grid-template-columns: minmax(0, 1fr); } }
+}

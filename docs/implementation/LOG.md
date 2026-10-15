@@ -17,6 +17,15 @@
 
 ---
 
+### 2026-10-15 — S2.02 виджет «Подгонка прямой» — готова
+- **Сделано:** src/widgets/la/fit-line/{model.ts,model.test.ts,FitLine.tsx,index.ts,README.md,data.json}, src/components/widgets/FitLine.astro, scripts/export_widget_data.py (data.json виджетов сайта), code/tests/test_normal_equations.py::test_widget_export_matches_generator, tests/e2e/fit-line.spec.ts; FitLine в lessonComponents; демо-урок использует виджет вместо заглушки.
+- **Файлы:** src/widgets/la/fit-line/*, src/components/widgets/FitLine.astro, src/components/pedagogy/index.ts, scripts/export_widget_data.py, code/tests/test_normal_equations.py, tests/e2e/fit-line.spec.ts, src/pages/demo/lesson.astro
+- **Проверка:** vitest 163 (θ* = (0.798, 0.548), J(2.5, 0.25) = 5.23, J(θ*) = 1.466), pytest 28, lint, astro check 0, build, e2e 100 (крайние значения ползунков — всё внутри области графика, подписи не ниже оси; минимум; сброс; подсветка из формулы)
+- **Отклонения от плана и решения:** Нижний предел подписей на рисунке поднят до 12 px от оси: индекс опускается ниже базовой линии и вылезал на 1.5 px. Ползунки показывают три знака (θ* в тексте урока — с тремя).
+- **Где остановился:** —
+- **Следующий шаг:** S2.03.
+- **Вопросы пользователю:** —
+
 ### 2026-10-15 — S2.01 набор widgets/_kit — готова
 - **Сделано:** src/widgets/_kit/* (логика layout/clip/format/scrub + 10 элементов + KitDemo, README), src/styles/kit.css, раздел «Набор для рисунков» на /lab (остров client:visible). Тесты: kit.test.ts (шкалы, клетка совпадает с делениями при 300–1200 px, обрезка Лианга — Барски, подписи, клавиатура), render.test.tsx (SSR: viewBox, clipPath, подписи, ARIA), e2e: стрелки и Shift+стрелка, End, прямая вне графика без подписи, подсветка X из рисунка в формулах. Зависимости: d3-scale 4.0.2, @nanostores/react 2.0.1.
 - **Файлы:** src/widgets/_kit/*, src/styles/kit.css, src/pages/lab.astro, tests/e2e/lab.spec.ts
