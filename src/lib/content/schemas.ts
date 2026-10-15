@@ -38,7 +38,7 @@ export const symbolSpec = z.strictObject({
   meaning: localized.optional(),
   shape: z.array(z.union([z.string(), z.number().int().positive()])).optional(),
   role: z.enum(["data", "param", "target", "aux"]).optional(),
-  sample: z.enum(["normal", "invertible", "spd"]).optional(),
+  sample: z.enum(["normal", "invertible", "spd", "positive"]).optional(),
 });
 
 export const check = z.discriminatedUnion("kind", [
@@ -151,6 +151,8 @@ export const lessonFrontmatter = z.strictObject({
   number: z.string().min(1),
   concepts: z.array(conceptId),
   minutes: z.number().int().positive(),
+  /** Вводный абзац под заголовком («зачем»): текст с $…$, до строки «Знаю эту тему». */
+  lead: z.string().min(1).optional(),
   cs229: z.array(cs229Ref).optional(),
   symbols: z.array(symbolSpec).optional(),
 });

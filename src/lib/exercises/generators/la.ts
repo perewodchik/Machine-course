@@ -6,14 +6,14 @@ const pm = (rows: number[][]) => String.raw`\begin{pmatrix}${rows.map((r) => r.j
 
 export const det2: Generator = {
   id: "la.det2",
-  version: 1,
+  version: 2,
   title: "Определитель матрицы 2 × 2",
   make(seed) {
     const r = rng(seed);
     const [a, b, c, d] = [r.int(-4, 5), r.nonzero(-4, 4), r.nonzero(-4, 4), r.int(-3, 6)];
     return {
       kind: "numeric",
-      prompt: String.raw`Найдите $\det A$ для $A = ${pm([[a, b], [c, d]])}$.`,
+      prompt: String.raw`Найдите $\det A$ для матрицы $$A = ${pm([[a, b], [c, d]])}.$$`,
       label: String.raw`$\det A =$`,
       answer: a * d - b * c,
       tol: 0,
@@ -30,7 +30,7 @@ export const det2: Generator = {
 
 export const matmul2: Generator = {
   id: "la.matmul2",
-  version: 1,
+  version: 2,
   title: "Произведение матриц 2 × 2",
   make(seed) {
     const r = rng(seed);
@@ -39,7 +39,7 @@ export const matmul2: Generator = {
     const AB = A.map((row) => [0, 1].map((j) => row[0]! * B[0]![j]! + row[1]! * B[1]![j]!));
     return {
       kind: "matrix",
-      prompt: String.raw`Вычислите $AB$ для $A = ${pm(A)}$ и $B = ${pm(B)}$.`,
+      prompt: String.raw`Вычислите $AB$ для матриц $$A = ${pm(A)}, \qquad B = ${pm(B)}.$$`,
       label: "$AB =$",
       answer: AB,
       tol: 0,
@@ -56,7 +56,7 @@ export const matmul2: Generator = {
 
 export const slope3: Generator = {
   id: "la.slope3",
-  version: 1,
+  version: 2,
   title: "Наклон прямой по трём точкам",
   make(seed) {
     const r = rng(seed);
@@ -65,7 +65,7 @@ export const slope3: Generator = {
     const slope = (y[2]! - y[0]!) / 2;
     return {
       kind: "numeric",
-      prompt: String.raw`Три объекта с одним признаком. Найдите наклон $\theta_1$ прямой наименьших квадратов: $X = ${pm([[1, 1], [1, 2], [1, 3]])}$, $y = ${pm(y.map((v) => [v]))}$.`,
+      prompt: String.raw`Три объекта с одним признаком. Найдите наклон $\theta_1$ прямой наименьших квадратов: $$X = ${pm([[1, 1], [1, 2], [1, 3]])}, \qquad y = ${pm(y.map((v) => [v]))}.$$`,
       label: String.raw`$\theta_1 =$`,
       answer: slope,
       hints: [

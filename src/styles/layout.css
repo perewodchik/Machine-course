@@ -53,6 +53,8 @@
   }
 
   /* ───────── Кнопки ───────── */
+  /* обёртку ставит rehypeWrapTables: широкая таблица прокручивается внутри колонки */
+  .table-wrap { margin: var(--space-5) 0; overflow-x: auto; }
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
     height: 36px; padding: 0 14px; border-radius: var(--radius-control);
@@ -132,6 +134,12 @@
   }
   .article > * { max-width: var(--measure); }
   .article > .note { max-width: var(--margin-width); }
+  /* Списки из Markdown (прямые потомки текста и блоков): preflight Tailwind снимает маркеры, возвращаем их */
+  .article > ul, .article > ol, .block > ul, .block > ol { margin: var(--space-3) 0; padding-left: 1.3em; }
+  .article > ul, .block > ul { list-style: disc; }
+  .article > ol, .block > ol { list-style: decimal; }
+  :is(.article, .block) > :is(ul, ol) > li + li { margin-top: var(--space-1); }
+  :is(.article, .block) > :is(ul, ol) > li::marker { color: var(--ink-3); }
   /* Широкий блок (.wide): в обычном режиме остаётся в колонке текста и не заходит за линию полей,
      поэтому заметки на полях стоят рядом с ним, а не сдвигают его вниз;
      в режиме «поля скрыты» расширяется симметрично до --wide-measure */

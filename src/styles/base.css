@@ -48,6 +48,10 @@
   /* Маркер: полоса под нижней частью строки, как настоящим выделителем */
   /* stylelint-disable-next-line function-disallowed-list -- маркер: полоса цвета токена, а не декоративный градиент */
   mark, .marker { background: linear-gradient(to top, var(--highlighter) 0 45%, transparent 45%); color: inherit; padding: 0 0.1em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+  /* Таблицы в тексте урока: линейки карандашом, заголовки — шрифтом интерфейса */
+  table { border-collapse: collapse; width: 100%; }
+  th { padding: 6px var(--space-4) 6px 0; border-bottom: 1px solid var(--ink-3); text-align: left; vertical-align: bottom; font: 600 14px/1.35 var(--font-ui); color: var(--ink-2); }
+  td { padding: 8px var(--space-4) 8px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
   code { font-family: var(--font-code); font-size: 0.86em; background: var(--paper-2); border: 1px solid var(--rule); border-radius: var(--radius-inline); padding: 0 0.3em; }
 
   /* Иконки: только функциональные, 16 px, наследуют цвет */

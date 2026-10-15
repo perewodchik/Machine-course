@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-15 — S2.06 S2.06 — урок V.1 — готова
+- **Сделано:** Первый урок в MDX: 4 цикла с проверками, 3 формулы из реестра с выводами, ячейка Python (θ закреплено тестом), итоговая проверка ставит «знаю». Маршрут урока: `lead` и заметка CS229 из frontmatter, тексты через `lessonText` (без 113 предупреждений), таблицы в прокручиваемой обёртке, маркеры списков.
+- **Файлы:** content/courses/foundations/bridge/linear-regression.mdx, content/formulas/{la/residual-orthogonality,stat/linreg-likelihood}.yaml, content/concepts/{prob,stat}.yaml, src/pages/[course]/[module]/[lesson].astro, src/lib/content/cs229.ts, tests/e2e/lesson-v1.spec.ts
+- **Проверка:** validate, pytest (35), vitest 224, lint, astro check, build, e2e 140 passed (axe чисто), check_consistency; content-review — правки внесены; скриншоты 1440/390 без горизонтальной прокрутки
+- **Отклонения от плана и решения:** Игра «Подгони прямую» — этап 3 (S3), в уроке пока не упоминается. Исправлено попутно: текст урока попадал в слот intro (выражение со slot), слипались ссылки-обоснования в шагах вывода, матрицы в условиях генераторов — выключными формулами (версии 2). sample: positive для скаляров в проверке формул.
+- **Следующий шаг:** S2.07 — игра «Матрица-пазл».
+- **Вопросы пользователю:** —
+
 ### 2026-10-15 — S2.05 S2.05 — Python в уроке — готова
 - **Сделано:** Воркер, очередь и «Стоп» (`src/python/`), компоненты `components/python/`, регионы сниппетов (`lib/content/snippets.ts`) с проверкой в валидаторе, подсветка «карандашом» при сборке, COOP/COEP в dev и preview, кэш Pyodide в CI.
 - **Файлы:** scripts/fetch-pyodide.ts, src/python/*, src/components/python/*, src/lib/content/snippets.ts, src/markdown/core/python.ts, src/styles/python.css, tests/e2e/python.spec.ts

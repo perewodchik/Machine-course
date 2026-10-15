@@ -277,6 +277,7 @@ export function validateContent(root: string): ValidationResult {
   const mdxParser = unified().use(remarkParse).use(remarkMdx).use(remarkMath);
   for (const m of mdx) {
     m.frontmatter?.symbols?.forEach((x, i) => checkTex(x.tex, m.file, `symbols[${i}].tex`));
+    for (const f of m.frontmatter?.lead?.matchAll(/\$((?:\\.|[^$\\])+?)\$/g) ?? []) checkTex(f[1]!, m.file, "lead", m.frontmatter?.symbols);
     let tree: MdastRoot;
     try {
       tree = mdxParser.parse(m.body);

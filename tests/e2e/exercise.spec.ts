@@ -32,7 +32,7 @@ test("числовой ответ: запятая принимается, выв
   const journal = await page.evaluate(() => JSON.parse(localStorage.getItem("mlf:journal:v1") ?? "[]"));
   const attempts = journal.filter((e: { item: string }) => e.item === "la.slope3");
   expect(attempts.map((e: { correct: boolean }) => e.correct)).toEqual([false, true]);
-  expect(attempts[1]).toMatchObject({ lesson: "foundations/bridge/linear-regression", seed: 1, attempt: 2, confidence: 3, generatorVersion: 1 });
+  expect(attempts[1]).toMatchObject({ lesson: "foundations/bridge/linear-regression", seed: 1, attempt: 2, confidence: 3, generatorVersion: generator("la.slope3").version });
 });
 
 test("подсказки открываются по одной, «Ещё задача» даёт новую", async ({ page }) => {

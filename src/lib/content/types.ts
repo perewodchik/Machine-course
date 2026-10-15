@@ -36,7 +36,7 @@ export interface SymbolSpec {
   meaning?: Localized;
   shape?: (string | number)[]; // ["n", "d"]; вектор-столбец — ["d", 1]
   role?: SymbolRole;
-  sample?: "normal" | "invertible" | "spd"; // как генерировать значение для численной проверки
+  sample?: "normal" | "invertible" | "spd" | "positive"; // как генерировать значение для численной проверки (positive — σ, шаг и т. п.)
 }
 
 /** Численная проверка (выражения на NumPy, см. code/mlf/formulas.py). */
@@ -109,7 +109,8 @@ export interface LessonFrontmatter {
   number: string;
   concepts: ConceptId[]; // понятия, которые урок вводит
   minutes: number;
-  cs229?: CS229Ref[];
+  lead?: string; // вводный абзац «зачем» под заголовком, текст с $…$
+  cs229?: CS229Ref[]; // показываются заметкой «В CS229» у заголовка
   symbols?: SymbolSpec[]; // символы с ролями для \sym в разовых формулах урока
 }
 

@@ -17,3 +17,22 @@
   ru: 'формула умножения вероятностей'
   en: 'chain rule of probability'
   note: 'Не путать с правилом цепочки для производных (chain rule).'
+- id: residual
+  ru: 'остаток'
+  en: 'residual'
+  note: 'Разница ответа и предсказания на объекте при выбранных весах; в модели шума CS229 — error term ε⁽ⁱ⁾.'
+- id: least-squares
+  ru: 'метод наименьших квадратов (МНК)'
+  en: 'least squares'
+- id: column-space
+  ru: 'пространство столбцов'
+  en: 'column space (range)'
+- id: log-likelihood
+  ru: 'логарифм правдоподобия'
+  en: 'log-likelihood'
+- id: intercept
+  ru: 'свободный член'
+  en: 'intercept (bias term)'
+- id: cost-function
+  ru: 'функция потерь'
+  en: 'cost function (loss)'

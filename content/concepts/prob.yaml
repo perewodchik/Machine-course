@@ -1,0 +1,22 @@
+# Понятия теории вероятностей. Формат — content/concepts/la.yaml; программа — docs/program/03-probability.md.
+# Граф модуля III дополняется вместе с его уроками (этап 4); здесь — то, на что уже ссылаются формулы и уроки.
+- id: prob.independence
+  title:
+    ru: 'Независимость'
+    en: 'independence'
+  summary: 'События или величины независимы, если совместная вероятность (плотность) равна произведению отдельных.'
+  lesson: conditional-independence
+  prerequisites: []
+  core: true
+
+- id: prob.normal
+  title:
+    ru: 'Нормальное распределение'
+    en: 'normal (Gaussian) distribution'
+  summary: 'Плотность (1/(√(2π)σ))·exp(−(x − μ)²/(2σ²)); второй параметр N(μ, σ²) — дисперсия.'
+  lesson: continuous-distributions
+  prerequisites: [calc.log-exp]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Linear regression / Probabilistic interpretation'

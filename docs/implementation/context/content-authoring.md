@@ -12,6 +12,10 @@
 6. Виджет или игра из карточки — по пакету `widgets-games.md`; если их ещё нет — сначала задача на виджет.
 7. Проверь скиллом `content-review`; сними скриншоты урока (1440 и 390 px).
 
+## Эталон
+
+Урок V.1 — `content/courses/foundations/bridge/linear-regression.mdx` (S2.06): frontmatter с `lead`, `cs229`, `symbols`; `Prereqs`; циклы с упражнениями `spec={{…}}`; формулы из реестра (`f.residual-orthogonality`, `f.normal-equations`, `f.linreg-likelihood`); ячейка `PyCode`; итоговая проверка `final`. Текст урока ищет маршрут `src/pages/[course]/[module]/[lesson].astro` через `lessonText` (`src/lib/content/collections.ts`); e2e — `tests/e2e/lesson-v1.spec.ts`.
+
 ## Определение готовности урока
 
 - [ ] Все цели карточки проверяются заданиями.

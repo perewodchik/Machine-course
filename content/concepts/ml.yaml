@@ -1,12 +1,24 @@
 # Понятия машинного обучения, на которые ссылаются формулы курса математики («Где используется»).
 # Основной граф понятий курсов ML появится вместе с их уроками (docs/program/catalog.md).
+- id: ml.least-squares
+  title:
+    ru: 'Метод наименьших квадратов'
+    en: 'least squares'
+  summary: 'Веса минимизируют ½‖Xθ − y‖²; решение — нормальные уравнения XᵀXθ = Xᵀy, остаток перпендикулярен столбцам X.'
+  lesson: linear-regression
+  prerequisites: [la.projection, calc.matrix-calculus, calc.convexity]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Linear regression / The normal equations'
+
 - id: ml.linear-regression-probabilistic
   title:
     ru: 'Вероятностная модель линейной регрессии'
     en: 'probabilistic interpretation of linear regression'
   summary: 'При гауссовом шуме максимум правдоподобия совпадает с минимумом суммы квадратов остатков.'
   lesson: linear-regression
-  prerequisites: [la.projection, calc.matrix-calculus]
+  prerequisites: [ml.least-squares, stat.mle, prob.normal]
   core: true
   cs229:
     - edition: main-notes-2026-spring

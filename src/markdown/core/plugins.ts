@@ -62,4 +62,16 @@ export function rehypeFailOnMathErrors() {
 }
 
 export const remarkPlugins = [remarkMath, remarkSymbolRoles];
-export const rehypePlugins = [[rehypeKatex, katexOptions], rehypeFailOnMathErrors, rehypeTypograf] as const;
+/** Таблица урока — в обёртке .table-wrap: на узком экране прокручивается сама, а не вся страница. */
+export function rehypeWrapTables() {
+  return (tree: HastRoot) => {
+    visit(tree, "element", (node: Element, index, parent) => {
+      if (node.tagName !== "table" || !parent || index === undefined) return;
+      if (parent.type === "element" && (parent.properties?.className as string[] | undefined)?.includes("table-wrap")) return;
+      parent.children[index] = { type: "element", tagName: "div", properties: { className: ["table-wrap"] }, children: [node] };
+      return SKIP;
+    });
+  };
+}
+
+export const rehypePlugins = [[rehypeKatex, katexOptions], rehypeFailOnMathErrors, rehypeTypograf, rehypeWrapTables] as const;

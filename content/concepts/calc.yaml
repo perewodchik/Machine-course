@@ -37,3 +37,12 @@
   lesson: convexity
   prerequisites: [calc.stationary-point, la.psd]
   core: true
+
+- id: calc.log-exp
+  title:
+    ru: 'Логарифм и экспонента'
+    en: 'logarithm and exponential'
+  summary: 'log(ab) = log a + log b, log eˣ = x; логарифм возрастает, поэтому не меняет точку максимума.'
+  lesson: exp-log-sigmoid
+  prerequisites: []
+  core: true

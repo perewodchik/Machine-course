@@ -41,6 +41,8 @@ def sample_symbols(symbols: list[dict], rng: np.random.Generator) -> dict[str, A
             value = value + shape[0] * np.eye(shape[0])
         elif kind == "spd":
             value = value @ value.T + shape[0] * np.eye(shape[0])
+        elif kind == "positive":  # стандартное отклонение, шаг: строго больше нуля и не крошечное
+            value = np.abs(value) + 1.0
         env[sym["name"]] = value
     return env
 

@@ -37,10 +37,13 @@ const stepClass = (i: number) => [i === first && "is-current", i > first && "is-
         <div class="step__math" set:html={renderTex(st.tex, { symbols: f.symbols })} />
         <div class="step__why">
           {st.note && <>{typograf(ru(st.note))} </>}
-          {st.by.map((id) => {
+          {st.by.map((id, k) => {
             const link = refLink(reg, id);
             const rule = id.startsWith("rule.") ? reg.rules.get(id) : undefined;
+            // несколько обоснований через «;»: иначе ссылки слипаются («…, I.8Скалярное…»)
+            const sep = k > 0 ? "; " : "";
             return rule ? (
+              <>{sep}
               <details class="rule-ref">
                 <summary>{link.title}</summary>
                 <span class="rule-ref__body">
@@ -48,11 +51,11 @@ const stepClass = (i: number) => [i === first && "is-current", i > first && "is-
                   {rule.corollary && <span>{typograf(ru(rule.corollary))} </span>}
                   {link.href && <a href={link.href}>Урок {link.lesson}</a>}
                 </span>
-              </details>
+              </details></>
             ) : link.href ? (
-              <a class="step__ref" href={link.href}>{link.title}, {link.lesson}</a>
+              <>{sep}<a class="step__ref" href={link.href}>{link.title}, {link.lesson}</a></>
             ) : (
-              <span class="step__ref">{link.title}</span>
+              <>{sep}<span class="step__ref">{link.title}</span></>
             );
           })}
           {st.why && (
