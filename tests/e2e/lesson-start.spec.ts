@@ -2,7 +2,8 @@
 // проходится с клавиатуры по бегункам; партия по ссылке ?seed=&level= совпадает с моделью.
 // Урок 0.3 — перевод записей в обе стороны с разбором ошибок, композиция, итоговая проверка.
 // Урок 0.4 — задача из правила xᵀAy с разбором перестановки индексов, вывод формулы 1 по шагам, итоговая проверка.
-// Урок 0.5 — задача из правила log ∏ = Σ log, вывод производной сигмоиды в четыре шага, итоговая проверка. axe.
+// Урок 0.5 — задача из правила log ∏ = Σ log, вывод производной сигмоиды в четыре шага, итоговая проверка.
+// Урок 0.6 — разбор «забыта внутренняя производная», вывод производной log g, ячейка с разностями, итоговая проверка. axe.
 import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 import { generator } from "../../src/lib/exercises/generators";
@@ -130,6 +131,28 @@ test("урок 0.5: log ∏ из правила, производная сигм
   await expect(page.getByRole("link", { name: "Открыть игру" })).toHaveAttribute("href", "/games/underflow/");
   const final = page.locator("[data-exercise][data-final]");
   const spec = generator("basics.sigmoid").make(31);
+  if (spec.kind !== "numeric") throw new Error("ожидалась числовая задача");
+  await final.locator("[data-variant]:not([hidden]) input[data-input]").fill(String(spec.answer));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await expectNoAxeViolations(page);
+});
+
+test("урок 0.6: разбор внутренней производной, вывод log g по шагам, итоговая проверка ставит «знаю»", async ({ page }) => {
+  await page.goto("/foundations/start/derivative-refresher/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Производная и правило цепочки");
+
+  const cls0 = page.locator("[data-exercise][data-item='start6.log-class0']");
+  await cls0.locator("[data-option]").nth(1).click();
+  await expect(cls0.locator("[data-feedback]")).toContainText("Забыта внутренняя производная");
+
+  const formula = page.locator("[data-formula='f.log-sigmoid-derivative']");
+  await formula.getByRole("button", { name: "Показать все шаги" }).click();
+  await expect(formula.getByText("Шаг 4 из 4")).toBeVisible();
+  await expect(page.locator("[data-py-cell]")).toHaveCount(1);
+
+  const final = page.locator("[data-exercise][data-final]");
+  const spec = generator("basics.chain-rule").make(31);
   if (spec.kind !== "numeric") throw new Error("ожидалась числовая задача");
   await final.locator("[data-variant]:not([hidden]) input[data-input]").fill(String(spec.answer));
   await final.getByRole("button", { name: "Проверить" }).click();

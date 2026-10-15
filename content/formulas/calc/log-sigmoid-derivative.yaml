@@ -1,0 +1,63 @@
+id: f.log-sigmoid-derivative
+kind: formula
+title:
+  ru: 'Производная логарифма сигмоиды'
+  en: 'derivative of the log-sigmoid'
+statement: '\frac{d}{dz} \log g(z) = 1 - g(z)'
+
+symbols:
+  - name: z
+    tex: 'z'
+    meaning: 'аргумент сигмоиды; в логистической регрессии $z = \theta^\top x$'
+    shape: []
+
+dependsOn:
+  concepts: [calc.chain-rule, calc.sigmoid]
+  rules: [rule.sigmoid-symmetry]
+
+derivation:
+  plan:
+    - 'Записать $\log g(z)$ как композицию: $-\log u$, где $u = 1 + e^{-z}$'
+    - 'Применить правило цепочки дважды: к логарифму и к экспоненте'
+    - 'Узнать в ответе $1 - g(z)$'
+  steps:
+    - goal: 0
+      tex: '\log g(z) = \log \frac{1}{1 + e^{-z}} = -\log\bigl(1 + e^{-z}\bigr)'
+      by: [calc.log-exp]
+      note: '$\log \frac{1}{a} = -\log a$.'
+      check:
+        kind: same
+        py: '-np.log(1 + np.exp(-z))'
+    - goal: 1
+      tex: '\frac{d}{dz} \log g(z) = \changed{-\frac{1}{1 + e^{-z}} \cdot \bigl(-e^{-z}\bigr)}'
+      by: [calc.chain-rule]
+      note: 'Внешняя функция $-\log u$ даёт $-\frac{1}{u}$, внутренняя $u = 1 + e^{-z}$ — производную $-e^{-z}$ (ещё одна цепочка: $e^{-z}$ и $-z$).'
+      check:
+        kind: gradient
+        wrt: z
+        py: '-(1 / (1 + np.exp(-z))) * (-np.exp(-z))'
+    - goal: 1
+      tex: '= \changed{\frac{e^{-z}}{1 + e^{-z}}}'
+      by: [calc.derivative]
+      note: 'Два минуса дают плюс.'
+      check:
+        kind: gradient
+        wrt: z
+        py: 'np.exp(-z) / (1 + np.exp(-z))'
+    - goal: 2
+      tex: '= \changed{1 - g(z)}'
+      by: [rule.sigmoid-symmetry]
+      note: '$\frac{e^{-z}}{1 + e^{-z}} = 1 - \frac{1}{1 + e^{-z}} = 1 - g(z)$.'
+      check:
+        kind: gradient
+        wrt: z
+        py: '1 - 1 / (1 + np.exp(-z))'
+
+pitfalls:
+  - 'Забыть внутреннюю производную $-e^{-z}$: получится $-\frac{1}{1 + e^{-z}}$ — отрицательное число, хотя $\log g(z)$ возрастает.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Classification and logistic regression'
+
+usedIn: [calc.chain-rule]
