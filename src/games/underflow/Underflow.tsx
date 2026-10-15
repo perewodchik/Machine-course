@@ -1,17 +1,18 @@
-// Представление «Underflow»: график десятичного порядка произведения (уровни 1–3) или суммы логарифмов (4–5)
-// по числу объектов. Прогноз ученика — линия цвета параметра, ответ появляется после «Перемножить».
+// Представление «Underflow»: график «сколько нулей после запятой» у произведения, −log₁₀ ∏ pᵢ (уровни 1–3), или
+// минус суммы логарифмов (4–5) по числу объектов: величины положительны и растут, ось n — внизу.
+// Прогноз ученика — линия цвета параметра, ответ появляется после «Перемножить».
 // Логика — model.ts, оболочка — GameShell.
 import { useMemo, type ReactNode } from "react";
 import { GameShell, type ShellView } from "../_engine/GameShell";
 import { Line, ParamSlider, Plane, Point } from "../../widgets/_kit";
 import { answer, COMPARE_N, DEBRIEF, fmt, KIND_NAMES, LEVELS, LOG_N, underflow as game, underflowAt, type Action, type Level, type State } from "./model";
 
-/** Наименьшее обычное и наименьшее положительное число float64 — десятичные порядки. */
-const NORMAL = -308;
-const ZERO = -324;
+/** Наименьшее обычное и наименьшее положительное число float64: 10⁻³⁰⁸ и около 10⁻³²⁴. */
+const NORMAL = 308;
+const ZERO = 324;
 const SAMPLES = 60;
 
-/** Накопленная сумма f(pᵢ) в SAMPLES + 1 точках от 0 до n: ломаная для графика. */
+/** Накопленная сумма f(pᵢ) в SAMPLES + 1 точках от 0 до n: ломаная для графика (f ≥ 0). */
 function curve(probs: readonly number[], n: number, f: (p: number) => number): [number, number][] {
   const pts: [number, number][] = [[0, 0]];
   let sum = 0;
@@ -41,37 +42,38 @@ function Board({ state }: { state: State }) {
   const [lo, hi] = level.range;
   const source = lo === hi ? `все вероятности pᵢ = ${lo}` : `вероятности pᵢ от ${lo} до ${hi}`;
   const zeroAt = useMemo(() => underflowAt(level.probs), [level]);
-  const product = useMemo(() => (level.kind === "logsum" || level.kind === "compare" ? [] : curve(level.probs, zeroAt, Math.log10)), [level, zeroAt]);
-  const logs = useMemo(() => (level.kind === "logsum" || level.kind === "compare" ? curve(level.probs, level.probs.length, Math.log) : []), [level]);
-  const logsB = useMemo(() => (level.probsB ? curve(level.probsB, level.probsB.length, Math.log) : []), [level]);
+  const product = useMemo(() => (level.kind === "logsum" || level.kind === "compare" ? [] : curve(level.probs, zeroAt, (p) => -Math.log10(p))), [level, zeroAt]);
+  const logs = useMemo(() => (level.kind === "logsum" || level.kind === "compare" ? curve(level.probs, level.probs.length, (p) => -Math.log(p)) : []), [level]);
+  const logsB = useMemo(() => (level.probsB ? curve(level.probsB, level.probsB.length, (p) => -Math.log(p)) : []), [level]);
 
   if (level.kind === "logsum" || level.kind === "compare") {
     const n = level.kind === "logsum" ? LOG_N : COMPARE_N;
-    const yMin = level.kind === "logsum" ? -3000 : -2500;
+    const yMax = level.kind === "logsum" ? 3000 : 2500;
     const show = level.kind === "logsum" ? state.revealed : state.logs;
     return (
       <figure className="game__figure">
         <Plane
           x={[0, n]}
-          y={[yMin, 0]}
+          y={[0, yMax]}
+          xStep={n / 4}
           yStep={500}
           height={{ ratio: 0.7, min: 240, max: 440 }}
           initialWidth={560}
           xLabel="объектов n"
-          yLabel="Σ ln pᵢ"
+          yLabel="−Σ ln p_i"
           label={`Сумма натуральных логарифмов вероятностей по числу объектов, ${n} объектов.${show ? " Кривые построены." : ""}`}
         >
-          {level.kind === "logsum" && <Line from={[0, state.guess]} to={[n, state.guess]} role="param" label="прогноз" labelAbove />}
+          {level.kind === "logsum" && <Line from={[0, -state.guess]} to={[n, -state.guess]} role="param" />}
           {show && <Polyline pts={logs} role="data" />}
           {show && level.kind === "compare" && <Polyline pts={logsB} role="target" />}
-          {show && level.kind === "logsum" && <Point x={n} y={answer(level)} role="data" />}
+          {show && level.kind === "logsum" && <Point x={n} y={-answer(level)} role="data" />}
         </Plane>
         <figcaption className="game__legend">
           {level.kind === "logsum" ? (
             <>
               <span className="key">{n} объектов, {source}</span>
               <span className="key"><span className="game__swatch game__swatch--s2" aria-hidden="true" />ваш прогноз</span>
-              {show && <span className="key"><span className="game__swatch game__swatch--s1" aria-hidden="true" />сумма логарифмов</span>}
+              {show && <span className="key"><span className="game__swatch game__swatch--s1" aria-hidden="true" />−Σ ln pᵢ</span>}
             </>
           ) : (
             <>
@@ -89,17 +91,18 @@ function Board({ state }: { state: State }) {
     <figure className="game__figure">
       <Plane
         x={[0, level.xMax]}
-        y={[-340, 0]}
+        y={[0, 380]}
+        xStep={level.xMax / 4}
         yStep={50}
         height={{ ratio: 0.7, min: 240, max: 440 }}
         initialWidth={560}
         xLabel="объектов n"
-        yLabel="порядок ∏ pᵢ"
+        yLabel="−log_{10} ∏ p_i"
         label={`Десятичный порядок произведения вероятностей по числу объектов, ${source}.${state.revealed ? ` Произведение стало нулём на объекте ${zeroAt}.` : ""}`}
       >
-        <Line from={[0, NORMAL]} to={[level.xMax, NORMAL]} role="aux" label="10^{−308}" labelAbove />
-        <Line from={[0, ZERO]} to={[level.xMax, ZERO]} role="aux" label="ноль" />
-        <Line from={[state.guess, 0]} to={[state.guess, -340]} role="param" label="прогноз" />
+        <Line from={[0, NORMAL]} to={[level.xMax, NORMAL]} role="aux" />
+        <Line from={[0, ZERO]} to={[level.xMax, ZERO]} role="aux" label="ноль во float64" labelAbove />
+        <Line from={[state.guess, 0]} to={[state.guess, 380]} role="param" />
         {state.revealed && <Polyline pts={product} role="data" />}
         {state.revealed && <Point x={zeroAt} y={ZERO} role="target" />}
       </Plane>
@@ -107,7 +110,7 @@ function Board({ state }: { state: State }) {
         <span className="key">{source}</span>
         <span className="key"><span className="game__swatch game__swatch--s2" aria-hidden="true" />ваш прогноз</span>
         {state.revealed && <span className="key"><span className="game__swatch game__swatch--s1" aria-hidden="true" />порядок произведения</span>}
-        <span className="key"><span className="game__swatch game__swatch--target" aria-hidden="true" />пределы float64</span>
+        <span className="key"><span className="game__swatch game__swatch--target" aria-hidden="true" />10⁻³⁰⁸ и ноль во float64</span>
       </figcaption>
     </figure>
   );
@@ -167,7 +170,7 @@ const view: ShellView<State, Action, Level> = {
   board: (s) => <Board state={s} />,
   controls: (s, dispatch) => <Controls state={s} dispatch={dispatch} />,
   keys: [
-    ["Стрелки на бегунке", "сдвинуть прогноз на шаг; Page Up и Page Down — на десять шагов"],
+    ["Стрелки на бегунке", "сдвинуть прогноз на шаг; Page Up и Page Down — на десятую часть шкалы"],
     ["Tab", "перейти к кнопкам"],
     ["Подсказка", "сначала предел float64, потом как оценить, потом ответ"],
   ],

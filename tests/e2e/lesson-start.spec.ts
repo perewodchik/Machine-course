@@ -1,7 +1,8 @@
 // Модуль 0 (S3.L0): урок 0.1 — рисунок без кнопки минимума, итоговая проверка ставит «знаю»; игра «Подгони прямую»
 // проходится с клавиатуры по бегункам; партия по ссылке ?seed=&level= совпадает с моделью.
 // Урок 0.3 — перевод записей в обе стороны с разбором ошибок, композиция, итоговая проверка.
-// Урок 0.4 — задача из правила xᵀAy с разбором перестановки индексов, вывод формулы 1 по шагам, итоговая проверка. axe.
+// Урок 0.4 — задача из правила xᵀAy с разбором перестановки индексов, вывод формулы 1 по шагам, итоговая проверка.
+// Урок 0.5 — задача из правила log ∏ = Σ log, вывод производной сигмоиды в четыре шага, итоговая проверка. axe.
 import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 import { generator } from "../../src/lib/exercises/generators";
@@ -107,6 +108,28 @@ test("урок 0.4: xᵀAy из правила, вывод геометриче�
   await expect(page.getByRole("link", { name: "Открыть игру" })).toHaveAttribute("href", "/games/sum-translator/");
   const final = page.locator("[data-exercise][data-final]");
   const spec = generator("basics.indicator-sum").make(31);
+  if (spec.kind !== "numeric") throw new Error("ожидалась числовая задача");
+  await final.locator("[data-variant]:not([hidden]) input[data-input]").fill(String(spec.answer));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await expectNoAxeViolations(page);
+});
+
+test("урок 0.5: log ∏ из правила, производная сигмоиды по шагам, итоговая проверка ставит «знаю»", async ({ page }) => {
+  await page.goto("/foundations/start/exp-log-sigmoid/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Экспонента, логарифм, сигмоида");
+
+  const rule = page.locator("[data-exercise][data-item='start5.log-product']");
+  await rule.locator("[data-option]").filter({ hasText: "∏i=1nlogpi" }).click();
+  await expect(rule.locator("[data-feedback]")).toContainText("превращает умножение в сложение");
+
+  const formula = page.locator("[data-formula='f.sigmoid-derivative']");
+  await formula.getByRole("button", { name: "Показать все шаги" }).click();
+  await expect(formula.getByText("Шаг 4 из 4")).toBeVisible();
+
+  await expect(page.getByRole("link", { name: "Открыть игру" })).toHaveAttribute("href", "/games/underflow/");
+  const final = page.locator("[data-exercise][data-final]");
+  const spec = generator("basics.sigmoid").make(31);
   if (spec.kind !== "numeric") throw new Error("ожидалась числовая задача");
   await final.locator("[data-variant]:not([hidden]) input[data-input]").fill(String(spec.answer));
   await final.getByRole("button", { name: "Проверить" }).click();

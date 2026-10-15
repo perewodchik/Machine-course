@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-15 — L-0.5 Экспонента, логарифм, сигмоида — готов
+- **Сделано:** Урок 0.5: три цикла (экспонента и логарифм; логарифм правдоподобия и underflow; сигмоида). Правила rule.log-product, rule.sigmoid-symmetry, rule.logsumexp-shift, формула f.sigmoid-derivative с выводом в четыре шага; понятие calc.sigmoid. Ячейка Python start/underflow.py (произведение 1100 вероятностей — 0.0, сумма логарифмов, log-sum-exp со сдвигом), числа закреплены в code/tests/test_underflow.py. Игра «Underflow» (/games/underflow): прогноз объекта, на котором произведение станет нулём, сумма логарифмов, сравнение двух моделей с нулевым правдоподобием. Валидатор: заголовок таблицы из одной формулы — ошибка (axe empty-table-header). Правило из реестра делится на части по «=» вне скобок.
+- **Файлы:** content/courses/foundations/start/exp-log-sigmoid.mdx, content/formulas/rules/{log-product,sigmoid-symmetry,logsumexp-shift}.yaml, content/formulas/calc/sigmoid-derivative.yaml, code/snippets/start/underflow.py, src/games/underflow/*, src/lib/content/rule-instance.ts, src/lib/content/validate.ts
+- **Проверка:** vitest 337; pytest 77; e2e урок 0.5, обе игры модуля, «Подгони прямую» — 21; lint, check, validate, check_consistency — чисто; скриншоты 1440/390
+- **Отклонения от плана и решения:** Черновик игры попал ещё в коммит L-0.4 (commit.sh делает git add -A), доделан здесь. У «уверенной модели» вероятности от 0.4: произведение чисел больше 0.5 во float64 застревает на 2⁻¹⁰⁷⁴ и нулём не становится. График — «сколько нулей после запятой» (−log₁₀ ∏ pᵢ) с осью n внизу. Page Up у бегунка — десятая часть шкалы, а не десять шагов: справка в обеих играх исправлена. Пользователь попросил вливать готовые срезы в main: после L-0.4 открыт и влит PR #3.
+- **Следующий шаг:** L-0.6 — производная и правило цепочки.
+- **Вопросы пользователю:** —
+
 ### 2026-10-15 — L-0.4 Суммы, произведения, индикатор — готов
 - **Сделано:** Урок 0.4: четыре цикла (знак суммы и произведения; двойные суммы и матрицы; индикатор; геометрический ряд), ошибки «выносить зависящее от индекса» и (Σa)² ≠ Σa². Правило rule.bilinear-sum (xᵀAy как двойная сумма, мутации — перестановки индексов) и формула f.geometric-series с выводом по шагам; новый вид выборки fraction. Генераторы basics.sum-square, basics.bilinear, basics.geometric; понятие nota.indicator. Игра «Переводчик сумм» (/games/sum-translator): цепочка множителей с ⊤ переводится обратно в индексы, проверка на двух наборах чисел, 7 уровней до Xᵀy и XᵀX; формулы из HTML шрифтами KaTeX (токен --font-math-upright).
 - **Файлы:** content/courses/foundations/start/sums-products-indicators.mdx, content/formulas/rules/bilinear-sum.yaml, content/formulas/calc/geometric-series.yaml, src/games/sum-translator/*, src/pages/games/sum-translator.astro, src/lib/exercises/generators/basics.ts, tests/e2e/sum-translator.spec.ts

@@ -24,8 +24,22 @@ export function substitute(tex: string, bind: Readonly<Record<string, string>>, 
   return out;
 }
 
+/** Первый знак «=» вне скобок: в «\log \prod_{i=1}^{n} p_i = …» знак в пределах суммы не считается. */
+export function topLevelEq(tex: string): number {
+  let depth = 0;
+  for (let i = 0; i < tex.length; i++) {
+    // и группы {…}, и множества \{…\}: «=» внутри них — часть подформулы, а не главное равенство
+    const c = tex[i] === "\\" ? tex.slice(i, i + 2) : tex[i];
+    if (c === "{" || c === "\\{") depth++;
+    else if (c === "}" || c === "\\}") depth--;
+    else if (c === "=" && depth === 0) return i;
+    if (c.length === 2) i++;
+  }
+  return -1;
+}
+
 export function instantiate(rule: Rule, bind: Readonly<Record<string, string>>): RuleInstance {
-  const eq = rule.statement.indexOf("=");
+  const eq = topLevelEq(rule.statement);
   if (eq < 0) throw new Error(`${rule.id}: в утверждении нет «=»`);
   const sub = (t: string) => substitute(t, bind, rule.symbols).trim();
   return {

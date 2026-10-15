@@ -1,0 +1,24 @@
+id: rule.logsumexp-shift
+kind: rule
+title:
+  ru: 'Устойчивый log-sum-exp'
+  en: 'stable log-sum-exp'
+statement: '\log \sum_{i=1}^{n} e^{z_i} = m + \log \sum_{i=1}^{n} e^{z_i - m},\quad m = \max_i z_i'
+symbols:
+  - name: z
+    tex: 'z'
+    shape: [n, 1]
+concept: calc.log-exp
+corollary: 'Справа самая большая экспонента равна $e^0 = 1$: ни одно слагаемое не переполняет float, и сумма не меньше единицы — логарифм не уходит в $-\infty$.'
+pitfall: 'Вычесть $m$ под экспонентой и забыть прибавить его снаружи — ответ сдвинется на $m$.'
+checks:
+  - kind: identity
+    lhs: 'np.log(np.sum(np.exp(z)))'
+    rhs: 'np.max(z) + np.log(np.sum(np.exp(z - np.max(z))))'
+mutations:
+  - tex: '\log \sum_{i=1}^{n} e^{z_i - m}'
+    py: 'np.log(np.sum(np.exp(z - np.max(z))))'
+    why: 'Под экспонентой вычли $m$, а снаружи не прибавили: $e^{z_i - m} = e^{z_i} / e^{m}$, и логарифм суммы уменьшился ровно на $m$.'
+  - tex: 'm + \log \sum_{i=1}^{n} e^{z_i}'
+    py: 'np.max(z) + np.log(np.sum(np.exp(z)))'
+    why: '$m$ прибавили, но под экспонентой не вычли: ответ больше на $m$, и переполнение никуда не делось.'
