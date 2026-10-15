@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-15 — S2.10 S2.10 — пилот: журнал, опрос, отчёт — готова
+- **Сделано:** Инструменты пилота без сервера: всё в браузере участника, результаты — файлом, сводка — скриптом.
+- **Файлы:** src/lib/pilot/report.ts, scripts/pilot-report.ts, src/client/survey.ts, src/components/pedagogy/{LessonSurvey,Pilot}.astro, src/client/derivation.ts, docs/pilot/README.md, tests/e2e/pilot.spec.ts
+- **Проверка:** lint, astro check, vitest 262, validate, check_consistency, build, e2e 170 passed (axe чисто)
+- **Отклонения от плана и решения:** Пилот запускает пользователь: набрать 6–10 участников и разослать ссылку с ?pilot=1 (docs/pilot/README.md).
+- **Следующий шаг:** S2.11 — ревью среза.
+- **Вопросы пользователю:** —
+
 ### 2026-10-15 — S2.09 S2.09 — лабораторные в CI и кнопки открытия — готова
 - **Сделано:** Единый источник кода урока и лабораторной; публикация для Colab — из этого же репозитория.
 - **Файлы:** code/mlf/snippets.py, code/tests/test_snippets.py, scripts/build_notebooks.py, notebooks/src/la/normal_equations.py, notebooks/la/normal_equations.ipynb, tests/e2e/lesson-v1.spec.ts

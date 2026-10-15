@@ -49,6 +49,14 @@ symbols:
 
 <Prereqs lessons={["foundations/linear-algebra/orthogonality-projections", "foundations/calculus/matrix-calculus", "foundations/calculus/convexity", "foundations/statistics/mle"]} />
 
+<Pilot>
+
+Решите до чтения урока: так видно, сколько урок добавил. На прогресс ответ не влияет.
+
+<Exercise gen="la.slope3" variants={1} seed={51} id="pre.v1" title="До урока" />
+
+</Pilot>
+
 ## Задача
 
 Возьмём $n$ объектов, у каждого — $d$ признаков. Признаки $i$-го объекта — вектор-столбец $\sym{x}{x}^{(i)} \in \mathbb{R}^d$, и первый признак всегда равен единице. Ответ на этом объекте — число $\sym{y}{y}^{(i)}$. Модель предсказывает ответ как $\sym{theta}{\theta}^\top \sym{x}{x}^{(i)}$, где $\sym{theta}{\theta} \in \mathbb{R}^d$ — веса.
@@ -273,6 +281,6 @@ $$
 - Три вывода сходятся в одном условии: остаток перпендикулярен столбцам $X$.
 - Квадраты — следствие гауссова шума; от $\sigma$ веса не зависят.
 
-<Exercise gen="la.slope3" title="Итоговая проверка" final />
+<Exercise gen="la.slope3" id="post.v1" title="Итоговая проверка" final />
 
 Дальше — курс «Основы машинного обучения», урок 1.2: та же модель, но веса находит градиентный спуск, а не формула.

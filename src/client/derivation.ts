@@ -1,5 +1,7 @@
 // Вывод по шагам: «Назад», «Следующий шаг», «Показать все шаги», режим «Сначала предсказать шаг».
 // Начальное состояние уже в разметке (Derivation.astro), здесь — только переходы.
+// Впервые открытый шаг пишется в журнал (StepEvent): сводка пилота показывает, где ученики бросают вывод.
+import { logEvent } from "../lib/state/journal";
 const NEXT = "Какой шаг дальше? Запишите сами, затем откройте его.";
 const LATER = "Откроется после предыдущего шага.";
 
@@ -12,6 +14,13 @@ function init(box: HTMLElement): void {
   const predict = box.querySelector<HTMLInputElement>("[data-predict-toggle]")!;
   const pos = box.querySelector<HTMLElement>("[data-pos]")!;
   let current = Number(box.dataset.start ?? 0);
+  let reached = current;
+  const lesson = location.pathname.split("/").filter(Boolean).slice(0, 3).join("/");
+  const track = () => {
+    if (current <= reached) return;
+    reached = current;
+    logEvent({ type: "step", lesson, formula: box.dataset.formula ?? "", step: current, predict: predict.checked, at: new Date().toISOString() });
+  };
 
   const render = () => {
     steps.forEach((s, i) => {
@@ -39,10 +48,12 @@ function init(box: HTMLElement): void {
   });
   next.addEventListener("click", () => {
     current = Math.min(steps.length - 1, current + 1);
+    track();
     render();
   });
   all.addEventListener("click", () => {
     current = steps.length - 1;
+    track();
     render();
   });
   predict.addEventListener("change", render);

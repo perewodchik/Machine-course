@@ -32,10 +32,17 @@ const lessonRedirects = (await getEntry("redirects", "lessons"))?.data ?? {};
       (() => {
         const root = document.documentElement;
         root.classList.add("js"); // компоненты с поведением прячут лишнее до отрисовки, без JS видно всё
-        let theme, margins;
-        try { theme = localStorage.getItem("theme"); margins = localStorage.getItem("margins"); } catch { /* приватный режим */ }
+        let theme, margins, pilot;
+        try {
+          // режим пилота (S2.10): ?pilot=1 включает задания «до урока», ?pilot=0 выключает; запоминается в браузере
+          const flag = new URLSearchParams(location.search).get("pilot");
+          if (flag === "1") localStorage.setItem("mlf:pilot", "1");
+          if (flag === "0") localStorage.removeItem("mlf:pilot");
+          theme = localStorage.getItem("theme"); margins = localStorage.getItem("margins"); pilot = localStorage.getItem("mlf:pilot");
+        } catch { /* приватный режим */ }
         if (theme === "light" || theme === "dark") root.dataset.theme = theme;
         if (margins === "hidden") root.dataset.margins = "hidden";
+        if (pilot === "1") root.dataset.pilot = "on";
       })();
     </script>
   </head>
@@ -53,6 +60,7 @@ const lessonRedirects = (await getEntry("redirects", "lessons"))?.data ?? {};
       import "../client/exercise";
       import "../client/know";
       import "../python/cell";
+      import "../client/survey";
     </script>
   </body>
 </html>

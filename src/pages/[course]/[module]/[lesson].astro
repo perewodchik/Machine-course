@@ -5,6 +5,7 @@ import type { GetStaticPaths } from "astro";
 import { render } from "astro:content";
 import LessonLayout from "../../../layouts/LessonLayout.astro";
 import { lessonComponents, Note } from "../../../components/pedagogy";
+import LessonSurvey from "../../../components/pedagogy/LessonSurvey.astro";
 import { lessonText, loadCatalog } from "../../../lib/content/collections";
 import type { CourseTree, LessonEntry } from "../../../lib/content/catalog";
 import { plural } from "../../../i18n/ru";
@@ -38,4 +39,5 @@ const lead = entry?.data.lead ? renderInline(entry.data.lead, entry.data.symbols
   {!rendered && <p class="lead" slot="intro">Текст этого урока ещё пишется. Соседние уроки&nbsp;— ниже и&nbsp;в&nbsp;оглавлении.</p>}
   {/* отдельным выражением: в одном выражении с slot="intro" Astro отправил бы текст урока тоже в intro */}
   {rendered && <rendered.Content components={lessonComponents} />}
+  {rendered && <LessonSurvey lesson={lesson.key} sections={(headings ?? []).map((h) => h.text).filter((t) => t !== "Итог")} />}
 </LessonLayout>

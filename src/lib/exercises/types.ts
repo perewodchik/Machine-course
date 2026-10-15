@@ -91,3 +91,28 @@ export interface MarkEvent {
   by: "learner" | "lesson-check" | "diagnostic";
   at: string;
 }
+
+/** Шаг вывода открыт впервые (src/client/derivation.ts): по этим событиям видно, где ученики бросают вывод. */
+export interface StepEvent {
+  type: "step";
+  lesson: string;
+  formula: string;
+  /** Номер открытого шага, с нуля. */
+  step: number;
+  /** Включён ли режим «Сначала предсказать шаг». */
+  predict: boolean;
+  at: string;
+}
+
+/** Микроопрос в конце урока (LessonSurvey). */
+export interface SurveyEvent {
+  type: "survey";
+  lesson: string;
+  /** Насколько понятно: 1 — совсем непонятно, 5 — всё понятно. */
+  clarity: 1 | 2 | 3 | 4 | 5;
+  /** Раздел урока, где споткнулись; пусто — нигде. */
+  stuck?: string;
+  comment?: string;
+  at: string;
+}
+

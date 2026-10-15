@@ -18,7 +18,8 @@
     "lint": "eslint . && stylelint \"src/**/*.css\"",
     "test": "vitest run --passWithNoTests",
     "test:e2e": "playwright test --pass-with-no-tests",
-    "validate": "tsx scripts/validate-content.ts"
+    "validate": "tsx scripts/validate-content.ts",
+    "pilot:report": "tsx scripts/pilot-report.ts"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "7.3.2",

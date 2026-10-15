@@ -1,0 +1,12 @@
+---
+// Блок только для участников пилота (S2.10): виден, когда страница открыта с ?pilot=1 (флаг в браузере,
+// атрибут data-pilot ставит скрипт в <head>). Для остальных учеников урок не меняется.
+interface Props {
+  label?: string;
+}
+const { label = "Для пилота: до урока" } = Astro.props;
+---
+<div class="pilot" data-pilot-only>
+  <p class="pilot__label">{label}</p>
+  <slot />
+</div>

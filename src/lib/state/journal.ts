@@ -2,11 +2,11 @@
 // Из него — отчёт ученика файлом и график калибровки уверенности (S4.01); смены галочки «знаю» — тоже здесь.
 import { atom } from "nanostores";
 import type { GameResult } from "../../games/_engine/types";
-import type { AttemptEvent, MarkEvent } from "../exercises/types";
+import type { AttemptEvent, MarkEvent, StepEvent, SurveyEvent } from "../exercises/types";
 
 /** Результат уровня игры: практика, на галочку «знаю» не влияет. */
 export type GameEvent = { type: "game" } & GameResult;
-export type JournalEvent = AttemptEvent | MarkEvent | GameEvent;
+export type JournalEvent = AttemptEvent | MarkEvent | GameEvent | StepEvent | SurveyEvent;
 
 const KEY = "mlf:journal:v1";
 const LIMIT = 2000;

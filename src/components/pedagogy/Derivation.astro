@@ -26,7 +26,7 @@ const NEXT = "Какой шаг дальше? Запишите сами, зат�
 const LATER = "Откроется после предыдущего шага.";
 const stepClass = (i: number) => [i === first && "is-current", i > first && "is-pending", i > first && predict && "is-masked"];
 ---
-<div class="derivation-box" data-derivation data-start={first} data-predict={predict ? "on" : "off"}>
+<div class="derivation-box" data-derivation data-formula={formula} data-start={first} data-predict={predict ? "on" : "off"}>
   <ol class="plan" aria-label="План вывода">
     {plan.map((g, i) => <li class:list={[i === steps[first]!.goal && "is-current"]}>{typograf(g)}</li>)}
   </ol>

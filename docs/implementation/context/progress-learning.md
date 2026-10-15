@@ -23,6 +23,12 @@
 - `src/components/layout/ProgressFile.astro` — «Сохранить / Загрузить прогресс» (главная, страница курса). Тесты: `marks.test.ts`, `tests/e2e/know.spec.ts`.
 - Клиент импортирует из `lib/content` только типы (`import type`), значения сборочных модулей — запрещено линтером.
 
+## Пилот (S2.10)
+
+- Режим пилота — `?pilot=1` (флаг `mlf:pilot`, атрибут `data-pilot` ставит скрипт в `<head>`); `<Pilot>` показывает задания «до урока» (`id="pre.<урок>"`), итоговая проверка — `id="post.<урок>"`.
+- Микроопрос — `LessonSurvey` в конце каждого урока с текстом (маршрут урока), события `SurveyEvent`; шаги вывода — `StepEvent` (`src/client/derivation.ts`).
+- Отчёт — кнопка «Скачать отчёт» (`src/client/survey.ts`): журнал + отметки + случайный ID браузера; формат и сводка — `src/lib/pilot/report.ts`, `npm run pilot:report -- папка/`. Инструкция — `docs/pilot/README.md`.
+
 ## Источники (только если нужно)
 
 - `docs/conventions/pedagogy.md` — разделы «Прогресс: галочка „знаю“» и «Учебная аналитика».
