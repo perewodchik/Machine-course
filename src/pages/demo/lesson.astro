@@ -2,7 +2,7 @@
 // Демо-урок: раскладка и педагогические компоненты на настоящих данных реестра (e2e, скриншоты). Не индексируется.
 // Есть всё, что проверяют тесты: заметки на полях, широкие блоки (.wide), разделы в оглавлении, формула с выводом.
 import LessonLayout from "../../layouts/LessonLayout.astro";
-import { Block, Exercise, FitLine, Formula, Note, Prereqs } from "../../components/pedagogy";
+import { Block, Exercise, FitLine, Formula, Note, Prereqs, PyCode } from "../../components/pedagogy";
 import Tex from "../../components/pedagogy/Tex.astro";
 import { loadCourse } from "../../lib/content/collections";
 import { loadRegistry } from "../../lib/content/registry";
@@ -16,6 +16,7 @@ const headings = [
   { slug: "task", text: "Задача и данные" },
   { slug: "figure", text: "Рисунок с ползунками" },
   { slug: "formula", text: "Карточка формулы" },
+  { slug: "code", text: "Код на Python" },
   { slug: "summary", text: "Итог" },
 ];
 ---
@@ -46,6 +47,9 @@ const headings = [
     <p>Размерности ловят ошибку сразу: <Tex tex={String.raw`\sym{X}{X}^\top \sym{theta}{\theta}^\top`} symbols={symbols} />&nbsp;— это <Tex tex={String.raw`d \times n`} /> на&nbsp;<Tex tex={String.raw`1 \times d`} />, такое произведение не&nbsp;определено.</p>
   </Block>
   <Note label="Учитель" teacher>Проверяйте размерности до&nbsp;того, как раскрывать скобки.</Note>
+  <h2 id="code">Код на Python</h2>
+  <p>Те&nbsp;же двенадцать точек, что на&nbsp;рисунке&nbsp;1. Решаем систему нормальных уравнений и&nbsp;сверяем ответ с&nbsp;библиотечной функцией. Сначала предскажите, что напечатает ячейка, затем запустите&nbsp;её.</p>
+  <PyCode src="la/normal_equations.py#solve+demo" run lab="la/normal_equations" />
   <p>Последний абзац перед итогом. Если поля скрыты, колонка текста стоит по&nbsp;центру, а&nbsp;заметки свёрнуты в&nbsp;строки и&nbsp;раскрываются по&nbsp;щелчку.</p>
 
   <h2 id="summary">Итог</h2>

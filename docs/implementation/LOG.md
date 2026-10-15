@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-15 — S2.05 S2.05 — Python в уроке — готова
+- **Сделано:** Воркер, очередь и «Стоп» (`src/python/`), компоненты `components/python/`, регионы сниппетов (`lib/content/snippets.ts`) с проверкой в валидаторе, подсветка «карандашом» при сборке, COOP/COEP в dev и preview, кэш Pyodide в CI.
+- **Файлы:** scripts/fetch-pyodide.ts, src/python/*, src/components/python/*, src/lib/content/snippets.ts, src/markdown/core/python.ts, src/styles/python.css, tests/e2e/python.spec.ts
+- **Проверка:** lint, astro check, vitest 218, validate, build, e2e 130 passed (axe чисто), pytest code/, сборка лабораторных, check_consistency; design-critique и accessibility-review по скриншотам — правки внесены
+- **Отклонения от плана и решения:** jsDelivr закрыт в этой сети — numpy извлекается из архива релиза на GitHub (fallback в скрипте). Кнопка JupyterLite скрыта до своей сборки (этап 3, notebooks/README.md). Сверх плана: правка кода в ячейке (PRIMM «измени»). Компоненты ячейки — .astro + скрипт, не React (src/README.md обновлён).
+- **Следующий шаг:** S2.06 — урок V.1.
+- **Вопросы пользователю:** —
+
 ### 2026-10-15 — S2.04 S2.04 — галочка «знаю» — готова
 - **Сделано:** Логика в `lib/progress/marks.ts`, стор в `lib/state/marks.ts`, клиент `client/know.ts`, компонент `ProgressFile`; итоговая проверка демо-урока ставит отметку сама.
 - **Файлы:** src/lib/progress/marks.ts, src/lib/state/marks.ts, src/client/know.ts, src/components/layout/ProgressFile.astro, tests/e2e/know.spec.ts, eslint.config.js

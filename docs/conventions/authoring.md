@@ -49,4 +49,4 @@
 - Frontmatter: `id`, `title`, `number`, `concepts`, `minutes`, `cs229`.
 - Импортов в MDX нет: компоненты (`Formula`, `Derivation`, `Exercise`, виджеты) передаёт сайт.
 - Формула с ролями — из реестра: `<Formula formula="f.normal-equations" />`. Разовая формула — TeX с `\sym{…}{…}` для символов с ролями.
-- Код — из сниппетов: `<PyCode src="la/normal_equations.py#solve" run />`.
+- Код — из сниппетов: `<PyCode src="la/normal_equations.py#solve+demo" run lab="la/normal_equations" />`. Регионы через `+` идут подряд; `run` делает ячейку, которая молча выполняет весь файл сниппета, затем показанный код; без `run` — листинг; `lab` — кнопка «Открыть в Colab». Код, которого нет в сниппетах (разовый пример), — `<PyCell code={…} />`. Что ячейка печатает, закреплено тестом в `code/tests/`.

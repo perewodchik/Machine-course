@@ -11,6 +11,8 @@ dist/
 .astro/
 .wrangler/
 test-results/
+# Pyodide раздаётся со своего домена, но в git не хранится: npm run py:fetch (S2.05)
+public/py/
 playwright-report/
 blob-report/
 

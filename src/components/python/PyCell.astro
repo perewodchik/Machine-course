@@ -1,0 +1,40 @@
+---
+// Ячейка Python в уроке (docs/conventions/python.md, «Ячейка в уроке»): код подсвечен при сборке,
+// «Запустить» выполняет его в Pyodide (src/python/cell.ts), повторное нажатие — «Стоп»; «Изменить» открывает правку.
+// setup — служебный код, который выполняется молча перед показанным (у PyCode — весь файл сниппета).
+// Без JS видна только подсвеченная программа.
+import Icon from "../layout/Icon.astro";
+import OpenIn from "./OpenIn.astro";
+import { highlightPython } from "../../markdown/core/python";
+
+interface Props {
+  code: string;
+  setup?: string;
+  /** Лабораторная, к которой ведёт ячейка: путь от notebooks/ без расширения */
+  lab?: string;
+}
+const { code, setup = "", lab } = Astro.props;
+if (/[\t\r]/.test(code)) throw new Error(`PyCell: в коде табуляция или \\r — отступы пробелами:\n${code}`);
+// </script> внутри кода не должен закрыть тег с данными
+const source = JSON.stringify({ code, setup }).replace(/</g, "\\u003c");
+const lines = code.split("\n").length;
+---
+<div class="code-cell" role="group" aria-label="Код на Python" data-py-cell>
+  <div class="code-cell__bar">
+    <span class="code-cell__title"><b>Python</b><span class="code-cell__status" role="status" data-py-status></span></span>
+    <span class="code-cell__actions">
+      <button type="button" class="btn btn--sm btn--primary code-cell__run" data-py-run>
+        <Icon name="play" class="code-cell__icon-run" /><Icon name="stop" class="code-cell__icon-stop" /><span data-py-run-label>Запустить</span>
+      </button>
+      <button type="button" class="btn btn--sm btn--quiet code-cell__edit" data-py-edit>Изменить</button>
+      {lab && <OpenIn notebook={lab} compact />}
+    </span>
+  </div>
+  <pre class="code" data-py-view><code set:html={highlightPython(code)} /></pre>
+  <textarea class="code code-cell__editor" data-py-editor rows={lines} spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="Код ячейки: можно менять, Ctrl+Enter — запустить" hidden></textarea>
+  <script type="application/json" data-py-source set:html={source} />
+  <div class="code-cell__out" data-py-out hidden>
+    <div class="code-cell__out-label"><span>Результат</span><span class="num" data-py-time></span></div>
+    <pre data-py-output></pre>
+  </div>
+</div>

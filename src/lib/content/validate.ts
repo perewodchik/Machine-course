@@ -13,6 +13,7 @@ import { unified } from "unified";
 import { visit } from "unist-util-visit";
 import { MACROS, TRUSTED_COMMANDS } from "../../markdown/core/katex";
 import { ContentError, parseYaml, validate, validateList } from "./files";
+import { loadSnippet } from "./snippets";
 import * as s from "./schemas";
 import type { Concept, Course, Formula, LessonFrontmatter, LessonRef, Module, Redirects, Rule, SymbolSpec } from "./types";
 
@@ -32,12 +33,12 @@ export function validateContent(root: string): ValidationResult {
   const problems: string[] = [];
   const rel = (path: string) => relative(root, path);
   const report = (file: string, message: string) => problems.push(`${file}: ${message}`);
-  /** Выполняет проверку схемой; ошибки — в общий список, результат — undefined. */
-  const guard = <T>(run: () => T): T | undefined => {
+  /** Выполняет проверку схемой; ошибки — в общий список (с приставкой prefix), результат — undefined. */
+  const guard = <T>(run: () => T, prefix = ""): T | undefined => {
     try {
       return run();
     } catch (e) {
-      if (e instanceof ContentError) problems.push(...e.problems);
+      if (e instanceof ContentError) problems.push(...e.problems.map((p) => prefix + p));
       else throw e;
       return undefined;
     }
@@ -287,6 +288,19 @@ export function validateContent(root: string): ValidationResult {
     visit(tree, (node) => {
       if (node.type === "math" || node.type === "inlineMath") {
         checkTex(node.value, m.file, `строка ${line(node)}`, m.frontmatter?.symbols);
+      }
+      if ((node.type === "mdxJsxFlowElement" || node.type === "mdxJsxTextElement") && (node.name === "PyCode" || node.name === "OpenIn")) {
+        // ссылки на код и лабораторные: PyCode и OpenIn уронят сборку — валидатор говорит об этом раньше и с номером строки
+        const attr = (name: string) => {
+          const a = node.attributes.find((x): x is MdxJsxAttribute => x.type === "mdxJsxAttribute" && x.name === name);
+          return typeof a?.value === "string" ? a.value : undefined;
+        };
+        const src = attr("src");
+        if (src !== undefined) guard(() => loadSnippet(src, root), `${m.file}: строка ${line(node)}: `);
+        const lab = attr(node.name === "PyCode" ? "lab" : "notebook");
+        if (lab !== undefined && !existsSync(join(root, "notebooks", `${lab}.ipynb`))) {
+          report(m.file, `строка ${line(node)}: лабораторной notebooks/${lab}.ipynb нет`);
+        }
       }
       if ((node.type === "mdxJsxFlowElement" || node.type === "mdxJsxTextElement") && node.name === "Note") {
         const label = node.attributes.find((a): a is MdxJsxAttribute => a.type === "mdxJsxAttribute" && a.name === "label");

@@ -15,6 +15,7 @@
 | Сборка | `npm run build` |
 | E2E и доступность | `npm run build && npm run test:e2e` (Playwright + axe; сервер — `astro preview`) |
 | Скриншоты для ревью | `SCREENSHOTS=1 npx playwright test screens` → `test-screens/` (страницы × 1440/390 × темы × поля) |
+| Pyodide для ячеек Python | `npm run py:fetch` — кладёт ядро и NumPy в `public/py/<версия>/` (в git не хранится); сам вызывается перед `dev` и `build`. Если CDN закрыт, берёт NumPy из архива релиза на GitHub (~340 MB потоком, один раз) |
 | Формулы и Python | `cd code && pytest` |
 | Лабораторные | `python scripts/build_notebooks.py --solutions /tmp/nb && pytest --nbmake /tmp/nb` |
 | Согласованность курсов, программы и плана | `python scripts/check_consistency.py` (работает и до S1.01) |

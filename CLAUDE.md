@@ -45,6 +45,7 @@ npm run build && npm run check                                   # сборка 
 npm test                                                         # Vitest
 npm run test:e2e                                                 # Playwright + axe
 npm run lint && npm run validate                                 # линтеры и валидатор контента (с S1.04 и S1.08)
+npm run py:fetch                                                 # Pyodide в public/py (сам вызывается перед dev и build)
 cd code && pip install -e ".[dev]" && pytest                     # формулы, выводы, сниппеты
 python scripts/build_notebooks.py --solutions /tmp/nb            # сборка лабораторных
 pytest --nbmake /tmp/nb                                          # лабораторные выполняются

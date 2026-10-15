@@ -1,6 +1,6 @@
 import numpy as np
 
-from la.normal_equations import loss, make_data, normal_equations
+from la.normal_equations import _lesson_cell, loss, make_data, normal_equations
 
 
 def test_matches_lstsq():
@@ -15,6 +15,12 @@ def test_values_shown_in_lesson():
     theta = normal_equations(X, y)
     assert np.allclose(theta.round(3), [0.798, 0.548])
     assert round(loss(np.array([2.5, 0.25]), X, y), 2) == 5.23
+
+
+def test_lesson_cell_output(capsys):
+    """Ячейка урока V.1 (<PyCode src="la/normal_equations.py#solve+demo" run />) печатает ровно это."""
+    _lesson_cell()
+    assert capsys.readouterr().out == "θ = [0.798 0.548]\nсовпадает с lstsq: True\n"
 
 
 def test_minimum_is_global():

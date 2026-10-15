@@ -55,7 +55,7 @@ const layerPolicies = [
 export default tseslint.config(
   {
     ignores: [
-      "dist/**", ".astro/**", "node_modules/**", ".venv/**",
+      "dist/**", ".astro/**", "node_modules/**", ".venv/**", "public/py/**",
       "prototype/**", "code/**", "notebooks/**", "docs/**",
       "tests/fixtures/**", "test-results/**", "test-screens/**", "playwright-report/**",
     ],

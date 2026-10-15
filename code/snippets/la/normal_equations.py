@@ -1,7 +1,8 @@
 """Нормальные уравнения: код для урока V.1 и лабораторной.
 
 Регионы (``# region name`` … ``# endregion``) вставляются в урок и ноутбук при сборке:
-``<PyCode src="la/normal_equations.py#solve" />``. Код вне регионов — служебный.
+``<PyCode src="la/normal_equations.py#solve" />``. Код вне регионов — служебный: ячейка урока
+выполняет весь файл молча, а затем показанные регионы (отступ региона снимается).
 """
 
 import numpy as np
@@ -20,7 +21,7 @@ def make_data(n: int = 12, seed: int = 7):
 
 # region solve
 def normal_equations(X: np.ndarray, y: np.ndarray) -> np.ndarray:
-    """Решает XᵀXθ = Xᵀy. Решаем систему, а не обращаем матрицу: быстрее и точнее."""
+    """XᵀXθ = Xᵀy: решаем систему, а не обращаем матрицу."""
     return np.linalg.solve(X.T @ X, X.T @ y)
 # endregion
 
@@ -31,3 +32,14 @@ def loss(theta: np.ndarray, X: np.ndarray, y: np.ndarray) -> float:
     r = X @ theta - y
     return 0.5 * float(r @ r)
 # endregion
+
+
+def _lesson_cell() -> None:
+    """Служебная обёртка: регион demo — ячейка урока V.1; тест сверяет её вывод с уроком."""
+    # region demo
+    X, y = make_data()
+    theta = normal_equations(X, y)
+    print("θ =", theta.round(3))
+    ref = np.linalg.lstsq(X, y, rcond=None)[0]
+    print("совпадает с lstsq:", np.allclose(theta, ref))
+    # endregion

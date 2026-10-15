@@ -1,0 +1,43 @@
+/*
+ * Ячейка Python и листинг кода (S2.05): перенесено из прототипа (prototype/assets/proto.css, «Код»). Только токены.
+ * Подсветка «карандашом»: ключевые слова — цветом текста, строки и числа — --code-literal, комментарии — --code-comment.
+ */
+@layer components {
+  .code-cell, .code-listing { margin: var(--space-6) 0; border: 1px solid var(--rule); border-radius: var(--radius-panel); background: var(--paper-2); }
+  .code-cell { overflow: hidden; }
+  .code-cell__bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); padding: 7px 8px 7px var(--space-4); border-bottom: 1px solid var(--rule); background: var(--surface); font-family: var(--font-ui); font-size: 14px; color: var(--ink-2); }
+  .code-cell__title { margin-right: auto; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
+  .code-cell__title b { color: var(--ink); font-weight: 500; }
+  .code-cell__status { color: var(--ink-3); }
+  /* кнопки переносятся группой: на узком экране — второй строкой под «Python» */
+  .code-cell__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+
+  pre.code { margin: 0; padding: var(--space-3) var(--space-4); font: 14px/1.65 var(--font-code); color: var(--code-text); overflow-x: auto; tab-size: 4; }
+  pre.code code { font: inherit; background: none; border: 0; border-radius: 0; padding: 0; }
+  .tok-k { color: var(--code-text); }
+  .tok-s, .tok-n { color: var(--code-literal); }
+  .tok-c { color: var(--code-comment); }
+
+  /* Правка кода: те же шрифт и отступы, что у листинга, — код не «прыгает» при переключении */
+  .code-cell__editor { display: block; width: 100%; margin: 0; padding: var(--space-3) var(--space-4); resize: vertical; border: 0; border-radius: 0; background: var(--surface); font: 14px/1.65 var(--font-code); color: var(--code-text); tab-size: 4; white-space: pre; overflow-wrap: normal; }
+  .code-cell__editor:focus-visible { outline: 2px solid var(--pen); outline-offset: -2px; }
+
+  .code-cell__out { border-top: 1px dashed var(--control-border); background: var(--surface); padding: var(--space-2) var(--space-4) var(--space-3); }
+  .code-cell__out-label { display: flex; justify-content: space-between; font-family: var(--font-ui); font-size: 13px; color: var(--ink-3); margin-bottom: 2px; }
+  /* вывод переносится, а не прокручивается: трассировки длинные, а прокрутка в прокрутке неудобна */
+  .code-cell__out pre { margin: 0; font: 14px/1.6 var(--font-code); color: var(--ink); white-space: pre-wrap; overflow-wrap: anywhere; }
+  .code-cell__trace { color: var(--ink-2); }
+  .code-cell__error { color: var(--red-pen); }
+  .code-cell__muted { color: var(--ink-3); }
+
+  /* Кнопки работают только со скриптом; без JS видна программа */
+  .code-cell__run, .code-cell__edit, .code-cell__status { display: none; }
+  .js .code-cell__run, .js .code-cell__edit { display: inline-flex; }
+  .js .code-cell__status { display: inline; }
+  .code-cell__run .icon { margin-left: -2px; }
+  .code-cell__icon-stop, .code-cell[data-running] .code-cell__icon-run { display: none; }
+  .code-cell[data-running] .code-cell__icon-stop { display: block; }
+
+  .open-in { display: inline-flex; flex-wrap: wrap; gap: var(--space-2); }
+  .open-in .icon { width: 14px; height: 14px; }
+}

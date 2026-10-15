@@ -53,6 +53,14 @@ describe("каждая проверка ловит свою фикстуру", (
     ["course-requires", ["requires: нет курса «no-such-course»"]],
     ["redirect-target", ["цели «demo/basics/intro-renamed» нет среди уроков", "lessons.demo/basics/intro: старый ключ всё ещё занят уроком"]],
     ["mdx-orphan", ["extra.mdx: урока «extra» нет в module.yaml", "next.mdx: title: «Другое название», а в"]],
+    [
+      "pycode-refs",
+      [
+        /next\.mdx: строка 13: сниппет «la\/fit\.py#solv»: нет региона «solv»; в файле есть: solve/,
+        "next.mdx: строка 13: лабораторной notebooks/la/no-such-lab.ipynb нет",
+        "next.mdx: строка 15: лабораторной notebooks/la/missing.ipynb нет",
+      ],
+    ],
   ];
 
   it.each(cases)("%s", (name, expected) => {

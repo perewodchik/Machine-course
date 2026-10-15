@@ -14,6 +14,11 @@ export default defineConfig({
     // smartypants выключен: кавычки «ёлочки» ставит типограф, а не английские “лапки”.
     processor: unified({ remarkPlugins, rehypePlugins: [...rehypePlugins], gfm: true, smartypants: false }),
   },
+  // Те же COOP/COEP, что отдаёт Cloudflare (public/_headers): в dev и preview работает SharedArrayBuffer,
+  // и «Стоп» в ячейке Python прерывает выполнение так же, как на сайте (S2.05).
+  server: {
+    headers: { "Cross-Origin-Opener-Policy": "same-origin", "Cross-Origin-Embedder-Policy": "require-corp" },
+  },
   vite: {
     plugins: [tailwindcss()],
   },

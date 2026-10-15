@@ -6,7 +6,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Know from "../components/layout/Know.astro";
 import CheckMark from "../components/layout/CheckMark.astro";
 import Icon from "../components/layout/Icon.astro";
-import { Block, Exercise, ExerciseSet, Formula, Note, Prereqs } from "../components/pedagogy";
+import { Block, Exercise, ExerciseSet, Formula, Note, Prereqs, PyCell, PyCode } from "../components/pedagogy";
 import type { OrderSpec, PredictSpec } from "../lib/exercises/types";
 import SymbolLegend from "../components/pedagogy/SymbolLegend.astro";
 import Tex from "../components/pedagogy/Tex.astro";
@@ -214,6 +214,14 @@ const regression = course.lessons.find((l) => l.key === "foundations/bridge/line
           { lesson: "foundations/bridge/linear-regression", gen: "la.slope3" },
         ]}
       />
+    </section>
+
+    <section aria-labelledby="lab-python">
+      <h2 id="lab-python">Python</h2>
+      <p class="intro">Код из&nbsp;<code>code/snippets</code> вставляется при сборке; ячейка выполняет его в&nbsp;Pyodide прямо в&nbsp;браузере. Первый запуск загружает Python и&nbsp;NumPy, дальше ячейки выполняются сразу. «Стоп» прерывает выполнение, не&nbsp;перезапуская Python. «Изменить» открывает код для правки, Ctrl+Enter&nbsp;— запустить.</p>
+      <PyCode src="la/normal_equations.py#solve" />
+      <PyCell code={"# бесконечный цикл: нажмите «Стоп»\nsteps = 0\nwhile True:\n    steps += 1"} />
+      <PyCell code={"import numpy as np\n\nX = np.ones((3, 2))\ntheta = np.array([0.5, 1.0, 2.0])\nprint(X @ theta)  # размерности не сходятся"} />
     </section>
 
     <section aria-labelledby="lab-dont">
