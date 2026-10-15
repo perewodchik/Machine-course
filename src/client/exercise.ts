@@ -60,7 +60,8 @@ function init(root: HTMLElement): void {
     });
     root.dispatchEvent(new CustomEvent<ExerciseResultDetail>("exercise:result", { bubbles: true, detail: { uid, item, lesson, correct } }));
     if (correct && root.hasAttribute("data-final")) {
-      root.dispatchEvent(new CustomEvent("exercise:final-correct", { bubbles: true, detail: { lesson } }));
+      // после того как отзыв уже показан: слушатель (прогресс) может дописать в него «Урок отмечен»
+      queueMicrotask(() => root.dispatchEvent(new CustomEvent("exercise:final-correct", { bubbles: true, detail: { lesson } })));
     }
   };
 

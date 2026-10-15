@@ -3,6 +3,7 @@
 import type { GetStaticPaths } from "astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Know from "../../components/layout/Know.astro";
+import ProgressFile from "../../components/layout/ProgressFile.astro";
 import { loadCatalog } from "../../lib/content/collections";
 import type { CourseTree } from "../../lib/content/catalog";
 import { hoursRange, plural } from "../../i18n/ru";
@@ -35,5 +36,6 @@ const { course } = Astro.props;
         </ol>
       </section>
     ))}
+    <ProgressFile />
   </main>
 </BaseLayout>

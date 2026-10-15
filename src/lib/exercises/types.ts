@@ -82,3 +82,12 @@ export interface AttemptEvent {
   generatorVersion?: number;
   at: string;
 }
+
+/** Смена галочки «знаю» в журнале. */
+export interface MarkEvent {
+  type: "mark";
+  lesson: string;
+  known: boolean;
+  by: "learner" | "lesson-check" | "diagnostic";
+  at: string;
+}

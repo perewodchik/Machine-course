@@ -1,9 +1,9 @@
 // Журнал событий обучения (без сервера): попытки упражнений. Хранится в localStorage, последние 2000 записей.
-// Из него — отчёт ученика файлом и график калибровки уверенности (S4.01). Смены галочки «знаю» добавит S2.04.
+// Из него — отчёт ученика файлом и график калибровки уверенности (S4.01); смены галочки «знаю» — тоже здесь.
 import { atom } from "nanostores";
-import type { AttemptEvent } from "../exercises/types";
+import type { AttemptEvent, MarkEvent } from "../exercises/types";
 
-export type JournalEvent = AttemptEvent;
+export type JournalEvent = AttemptEvent | MarkEvent;
 
 const KEY = "mlf:journal:v1";
 const LIMIT = 2000;

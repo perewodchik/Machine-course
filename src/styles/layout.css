@@ -245,3 +245,13 @@
     .toc__chevron .icon, .btn, :root[data-margins="hidden"] .note .label::before { transition: none; }
   }
 }
+
+@layer components {
+  /* Прогресс файлом: на главной и странице курса */
+  .progress-file { margin-top: var(--space-7); padding-top: var(--space-4); border-top: 1px solid var(--rule); font-family: var(--font-ui); font-size: var(--text-sm); color: var(--ink-2); }
+  .progress-file p { max-width: var(--measure); margin: 0 0 var(--space-3); }
+  .progress-file__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .progress-file__import:focus-within { outline: 2px solid var(--pen); outline-offset: 2px; }
+  .progress-file__status:empty { display: none; }
+  .course-progress { color: var(--ink-2); }
+}

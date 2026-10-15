@@ -3,6 +3,7 @@
 import "../styles/global.css";
 import SiteHeader from "../components/layout/SiteHeader.astro";
 import type { CourseTree } from "../lib/content/catalog";
+import { getEntry } from "astro:content";
 
 interface Props {
   title: string;
@@ -14,6 +15,8 @@ interface Props {
 }
 const { title, description, course, withToc = false, noindex = false } = Astro.props;
 const fullTitle = course ? `${title} — ${course.title}` : title;
+// переименования уроков (content/redirects.yaml): по ним мигрируют сохранённые отметки «знаю»
+const lessonRedirects = (await getEntry("redirects", "lessons"))?.data ?? {};
 ---
 <!doctype html>
 <html lang="ru">
@@ -40,6 +43,7 @@ const fullTitle = course ? `${title} — ${course.title}` : title;
     <a class="skip-link" href="#content">К содержимому</a>
     <SiteHeader course={course} withToc={withToc} />
     <slot />
+    <script type="application/json" id="lesson-redirects" set:html={JSON.stringify(lessonRedirects)} />
     <script>
       import "../client/layout";
       import "../client/symbols";
@@ -47,6 +51,7 @@ const fullTitle = course ? `${title} — ${course.title}` : title;
       import "../client/tabs";
       import "../client/derivation";
       import "../client/exercise";
+      import "../client/know";
     </script>
   </body>
 </html>

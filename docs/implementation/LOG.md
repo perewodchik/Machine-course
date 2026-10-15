@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-15 — S2.04 S2.04 — галочка «знаю» — готова
+- **Сделано:** Логика в `lib/progress/marks.ts`, стор в `lib/state/marks.ts`, клиент `client/know.ts`, компонент `ProgressFile`; итоговая проверка демо-урока ставит отметку сама.
+- **Файлы:** src/lib/progress/marks.ts, src/lib/state/marks.ts, src/client/know.ts, src/components/layout/ProgressFile.astro, tests/e2e/know.spec.ts, eslint.config.js
+- **Проверка:** lint, astro check, vitest 199, validate, build 127 страниц, e2e 122 passed (axe чисто)
+- **Отклонения от плана и решения:** Правило слоёв: клиенту разрешён `import type` из сборочных модулей (`dependency.kind: value`), фикстура `ok-type-import-build.ts`. Сообщение «Урок отмечен» — через `queueMicrotask`, чтобы его не затирал отзыв упражнения.
+- **Следующий шаг:** S2.05 — Python в уроке (Pyodide в Web Worker, PyCell, PyCode, OpenIn).
+- **Вопросы пользователю:** —
+
 ### 2026-10-15 — S2.03 движок упражнений — готова
 - **Сделано:** src/lib/math/rng.ts (mulberry32), src/lib/exercises/{types,parse,check}.ts, generators/{la,index}.ts (det2, matmul2, slope3, shapes), src/markdown/core/inline.ts (renderInline, inlineText), src/components/pedagogy/{Exercise,ExerciseSet}.astro, src/client/exercise.ts, src/lib/state/journal.ts, стили в pedagogy.css, раздел «Упражнения» на /lab. Тесты: exercises.test.ts (разбор «0,5», «−3/4», «1e-3»; проверки; детерминизм генераторов), inline.test.ts, tests/e2e/exercise.spec.ts (все типы с клавиатуры, журнал, итоговая проверка).
 - **Файлы:** src/lib/math/rng.ts, src/lib/exercises/*, src/markdown/core/inline.ts, src/components/pedagogy/{Exercise,ExerciseSet}.astro, src/client/exercise.ts, src/lib/state/journal.ts, src/styles/pedagogy.css, src/pages/lab.astro, tests/e2e/exercise.spec.ts

@@ -14,6 +14,15 @@
 - **Хранилище:** nanostores + localStorage; `schemaVersion` и миграции; `navigator.storage.persist()`; экспорт и импорт прогресса файлом (Safari стирает localStorage через 7 дней без визитов). Переименования уроков применяются из `content/redirects.yaml`.
 - **Журнал событий** (без бэкенда): `{lesson, item, seed, attempt, correct, hints, ms, confidence?, generatorVersion}` и смены галочки `{lesson, known, by}` (`confidence` — необязательная отметка уверенности перед ответом, идея B6; из неё S4.01 строит график калибровки); кнопка «Отправить отчёт» (файл); микроопрос в конце урока «понятно 1–5, где споткнулись».
 
+## Где в коде (S2.03–S2.04)
+
+- `src/lib/progress/marks.ts` — чистая логика: `setMark`, `isKnown`, `countKnown` (★ не считаются), `migrate` (v1 «модуль/slug» → `foundations/…`, затем цепочки переименований), `mergeMarks` (по уроку побеждает поздняя отметка), `exportMarks` / `importMarks`, `MarksFormatError`. `SCHEMA_VERSION = 2`.
+- `src/lib/state/marks.ts` — стор `$marks` (localStorage `mlf:marks`), `mark(key, known, by)` пишет `MarkEvent` в журнал и просит `storage.persist()`; `exportFile`, `importFile` (слияние). Переименования берёт из `<script id="lesson-redirects">` (`BaseLayout`, коллекция `redirects`).
+- `src/lib/state/journal.ts` — журнал `$journal` (`mlf:journal:v1`), `logEvent`; типы событий — `src/lib/exercises/types.ts`.
+- `src/client/know.ts` — все `input[data-know]` страницы, счётчики `[data-progress-lessons]` (шапка, главная, страница курса) и модулей оглавления; событие `exercise:final-correct` (итоговая проверка, `<Exercise final lesson="…">`) ставит отметку `lesson-check`; кнопки `[data-marks-export]`, `[data-marks-import]`.
+- `src/components/layout/ProgressFile.astro` — «Сохранить / Загрузить прогресс» (главная, страница курса). Тесты: `marks.test.ts`, `tests/e2e/know.spec.ts`.
+- Клиент импортирует из `lib/content` только типы (`import type`), значения сборочных модулей — запрещено линтером.
+
 ## Источники (только если нужно)
 
 - `docs/conventions/pedagogy.md` — разделы «Прогресс: галочка „знаю“» и «Учебная аналитика».

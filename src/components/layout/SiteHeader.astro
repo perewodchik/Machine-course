@@ -36,7 +36,7 @@ const total = course?.required ?? 0;
         <a class="course-name" href={course.href}>{course.title}</a>
       </>
     )}
-    <div class="header-progress" data-course={course?.id}>
+    <div class="header-progress" data-course={course?.id} data-progress-lessons={course ? JSON.stringify(course.lessons.filter((l) => !l.optional).map((l) => l.key)) : undefined}>
       {course && (
         <>
           <span class="label">

@@ -2,7 +2,7 @@
 // Демо-урок: раскладка и педагогические компоненты на настоящих данных реестра (e2e, скриншоты). Не индексируется.
 // Есть всё, что проверяют тесты: заметки на полях, широкие блоки (.wide), разделы в оглавлении, формула с выводом.
 import LessonLayout from "../../layouts/LessonLayout.astro";
-import { Block, FitLine, Formula, Note, Prereqs } from "../../components/pedagogy";
+import { Block, Exercise, FitLine, Formula, Note, Prereqs } from "../../components/pedagogy";
 import Tex from "../../components/pedagogy/Tex.astro";
 import { loadCourse } from "../../lib/content/collections";
 import { loadRegistry } from "../../lib/content/registry";
@@ -49,5 +49,6 @@ const headings = [
   <p>Последний абзац перед итогом. Если поля скрыты, колонка текста стоит по&nbsp;центру, а&nbsp;заметки свёрнуты в&nbsp;строки и&nbsp;раскрываются по&nbsp;щелчку.</p>
 
   <h2 id="summary">Итог</h2>
+  <Exercise gen="la.slope3" variants={3} title="Итоговая проверка" final lesson="foundations/bridge/linear-regression" />
   <p>Раскладка урока готова к&nbsp;настоящим текстам: заметки, рисунки и&nbsp;формулы займут свои места без правок вёрстки.</p>
 </LessonLayout>

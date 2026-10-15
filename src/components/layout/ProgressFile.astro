@@ -1,0 +1,14 @@
+---
+// Сохранить и загрузить прогресс файлом (src/client/know.ts): отметки живут в браузере, файл переносит их на другое устройство.
+---
+<div class="progress-file" data-progress-file>
+  <p>Отметки «знаю» хранятся в&nbsp;этом браузере. Чтобы не&nbsp;потерять их или перенести на&nbsp;другое устройство, сохраните файл и&nbsp;загрузите его там.</p>
+  <div class="progress-file__actions">
+    <button type="button" class="btn btn--sm" data-marks-export>Сохранить прогресс</button>
+    <label class="btn btn--sm btn--quiet progress-file__import">
+      Загрузить прогресс
+      <input type="file" accept="application/json,.json" class="visually-hidden" data-marks-import />
+    </label>
+  </div>
+  <p class="progress-file__status" role="status" data-marks-status></p>
+</div>

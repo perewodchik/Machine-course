@@ -27,7 +27,10 @@ describe("ESLint", () => {
     expectRule("games/puzzle/bad-imports-widget-view.ts", "boundaries/dependencies");
     expectClean("games/puzzle/ok-imports-model.ts");
   });
-  it("клиентский код не импортирует сборочные модули", () => expectRule("client/bad-imports-build.ts", "boundaries/dependencies"));
+  it("клиентский код не импортирует сборочные модули, кроме типов", () => {
+    expectRule("client/bad-imports-build.ts", "boundaries/dependencies");
+    expectClean("client/ok-type-import-build.ts");
+  });
   it("разрешённые зависимости не ругаются", () => {
     expectClean("widgets/beta/ok-imports-kit.ts");
     expectClean("lib/math/ok-pure.ts");

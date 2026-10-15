@@ -2,7 +2,8 @@
 // Главная: список курсов. Каталог с графом курсов и маршрутами по целям — S7.01 (эталон prototype/courses.html).
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { loadCatalog } from "../lib/content/collections";
-import { hoursRange, plural } from "../i18n/ru";
+import { hoursRange, ofLessons, plural } from "../i18n/ru";
+import ProgressFile from "../components/layout/ProgressFile.astro";
 
 const courses = await loadCatalog();
 const hours = (c: (typeof courses)[number]) =>
@@ -23,9 +24,13 @@ const hours = (c: (typeof courses)[number]) =>
               {c.lessons.length}&nbsp;{plural(c.lessons.length, "урок", "урока", "уроков")}
               {c.required < c.lessons.length && `, из них ${c.lessons.length - c.required} ★ по желанию`}; <span class="nowrap">{hoursRange(hours(c))}</span>
             </p>
+            <p class="facts course-progress" data-progress-lessons={JSON.stringify(c.lessons.filter((l) => !l.optional).map((l) => l.key))}>
+              Знаю <span data-known-total>0</span> из&nbsp;{c.required} {ofLessons(c.required)}
+            </p>
           </div>
         </li>
       ))}
     </ul>
+    <ProgressFile />
   </main>
 </BaseLayout>
