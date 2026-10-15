@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-15 — L-0.4 Суммы, произведения, индикатор — готов
+- **Сделано:** Урок 0.4: четыре цикла (знак суммы и произведения; двойные суммы и матрицы; индикатор; геометрический ряд), ошибки «выносить зависящее от индекса» и (Σa)² ≠ Σa². Правило rule.bilinear-sum (xᵀAy как двойная сумма, мутации — перестановки индексов) и формула f.geometric-series с выводом по шагам; новый вид выборки fraction. Генераторы basics.sum-square, basics.bilinear, basics.geometric; понятие nota.indicator. Игра «Переводчик сумм» (/games/sum-translator): цепочка множителей с ⊤ переводится обратно в индексы, проверка на двух наборах чисел, 7 уровней до Xᵀy и XᵀX; формулы из HTML шрифтами KaTeX (токен --font-math-upright).
+- **Файлы:** content/courses/foundations/start/sums-products-indicators.mdx, content/formulas/rules/bilinear-sum.yaml, content/formulas/calc/geometric-series.yaml, src/games/sum-translator/*, src/pages/games/sum-translator.astro, src/lib/exercises/generators/basics.ts, tests/e2e/sum-translator.spec.ts
+- **Проверка:** vitest 331; pytest 71; e2e — 299 passed (полный прогон; одно падение подсказок игры на телефоне устранено ожиданием каждой подсказки), урок 0.4 и игра — 12; lint, check, validate, check_consistency — чисто; скриншоты 1440/390
+- **Отклонения от плана и решения:** Индикатор — как в CS229, 1{·}: KaTeX рисует \mathbb{1} обычной единицей, и заметка «в курсе — 𝟙» показывала два одинаковых знака. Игра проверяет ответ на числах, а не по форме: xᵀy и yᵀx, xᵀAy и yᵀAᵀx принимаются обе; что принятая цепочка не бывает ложной, проверяет fast-check по всем цепочкам до трёх множителей.
+- **Следующий шаг:** L-0.5 — экспонента, логарифм, сигмоида и игра «Underflow».
+- **Вопросы пользователю:** —
+
 ### 2026-10-15 — L-0.3 Язык математики: множества, отображения, кванторы — готов
 - **Сделано:** Урок 0.3: три цикла (множества и ℝᵈ, ∈ и ⊂; отображения — функция, значение, образ, композиция; аргмин, кванторы, ∝) и практика «перевод туда и обратно» — генератор basics.read-notation (8 записей × 2 стороны, неверные варианты — типичные путаницы). Ошибки ∈↔⊂, min↔argmin, ∝↔=. Понятия nota.sets и nota.argmin, глоссарий. Итоговая проверка — basics.argmin. Типограф: однострочные компоненты MDX (<Note>…</Note>) типографятся как абзац — кавычка после формулы больше не разворачивается («…«), короткие формулы в заметках не рвутся.
 - **Файлы:** content/courses/foundations/start/language-of-math.mdx, content/concepts/nota.yaml, content/glossary.yaml, src/lib/exercises/generators/basics.ts, src/markdown/core/plugins.ts, tests/e2e/lesson-start.spec.ts

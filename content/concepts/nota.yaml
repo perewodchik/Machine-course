@@ -3,7 +3,7 @@
   title:
     ru: 'Знак суммы'
     en: 'summation notation'
-  summary: 'Сумма по индексу: сколько слагаемых, что меняется от слагаемого к слагаемому, что выносится за знак.'
+  summary: 'Сумма $\sum_{i=1}^{n} a_i$ и произведение $\prod_{i=1}^{n} a_i$ по индексу: что меняется от слагаемого к слагаемому, что выносится за знак; двойная сумма $x^\top A y = \sum_i \sum_j x_i A_{ij} y_j$.'
   lesson: sums-products-indicators
   prerequisites: [nota.sets]
   core: true
@@ -26,3 +26,11 @@
   prerequisites: [nota.sets]
   core: true
 
+- id: nota.indicator
+  title:
+    ru: 'Индикатор'
+    en: 'indicator function'
+  summary: '$1\{A\} = 1$, если условие $A$ верно, и $0$ иначе; $\sum_i 1\{y^{(i)} = k\}$ — число объектов класса $k$.'
+  lesson: sums-products-indicators
+  prerequisites: [nota.sums]
+  core: true

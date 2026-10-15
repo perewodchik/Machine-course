@@ -67,6 +67,7 @@
   --font-ui: "IBM Plex Sans", system-ui, sans-serif;
   --font-code: "IBM Plex Mono", ui-monospace, monospace;
   --font-math: "KaTeX_Math", "Latin Modern Math", serif; /* подписи на рисунках — тем же начертанием, что в формулах */
+  --font-math-upright: "KaTeX_Main", "Latin Modern Math", serif; /* цифры, знаки и ∑ в формулах, собранных без KaTeX (игры) */
 
   /* Шкала: текст урока 18 px, интерфейс 15 px */
   --text-xs: 0.8125rem;   /* 13 */

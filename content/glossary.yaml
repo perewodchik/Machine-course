@@ -84,3 +84,20 @@
 - id: proportional
   ru: 'пропорционально'
   en: 'proportional to'
+- id: summation
+  ru: 'знак суммы, знак произведения'
+  en: 'summation notation, product notation'
+- id: summation-index
+  ru: 'индекс суммирования'
+  en: 'index of summation (dummy index)'
+  note: 'Имя индекса суммирования ни на что не влияет: $\sum_i a_i = \sum_k a_k$.'
+- id: indicator
+  ru: 'индикатор'
+  en: 'indicator function'
+  note: 'Обозначение как в CS229: $1\{\cdot\}$. Не путать с вектором из единиц $\mathbf{1}$.'
+- id: geometric-series
+  ru: 'геометрический ряд'
+  en: 'geometric series'
+- id: discount-factor
+  ru: 'коэффициент дисконтирования'
+  en: 'discount factor'
