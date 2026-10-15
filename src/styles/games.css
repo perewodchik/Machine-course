@@ -16,6 +16,7 @@
   .game__swatch--pen { color: var(--pen); }
   .game__swatch--s1 { color: var(--sym-1); }
   .game__swatch--s2 { color: var(--sym-2); }
+  .game__swatch--s3 { color: var(--sym-3); }
 
   /* панель */
   .game__top { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-4); margin-top: var(--space-5); }
@@ -155,4 +156,10 @@
     .game-sum__math { font-size: 22px; }
     .game-sum__row { padding: var(--space-3) var(--space-4); }
   }
+
+  /* «Underflow»: прогноз — бегунок цвета параметра, задание и выбор модели */
+  .game-under { display: grid; gap: var(--space-3); }
+  .game-under__task { margin: 0; font: var(--text-sm) / 1.5 var(--font-ui); color: var(--ink-2); }
+  .game-under .btn { justify-self: start; }
+  .game-under__picks { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 }
