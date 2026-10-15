@@ -16,6 +16,11 @@
 - **Тесты:** Vitest для моделей; fast-check — детерминизм и решаемость уровней; Playwright с `?seed=` — уровень проходится с клавиатуры, axe без ошибок.
 - **Эталоны:** рисунок регрессии — `prototype/assets/proto.js` (`initRegression`); игра — `prototype/assets/game.js`.
 
+## Готовые виджеты (S2.02, S2.08)
+
+- `la/fit-line` (V.1), `la/grid-map` (I.4: деформация сетки, режим `compose` для порядка отображений), `prob/bayes-grid` (III.3: 1000 человек, две раскладки SVG с постоянным `viewBox` — выбор CSS по ширине, без сдвига вёрстки при гидратации). Обёртки — `src/components/widgets/*.astro`, регистрация — `lessonComponents`.
+- e2e с островами `client:visible`: прокрутить к виджету и дождаться, пока у `astro-island` пропадёт `ssr` (`widget.locator("xpath=ancestor::astro-island[1]")`), иначе клик уйдёт в статичную разметку.
+
 ## Где в коде (игры, S2.07)
 
 - Контракт — `src/games/_engine/types.ts` (`GameSpec`, `GameResult`; `Rng` — общий ГПСЧ `src/lib/math/rng.ts`). Оболочка — `src/games/_engine/GameShell.tsx`: игра передаёт `spec` и `view` (`board`, `controls`, `feedback`, `optimal`, `debrief`, `keys`). Уровень k строится из `rng(seed · 1000 + k)`, партия по ссылке — `?seed=&level=`. Строка уровня над полем (на телефоне матрица сразу под рисунком), описание для скринридера — `describe` с задержкой 400 мс, после решения фокус на «Следующий уровень», результат — `GameEvent` в журнале.

@@ -20,3 +20,34 @@
   cs229:
     - edition: main-notes-2026-spring
       section: 'Linear regression / Probabilistic interpretation'
+
+- id: prob.conditional
+  title:
+    ru: 'Условная вероятность'
+    en: 'conditional probability'
+  summary: 'P(A | B) = P(A ∩ B) / P(B): вероятность A, когда известно, что произошло B.'
+  lesson: conditional-independence
+  prerequisites: []
+  core: true
+
+- id: prob.total-probability
+  title:
+    ru: 'Формула полной вероятности'
+    en: 'law of total probability'
+  summary: 'Если B₁, …, B_K разбивают пространство исходов, то P(A) = Σ P(A | B_k) P(B_k).'
+  lesson: bayes
+  prerequisites: [prob.conditional]
+  core: true
+
+- id: prob.bayes
+  title:
+    ru: 'Формула Байеса'
+    en: "Bayes' rule"
+  summary: 'P(B | A) = P(A | B) P(B) / P(A): апостериорная вероятность из априорной и правдоподобия; знаменатель — формула полной вероятности.'
+  lesson: bayes
+  prerequisites: [prob.conditional, prob.total-probability]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Generative learning algorithms'
+

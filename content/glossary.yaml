@@ -45,3 +45,18 @@
 - id: composition
   ru: 'композиция отображений'
   en: 'composition'
+- id: prior
+  ru: 'априорная вероятность'
+  en: "prior"
+- id: posterior
+  ru: 'апостериорная вероятность'
+  en: "posterior"
+- id: base-rate
+  ru: 'базовая частота'
+  en: "base rate"
+- id: total-probability
+  ru: 'формула полной вероятности'
+  en: "law of total probability"
+- id: bayes-rule
+  ru: 'формула Байеса'
+  en: "Bayes' rule"

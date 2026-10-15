@@ -115,4 +115,35 @@
   .grid-map__choice b, .grid-map__matrix b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
   .grid-map__matrix { margin: 0; }
   @media (max-width: 900px) { .grid-map__sliders { grid-template-columns: minmax(0, 1fr); } }
+
+  /* Сетка из 1000 человек (урок III.3): пурпур — болен, карандаш — здоров; заливка — тест +, контур — тест − */
+  .bayes-grid__board { padding: var(--space-3) var(--space-4) 0; }
+  .bayes-grid__svg { display: block; width: 100%; height: auto; }
+  .bayes-grid__svg--tall { display: none; }
+  @media (max-width: 640px) {
+    .bayes-grid__svg--wide { display: none; }
+    .bayes-grid__svg--tall { display: block; }
+  }
+  .bayes-grid__cell--tp { fill: var(--sym-3); }
+  .bayes-grid__cell--fn { fill: none; stroke: var(--sym-3); stroke-width: 1.4; }
+  .bayes-grid__cell--fp { fill: var(--ink-3); }
+  .bayes-grid__cell--tn { fill: none; stroke: var(--ink-3); stroke-width: 1; opacity: 0.7; }
+  .bayes-grid__legend { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); margin: var(--space-3) var(--space-4) 0; padding: 0; list-style: none; font-family: var(--font-ui); font-size: 14px; color: var(--ink-2); }
+  .bayes-grid__legend li { display: inline-flex; align-items: center; gap: 6px; }
+  .bayes-grid__legend b, .bayes-grid__summary b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .bayes-grid__swatch { display: inline-block; width: 12px; height: 12px; border-radius: 2px; }
+  .bayes-grid__swatch.bayes-grid__cell--tp { background: var(--sym-3); }
+  .bayes-grid__swatch.bayes-grid__cell--fn { border: 1.5px solid var(--sym-3); }
+  .bayes-grid__swatch.bayes-grid__cell--fp { background: var(--ink-3); }
+  .bayes-grid__swatch.bayes-grid__cell--tn { border: 1px solid var(--ink-3); opacity: 1; }
+  .bayes-grid__summary { margin: var(--space-2) var(--space-4) 0; font-family: var(--font-ui); font-size: var(--text-sm); color: var(--ink-2); }
+  .bayes-grid__controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3) var(--space-5); margin-top: var(--space-3); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule); }
+  /* бегунки вероятностей — во всю ширину, имя шрифтом интерфейса: «P(+ | болен)» с кириллицей не для курсива формул */
+  .bayes-grid .kit-slider { grid-column: 1 / -1; grid-template-columns: 8.5rem minmax(0, 1fr) 3.4em; }
+  .bayes-grid .kit-slider__name, .bayes-grid .kit-readout__name { font-family: var(--font-ui); font-style: normal; font-size: 1em; white-space: nowrap; }
+  .bayes-grid__order { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-4); font-family: var(--font-ui); font-size: 14px; color: var(--ink-2); }
+  .bayes-grid__choice { display: inline-flex; align-items: center; gap: var(--space-2); cursor: pointer; }
+  .bayes-grid__choice input { width: 18px; height: 18px; margin: 0; accent-color: var(--pen); }
+  .bayes-grid__readouts { display: grid; gap: var(--space-2); }
+  @media (max-width: 900px) { .bayes-grid__controls { grid-template-columns: minmax(0, 1fr); } }
 }

@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-15 — S2.08 S2.08 — уроки I.4 и III.3 — готова
+- **Сделано:** Два урока с виджетами, формулами в реестре и параметрическими задачами; итоговые проверки ставят «знаю». Попутно: типограф видит абзац целиком (кавычки вокруг формул), матрицы в условиях генераторов — smallmatrix в строке, sample: simplex для проверки вероятностных формул.
+- **Файлы:** content/courses/foundations/{linear-algebra/matrix-as-map,probability/bayes}.mdx, src/widgets/{la/grid-map,prob/bayes-grid}/*, content/formulas/{rules/matvec-columns,rules/matmul-composition,prob/bayes}.yaml, src/lib/exercises/generators/{la,prob}.ts, code/snippets/prob/bayes.py, tests/e2e/lesson-{i4,iii3}.spec.ts
+- **Проверка:** lint, astro check, vitest 249, pytest 48, validate, check_consistency, build, e2e 160 passed (axe чисто); content-review — правки внесены; скриншоты 1440/390 без горизонтальной прокрутки
+- **Отклонения от плана и решения:** Игра «Байес-детектив» из карточки III.3 — не в этой задаче (в плане её нет), записать в план отдельно. Длинный \\text в условии формулы ломал ширину на телефоне — условия в карточке пишем короткой формулой, слова — в why.
+- **Следующий шаг:** S2.09 — лабораторные в CI и кнопки открытия.
+- **Вопросы пользователю:** —
+
 ### 2026-10-15 — S2.07 S2.07 — игра «Матрица-пазл» — готова
 - **Сделано:** Игра по контракту с чистой моделью и оболочкой GameShell; уровень проходится только с клавиатуры, axe чисто. Попутно: `_kit/Polygon`, `GameEvent` в журнале, общий `Rng` в контракте игр; S1.14 отмечена — этап 1 слит в main (PR #1).
 - **Файлы:** src/games/_engine/GameShell.tsx, src/games/matrix-puzzle/*, src/pages/games/matrix-puzzle.astro, src/styles/games.css, src/widgets/_kit/Polygon.tsx, tests/e2e/matrix-puzzle.spec.ts

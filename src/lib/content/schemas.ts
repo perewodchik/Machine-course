@@ -38,7 +38,7 @@ export const symbolSpec = z.strictObject({
   meaning: localized.optional(),
   shape: z.array(z.union([z.string(), z.number().int().positive()])).optional(),
   role: z.enum(["data", "param", "target", "aux"]).optional(),
-  sample: z.enum(["normal", "invertible", "spd", "positive"]).optional(),
+  sample: z.enum(["normal", "invertible", "spd", "positive", "simplex"]).optional(),
 });
 
 export const check = z.discriminatedUnion("kind", [
