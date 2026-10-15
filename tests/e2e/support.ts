@@ -24,6 +24,8 @@ export const layoutPages = {
   start1: "/foundations/start/regression-by-hand/",
   fitgame: "/games/fit-line/",
   start3: "/foundations/start/language-of-math/",
+  start4: "/foundations/start/sums-products-indicators/",
+  sumgame: "/games/sum-translator/",
   concept: "/concepts/la.dot-product/",
 } as const;
 

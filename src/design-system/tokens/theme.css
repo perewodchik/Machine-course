@@ -45,6 +45,7 @@
   --font-ui: var(--font-ui);
   --font-code: var(--font-code);
   --font-math: var(--font-math);
+  --font-math-upright: var(--font-math-upright);
 
   --text-xs: var(--text-xs);
   --text-sm: var(--text-sm);

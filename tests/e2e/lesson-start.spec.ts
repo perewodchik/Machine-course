@@ -1,6 +1,7 @@
 // Модуль 0 (S3.L0): урок 0.1 — рисунок без кнопки минимума, итоговая проверка ставит «знаю»; игра «Подгони прямую»
 // проходится с клавиатуры по бегункам; партия по ссылке ?seed=&level= совпадает с моделью.
-// Урок 0.3 — перевод записей в обе стороны с разбором ошибок, композиция, итоговая проверка. axe.
+// Урок 0.3 — перевод записей в обе стороны с разбором ошибок, композиция, итоговая проверка.
+// Урок 0.4 — задача из правила xᵀAy с разбором перестановки индексов, вывод формулы 1 по шагам, итоговая проверка. axe.
 import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 import { generator } from "../../src/lib/exercises/generators";
@@ -82,6 +83,32 @@ test("урок 0.3: перевод записей в обе стороны, ра
   const argmin = generator("basics.argmin").make(31);
   if (argmin.kind !== "numeric") throw new Error("ожидалась числовая задача");
   await final.locator("[data-variant]:not([hidden]) input[data-input]").fill(String(argmin.answer));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await expectNoAxeViolations(page);
+});
+
+test("урок 0.4: xᵀAy из правила, вывод геометрического ряда по шагам, итоговая проверка ставит «знаю»", async ({ page }) => {
+  await page.goto("/foundations/start/sums-products-indicators/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Суммы, произведения, индикатор");
+
+  // задача из правила: перестановка индексов у A разобрана
+  const rule = page.locator("[data-exercise][data-item='start4.bilinear-rule']");
+  await rule.locator("[data-option]").filter({ hasText: "Aji" }).click();
+  await expect(rule.locator("[data-feedback]")).toContainText("переставлены");
+  await rule.locator("[data-option]").filter({ hasText: "Aijyj" }).click();
+  await expect(rule.locator("[data-feedback]")).toContainText("Верно.");
+
+  // формула 1: вывод в три шага, каждый открывается
+  const formula = page.locator("[data-formula='f.geometric-series']");
+  await formula.getByRole("button", { name: "Показать все шаги" }).click();
+  await expect(formula.getByText("стремится к нулю.", { exact: false }).last()).toBeVisible();
+
+  await expect(page.getByRole("link", { name: "Открыть игру" })).toHaveAttribute("href", "/games/sum-translator/");
+  const final = page.locator("[data-exercise][data-final]");
+  const spec = generator("basics.indicator-sum").make(31);
+  if (spec.kind !== "numeric") throw new Error("ожидалась числовая задача");
+  await final.locator("[data-variant]:not([hidden]) input[data-input]").fill(String(spec.answer));
   await final.getByRole("button", { name: "Проверить" }).click();
   await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
   await expectNoAxeViolations(page);

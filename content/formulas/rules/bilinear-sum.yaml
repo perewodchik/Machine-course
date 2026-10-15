@@ -1,0 +1,31 @@
+id: rule.bilinear-sum
+kind: rule
+title:
+  ru: 'Строка, матрица, столбец — двойная сумма'
+  en: 'bilinear form as a double sum'
+statement: 'x^\top A y = \sum_{i=1}^{m} \sum_{j=1}^{k} x_i A_{ij} y_j'
+symbols:
+  - name: x
+    tex: 'x'
+    shape: [m, 1]
+  - name: A
+    tex: 'A'
+    shape: [m, k]
+  - name: y
+    tex: 'y'
+    shape: [k, 1]
+concept: nota.sums
+corollary: 'Частные случаи: при $A = I$ — скалярное произведение $x^\top y = \sum_i x_i y_i$; при $x = \mathbf{1}$ и $A = I$ — сумма элементов $\mathbf{1}^\top y = \sum_i y_i$.'
+pitfall: 'Путать порядок индексов у $A$: $\sum_i \sum_j x_i A_{ji} y_j$ — это $x^\top A^\top y$, а не $x^\top A y$.'
+checks:
+  - kind: identity
+    lhs: 'x @ A @ y'
+    rhs: 'np.einsum("i,ij,j->", x, A, y)'
+# типичные ошибки (S3.05): неверные варианты в задачах с выбором и диагноз ответа ученика
+mutations:
+  - tex: '\sum_{i=1}^{m} \sum_{j=1}^{k} x_i A_{ji} y_j'
+    py: 'np.einsum("i,ji,j->", x, A, y)'
+    why: 'Индексы у $A$ переставлены: это $x^\top A^\top y$. Первый индекс $A$ — номер строки — должен совпадать с индексом $x$, который стоит слева.'
+  - tex: '\sum_{i=1}^{m} \sum_{j=1}^{k} x_i A_{ij} y_i'
+    py: 'np.einsum("i,ij,i->", x, A, y)'
+    why: 'У $y$ должен быть индекс $j$ — номер столбца $A$: соседние множители связывает общий индекс.'

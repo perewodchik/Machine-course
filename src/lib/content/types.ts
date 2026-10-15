@@ -36,7 +36,7 @@ export interface SymbolSpec {
   meaning?: Localized;
   shape?: (string | number)[]; // ["n", "d"]; вектор-столбец — ["d", 1]
   role?: SymbolRole;
-  sample?: "normal" | "invertible" | "spd" | "positive" | "simplex"; // значение для численной проверки: positive — σ, шаг; simplex — распределение (сумма 1)
+  sample?: "normal" | "invertible" | "spd" | "positive" | "fraction" | "simplex"; // значение для численной проверки: positive — σ, шаг; fraction — доля из (0, 1); simplex — распределение (сумма 1)
 }
 
 /** Численная проверка (выражения на NumPy, см. code/mlf/formulas.py). */

@@ -3,7 +3,7 @@ import type { Element, ElementContent, Root as HastRoot } from "hast";
 import rehypeStringify from "rehype-stringify";
 import remarkMdx from "remark-mdx";
 import remarkParse from "remark-parse";
-import remarkRehype from "remark-rehype";
+import remarkRehype, { type Options as RemarkRehypeOptions } from "remark-rehype";
 import { unified } from "unified";
 import { VFile } from "vfile";
 import { describe, expect, it } from "vitest";
@@ -123,7 +123,7 @@ describe("типограф", () => {
     const mdx = ["mdxJsxFlowElement", "mdxJsxTextElement", "mdxFlowExpression", "mdxTextExpression", "mdxjsEsm"];
     const processor = unified().use(remarkParse).use(remarkMdx);
     for (const plugin of remarkPlugins) processor.use(plugin);
-    processor.use(remarkRehype, { passThrough: mdx });
+    processor.use(remarkRehype, { passThrough: mdx } as RemarkRehypeOptions);
     for (const plugin of rehypePlugins) processor.use(...((Array.isArray(plugin) ? plugin : [plugin]) as [never]));
     const tree = (await processor.run(processor.parse('<Note label="x">Пишут «функция $J(\\theta)$», хотя $A = B$ — значение.</Note>\n'))) as HastRoot;
     const para = tree.children.find((c): c is Element => c.type === "element" && c.tagName === "p");

@@ -111,4 +111,48 @@
   .game-fit__model i { font-family: var(--font-math); font-style: italic; }
   .game-fit__note { margin: 0; font: var(--text-sm) var(--font-ui); color: var(--ink-3); }
   .game-fit .btn { justify-self: start; }
+
+  /* «Переводчик сумм»: формулы из HTML шрифтами KaTeX (буквы — --font-math, цифры и знаки — --font-math-upright).
+     Задание и запись ученика — две строки поля; плитки множителей и цепочка — справа. */
+  .ix { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0 0.12em; font-family: var(--font-math-upright); font-style: normal; line-height: 1.2; }
+  .ix i { font-family: var(--font-math); font-style: italic; }
+  /* сдвиг индексов — из preflight (sub: bottom −0.25em, sup: top −0.5em), только кегль как у KaTeX */
+  .ix sub, .ix sup { font-size: 0.7em; }
+  .ix__one { font-weight: 700; }
+  .ix__factor { white-space: nowrap; }
+  .ix__factor sup { margin-left: 0.05em; }
+  .ix__sum { display: inline-grid; justify-items: center; margin-right: 0.1em; line-height: 1; }
+  .ix__sigma { font-size: 1.45em; line-height: 1; }
+  .ix__limit { font-size: 0.6em; white-space: nowrap; }
+  .ix__term { white-space: nowrap; }
+  .ix__eq { margin: 0 0.3em; font-family: var(--font-math-upright); }
+  .ix-free { margin-left: 0.6em; font-family: var(--font-math-upright); font-size: 0.75em; color: var(--ink-2); white-space: nowrap; }
+  .ix-free::before { content: ","; margin-left: -0.6em; margin-right: 0.45em; }
+  .ix-free i { font-family: var(--font-math); font-style: italic; }
+
+  .game-sum__row { padding: var(--space-4) var(--space-5); }
+  .game-sum__row--mine { min-height: 8.5rem; border-top: 1px solid var(--rule); }
+  .game-sum__label { margin: 0 0 var(--space-2); font: 500 var(--text-sm) var(--font-ui); color: var(--ink-2); }
+  .game-sum__math { display: flex; flex-wrap: wrap; align-items: center; margin: 0; font-size: 26px; color: var(--ink); }
+  .game-sum__math > span { display: inline-flex; flex-wrap: wrap; align-items: center; row-gap: var(--space-2); }
+  .game-sum__empty { margin: 0; font: var(--text-sm) var(--font-ui); color: var(--ink-3); }
+  .game-sum__size { margin: var(--space-2) 0 0; font: var(--text-sm) var(--font-ui); color: var(--ink-2); }
+  .game-sum__size.is-error { color: var(--red-pen); }
+  .game-sum .game__legend .ix { font-size: 17px; }
+
+  .game-sum__controls { display: grid; gap: var(--space-4); }
+  .game-sum__tiles { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .game-sum__tile { min-width: 3rem; font-size: 20px; }
+  .game-sum__chain { display: grid; gap: var(--space-2); margin: 0; padding: 0 0 0 1.5em; font-family: var(--font-ui); color: var(--ink-2); }
+  .game-sum__chain li { padding-left: var(--space-1); }
+  .game-sum__chain li > * { vertical-align: middle; }
+  .game-sum__chain li .ix { min-width: 2.5rem; font-size: 20px; color: var(--ink); }
+  .game-sum__chain .btn { margin-left: var(--space-2); }
+  .game-sum__t { min-width: 2.25rem; font-family: var(--font-math-upright); font-size: 16px; }
+  .game-sum__t[aria-pressed="true"] { border-color: var(--pen); color: var(--pen); box-shadow: inset 0 0 0 1px var(--pen); }
+  .game-sum__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  @media (max-width: 900px) {
+    .game-sum__math { font-size: 22px; }
+    .game-sum__row { padding: var(--space-3) var(--space-4); }
+  }
 }

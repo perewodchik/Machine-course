@@ -1,0 +1,62 @@
+id: f.geometric-series
+kind: formula
+title:
+  ru: 'Сумма геометрического ряда'
+  en: 'geometric series'
+statement: '\sum_{t=0}^{\infty} \gamma^t = \frac{1}{1 - \gamma}'
+
+# Проверки — при T = 2000: γ из (0.05, 0.95), γᵀ < 1e-44, поэтому конечная сумма совпадает с пределом
+# в пределах точности сравнения, а формула для конечной суммы проверяется точно.
+symbols:
+  - name: gamma
+    tex: '\gamma'
+    meaning: 'знаменатель прогрессии; в обучении с подкреплением — коэффициент дисконтирования'
+    shape: []
+    sample: fraction
+
+dependsOn:
+  concepts: [nota.sums]
+  rules: []
+
+conditions:
+  - tex: '\lvert \gamma \rvert < 1'
+    why: 'Иначе $\gamma^T$ не стремится к нулю и сумма не сходится: при $\gamma = 1$ это $1 + 1 + 1 + \ldots$'
+    concept: nota.sums
+
+derivation:
+  plan:
+    - 'Записать конечную сумму $S_T$ первых $T$ слагаемых'
+    - 'Умножить её на $\gamma$ и вычесть: почти все слагаемые сократятся'
+    - 'Устремить $T$ к бесконечности'
+  steps:
+    - goal: 0
+      tex: 'S_T = \sum_{t=0}^{T-1} \gamma^t = 1 + \gamma + \ldots + \gamma^{T-1}'
+      by: [nota.sums]
+      note: 'Бесконечную сумму понимают как предел конечных сумм.'
+      check:
+        kind: same
+        py: 'np.sum(gamma ** np.arange(2000))'
+    - goal: 1
+      tex: 'S_T = \changed{\frac{1 - \gamma^T}{1 - \gamma}}'
+      by: [nota.sums]
+      note: '$\gamma S_T = \gamma + \gamma^2 + \ldots + \gamma^T$: в разности $S_T - \gamma S_T$ остаются только $1$ и $-\gamma^T$, то есть $(1 - \gamma) S_T = 1 - \gamma^T$.'
+      check:
+        kind: same
+        py: '(1 - gamma ** 2000) / (1 - gamma)'
+    - goal: 2
+      tex: '\sum_{t=0}^{\infty} \gamma^t = \lim_{T \to \infty} S_T = \changed{\frac{1}{1 - \gamma}}'
+      by: [nota.sums]
+      note: 'При $\lvert\gamma\rvert < 1$ степень $\gamma^T$ стремится к нулю.'
+      check:
+        kind: same
+        py: '1 / (1 - gamma)'
+
+pitfalls:
+  - 'Начинать сумму с $t = 1$ и забыть, что тогда $\sum_{t=1}^{\infty} \gamma^t = \frac{\gamma}{1 - \gamma}$ — без первого слагаемого $1$.'
+  - 'Применять формулу при $\lvert\gamma\rvert \ge 1$: ряд расходится.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Reinforcement learning'
+
+usedIn: [nota.sums]

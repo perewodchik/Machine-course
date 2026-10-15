@@ -1,0 +1,26 @@
+---
+// Игра «Переводчик сумм» (S3.L0, урок 0.4): остров React с оболочкой GameShell. Блок «Чему учит игра» — статичный HTML.
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { SumTranslator, meta } from "../../games/sum-translator";
+import { loadCourse } from "../../lib/content/collections";
+
+const course = await loadCourse("foundations");
+const lesson = course.lessons.find((l) => l.key === meta.lesson);
+if (!lesson) throw new Error(`игра ${meta.id}: нет урока ${meta.lesson}`);
+const module = course.modules.find((m) => m.id === lesson.module);
+---
+<BaseLayout title={meta.title} description="Соберите из векторов и матриц произведение, которое даёт заданную сумму с индексами." course={course}>
+  <main class="game shell" id="content">
+    <nav class="breadcrumb" aria-label="Путь">
+      <a href={`${course.href}#m-${lesson.module}`}>{module?.title}</a><span aria-hidden="true">/</span><span>Игра к уроку {lesson.number}</span>
+    </nav>
+    <h1>{meta.title}</h1>
+    <p class="lead game__lead">Перед вами сумма с индексами. Соберите из векторов и матриц произведение, которое даёт ту&nbsp;же сумму: игра переводит вашу запись обратно в индексы, и их можно сравнить с заданием. Семь уровней, партия&nbsp;— 3–5&nbsp;минут.</p>
+    <SumTranslator client:load>
+      <div class="block block--intuition game__teaches">
+        <p><span class="block__title">Чему учит игра.</span> В произведении матриц суммируют по общему индексу соседей: номеру столбца левого множителя и номеру строки правого. Индексы без суммы&nbsp;— свободные: они нумеруют элементы результата. Транспонирование меняет индексы местами.</p>
+        <p><a href={lesson.href}>Урок {lesson.number}. {lesson.title}</a></p>
+      </div>
+    </SumTranslator>
+  </main>
+</BaseLayout>

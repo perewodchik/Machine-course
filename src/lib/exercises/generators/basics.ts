@@ -75,11 +75,11 @@ export const indicatorSum: Generator = {
     const answer = x.reduce((s, v) => s + (v > t ? v : 0), 0);
     return {
       kind: "numeric",
-      prompt: String.raw`Дан вектор $x = (${x.join(", ")})$. Вычислите $\sum_{i=1}^{6} \mathbb{1}\{x_i > ${t}\}\, x_i$.`,
+      prompt: String.raw`Дан вектор $x = (${x.join(", ")})$. Вычислите $\sum_{i=1}^{6} 1\{x_i > ${t}\}\, x_i$.`,
       label: String.raw`$\textstyle\sum =$`,
       answer,
       tol: 0,
-      hints: [String.raw`Индикатор $\mathbb{1}\{x_i > ${t}\}$ равен $1$, если условие верно, и $0$ иначе: в сумму попадают только $x_i > ${t}$.`],
+      hints: [String.raw`Индикатор $1\{x_i > ${t}\}$ равен $1$, если условие верно, и $0$ иначе: в сумму попадают только $x_i > ${t}$.`],
       right: String.raw`Складываются только числа больше $${t}$: сумма равна $${answer}$.`,
       wrong: String.raw`Проверьте строгость: число, равное $${t}$, условию $x_i > ${t}$ не удовлетворяет. Отрицательные числа тоже отбрасываются.`,
     };
@@ -337,3 +337,94 @@ export const readNotation: Generator = {
   },
 };
 
+
+/** Урок 0.4: сумма квадратов и квадрат суммы — разные числа. Чётный seed спрашивает одно, нечётный — другое. */
+export const sumSquare: Generator = {
+  id: "basics.sum-square",
+  version: 1,
+  title: "Сумма квадратов и квадрат суммы",
+  make(seed) {
+    const r = rng(seed);
+    let a: number[];
+    do a = [r.nonzero(-3, 4), r.nonzero(-3, 4), r.nonzero(-3, 4), r.nonzero(-3, 4)];
+    while (a.reduce((s, v) => s + v, 0) ** 2 === a.reduce((s, v) => s + v * v, 0));
+    const sum = a.reduce((s, v) => s + v, 0);
+    const squares = a.reduce((s, v) => s + v * v, 0);
+    const askSquares = seed % 2 === 1;
+    const expr = askSquares ? String.raw`\sum_{i=1}^{4} a_i^2` : String.raw`\Bigl(\sum_{i=1}^{4} a_i\Bigr)^2`;
+    const answer = askSquares ? squares : sum ** 2;
+    const other = askSquares ? sum ** 2 : squares;
+    return {
+      kind: "numeric",
+      prompt: String.raw`Дан вектор $a = (${a.join(", ")})$. Вычислите $${expr}$.`,
+      label: String.raw`$${expr} =$`,
+      answer,
+      tol: 0,
+      hints: [askSquares ? "Сначала возведите в квадрат каждое число, потом сложите." : "Сначала сложите числа, потом возведите сумму в квадрат."],
+      right: askSquares ? String.raw`Квадраты: ${a.map((v) => v * v).join(", ")}; их сумма — $${squares}$.` : String.raw`Сумма — $${sum}$, её квадрат — $${sum ** 2}$.`,
+      wrong: String.raw`Если получилось $${other}$ — это ${askSquares ? "квадрат суммы" : "сумма квадратов"}: порядок «сложить» и «возвести в квадрат» важен.`,
+    };
+  },
+};
+
+/** Урок 0.4: xᵀAy по двойной сумме — четыре слагаемых x_i A_ij y_j. */
+export const bilinear: Generator = {
+  id: "basics.bilinear",
+  version: 1,
+  title: "Строка, матрица, столбец",
+  make(seed) {
+    const r = rng(seed);
+    const x = [r.nonzero(-2, 3), r.nonzero(-2, 3)];
+    const y = [r.nonzero(-2, 3), r.nonzero(-2, 3)];
+    let A: number[][];
+    // A несимметрична: иначе ответ с переставленными индексами (xᵀAᵀy) совпал бы с верным
+    do A = [[r.int(-2, 3), r.int(-2, 3)], [r.int(-2, 3), r.int(-2, 3)]];
+    while (A[0]![1] === A[1]![0]);
+    const value = (M: number[][]) => x.reduce((s, xi, i) => s + y.reduce((t, yj, j) => t + xi * M[i]![j]! * yj, 0), 0);
+    const answer = value(A);
+    const swapped = value([[A[0]![0]!, A[1]![0]!], [A[0]![1]!, A[1]![1]!]]);
+    const mat = String.raw`\begin{pmatrix} ${A[0]![0]} & ${A[0]![1]} \\ ${A[1]![0]} & ${A[1]![1]} \end{pmatrix}`;
+    return {
+      kind: "numeric",
+      prompt: String.raw`$x = (${x.join(", ")})^\top$, $y = (${y.join(", ")})^\top$, $A = ${mat}$. Вычислите $x^\top A y = \sum_{i=1}^{2} \sum_{j=1}^{2} x_i A_{ij} y_j$.`,
+      label: String.raw`$x^\top A y =$`,
+      answer,
+      tol: 0,
+      hints: [String.raw`Четыре слагаемых: $x_1 A_{11} y_1 + x_1 A_{12} y_2 + x_2 A_{21} y_1 + x_2 A_{22} y_2$.`, String.raw`Или по шагам: сначала столбец $Ay$, потом его скалярное произведение с $x$.`],
+      right: String.raw`$Ay = (${A.map((row) => row[0]! * y[0]! + row[1]! * y[1]!).join(", ")})^\top$, и $x^\top (Ay) = ${answer}$.`,
+      wrong: swapped !== answer ? String.raw`Если получилось $${swapped}$ — индексы у $A$ переставлены: это $x^\top A^\top y$. Первый индекс $A_{ij}$ — номер строки, он идёт с $x_i$.` : String.raw`Распишите все четыре слагаемых $x_i A_{ij} y_j$ и сложите.`,
+    };
+  },
+};
+
+/** Урок 0.4: дисконтированная сумма наград — геометрический ряд. Коэффициенты подобраны так, чтобы ответ был целым. */
+export const geometric: Generator = {
+  id: "basics.geometric",
+  version: 1,
+  title: "Геометрический ряд",
+  make(seed) {
+    const r = rng(seed);
+    // γ и 1/(1 − γ), γ/(1 − γ) — точные значения, без ошибок округления
+    const [gamma, fromZero, fromOne] = r.pick([
+      [0.5, 2, 1],
+      [0.75, 4, 3],
+      [0.8, 5, 4],
+      [0.9, 10, 9],
+      [0.95, 20, 19],
+    ] as const);
+    const reward = r.pick([1, 2, 3, 5]);
+    const start = seed % 3 === 0 ? 1 : 0;
+    const answer = reward * (start === 0 ? fromZero : fromOne);
+    const other = reward * (start === 0 ? fromOne : fromZero);
+    return {
+      kind: "numeric",
+      prompt: String.raw`На каждом шаге агент получает награду $${reward}$, коэффициент дисконтирования $\gamma = ${gamma}$. Вычислите $\sum_{t=${start}}^{\infty} ${reward === 1 ? "" : `${reward}\\,`}\gamma^t$.`,
+      label: String.raw`$\textstyle\sum =$`,
+      answer,
+      tol: 1e-9,
+      hints: [String.raw`Вынесите награду за знак суммы и воспользуйтесь формулой $\sum_{t=0}^{\infty} \gamma^t = \frac{1}{1 - \gamma}$.`, start === 1 ? String.raw`Сумма начинается с $t = 1$: из суммы с $t = 0$ нужно вычесть первое слагаемое $\gamma^0 = 1$.` : String.raw`$\frac{1}{1 - ${gamma}} = ${fromZero}$.`],
+      right: String.raw`$${reward} \cdot ${start === 0 ? String.raw`\frac{1}{1 - \gamma}` : String.raw`\frac{\gamma}{1 - \gamma}`} = ${reward} \cdot ${start === 0 ? fromZero : fromOne} = ${answer}$.`,
+      wrong: String.raw`Если получилось $${other}$, проверьте, с какого $t$ начинается сумма: ${start === 0 ? "первое слагаемое — $\\gamma^0 = 1$, оно входит" : "слагаемого с $t = 0$ здесь нет"}.`,
+    };
+  },
+};
