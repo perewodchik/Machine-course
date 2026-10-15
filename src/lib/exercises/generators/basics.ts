@@ -12,6 +12,35 @@ const linear = (q: number) => (q === 0 ? "" : ` ${q > 0 ? "+" : "-"} ${Math.abs(
 /** Коэффициент перед x: «2x», «x», «-x», «-3x». */
 const coef = (a: number, v = "x") => (a === 1 ? v : a === -1 ? `-${v}` : `${a}${v}`);
 
+export const sse: Generator = {
+  id: "basics.sse",
+  version: 1,
+  title: "Функция потерь прямой",
+  make(seed) {
+    const r = rng(seed);
+    const t0 = r.int(0, 3);
+    const t1 = r.pick([1, 2]);
+    const xs = r.shuffle([0, 1, 2, 3, 4]).slice(0, 3).sort((a, b) => a - b);
+    // ответы — около прямой, ошибки от −2 до 2, не все нули
+    let errs: number[];
+    do errs = xs.map(() => r.int(-2, 2));
+    while (errs.every((e) => e === 0));
+    const ys = xs.map((x, i) => t0 + t1 * x + errs[i]!);
+    const answer = errs.reduce((acc, e) => acc + e * e, 0) / 2;
+    const pts = xs.map((x, i) => `(${x}, ${ys[i]})`).join(", ");
+    return {
+      kind: "numeric",
+      prompt: String.raw`Точки ${pts.replace(/\((\d+), (-?\d+)\)/g, "$$($1, $2)$$")}. Модель $\hat y = ${t0} + ${t1 === 1 ? "" : t1}x$. Вычислите $J = \tfrac12 \sum_i \bigl(y^{(i)} - \hat y^{(i)}\bigr)^2$.`,
+      label: String.raw`$J =$`,
+      answer,
+      tol: 0,
+      hints: [String.raw`Для каждой точки найдите ошибку $y^{(i)} - \hat y^{(i)}$: подставьте $x$ в модель.`, String.raw`Ошибки: ${errs.join(", ")}. Возведите в квадрат, сложите, разделите на 2.`],
+      right: String.raw`Ошибки ${errs.join(", ")}; сумма квадратов ${2 * answer}, половина — $${answer}$.`,
+      wrong: String.raw`Ошибки возводятся в квадрат до сложения, и сумма делится на 2. Если получилось $${2 * answer}$, забыта половина.`,
+    };
+  },
+};
+
 export const argmin: Generator = {
   id: "basics.argmin",
   version: 1,

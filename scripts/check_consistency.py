@@ -190,7 +190,7 @@ for m in re.finditer(r"^### (S\d\.(?:\d\d|L[A-Z0-9]))\..*?(?=^### |^## |\Z)", pl
         for f in re.findall(r"`((?:docs|src|prototype|code|content|scripts|notebooks)/[\w./-]+\.\w+)`", ctx.group(1)):
             if not (ROOT / f).exists():
                 err(f"{tid}: в «Контексте» нет файла {f}")
-now = re.search(r"\*\*Задача:\*\* (S\d\.\d\d)", plan)
+now = re.search(r"\*\*Задача:\*\* (S\d\.(?:\d\d|L[A-Z0-9]+))", plan)
 if not now or now.group(1) not in order:
     err("план: в блоке «Сейчас» задача не найдена")
 

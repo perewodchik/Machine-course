@@ -104,4 +104,11 @@
     .stepper { height: var(--target-touch); }
     .stepper button { width: 40px; }
   }
+  /* «Подгони прямую»: модель, бегунки θ₀ и θ₁, J и «Сдать прямую» */
+  .game-fit { display: grid; gap: var(--space-3); }
+  /* слова — прямым шрифтом текста, θ — шрифтом формул: курсивная θ в Literata похожа на ϑ */
+  .game-fit__model { margin: 0; font: 20px var(--font-text); color: var(--ink); }
+  .game-fit__model i { font-family: var(--font-math); font-style: italic; }
+  .game-fit__note { margin: 0; font: var(--text-sm) var(--font-ui); color: var(--ink-3); }
+  .game-fit .btn { justify-self: start; }
 }

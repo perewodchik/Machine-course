@@ -6,7 +6,7 @@
     en: 'least squares'
   summary: 'Веса минимизируют $\tfrac12 \lVert X\theta - y \rVert^2$; решение — нормальные уравнения $X^\top X\theta = X^\top y$, остаток перпендикулярен столбцам $X$.'
   lesson: linear-regression
-  prerequisites: [la.projection, calc.matrix-calculus, calc.convexity]
+  prerequisites: [ml.loss, la.projection, calc.matrix-calculus, calc.convexity]
   core: true
   cs229:
     - edition: main-notes-2026-spring
@@ -35,3 +35,13 @@
   cs229:
     - edition: main-notes-2026-spring
       section: 'Regularization and model selection'
+
+- id: ml.loss
+  title:
+    ru: 'Функция потерь'
+    en: 'loss function'
+  summary: 'Число, которое измеряет, насколько модель плоха на данных; у регрессии — половина суммы квадратов ошибок $J = \tfrac12 \sum_i (y^{(i)} - \hat y^{(i)})^2$.'
+  lesson: regression-by-hand
+  prerequisites: []
+  core: true
+

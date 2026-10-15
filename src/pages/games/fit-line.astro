@@ -1,0 +1,27 @@
+---
+// Игра «Подгони прямую» (S3.L0, урок 0.1): остров React с оболочкой GameShell. Блок «Чему учит игра» — статичный HTML.
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { FitLineGame, meta } from "../../games/fit-line";
+import { loadCourse } from "../../lib/content/collections";
+
+const course = await loadCourse("foundations");
+const lesson = course.lessons.find((l) => l.key === meta.lesson);
+if (!lesson) throw new Error(`игра ${meta.id}: нет урока ${meta.lesson}`);
+const module = course.modules.find((m) => m.id === lesson.module);
+const v1 = course.lessons.find((l) => l.key === "foundations/bridge/linear-regression");
+---
+<BaseLayout title={meta.title} description="Проведите прямую через квартиры «площадь — цена» так, чтобы сумма квадратов ошибок была наименьшей." course={course}>
+  <main class="game shell" id="content">
+    <nav class="breadcrumb" aria-label="Путь">
+      <a href={`${course.href}#m-${lesson.module}`}>{module?.title}</a><span aria-hidden="true">/</span><span>Игра к уроку {lesson.number}</span>
+    </nav>
+    <h1>{meta.title}</h1>
+    <p class="lead game__lead">Проведите прямую через квартиры так, чтобы функция потерь&nbsp;<i>J</i>&nbsp;— половина суммы квадратов ошибок&nbsp;— стала как можно меньше, и сдайте её. Принимается прямая в пределах 5&nbsp;% от минимума. Партия&nbsp;— 3–5&nbsp;минут.</p>
+    <FitLineGame client:load>
+      <div class="block block--intuition game__teaches">
+        <p><span class="block__title">Чему учит игра.</span> «Лучшая прямая» — это прямая с наименьшей суммой квадратов ошибок. Квадраты не дают плюсам и минусам гасить друг друга и сильно наказывают большие промахи, поэтому один выброс заметно тянет прямую.</p>
+        <p><a href={lesson.href}>Урок {lesson.number}. {lesson.title}</a>{v1 && <> · <a href={v1.href}>урок {v1.number}: как найти минимум точно</a></>}</p>
+      </div>
+    </FitLineGame>
+  </main>
+</BaseLayout>

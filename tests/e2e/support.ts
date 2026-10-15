@@ -21,6 +21,8 @@ export const layoutPages = {
   // этап 3: урок 0.2 с диагностикой
   start2: "/foundations/start/how-the-course-works/",
   map: "/map/",
+  start1: "/foundations/start/regression-by-hand/",
+  fitgame: "/games/fit-line/",
   concept: "/concepts/la.dot-product/",
 } as const;
 

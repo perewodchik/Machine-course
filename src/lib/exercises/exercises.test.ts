@@ -104,6 +104,14 @@ describe("генераторы", () => {
 
   it("задачи модуля 0: ответы сходятся с условием", () => {
     for (let s = 1; s <= 40; s++) {
+      const ss = num(make("basics.sse", s));
+      const pts = [...ss.prompt.matchAll(/\$\((\d+), (-?\d+)\)\$/g)].map((m) => [Number(m[1]), Number(m[2])]);
+      const [, b0, b1] = /\\hat y = (\d+) \+ (\d*)x/.exec(ss.prompt)!;
+      const [t0, t1] = [Number(b0), b1 === "" ? 1 : Number(b1)];
+      expect(pts).toHaveLength(3);
+      expect(ss.answer).toBe(pts.reduce((acc, [x, y]) => acc + (y! - t0 - t1 * x!) ** 2, 0) / 2);
+      expect(ss.answer).toBeGreaterThan(0);
+
       const am = num(make("basics.argmin", s));
       const [, sign, shift, b] = /f\(x\) = \(x(?: ([-+]) (\d+))?\)\^2 \+ (\d+)/.exec(am.prompt)!;
       const a = sign === "-" ? Number(shift) : sign === "+" ? -Number(shift) : 0;
