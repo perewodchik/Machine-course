@@ -44,3 +44,12 @@
   prerequisites: [nota.sums]
   core: true
 
+- id: nota.cs229
+  title:
+    ru: 'Обозначения CS229'
+    en: 'CS229 notation'
+  summary: '$n$ объектов, $d$ признаков; $x^{(i)}$ — объект, $x_j$ — признак; $h_\theta(x)$ — модель, $J(\theta)$ — потери, $\ell(\theta)$ — логарифм правдоподобия; $\lvert\Sigma\rvert$ — определитель.'
+  lesson: notation
+  prerequisites: [nota.sets, nota.arrays]
+  core: true
+

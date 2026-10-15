@@ -3,12 +3,13 @@
 import { expect, test } from "@playwright/test";
 import { better, underflow } from "../../src/games/underflow/model";
 import { rng } from "../../src/lib/math/rng";
-import { expectNoAxeViolations } from "./support";
+import { expectNoAxeViolations, waitForIslands } from "./support";
 
 const SEED = 3;
 
 test("монетка: прогноз 1075 с клавиатуры точный, журнал", async ({ page }) => {
   await page.goto(`/games/underflow/?seed=${SEED}&level=1`);
+  await waitForIslands(page);
   await expect(page.locator(".game__level")).toHaveText(/^Уровень 1 из 5: монетка/);
   await expectNoAxeViolations(page);
   const slider = page.getByRole("slider", { name: "n" });
@@ -29,6 +30,7 @@ test("монетка: прогноз 1075 с клавиатуры точный, 
 
 test("сравнение: «не различить» не принимается, после логарифмов выбирается лучшая модель", async ({ page }) => {
   await page.goto(`/games/underflow/?seed=${SEED}&level=5`);
+  await waitForIslands(page);
   const level = underflow.generate(rng(SEED * 1000 + 4), 5);
   await page.getByRole("button", { name: "Не различить" }).click();
   await expect(page.locator(".game__feedback")).toContainText("По произведениям — не различить");
