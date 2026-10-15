@@ -17,6 +17,13 @@
 
 ---
 
+### 2026-10-15 — S3.03 Ввод формул и проверка символьных ответов — готова
+- **Сделано:** Из Compute Engine взят только модуль latex-syntax (парсер в MathJSON, 415 КБ): вычислительное ядро (3.4 МБ) не нужно — значения считает свой вычислитель с матрицами (сложение, произведение, транспонирование, обратная, след, определитель, норма, log/exp/σ, x^{(i)}). Особенности парсера: \det A \det B = det(A det B); x^{(i)\top} читается как (i)·True — обработано. MathLive и парсер — отдельные чанки; npm audit — старые уязвимости braces в инструментах линтинга, не от новых пакетов.
+- **Файлы:** src/lib/symbolic/{evaluate,equivalent,parse,check}.ts, src/client/formula-input.ts, src/client/exercise.ts, src/components/pedagogy/Exercise.astro, tests/e2e/formula.spec.ts
+- **Проверка:** vitest 288; e2e formula, v1, hosting, pilot, know — 68; lint, check, validate, check_consistency — чисто
+- **Следующий шаг:** S3.04 — проверка вывода ученика по шагам.
+- **Вопросы пользователю:** —
+
 ### 2026-10-15 — S3.02 Карта курса, понятия, справка по опоре — готова
 - **Сделано:** requires/cs229 перенесены из карточек в module.yaml скриптом и сверяются с карточками (V.2: «модули 0–IV» — пояснение, опора — V.1). Карта рисует рёбра клиентом по положению узлов; ниже 1100 px — списки. Путь «зачем это мне» — BFS вперёд по requires всех курсов до урока с cs229. Справка по опоре — первая опора без «знаю». axe поймал приглушение прозрачностью — заменено цветом.
 - **Файлы:** content/courses/*/*/module.yaml, src/components/layout/CourseMap.astro, src/client/map.ts, src/lib/progress/graph.ts, src/pages/{map,concepts/index,concepts/[id]}.astro, src/components/pedagogy/PrereqHelp.astro, tests/e2e/map.spec.ts

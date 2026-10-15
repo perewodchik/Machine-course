@@ -1,6 +1,7 @@
 // Упражнения: описание задачи (что видит ученик и как проверить ответ). Тексты — с $…$ для формул:
 // их отрисовывает сервер (KaTeX в браузер не попадает), клиент получает только данные для проверки.
 // Типы — docs/conventions/pedagogy.md, «Упражнения».
+import type { SymbolShape } from "../symbolic/equivalent";
 
 interface Base {
   /** Условие: текст с $…$. */
@@ -57,7 +58,17 @@ export interface PredictSpec extends Base {
   reveal: string;
 }
 
-export type ExerciseSpec = NumericSpec | ChoiceSpec | MatrixSpec | OrderSpec | PredictSpec;
+export interface FormulaSpec extends Base {
+  kind: "formula";
+  /** Подпись поля: «$\nabla_\theta J =$». */
+  label: string;
+  /** Эталон в TeX; ответ ученика сравнивается с ним численно на случайных матрицах (src/lib/symbolic). */
+  answer: string;
+  /** Символы ответа: имя в MathJSON («theta», «X»), форма («n», «d», числа), положительность. */
+  symbols: SymbolShape[];
+}
+
+export type ExerciseSpec = NumericSpec | ChoiceSpec | MatrixSpec | OrderSpec | PredictSpec | FormulaSpec;
 
 /** Генератор параметрической задачи: одна и та же задача при одном seed. */
 export interface Generator {

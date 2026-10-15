@@ -2,6 +2,7 @@
 // журнал попыток. Тексты уже отрисованы сервером; здесь — только показать нужное и посчитать.
 import { checkMatrix, checkNumeric, checkOrder } from "../lib/exercises/check";
 import { formatNumber } from "../lib/exercises/parse";
+import type { SymbolShape } from "../lib/symbolic/equivalent";
 import { isKnown } from "../lib/progress/marks";
 import { logEvent } from "../lib/state/journal";
 import { $marks } from "../lib/state/marks";
@@ -10,7 +11,8 @@ type Answer =
   | { kind: "numeric"; answer: number; tol?: number; rel?: number }
   | { kind: "matrix"; answer: number[][]; tol?: number }
   | { kind: "choice" | "predict"; correct: boolean[] }
-  | { kind: "order"; order: number[] };
+  | { kind: "order"; order: number[] }
+  | { kind: "formula"; answer: string; symbols: SymbolShape[] };
 
 export interface ExerciseResultDetail {
   /** Экземпляр упражнения на странице: одна задача может встречаться дважды. */
@@ -87,6 +89,30 @@ function init(root: HTMLElement): void {
     hintBtn.textContent = hints >= total ? "Подсказок больше нет" : `Подсказка ${hints + 1} из ${total}`;
   };
 
+  // формула: разбор TeX и сравнение на случайных матрицах; модуль грузится при первой проверке
+  const checkFormulaAnswer = async (a: { answer: string; symbols: SymbolShape[] }, v: HTMLElement) => {
+    const field = v.querySelector<HTMLElement & { value: string }>("[data-formula-input]")!;
+    const { checkFormula } = await import("../lib/symbolic/check");
+    const verdict = checkFormula(field.value ?? "", a.answer, a.symbols);
+    if (verdict === null) {
+      say(null, "Введите формулу:", "буквы — как в условии, транспонирование — X^\\top или кнопкой на клавиатуре формул.");
+      field.focus();
+      return;
+    }
+    if (!verdict.ok && verdict.kind === "syntax") {
+      // непонятная запись — не попытка: подсказать и дать исправить
+      say(null, "Не получилось разобрать запись:", `${verdict.message}.`);
+      field.focus();
+      return;
+    }
+    field.classList.toggle("is-right", verdict.ok);
+    field.classList.toggle("is-wrong", !verdict.ok);
+    field.setAttribute("aria-invalid", String(!verdict.ok));
+    record(verdict.ok);
+    if (verdict.ok) say(true, "Верно.", html("[data-right]"));
+    else say(false, "Пока нет.", `${verdict.message[0]!.toUpperCase()}${verdict.message.slice(1)}. ${html("[data-wrong]")}`);
+  };
+
   const check = () => {
     const a = answer();
     const v = variant();
@@ -122,6 +148,8 @@ function init(root: HTMLElement): void {
       record(r.correct);
       const wrongCount = r.cells.flat().filter((c) => c === false).length;
       say(r.correct, r.correct ? "Верно." : `Неверных клеток: ${wrongCount}.`, r.correct ? html("[data-right]") : html("[data-wrong]"));
+    } else if (a.kind === "formula") {
+      void checkFormulaAnswer(a, v);
     } else if (a.kind === "order") {
       const items = [...v.querySelectorAll<HTMLElement>(".order > li")];
       const r = checkOrder(items.map((li) => Number(li.dataset.step)));

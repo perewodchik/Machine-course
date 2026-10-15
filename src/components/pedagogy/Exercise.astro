@@ -6,6 +6,7 @@ import type { ExerciseSpec } from "../../lib/exercises/types";
 import { generator } from "../../lib/exercises/generators";
 import { scrambled } from "../../lib/exercises/check";
 import { rng } from "../../lib/math/rng";
+import { checkFormula } from "../../lib/symbolic/check";
 import { inlineText, renderInline } from "../../markdown/core/inline";
 
 interface Props {
@@ -53,6 +54,12 @@ function answerData(s: ExerciseSpec, seedValue: number) {
       return { kind: s.kind, correct: s.options.map((o) => !!o.correct) };
     case "order":
       return { kind: s.kind, order: scrambled(s.steps.length, (xs) => rng(seedValue).shuffle(xs)) };
+    case "formula": {
+      // эталон должен разбираться и вычисляться на своих символах — иначе ошибка автора видна при сборке
+      const self = checkFormula(s.answer, s.answer, s.symbols);
+      if (!self?.ok) throw new Error(`<Exercise>: эталон формулы «${s.answer}» не проверяется: ${self ? self.message : "пусто"}`);
+      return { kind: s.kind, answer: s.answer, symbols: s.symbols };
+    }
   }
 }
 ---
@@ -67,6 +74,14 @@ function answerData(s: ExerciseSpec, seedValue: number) {
           <div class="field">
             <label for={`${vid}-input`} set:html={renderInline(sp.label)} />
             <input class="input" id={`${vid}-input`} inputmode="decimal" autocomplete="off" spellcheck="false" data-input aria-label={inlineText(sp.label).replace(/=$/, "").trim()} />
+          </div>
+        )}
+
+        {sp.kind === "formula" && (
+          <div class="field field--formula">
+            <label for={`${vid}-input`} set:html={renderInline(sp.label)} />
+            {/* без JS — поле для TeX; src/client/formula-input.ts заменяет его редактором формул MathLive */}
+            <input class="input input--tex" id={`${vid}-input`} autocomplete="off" spellcheck="false" data-formula-input placeholder="например, X^\top y" aria-label={inlineText(sp.label).replace(/=$/, "").trim()} />
           </div>
         )}
 

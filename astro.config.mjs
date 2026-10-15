@@ -21,5 +21,7 @@ export default defineConfig({
   },
   vite: {
     plugins: [tailwindcss()],
+    // MathLive (~800 КБ) и парсер формул (~420 КБ) — отдельные чанки, грузятся только на страницах с вводом формул
+    build: { chunkSizeWarningLimit: 900 },
   },
 });
