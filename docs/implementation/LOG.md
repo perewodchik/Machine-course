@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-15 — S3.07 S3.07 — проверка кода свойствами — готова
+- **Сделано:** Сделана параллельно с ревью среза: зависит только от S2.09.
+- **Файлы:** code/mlf/check.py, code/tests/test_check_properties.py, code/pyproject.toml, notebooks/src/la/normal_equations.py
+- **Проверка:** pytest 61, сборка лабораторных + nbmake
+- **Отклонения от плана и решения:** Нет.
+- **Следующий шаг:** S2.11 — ревью среза (в работе: визуальное ревью идёт).
+- **Вопросы пользователю:** —
+
 ### 2026-10-15 — S2.10 S2.10 — пилот: журнал, опрос, отчёт — готова
 - **Сделано:** Инструменты пилота без сервера: всё в браузере участника, результаты — файлом, сводка — скриптом.
 - **Файлы:** src/lib/pilot/report.ts, scripts/pilot-report.ts, src/client/survey.ts, src/components/pedagogy/{LessonSurvey,Pilot}.astro, src/client/derivation.ts, docs/pilot/README.md, tests/e2e/pilot.spec.ts

@@ -23,6 +23,7 @@
 ## Лабораторные (S2.09)
 
 - `scripts/build_notebooks.py` раскрывает `# snippet: путь#регион` через `code/mlf/snippets.py` (те же правила регионов, что `src/lib/content/snippets.ts`; общая фикстура `tests/fixtures/snippets`). Над кодом региона — комментарий, откуда он; неразрешённая ссылка роняет сборку.
+- `mlf.check.matches(func, reference, inputs=…)` (S3.07): Hypothesis с `derandomize=True`, по умолчанию данные регрессии X (n × d), y; сообщение — минимальный контрпример. Пример — задание 5 лабораторной V.1.
 - Репозиторий публичный: Colab открывает ученическую версию из `main` (`NOTEBOOKS.ref` в `src/python/links.ts`); после первого релиза — переключить на тег.
 
 ## Источники (только если нужно)
