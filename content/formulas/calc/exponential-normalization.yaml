@@ -1,0 +1,68 @@
+id: f.exponential-normalization
+kind: formula
+title:
+  ru: 'Плотность экспоненциального распределения интегрируется в единицу'
+  en: 'the exponential density integrates to one'
+statement: '\int_0^{\infty} \lambda e^{-\lambda x}\, dx = 1'
+
+# Интеграл в проверках — сумма по средним точкам на [0, 60] с шагом 3 · 10⁻⁴: при λ ≥ 1 хвост e^{−60λ}
+# пренебрежимо мал, а ошибка суммы — порядка шага в квадрате.
+symbols:
+  - name: lam
+    tex: '\lambda'
+    meaning: 'параметр распределения: средняя частота событий'
+    shape: []
+    sample: positive
+
+dependsOn:
+  concepts: [calc.integral, calc.log-exp]
+  rules: []
+
+conditions:
+  - tex: '\lambda > 0'
+    why: 'Иначе $e^{-\lambda x}$ не убывает и интеграл по бесконечному промежутку расходится.'
+    concept: calc.integral
+
+derivation:
+  plan:
+    - 'Записать несобственный интеграл как предел интегралов по $[0, T]$'
+    - 'Найти первообразную и подставить пределы'
+    - 'Устремить $T$ к бесконечности'
+  steps:
+    - goal: 0
+      tex: '\int_0^{\infty} \lambda e^{-\lambda x}\, dx = \lim_{T \to \infty} \int_0^{T} \lambda e^{-\lambda x}\, dx'
+      by: [calc.integral]
+      note: 'Интеграл по бесконечному промежутку — предел интегралов по конечным.'
+      check:
+        kind: same
+        py: 'np.sum(lam * np.exp(-lam * (np.arange(200000) + 0.5) * 3e-4)) * 3e-4'
+    - goal: 1
+      tex: '= \lim_{T \to \infty} \changed{\Bigl[-e^{-\lambda x}\Bigr]_0^{T}}'
+      by: [calc.integral, calc.chain-rule]
+      note: 'Первообразная $F(x) = -e^{-\lambda x}$: по правилу цепочки $F''(x) = -e^{-\lambda x} \cdot (-\lambda) = \lambda e^{-\lambda x}$.'
+      check:
+        kind: same
+        py: '-np.exp(-lam * 60) - (-np.exp(-lam * 0))'
+    - goal: 1
+      tex: '= \lim_{T \to \infty} \changed{\bigl(1 - e^{-\lambda T}\bigr)}'
+      by: [calc.integral]
+      note: 'Формула Ньютона — Лейбница: $F(T) - F(0)$, а $e^0 = 1$.'
+      check:
+        kind: same
+        py: '1 - np.exp(-lam * 60)'
+    - goal: 2
+      tex: '= \changed{1}'
+      by: [calc.log-exp]
+      note: 'При $\lambda > 0$ экспонента $e^{-\lambda T}$ стремится к нулю.'
+      check:
+        kind: same
+        py: '1.0'
+
+pitfalls:
+  - 'Потерять множитель $\lambda$: $\int_0^{\infty} e^{-\lambda x}\, dx = \frac{1}{\lambda}$, а не $1$.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Probability review'
+
+usedIn: [calc.integral]

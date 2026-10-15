@@ -12,10 +12,11 @@ import SymbolLegend from "./SymbolLegend.astro";
 import FitLine from "../widgets/FitLine.astro";
 import GridMap from "../widgets/GridMap.astro";
 import BayesGrid from "../widgets/BayesGrid.astro";
+import Riemann from "../widgets/Riemann.astro";
 import OpenIn from "../python/OpenIn.astro";
 import PyCell from "../python/PyCell.astro";
 import PyCode from "../python/PyCode.astro";
 
 // виджеты — обёртки .astro с островами React
-export const lessonComponents = { Block, Derivation, Diagnostic, Exercise, ExerciseSet, Formula, Note, Pilot, Prereqs, SymbolLegend, FitLine, GridMap, BayesGrid, PyCode, PyCell, OpenIn };
-export { BayesGrid, Block, Derivation, Diagnostic, Exercise, ExerciseSet, FitLine, Formula, GridMap, Note, Pilot, OpenIn, Prereqs, PyCell, PyCode, SymbolLegend };
+export const lessonComponents = { Block, Derivation, Diagnostic, Exercise, ExerciseSet, Formula, Note, Pilot, Prereqs, SymbolLegend, FitLine, GridMap, BayesGrid, Riemann, PyCode, PyCell, OpenIn };
+export { BayesGrid, Block, Derivation, Diagnostic, Exercise, ExerciseSet, FitLine, Formula, GridMap, Note, Pilot, OpenIn, Prereqs, PyCell, PyCode, Riemann, SymbolLegend };

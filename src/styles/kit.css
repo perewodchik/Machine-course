@@ -102,6 +102,14 @@
   .fit-line__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
   .fit-line__controls .kit-readout { justify-self: stretch; }
   @media (max-width: 900px) { .fit-line__controls { grid-template-columns: minmax(0, 1fr); } }
+  /* «Сумма прямоугольников»: тонкие рамки — прямоугольников до 64; выбор точки и функции — кнопки с aria-pressed */
+  .riemann .kit-polygon { stroke-width: 1; }
+  .riemann__controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: var(--space-3) var(--space-5); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule); }
+  .riemann__group { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .riemann__group .btn[aria-pressed="true"] { border-color: var(--pen); color: var(--pen); box-shadow: inset 0 0 0 1px var(--pen); }
+  .riemann__fn { font-family: var(--font-math); font-size: 1.05em; }
+  .riemann__fn sup { font-size: 0.7em; }
+  @media (max-width: 900px) { .riemann__controls { grid-template-columns: minmax(0, 1fr); } }
 
   /* Деформация сетки (урок I.4): образ сетки — карандашом, оси образа — темнее */
   .grid-map__line { stroke: var(--ink-3); stroke-width: 1; opacity: 0.7; }

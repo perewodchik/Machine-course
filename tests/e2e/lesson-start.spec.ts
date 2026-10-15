@@ -3,7 +3,8 @@
 // Урок 0.3 — перевод записей в обе стороны с разбором ошибок, композиция, итоговая проверка.
 // Урок 0.4 — задача из правила xᵀAy с разбором перестановки индексов, вывод формулы 1 по шагам, итоговая проверка.
 // Урок 0.5 — задача из правила log ∏ = Σ log, вывод производной сигмоиды в четыре шага, итоговая проверка.
-// Урок 0.6 — разбор «забыта внутренняя производная», вывод производной log g, ячейка с разностями, итоговая проверка. axe.
+// Урок 0.6 — разбор «забыта внутренняя производная», вывод производной log g, ячейка с разностями, итоговая проверка.
+// Урок 0.7 — сумма прямоугольников с клавиатуры (n, точка), вывод нормировки экспоненты, итоговая проверка. axe.
 import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 import { generator } from "../../src/lib/exercises/generators";
@@ -153,6 +154,35 @@ test("урок 0.6: разбор внутренней производной, в
 
   const final = page.locator("[data-exercise][data-final]");
   const spec = generator("basics.chain-rule").make(31);
+  if (spec.kind !== "numeric") throw new Error("ожидалась числовая задача");
+  await final.locator("[data-variant]:not([hidden]) input[data-input]").fill(String(spec.answer));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await expectNoAxeViolations(page);
+});
+
+test("урок 0.7: сумма прямоугольников приближает интеграл, вывод нормировки, итоговая проверка ставит «знаю»", async ({ page }) => {
+  await page.goto("/foundations/start/integral/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Интеграл");
+
+  const fig = page.locator(".riemann").first();
+  await fig.scrollIntoViewIfNeeded();
+  await expect(fig.locator("xpath=ancestor::astro-island[1]")).not.toHaveAttribute("ssr", "");
+  const sum = fig.locator(".kit-readout__value").first();
+  await expect(sum).toHaveText("1.7500"); // 4 левых прямоугольника под x² на [0, 2]
+  await fig.getByRole("slider", { name: "n" }).focus();
+  await page.keyboard.press("End");
+  await fig.getByRole("button", { name: "средние" }).press("Enter");
+  await expect(fig.getByRole("button", { name: "средние" })).toHaveAttribute("aria-pressed", "true");
+  await expect(sum).toHaveText("2.6665"); // 64 средних: 8/3 − (b − a) h² f″ / 24 при h = 1/32
+  await expect(fig.locator(".kit-readout__hint")).toHaveText("ошибка 0.0002");
+
+  const formula = page.locator("[data-formula='f.exponential-normalization']");
+  await formula.getByRole("button", { name: "Показать все шаги" }).click();
+  await expect(formula.getByText("Шаг 4 из 4")).toBeVisible();
+
+  const final = page.locator("[data-exercise][data-final]");
+  const spec = generator("basics.integral").make(31);
   if (spec.kind !== "numeric") throw new Error("ожидалась числовая задача");
   await final.locator("[data-variant]:not([hidden]) input[data-input]").fill(String(spec.answer));
   await final.getByRole("button", { name: "Проверить" }).click();
