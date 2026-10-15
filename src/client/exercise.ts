@@ -12,7 +12,8 @@ type Answer =
   | { kind: "matrix"; answer: number[][]; tol?: number }
   | { kind: "choice" | "predict"; correct: boolean[] }
   | { kind: "order"; order: number[] }
-  | { kind: "formula"; answer: string; symbols: SymbolShape[] };
+  | { kind: "formula"; answer: string; symbols: SymbolShape[] }
+  | { kind: "steps"; start: string; goal: string; symbols: SymbolShape[] };
 
 export interface ExerciseResultDetail {
   /** Экземпляр упражнения на странице: одна задача может встречаться дважды. */
@@ -113,6 +114,51 @@ function init(root: HTMLElement): void {
     else say(false, "Пока нет.", `${verdict.message[0]!.toUpperCase()}${verdict.message.slice(1)}. ${html("[data-wrong]")}`);
   };
 
+  // вывод по шагам: строки сверяются друг с другом, первая неверная подсвечивается (src/lib/symbolic/derivation.ts)
+  const checkSteps = async (a: { start: string; goal: string; symbols: SymbolShape[] }, v: HTMLElement) => {
+    const rows = [...v.querySelectorAll<HTMLElement>("[data-step-row]:not([hidden])")];
+    const filled = rows
+      .map((row) => ({ row, field: row.querySelector<HTMLElement & { value: string }>("[data-formula-input]")! }))
+      .filter((x) => (x.field.value ?? "").trim() !== "");
+    rows.forEach((row) => {
+      const field = row.querySelector<HTMLElement>("[data-formula-input]")!;
+      field.classList.remove("is-right", "is-wrong");
+      field.removeAttribute("aria-invalid");
+      const msg = row.querySelector<HTMLElement>("[data-row-msg]")!;
+      msg.hidden = true;
+      msg.textContent = "";
+    });
+    if (!filled.length) {
+      say(null, "Напишите следующую строку вывода:", "со знака «=», если строка равна предыдущей, или с ∇, если это её градиент.");
+      rows[0]?.querySelector<HTMLElement>("[data-formula-input]")?.focus();
+      return;
+    }
+    const { checkDerivation } = await import("../lib/symbolic/derivation");
+    const verdict = checkDerivation({ start: a.start, goal: a.goal, symbols: a.symbols }, filled.map((x) => x.field.value));
+    verdict.lines.forEach((line, i) => {
+      const { row, field } = filled[i]!;
+      field.classList.toggle("is-right", line.ok);
+      field.classList.toggle("is-wrong", !line.ok);
+      field.setAttribute("aria-invalid", String(!line.ok));
+      if (!line.ok && line.message) {
+        const msg = row.querySelector<HTMLElement>("[data-row-msg]")!;
+        msg.textContent = `${line.message[0]!.toUpperCase()}${line.message.slice(1)}.`;
+        msg.hidden = false;
+      }
+    });
+    const lineNo = (i: number) => rows.indexOf(filled[i]!.row) + 2;
+    if (!verdict.ok) {
+      record(false);
+      say(false, `Строка ${lineNo(verdict.first)}: ошибка.`, "Строки выше верны; исправьте отмеченную.");
+      filled[verdict.first]!.field.focus();
+    } else if (verdict.done) {
+      record(true);
+      say(true, "Вывод верен и доведён до цели.", html("[data-right]"));
+    } else {
+      say(null, "Все строки верны.", "До цели ещё не дошли: добавьте следующий шаг.");
+    }
+  };
+
   const check = () => {
     const a = answer();
     const v = variant();
@@ -150,6 +196,8 @@ function init(root: HTMLElement): void {
       say(r.correct, r.correct ? "Верно." : `Неверных клеток: ${wrongCount}.`, r.correct ? html("[data-right]") : html("[data-wrong]"));
     } else if (a.kind === "formula") {
       void checkFormulaAnswer(a, v);
+    } else if (a.kind === "steps") {
+      void checkSteps(a, v);
     } else if (a.kind === "order") {
       const items = [...v.querySelectorAll<HTMLElement>(".order > li")];
       const r = checkOrder(items.map((li) => Number(li.dataset.step)));
@@ -201,6 +249,15 @@ function init(root: HTMLElement): void {
   });
 
   checkBtn?.addEventListener("click", check);
+  root.addEventListener("click", (e) => {
+    const add = e.target instanceof Element ? e.target.closest<HTMLButtonElement>("[data-add-row]") : null;
+    if (!add || !variant().contains(add)) return;
+    const next = variant().querySelector<HTMLElement>("[data-step-row][hidden]");
+    if (!next) return;
+    next.hidden = false;
+    next.querySelector<HTMLElement>("[data-formula-input]")?.focus();
+    add.hidden = !variant().querySelector("[data-step-row][hidden]");
+  });
   root.addEventListener("keydown", (e) => {
     if (e.key === "Enter" && e.target instanceof HTMLInputElement && e.target.matches("[data-input], [data-cell]")) {
       e.preventDefault();

@@ -17,6 +17,13 @@
 
 ---
 
+### 2026-10-15 — S3.04 Проверка вывода ученика по шагам — готова
+- **Сделано:** Парсер не знает \\nabla — вид строки определяется по тексту до разбора; «= 0» с матрицей слева — ноль-число как нулевая матрица; вырожденная обратная — ошибка формы (попытка засчитывается). Харнесс повторяет виды проверок code/mlf/formulas.py (same, gradient, stationary, solution) на тех же размерах.
+- **Файлы:** src/lib/symbolic/derivation.ts, derivation.test.ts, src/client/exercise.ts, src/components/pedagogy/Exercise.astro, linear-regression.mdx, tests/e2e/formula.spec.ts
+- **Проверка:** vitest 300; e2e formula, v1, layout — 117; lint, check, validate — чисто
+- **Следующий шаг:** S3.05 — диагноз ошибок по мутациям.
+- **Вопросы пользователю:** —
+
 ### 2026-10-15 — S3.03 Ввод формул и проверка символьных ответов — готова
 - **Сделано:** Из Compute Engine взят только модуль latex-syntax (парсер в MathJSON, 415 КБ): вычислительное ядро (3.4 МБ) не нужно — значения считает свой вычислитель с матрицами (сложение, произведение, транспонирование, обратная, след, определитель, норма, log/exp/σ, x^{(i)}). Особенности парсера: \det A \det B = det(A det B); x^{(i)\top} читается как (i)·True — обработано. MathLive и парсер — отдельные чанки; npm audit — старые уязвимости braces в инструментах линтинга, не от новых пакетов.
 - **Файлы:** src/lib/symbolic/{evaluate,equivalent,parse,check}.ts, src/client/formula-input.ts, src/client/exercise.ts, src/components/pedagogy/Exercise.astro, tests/e2e/formula.spec.ts

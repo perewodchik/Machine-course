@@ -56,7 +56,7 @@ function inverse(a: Mat): Mat {
     for (let i = col + 1; i < n; i++) if (Math.abs(m[i]![col]!) > Math.abs(m[p]![col]!)) p = i;
     [m[col], m[p]] = [m[p]!, m[col]!];
     const piv = m[col]![col]!;
-    if (Math.abs(piv) < 1e-12) throw new EvalError("матрица вырождена: обратной нет", "syntax");
+    if (Math.abs(piv) < 1e-12) throw new EvalError(`матрица ${shapeText(a)} вырождена: обратной нет`, "shape");
     for (let j = 0; j < 2 * n; j++) m[col]![j]! /= piv;
     for (let i = 0; i < n; i++) {
       if (i === col) continue;

@@ -7,6 +7,7 @@ import { generator } from "../../lib/exercises/generators";
 import { scrambled } from "../../lib/exercises/check";
 import { rng } from "../../lib/math/rng";
 import { checkFormula } from "../../lib/symbolic/check";
+import { validateTask } from "../../lib/symbolic/derivation";
 import { inlineText, renderInline } from "../../markdown/core/inline";
 
 interface Props {
@@ -60,6 +61,9 @@ function answerData(s: ExerciseSpec, seedValue: number) {
       if (!self?.ok) throw new Error(`<Exercise>: эталон формулы «${s.answer}» не проверяется: ${self ? self.message : "пусто"}`);
       return { kind: s.kind, answer: s.answer, symbols: s.symbols };
     }
+    case "steps":
+      validateTask(s);
+      return { kind: s.kind, start: s.start, goal: s.goal, symbols: s.symbols };
   }
 }
 ---
@@ -82,6 +86,22 @@ function answerData(s: ExerciseSpec, seedValue: number) {
             <label for={`${vid}-input`} set:html={renderInline(sp.label)} />
             {/* без JS — поле для TeX; src/client/formula-input.ts заменяет его редактором формул MathLive */}
             <input class="input input--tex" id={`${vid}-input`} autocomplete="off" spellcheck="false" data-formula-input placeholder="например, X^\top y" aria-label={inlineText(sp.label).replace(/=$/, "").trim()} />
+          </div>
+        )}
+
+        {sp.kind === "steps" && (
+          <div class="steps-input" data-steps>
+            <p class="steps-input__goal">Цель: <Fragment set:html={renderInline(`$${sp.goal}$`)} /></p>
+            <ol class="steps-input__lines" aria-label="Строки вывода">
+              <li class="steps-input__start"><span class="steps-input__expr" set:html={renderInline(`${sp.label ?? ""} $${sp.start}$`)} /></li>
+              {Array.from({ length: sp.lines ?? 6 }, (_, k) => (
+                <li class="steps-input__row" data-step-row hidden={k >= 3}>
+                  <input class="input input--tex" id={`${vid}-row-${k}`} autocomplete="off" spellcheck="false" data-formula-input aria-label={`Строка ${k + 2}`} placeholder={k === 0 ? "= …" : undefined} />
+                  <p class="steps-input__msg" data-row-msg hidden></p>
+                </li>
+              ))}
+            </ol>
+            <button type="button" class="btn btn--sm btn--quiet" data-add-row>Добавить строку</button>
           </div>
         )}
 

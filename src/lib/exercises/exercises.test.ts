@@ -178,7 +178,7 @@ describe("генераторы", () => {
       ...(sp.hints ?? []),
       sp.right ?? "",
       sp.wrong ?? "",
-      ...("label" in sp ? [sp.label] : []),
+      ...("label" in sp && sp.label ? [sp.label] : []),
       ...("options" in sp ? sp.options.flatMap((o) => [o.text, o.why]) : []),
       ...("reveal" in sp ? [sp.reveal] : []),
       ...("steps" in sp ? sp.steps : []),

@@ -68,7 +68,20 @@ export interface FormulaSpec extends Base {
   symbols: SymbolShape[];
 }
 
-export type ExerciseSpec = NumericSpec | ChoiceSpec | MatrixSpec | OrderSpec | PredictSpec | FormulaSpec;
+export interface StepsSpec extends Base {
+  kind: "steps";
+  /** Первая строка вывода (TeX), дана ученику. */
+  start: string;
+  /** Подпись перед первой строкой: «$J(\theta) =$». */
+  label?: string;
+  /** Цель — последняя строка: выражение или решение «\theta = …» (src/lib/symbolic/derivation.ts). */
+  goal: string;
+  symbols: SymbolShape[];
+  /** Сколько полей для строк (видны сначала три). */
+  lines?: number;
+}
+
+export type ExerciseSpec = NumericSpec | ChoiceSpec | MatrixSpec | OrderSpec | PredictSpec | FormulaSpec | StepsSpec;
 
 /** Генератор параметрической задачи: одна и та же задача при одном seed. */
 export interface Generator {
