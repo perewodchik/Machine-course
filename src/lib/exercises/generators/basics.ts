@@ -468,3 +468,68 @@ export const derivative: Generator = {
     };
   },
 };
+
+/** Урок 0.9: фрагменты формул CS229 ↔ слова. Неверные прочтения — конфликты символов и типичные путаницы. */
+const CS229_READINGS: Reading[] = [
+  {
+    tex: String.raw`h_\theta(x) = \theta^\top x`,
+    text: String.raw`предсказание модели с весами $\theta$ на объекте $x$ — скалярное произведение весов и признаков`,
+    wrong: [
+      { tex: String.raw`h \cdot \theta \cdot x = \theta^\top x`, text: String.raw`$h$, умноженное на $\theta$ и на $x$`, why: String.raw`Нижний индекс $\theta$ у $h$ — параметры модели, а $x$ в скобках — аргумент: $h_\theta(x)$ — значение функции.` },
+      { tex: String.raw`h(x)^\theta = \theta^\top x`, text: String.raw`$h(x)$ в степени $\theta$`, why: "Индекс внизу — не степень. Степень пишут сверху, а у модели сверху ничего нет." },
+    ],
+  },
+  {
+    tex: String.raw`J(\theta) = \tfrac12 \sum_{i=1}^{n} \bigl(h_\theta(x^{(i)}) - y^{(i)}\bigr)^2`,
+    text: "половина суммы квадратов ошибок модели по всем объектам",
+    wrong: [
+      { tex: String.raw`J(\theta) = \tfrac12 \Bigl(\sum_{i=1}^{n} \bigl(h_\theta(x^{(i)}) - y^{(i)}\bigr)\Bigr)^2`, text: "половина квадрата суммы ошибок по всем объектам", why: String.raw`Квадрат стоит внутри суммы: каждая ошибка возводится в квадрат отдельно, иначе знаки гасят друг друга (урок 0.1).` },
+      { tex: String.raw`J(\theta) = \tfrac12 \sum_{j=1}^{d} \bigl(h_\theta(x_j) - y_j\bigr)^2`, text: "половина суммы квадратов по всем признакам", why: String.raw`Суммируют по объектам: индекс $i$ в скобках сверху, до $n$. Признаки — $j$, до $d$.` },
+    ],
+  },
+  {
+    tex: String.raw`\theta := \theta - \alpha \nabla_\theta J(\theta)`,
+    text: String.raw`шаг градиентного спуска: сдвинуть веса против градиента, длина шага — $\alpha$`,
+    wrong: [
+      { tex: String.raw`\theta = \theta - \alpha \nabla_\theta J(\theta)`, text: String.raw`уравнение на $\theta$, из которого $\nabla_\theta J(\theta) = 0$`, why: String.raw`$:=$ — присваивание: новое значение $\theta$ вычисляется из старого. Это шаг алгоритма, а не уравнение.` },
+      { tex: String.raw`\theta := \theta + \alpha \nabla_\theta J(\theta)`, text: "сдвинуть веса по направлению градиента", why: String.raw`По градиенту $J$ растёт. Чтобы уменьшать потери, идут против градиента — со знаком минус.` },
+    ],
+  },
+  {
+    tex: String.raw`\ell(\theta) = \sum_{i=1}^{n} \log p\bigl(y^{(i)} \mid x^{(i)}; \theta\bigr)`,
+    text: String.raw`логарифм правдоподобия: сумма логарифмов вероятностей ответов, $\theta$ — параметр модели`,
+    wrong: [
+      { tex: String.raw`\ell = \sum_{i=1}^{n} \log p\bigl(y^{(i)} \mid x^{(i)}, \theta\bigr)`, text: String.raw`сумма по слоям $\ell$, где $\theta$ — случайная величина`, why: String.raw`В CS229 $\ell(\theta)$ — логарифм правдоподобия; номер слоя пишут $[\ell]$. Точка с запятой перед $\theta$ — параметр, а не случайная величина.` },
+      { tex: String.raw`\ell(\theta) = \log \sum_{i=1}^{n} p\bigl(y^{(i)} \mid x^{(i)}; \theta\bigr)`, text: "логарифм суммы вероятностей ответов", why: String.raw`Логарифм стоит под суммой: правдоподобие — произведение, а $\log \prod = \sum \log$ (урок 0.5).` },
+    ],
+  },
+  {
+    tex: String.raw`\lvert \Sigma \rvert`,
+    text: String.raw`определитель ковариационной матрицы $\Sigma$`,
+    wrong: [
+      { tex: String.raw`\textstyle\sum`, text: "знак суммы", why: String.raw`Прямая $\Sigma$ в вертикальных чертах — матрица; знак суммы в формулах больше и стоит перед слагаемым.` },
+      { tex: String.raw`\operatorname{tr} \Sigma`, text: String.raw`след матрицы $\Sigma$ — сумма её диагональных элементов`, why: String.raw`След пишут $\operatorname{tr} \Sigma$ (в русских учебниках — $\operatorname{Sp} \Sigma$). Вертикальные черты у матрицы в CS229 — определитель, $\det \Sigma$.` },
+    ],
+  },
+];
+
+export const cs229Reading: Generator = {
+  id: "basics.cs229-reading",
+  version: 1,
+  title: "Переводчик формул CS229",
+  make(seed) {
+    const r = rng(seed);
+    const item = CS229_READINGS[(seed - 1) % CS229_READINGS.length]!;
+    // нечётный круг — от символов к словам, чётный — от слов к символам
+    const toWords = Math.floor((seed - 1) / CS229_READINGS.length) % 2 === 0;
+    const options: ChoiceOption[] = toWords
+      ? [{ text: item.text, correct: true, why: "Так и читается." }, ...item.wrong.map((w) => ({ text: w.text, why: w.why }))]
+      : [{ text: `$${item.tex}$`, correct: true, why: "Так и записывается." }, ...item.wrong.map((w) => ({ text: `$${w.tex}$`, why: w.why }))];
+    return {
+      kind: "choice",
+      prompt: toWords ? String.raw`Как читается фрагмент CS229 $${item.tex}$?` : `Как это записано в CS229: «${item.text}»?`,
+      options: r.shuffle(options),
+      hints: ["Разберите обозначения по одному: что стоит в индексах, что в скобках, по чему идёт сумма."],
+    };
+  },
+};

@@ -3,13 +3,14 @@
 import { expect, test } from "@playwright/test";
 import { sumTranslator } from "../../src/games/sum-translator/model";
 import { rng } from "../../src/lib/math/rng";
-import { expectNoAxeViolations } from "./support";
+import { expectNoAxeViolations, waitForIslands } from "./support";
 
 const SEED = 3;
 const levelOf = (k: number) => sumTranslator.generate(rng(SEED * 1000 + k - 1), k);
 
 test("строка, матрица, столбец: ошибка порядка видна сразу, равная запись принимается, журнал", async ({ page }) => {
   await page.goto(`/games/sum-translator/?seed=${SEED}&level=4`);
+  await waitForIslands(page);
   await expect(page.locator(".game__level")).toHaveText(/^Уровень 4 из 7: строка, матрица, столбец/);
   const level = levelOf(4);
   const rows = (name: string) => level.tiles.find((t) => t.name === name)!.rows;
@@ -44,6 +45,7 @@ test("строка, матрица, столбец: ошибка порядка 
 
 test("Xᵀy: без транспонирования — другой размер, подсказка ведёт к ответу", async ({ page }) => {
   await page.goto(`/games/sum-translator/?seed=${SEED}&level=6`);
+  await waitForIslands(page);
   const level = levelOf(6);
   const x = level.tiles.find((t) => t.name === "X")!;
   await page.getByRole("button", { name: "Добавить X" }).click();

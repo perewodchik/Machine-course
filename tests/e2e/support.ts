@@ -31,6 +31,7 @@ export const layoutPages = {
   start6: "/foundations/start/derivative-refresher/",
   start7: "/foundations/start/integral/",
   start8: "/foundations/start/numpy-minimum/",
+  start9: "/foundations/start/notation/",
   concept: "/concepts/la.dot-product/",
 } as const;
 
@@ -51,3 +52,12 @@ export async function expectNoAxeViolations(page: Page): Promise<void> {
   const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"]).analyze();
   expect(violations.map((v) => `${v.id}: ${v.help} — ${v.nodes.map((n) => n.target.join(" ")).join(", ")}`)).toEqual([]);
 }
+
+/**
+ * Ждёт гидратации островов: до неё поле игры меряет ширину заново, раскладка сдвигается, и клик попадает в соседнюю
+ * кнопку (так на телефоне «Добавить X» нажимало «Добавить y»).
+ */
+export async function waitForIslands(page: Page): Promise<void> {
+  await expect(page.locator("astro-island[ssr]")).toHaveCount(0);
+}
+

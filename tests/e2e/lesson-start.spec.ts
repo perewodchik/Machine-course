@@ -5,7 +5,8 @@
 // Урок 0.5 — задача из правила log ∏ = Σ log, вывод производной сигмоиды в четыре шага, итоговая проверка.
 // Урок 0.6 — разбор «забыта внутренняя производная», вывод производной log g, ячейка с разностями, итоговая проверка.
 // Урок 0.7 — сумма прямоугольников с клавиатуры (n, точка), вывод нормировки экспоненты, итоговая проверка.
-// Урок 0.8 — разбор broadcasting, ячейка со ссылкой на лабораторную, кнопки Colab, итоговая проверка. axe.
+// Урок 0.8 — разбор broadcasting, ячейка со ссылкой на лабораторную, кнопки Colab, итоговая проверка.
+// Урок 0.9 — переводчик формул CS229 и итоговая проверка модуля «Старт»: все восемь задач решаются, сводка 8 из 8. axe.
 import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 import { generator } from "../../src/lib/exercises/generators";
@@ -207,5 +208,36 @@ test("урок 0.8: разбор broadcasting, лабораторная «NumPy 
   if (spec.kind !== "choice") throw new Error("ожидался выбор");
   await final.locator("[data-variant]:not([hidden]) [data-option]").nth(spec.options.findIndex((o) => o.correct)).click();
   await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await expectNoAxeViolations(page);
+});
+
+test("урок 0.9: переводчик CS229 разбирает |Σ|, итоговая проверка модуля — 8 из 8", async ({ page }) => {
+  await page.goto("/foundations/start/notation/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Обозначения курса и CS229");
+
+  // пятая запись переводчика — |Σ|: «модуль» не предлагается, «знак суммы» объяснён
+  const reading = page.locator("[data-exercise][data-item='basics.cs229-reading']").first();
+  for (let k = 0; k < 4; k++) await reading.getByRole("button", { name: "Ещё задача" }).click();
+  const spec = generator("basics.cs229-reading").make(5);
+  if (spec.kind !== "choice") throw new Error("ожидался выбор");
+  const visible = reading.locator("[data-variant]:not([hidden])");
+  await visible.locator("[data-option]").nth(spec.options.findIndex((o) => o.text === "знак суммы")).click();
+  await expect(reading.locator("[data-feedback]")).toContainText("знак суммы в формулах больше");
+
+  const set = page.locator("[data-exercise-set]");
+  const summary = set.locator("[data-summary]");
+  await expect(summary).toHaveText(/Решено верно: 0 из\s8\./);
+  for (const ex of await set.locator("[data-exercise]").all()) {
+    const gen = (await ex.getAttribute("data-item"))!;
+    const seed = Number(await ex.locator("[data-variant]").getAttribute("data-seed"));
+    const task = generator(gen).make(seed);
+    if (task.kind === "numeric") {
+      await ex.locator("input[data-input]").fill(String(task.answer));
+      await ex.getByRole("button", { name: "Проверить" }).click();
+    } else if (task.kind === "choice") {
+      await ex.locator("[data-option]").nth(task.options.findIndex((o) => o.correct)).click();
+    } else throw new Error(`задача ${gen}: вид ${task.kind}`);
+  }
+  await expect(summary).toHaveText(/Решено верно: 8 из\s8\./);
   await expectNoAxeViolations(page);
 });
