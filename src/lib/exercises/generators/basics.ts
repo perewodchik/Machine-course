@@ -428,3 +428,43 @@ export const geometric: Generator = {
     };
   },
 };
+
+/** Урок 0.6: производная многочлена (нечётный seed) или произведения двух скобок (чётный) в точке. */
+export const derivative: Generator = {
+  id: "basics.derivative",
+  version: 1,
+  title: "Производная в точке",
+  make(seed) {
+    const r = rng(seed);
+    const x0 = r.pick([-1, 1, 2]);
+    if (seed % 2 === 1) {
+      const [a, b, c] = [r.nonzero(-2, 3), r.int(-3, 3), r.int(-4, 4)];
+      const answer = 3 * a * x0 * x0 + 2 * b * x0 + c;
+      const poly = `${coef(a, "x^3")}${b === 0 ? "" : ` ${b > 0 ? "+" : "-"} ${Math.abs(b) === 1 ? "" : Math.abs(b)}x^2`}${linear(c)}`;
+      return {
+        kind: "numeric",
+        prompt: String.raw`$f(x) = ${poly}$. Найдите $f'(${x0})$.`,
+        label: String.raw`$f'(${x0}) =$`,
+        answer,
+        tol: 0,
+        hints: [String.raw`$(x^k)' = k x^{k-1}$, производная суммы — сумма производных, множитель выносится.`],
+        right: String.raw`$f'(x) = ${coef(3 * a, "x^2")}${linear(2 * b)}${term(c)}$, $f'(${x0}) = ${answer}$.`,
+        wrong: String.raw`Степень спускается множителем и уменьшается на единицу: $(x^3)' = 3x^2$, $(x^2)' = 2x$, $(x)' = 1$.`,
+      };
+    }
+    const [a, b, c, d] = [r.nonzero(-2, 3), r.int(-3, 3), r.nonzero(-2, 3), r.int(-3, 3)];
+    // (ax + b)(cx + d): f' = a(cx + d) + c(ax + b)
+    const answer = a * (c * x0 + d) + c * (a * x0 + b);
+    const wrong = a * c;
+    return {
+      kind: "numeric",
+      prompt: String.raw`$f(x) = (${coef(a)}${term(b)})(${coef(c)}${term(d)})$. Найдите $f'(${x0})$ по правилу произведения.`,
+      label: String.raw`$f'(${x0}) =$`,
+      answer,
+      tol: 0,
+      hints: [String.raw`$(uv)' = u'v + uv'$: здесь $u' = ${a}$, $v' = ${c}$.`],
+      right: String.raw`$f'(x) = ${a}\,(${coef(c)}${term(d)}) + ${c < 0 ? `(${c})` : c}\,(${coef(a)}${term(b)})$; при $x = ${x0}$ это $${answer}$.`,
+      wrong: String.raw`Производная произведения — не произведение производных: $(uv)' \ne u'v'$${wrong !== answer ? ` (это дало бы $${wrong}$)` : ""}. Правило: $(uv)' = u'v + uv'$.`,
+    };
+  },
+};

@@ -28,6 +28,7 @@ export const layoutPages = {
   sumgame: "/games/sum-translator/",
   start5: "/foundations/start/exp-log-sigmoid/",
   undergame: "/games/underflow/",
+  start6: "/foundations/start/derivative-refresher/",
   concept: "/concepts/la.dot-product/",
 } as const;
 

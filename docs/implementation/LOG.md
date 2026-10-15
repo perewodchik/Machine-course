@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-15 — L-0.6 Производная и правило цепочки — готов
+- **Сделано:** Урок 0.6: три цикла (производная; правило цепочки; численная проверка). Формула f.log-sigmoid-derivative (d/dz log g = 1 − g, четыре шага с проверкой градиента), понятия calc.derivative и calc.chain-rule, генератор basics.derivative (многочлен или произведение скобок в точке). Ячейка Python start/numdiff.py: прямая и центральная разности для x³ при h от 0.1 до 10⁻¹²; вывод закреплён в code/tests/test_numdiff.py.
+- **Файлы:** content/courses/foundations/start/derivative-refresher.mdx, content/formulas/calc/log-sigmoid-derivative.yaml, code/snippets/start/numdiff.py, code/tests/test_numdiff.py, src/lib/exercises/generators/basics.ts
+- **Проверка:** vitest, pytest, e2e урока 0.6 — 2; lint, check, validate, check_consistency — чисто; скриншоты 1440/390
+- **Отклонения от плана и решения:** Функция в ячейке — x · x · x, а не x**3: только сложения и умножения, поэтому округления одинаковы в Pyodide и CPython и тест сверяет вывод до цифры.
+- **Следующий шаг:** L-0.7 — интеграл.
+- **Вопросы пользователю:** —
+
 ### 2026-10-15 — L-0.5 Экспонента, логарифм, сигмоида — готов
 - **Сделано:** Урок 0.5: три цикла (экспонента и логарифм; логарифм правдоподобия и underflow; сигмоида). Правила rule.log-product, rule.sigmoid-symmetry, rule.logsumexp-shift, формула f.sigmoid-derivative с выводом в четыре шага; понятие calc.sigmoid. Ячейка Python start/underflow.py (произведение 1100 вероятностей — 0.0, сумма логарифмов, log-sum-exp со сдвигом), числа закреплены в code/tests/test_underflow.py. Игра «Underflow» (/games/underflow): прогноз объекта, на котором произведение станет нулём, сумма логарифмов, сравнение двух моделей с нулевым правдоподобием. Валидатор: заголовок таблицы из одной формулы — ошибка (axe empty-table-header). Правило из реестра делится на части по «=» вне скобок.
 - **Файлы:** content/courses/foundations/start/exp-log-sigmoid.mdx, content/formulas/rules/{log-product,sigmoid-symmetry,logsumexp-shift}.yaml, content/formulas/calc/sigmoid-derivative.yaml, code/snippets/start/underflow.py, src/games/underflow/*, src/lib/content/rule-instance.ts, src/lib/content/validate.ts

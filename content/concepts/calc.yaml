@@ -56,3 +56,21 @@
   prerequisites: [calc.log-exp]
   core: true
 
+- id: calc.derivative
+  title:
+    ru: 'Производная'
+    en: 'derivative'
+  summary: '$f''(x) = \lim_{h \to 0} \frac{f(x + h) - f(x)}{h}$ — скорость изменения $f$; $(x^k)'' = k x^{k-1}$, $(e^x)'' = e^x$, $(\log x)'' = \frac{1}{x}$.'
+  lesson: derivative-refresher
+  prerequisites: [calc.log-exp]
+  core: true
+
+- id: calc.chain-rule
+  title:
+    ru: 'Правило цепочки'
+    en: 'chain rule'
+  summary: '$(g \circ f)''(x) = g''\bigl(f(x)\bigr)\, f''(x)$: производная внешней функции во внутренней, умноженная на производную внутренней.'
+  lesson: derivative-refresher
+  prerequisites: [calc.derivative, nota.sets]
+  core: true
+
