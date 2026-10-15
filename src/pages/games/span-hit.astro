@@ -1,0 +1,27 @@
+---
+// Игра «Попади в точку» (S3.L1, уроки I.1 и I.6): остров React с оболочкой GameShell. Блок «Чему учит игра» — статичный HTML.
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { SpanHit, meta } from "../../games/span-hit";
+import { loadCourse } from "../../lib/content/collections";
+
+const course = await loadCourse("foundations");
+const lesson = course.lessons.find((l) => l.key === meta.lesson);
+if (!lesson) throw new Error(`игра ${meta.id}: нет урока ${meta.lesson}`);
+const module = course.modules.find((m) => m.id === lesson.module);
+const systems = course.lessons.find((l) => l.key === "foundations/linear-algebra/systems-rank");
+---
+<BaseLayout title={meta.title} description="Подберите коэффициенты при векторах a и b, чтобы попасть в цель, или докажите, что это невозможно." course={course}>
+  <main class="game shell" id="content">
+    <nav class="breadcrumb" aria-label="Путь">
+      <a href={`${course.href}#m-${lesson.module}`}>{module?.title}</a><span aria-hidden="true">/</span><span>Игра к уроку {lesson.number}</span>
+    </nav>
+    <h1>{meta.title}</h1>
+    <p class="lead game__lead">Подберите коэффициенты <i>c</i><sub>1</sub> и <i>c</i><sub>2</sub> так, чтобы комбинация векторов попала в&nbsp;цель. Если попасть нельзя&nbsp;— нажмите «Невозможно». Шесть уровней, партия&nbsp;— 3–5&nbsp;минут.</p>
+    <SpanHit client:load>
+      <div class="block block--intuition game__teaches">
+        <p><span class="block__title">Чему учит игра.</span> Все комбинации <i>c</i><sub>1</sub><i>a</i>&nbsp;+&nbsp;<i>c</i><sub>2</sub><i>b</i>&nbsp;— линейная оболочка векторов. Если <i>a</i> и <i>b</i> не параллельны, она&nbsp;— вся плоскость, и попасть можно куда угодно. Если параллельны&nbsp;— только прямая, и цель вне её недостижима.</p>
+        <p><a href={lesson.href}>Урок {lesson.number}. {lesson.title}</a>{systems && <> · <a href={systems.href}>урок {systems.number}: системы и ранг</a></>}</p>
+      </div>
+    </SpanHit>
+  </main>
+</BaseLayout>

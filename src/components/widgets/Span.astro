@@ -1,0 +1,14 @@
+---
+// Обёртка виджета «Оболочка двух векторов» для урока: рисунок с номером и подписью, остров React (client:visible).
+import { Span, type SpanProps } from "../../widgets/la/span";
+
+interface Props extends SpanProps {
+  /** Номер рисунка в уроке. */
+  n?: number;
+}
+const { n, ...props } = Astro.props;
+---
+<figure class="figure wide">
+  <Span client:visible {...props} />
+  <figcaption class="figure__caption">{n && <b>Рисунок {n}.</b>} <slot /></figcaption>
+</figure>
