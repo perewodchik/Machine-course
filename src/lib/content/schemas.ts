@@ -134,6 +134,8 @@ export const lessonRef = z.strictObject({
   number: z.string().min(1),
   title: z.string().min(1),
   optional: z.boolean().optional(),
+  requires: z.array(lessonKey).optional(),
+  cs229: z.array(z.string().min(1)).optional(),
 });
 
 export const module = z.strictObject({

@@ -1,0 +1,18 @@
+---
+// Карта курса математики (S3.02): граф уроков «Опирается на» с галочками «знаю».
+import BaseLayout from "../layouts/BaseLayout.astro";
+import CourseMap from "../components/layout/CourseMap.astro";
+import { loadCourse } from "../lib/content/collections";
+
+const course = await loadCourse("foundations");
+---
+<BaseLayout title={`Карта курса — ${course.title}`} description="Уроки курса математики для машинного обучения и связи между ними: на какие уроки опирается каждый." course={course}>
+  <main class="shell shell--map" id="content">
+    <nav class="breadcrumb" aria-label="Путь">
+      <a href={course.href}>{course.title}</a><span aria-hidden="true">/</span><span>Карта</span>
+    </nav>
+    <h1>Карта курса</h1>
+    <p class="lead">Каждый урок опирается на&nbsp;несколько предыдущих. Отмеченные «знаю» уроки можно пропустить; урок, у&nbsp;которого отмечены все опоры, можно начинать.</p>
+    <CourseMap course={course} />
+  </main>
+</BaseLayout>

@@ -1,0 +1,31 @@
+---
+// Справка по пререквизитам урока (S3.02, идея A7): скрытый список опор урока (requires в module.yaml) с короткой
+// сводкой понятия, которое там вводится. После второй неверной попытки упражнение показывает первую опору без
+// галочки «знаю» (src/client/exercise.ts).
+import type { LessonEntry } from "../../lib/content/catalog";
+import { ru } from "../../lib/content/catalog";
+import { loadRegistry } from "../../lib/content/registry";
+import { renderInline } from "../../markdown/core/inline";
+
+interface Props {
+  lesson: LessonEntry;
+}
+const { lesson } = Astro.props;
+const reg = await loadRegistry();
+const items = (lesson.requires ?? []).flatMap((key) => {
+  const l = reg.lessonsByKey.get(key);
+  if (!l) return [];
+  const concept = [...reg.concepts.values()].find((c) => c.lesson === l.slug);
+  return [{ key, href: l.href, label: `${l.number}. ${l.title}`, summary: concept ? renderInline(ru(concept.summary)) : undefined }];
+});
+---
+{items.length > 0 && (
+  <div hidden data-prereq-help>
+    {items.map((it) => (
+      <p class="prereq-help" data-prereq={it.key}>
+        Не получается? Возможно, дело в&nbsp;опоре этого урока: <a href={it.href}>{it.label}</a>
+        {it.summary && <>{" — "}<Fragment set:html={it.summary} /></>}
+      </p>
+    ))}
+  </div>
+)}

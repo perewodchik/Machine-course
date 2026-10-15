@@ -92,6 +92,10 @@ export interface LessonRef {
   number: string; // «II.3»
   title: string;
   optional?: boolean;
+  /** «Опирается на» из карточки программы: уроки, без которых этот читать трудно (граф курса, карта /map). */
+  requires?: string[]; // ключи уроков (LessonKey), проверяет валидатор
+  /** Разделы конспекта CS229, где нужен урок (названия из карточки): конец пути «зачем это мне». */
+  cs229?: string[];
 }
 
 export interface Module {

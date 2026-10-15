@@ -57,6 +57,7 @@ describe("каждая проверка ловит свою фикстуру", (
         "diagnostic.yaml: items[2].lesson: нет урока «demo/basics/missing»",
       ],
     ],
+    ["lesson-graph", ["урок demo/basics/next: requires[1]: нет урока «demo/basics/nowhere»", /граф уроков: цикл demo\/basics\/(intro|next) → demo\/basics\/(next|intro) → demo\/basics\/\1/]],
     ["prose-math", ["dot-symmetric.yaml: corollary: «ᵀ» вне формулы", "dot-symmetric.yaml: pitfall: «_» вне формулы"]],
     ["lesson-duplicate", ["lessons[1].number: номер «1.1» уже занят", "lessons[2].slug: урок «intro» повторяется в модуле"]],
     ["course-requires", ["requires: нет курса «no-such-course»"]],

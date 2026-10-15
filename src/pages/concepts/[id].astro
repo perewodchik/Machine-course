@@ -1,0 +1,95 @@
+---
+// Страница понятия (S3.02, идея A7): что это, где вводится, на что опирается и что на нём держится, формулы, и путь
+// «зачем это мне» — от урока, где понятие вводится, вперёд по графу уроков до раздела конспекта CS229.
+import type { GetStaticPaths } from "astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { loadCatalog } from "../../lib/content/collections";
+import { ru } from "../../lib/content/catalog";
+import { loadRegistry } from "../../lib/content/registry";
+import { pathForward } from "../../lib/progress/graph";
+import { renderInline } from "../../markdown/core/inline";
+
+export const getStaticPaths = (async () => {
+  const reg = await loadRegistry();
+  return [...reg.concepts.keys()].map((id) => ({ params: { id } }));
+}) satisfies GetStaticPaths;
+
+const { id } = Astro.params;
+const reg = await loadRegistry();
+const catalog = await loadCatalog();
+const concept = reg.concepts.get(id)!;
+const course = catalog.find((c) => c.id === "foundations")!;
+const lesson = reg.lessonsBySlug.get(concept.lesson);
+const conceptHref = (cid: string) => `/concepts/${cid}/`;
+const prerequisites = concept.prerequisites.map((p) => reg.concepts.get(p)).filter((c) => !!c);
+const neededFor = [...reg.concepts.values()].filter((c) => c.prerequisites.includes(concept.id));
+const formulas = [...reg.formulas.values()].filter((f) => f.dependsOn.concepts.includes(concept.id));
+
+// путь вперёд по графу уроков всех курсов до первого урока, где нужен раздел CS229
+const lessons = catalog.flatMap((c) => c.lessons);
+const path = lesson ? pathForward(lesson.key, lessons.map((l) => ({ key: l.key, requires: l.requires ?? [] })), (k) => (reg.lessonsByKey.get(k)?.cs229?.length ?? 0) > 0) : null;
+const steps = (path ?? []).map((k) => reg.lessonsByKey.get(k)!);
+const goal = steps.at(-1);
+const courseTitle = (cid: string) => reg.courseTitles.get(cid) ?? cid;
+---
+<BaseLayout title={`${concept.title.ru} — понятие`} description={ru(concept.summary).replace(/\$/g, "")} course={course}>
+  <main class="shell concept" id="content">
+    <nav class="breadcrumb" aria-label="Путь">
+      <a href="/concepts/">Понятия</a><span aria-hidden="true">/</span><span>{concept.title.ru}</span>
+    </nav>
+    <h1>{concept.title.ru}</h1>
+    <p class="concept__en"><span lang="en">{concept.title.en}</span>{!concept.core && " · углубление, не обязательно для прогресса"}</p>
+    <p class="lead" set:html={renderInline(ru(concept.summary))} />
+
+    <dl class="concept__facts">
+      <dt>Вводится</dt>
+      <dd>{lesson ? <a href={lesson.href}>Урок {lesson.number}. {lesson.title}</a> : "в уроке, которого пока нет в программе"}</dd>
+      {prerequisites.length > 0 && (
+        <>
+          <dt>Опирается на</dt>
+          <dd>{prerequisites.map((p, i) => <>{i > 0 && ", "}<a href={conceptHref(p.id)}>{p.title.ru}</a></>)}</dd>
+        </>
+      )}
+      {neededFor.length > 0 && (
+        <>
+          <dt>Нужно для</dt>
+          <dd>{neededFor.map((p, i) => <>{i > 0 && ", "}<a href={conceptHref(p.id)}>{p.title.ru}</a></>)}</dd>
+        </>
+      )}
+      {formulas.length > 0 && (
+        <>
+          <dt>Формулы</dt>
+          <dd>{formulas.map((f, i) => <>{i > 0 && ", "}{f.title.ru}</>)}</dd>
+        </>
+      )}
+    </dl>
+
+    <section class="concept__why" aria-labelledby="why-title">
+      <h2 id="why-title">Зачем это мне</h2>
+      {concept.cs229?.length ? (
+        <p>В конспекте CS229 понятие встречается прямо: {concept.cs229.map((c, i) => <>{i > 0 && "; "}раздел «{c.section}»</>)}.</p>
+      ) : null}
+      {goal && steps.length === 1 && (
+        <p>
+          Урок, где понятие вводится, — <a href={goal.href}>{goal.number}. {goal.title}</a> — уже нужен в&nbsp;конспекте CS229:{" "}
+          {goal.cs229!.map((c, i) => <>{i > 0 && ", "}«{c}»</>)}.
+        </p>
+      )}
+      {goal && steps.length > 1 ? (
+        <>
+          <p>От урока, где понятие вводится, до раздела конспекта CS229 — {steps.length - 1}&nbsp;{steps.length - 1 === 1 ? "шаг" : steps.length - 1 < 5 ? "шага" : "шагов"} по&nbsp;«Опирается на»:</p>
+          <ol class="concept__path">
+            {steps.map((s) => (
+              <li>
+                <a href={s.href}>{s.course === "foundations" ? "" : `${courseTitle(s.course)}, `}урок {s.number}. {s.title}</a>
+              </li>
+            ))}
+          </ol>
+          <p class="concept__goal">CS229: {goal.cs229!.map((c, i) => <>{i > 0 && ", "}«{c}»</>)}.</p>
+        </>
+      ) : !goal && (
+        <p>Путь до конспекта CS229 появится, когда в программе будут уроки, которые опираются на это понятие.</p>
+      )}
+    </section>
+  </main>
+</BaseLayout>

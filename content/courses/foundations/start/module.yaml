@@ -8,27 +8,39 @@ lessons:
   - slug: regression-by-hand
     number: '0.1'
     title: 'Регрессия руками за 15 минут'
+    cs229: ['Linear regression']
   - slug: how-the-course-works
     number: '0.2'
     title: 'Как устроен курс и входная диагностика'
+    requires: [foundations/start/regression-by-hand]
   - slug: language-of-math
     number: '0.3'
     title: 'Язык математики: множества, отображения, кванторы'
   - slug: sums-products-indicators
     number: '0.4'
     title: 'Суммы, произведения, индикатор'
+    requires: [foundations/start/language-of-math]
+    cs229: ['Reinforcement learning']
   - slug: exp-log-sigmoid
     number: '0.5'
     title: 'Экспонента, логарифм, сигмоида'
+    requires: [foundations/start/sums-products-indicators]
+    cs229: ['Classification and logistic regression']
   - slug: derivative-refresher
     number: '0.6'
     title: 'Производная и правило цепочки'
+    requires: [foundations/start/exp-log-sigmoid]
   - slug: integral
     number: '0.7'
     title: 'Интеграл'
+    requires: [foundations/start/derivative-refresher]
+    cs229: ['Probability review']
   - slug: numpy-minimum
     number: '0.8'
     title: 'Минимум NumPy: массивы, формы, векторизация'
+    requires: [foundations/start/sums-products-indicators]
+    cs229: ['Deep learning']
   - slug: notation
     number: '0.9'
     title: 'Обозначения курса и CS229'
+    requires: [foundations/start/language-of-math, foundations/start/numpy-minimum]

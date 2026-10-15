@@ -13,7 +13,7 @@
   title:
     ru: 'Нормальное распределение'
     en: 'normal (Gaussian) distribution'
-  summary: 'Плотность (1/(√(2π)σ))·exp(−(x − μ)²/(2σ²)); второй параметр N(μ, σ²) — дисперсия.'
+  summary: 'Плотность $\frac{1}{\sqrt{2\pi}\,\sigma} \exp\bigl(-\frac{(x - \mu)^2}{2\sigma^2}\bigr)$; второй параметр $\mathcal{N}(\mu, \sigma^2)$ — дисперсия.'
   lesson: continuous-distributions
   prerequisites: [calc.log-exp]
   core: true
@@ -25,7 +25,7 @@
   title:
     ru: 'Условная вероятность'
     en: 'conditional probability'
-  summary: 'P(A | B) = P(A ∩ B) / P(B): вероятность A, когда известно, что произошло B.'
+  summary: '$P(A \mid B) = P(A \cap B) / P(B)$: вероятность $A$, когда известно, что произошло $B$.'
   lesson: conditional-independence
   prerequisites: []
   core: true
@@ -34,7 +34,7 @@
   title:
     ru: 'Формула полной вероятности'
     en: 'law of total probability'
-  summary: 'Если B₁, …, B_K разбивают пространство исходов, то P(A) = Σ P(A | B_k) P(B_k).'
+  summary: 'Если $B_1, \ldots, B_K$ разбивают пространство исходов, то $P(A) = \sum_k P(A \mid B_k)\, P(B_k)$.'
   lesson: bayes
   prerequisites: [prob.conditional]
   core: true
@@ -43,7 +43,7 @@
   title:
     ru: 'Формула Байеса'
     en: "Bayes' rule"
-  summary: 'P(B | A) = P(A | B) P(B) / P(A): апостериорная вероятность из априорной и правдоподобия; знаменатель — формула полной вероятности.'
+  summary: '$P(B \mid A) = P(A \mid B)\, P(B) / P(A)$: апостериорная вероятность из априорной и правдоподобия; знаменатель — формула полной вероятности.'
   lesson: bayes
   prerequisites: [prob.conditional, prob.total-probability]
   core: true

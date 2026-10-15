@@ -1,0 +1,42 @@
+---
+// Понятия курса (S3.02): по разделам, со ссылкой на урок, где понятие вводится.
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { loadCourse } from "../../lib/content/collections";
+import { ru } from "../../lib/content/catalog";
+import { loadRegistry } from "../../lib/content/registry";
+import { renderInline } from "../../markdown/core/inline";
+
+const reg = await loadRegistry();
+const course = await loadCourse("foundations");
+const SECTIONS: [string, string][] = [
+  ["nota", "Обозначения"],
+  ["la", "Линейная алгебра"],
+  ["calc", "Анализ и оптимизация"],
+  ["prob", "Вероятность"],
+  ["stat", "Статистика"],
+  ["ml", "Машинное обучение"],
+];
+const all = [...reg.concepts.values()];
+---
+<BaseLayout title="Понятия курса" description="Понятия курса математики для машинного обучения: определение, урок, связи и путь до конспекта CS229." course={course}>
+  <main class="shell concept-index" id="content">
+    <h1>Понятия</h1>
+    <p class="lead">У каждого понятия — урок, где оно вводится, связи с другими понятиями и путь до раздела конспекта CS229, где оно нужно. Уроки и их связи целиком — на&nbsp;<a href="/map/">карте курса</a>.</p>
+    {SECTIONS.map(([prefix, title]) => {
+      const items = all.filter((c) => c.id.startsWith(`${prefix}.`));
+      return items.length > 0 && (
+        <section aria-labelledby={`c-${prefix}`}>
+          <h2 id={`c-${prefix}`}>{title}</h2>
+          <dl class="concept-index__list">
+            {items.map((c) => (
+              <>
+                <dt><a href={`/concepts/${c.id}/`}>{c.title.ru}</a></dt>
+                <dd set:html={renderInline(ru(c.summary))} />
+              </>
+            ))}
+          </dl>
+        </section>
+      );
+    })}
+  </main>
+</BaseLayout>

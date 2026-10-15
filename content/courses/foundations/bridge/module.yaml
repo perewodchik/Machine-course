@@ -9,6 +9,10 @@ lessons:
   - slug: linear-regression
     number: 'V.1'
     title: 'Линейная регрессия тремя способами'
+    requires: [foundations/linear-algebra/orthogonality-projections, foundations/calculus/matrix-calculus, foundations/calculus/convexity, foundations/statistics/mle]
+    cs229: ['Linear regression']
   - slug: math-in-ml
     number: 'V.2'
     title: 'Итоговая проверка: математика в выводах ML'
+    requires: [foundations/bridge/linear-regression]
+    cs229: ['Classification and logistic regression', 'Generalized linear models', 'Generative learning algorithms', 'Deep learning']

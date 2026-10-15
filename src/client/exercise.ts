@@ -2,7 +2,9 @@
 // журнал попыток. Тексты уже отрисованы сервером; здесь — только показать нужное и посчитать.
 import { checkMatrix, checkNumeric, checkOrder } from "../lib/exercises/check";
 import { formatNumber } from "../lib/exercises/parse";
+import { isKnown } from "../lib/progress/marks";
 import { logEvent } from "../lib/state/journal";
+import { $marks } from "../lib/state/marks";
 
 type Answer =
   | { kind: "numeric"; answer: number; tol?: number; rel?: number }
@@ -62,10 +64,20 @@ function init(root: HTMLElement): void {
       at: new Date().toISOString(),
     });
     root.dispatchEvent(new CustomEvent<ExerciseResultDetail>("exercise:result", { bubbles: true, detail: { uid, item, lesson, correct, attempt, hints } }));
+    if (!correct && attempt === 2) offerPrereq();
     if (correct && root.hasAttribute("data-final")) {
       // после того как отзыв уже показан: слушатель (прогресс) может дописать в него «Урок отмечен»
       queueMicrotask(() => root.dispatchEvent(new CustomEvent("exercise:final-correct", { bubbles: true, detail: { lesson } })));
     }
+  };
+
+  // вторая неверная попытка: справка по опоре урока, которая ещё не отмечена «знаю» (идея A7; PrereqHelp.astro)
+  const offerPrereq = () => {
+    if (root.closest(".diagnostic") || root.querySelector(".prereq-help")) return;
+    const all = [...document.querySelectorAll<HTMLElement>("[data-prereq-help] [data-prereq]")];
+    const marks = $marks.get();
+    const pick = all.find((p) => !isKnown(marks, p.dataset.prereq ?? ""));
+    if (pick) feedback.after(pick.cloneNode(true));
   };
 
   const updateHintButton = () => {

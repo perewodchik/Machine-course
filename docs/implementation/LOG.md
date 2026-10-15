@@ -17,6 +17,13 @@
 
 ---
 
+### 2026-10-15 — S3.02 Карта курса, понятия, справка по опоре — готова
+- **Сделано:** requires/cs229 перенесены из карточек в module.yaml скриптом и сверяются с карточками (V.2: «модули 0–IV» — пояснение, опора — V.1). Карта рисует рёбра клиентом по положению узлов; ниже 1100 px — списки. Путь «зачем это мне» — BFS вперёд по requires всех курсов до урока с cs229. Справка по опоре — первая опора без «знаю». axe поймал приглушение прозрачностью — заменено цветом.
+- **Файлы:** content/courses/*/*/module.yaml, src/components/layout/CourseMap.astro, src/client/map.ts, src/lib/progress/graph.ts, src/pages/{map,concepts/index,concepts/[id]}.astro, src/components/pedagogy/PrereqHelp.astro, tests/e2e/map.spec.ts
+- **Проверка:** vitest 280; e2e 236 (90 пропущено); pytest 61; lint, check, validate, check_consistency — чисто
+- **Следующий шаг:** S3.03 — ввод формул и проверка символьных ответов.
+- **Вопросы пользователю:** —
+
 ### 2026-10-15 — S3.01 Входная диагностика и урок 0.2 — готова
 - **Сделано:** Диагностика по банку content/diagnostic.yaml в уроке 0.2 (написан целиком: L-0.2). Пропуск задач — только по прямым requires неверной задачи, без цепочки: иначе одна ошибка в 0.4 обрывала бы диагностику. Генераторы модуля 0 — basics.* (будущие итоговые проверки уроков 0.3–0.9). exercise:result теперь несёт attempt и hints. Проценты в генераторах вероятности — с неразрывным пробелом.
 - **Файлы:** content/diagnostic.yaml, content/courses/foundations/start/how-the-course-works.mdx, src/components/pedagogy/Diagnostic.astro, src/client/diagnostic.ts, src/lib/diagnostic/plan.ts, src/lib/exercises/generators/basics.ts, tests/e2e/diagnostic.spec.ts

@@ -12,7 +12,7 @@
   title:
     ru: 'Матричное дифференцирование'
     en: 'matrix calculus'
-  summary: 'Градиенты выражений с векторами и матрицами без покоординатных выкладок: ∇ₓ aᵀx = a, ∇ₓ xᵀAx = (A + Aᵀ)x.'
+  summary: 'Градиенты выражений с векторами и матрицами без покоординатных выкладок: $\nabla_x a^\top x = a$, $\nabla_x x^\top A x = (A + A^\top)x$.'
   lesson: matrix-calculus
   prerequisites: [calc.gradient, la.matmul, la.transpose]
   core: true
@@ -42,7 +42,7 @@
   title:
     ru: 'Логарифм и экспонента'
     en: 'logarithm and exponential'
-  summary: 'log(ab) = log a + log b, log eˣ = x; логарифм возрастает, поэтому не меняет точку максимума.'
+  summary: '$\log(ab) = \log a + \log b$, $\log e^x = x$; логарифм возрастает, поэтому не меняет точку максимума.'
   lesson: exp-log-sigmoid
   prerequisites: []
   core: true

@@ -8,36 +8,56 @@ lessons:
   - slug: vectors-span
     number: 'I.1'
     title: 'Векторы, линейные комбинации, оболочка'
+    requires: [foundations/start/language-of-math, foundations/start/numpy-minimum]
   - slug: dot-product-norms
     number: 'I.2'
     title: 'Скалярное произведение и нормы'
+    requires: [foundations/linear-algebra/vectors-span]
+    cs229: ['Kernel methods', 'Regularization and model selection']
   - slug: matrix-multiplication
     number: 'I.3'
     title: 'Умножение матриц: четыре взгляда'
+    requires: [foundations/linear-algebra/dot-product-norms]
+    cs229: ['Linear regression', 'Deep learning']
   - slug: matrix-as-map
     number: 'I.4'
     title: 'Матрица как линейное отображение'
+    requires: [foundations/linear-algebra/matrix-multiplication]
   - slug: transpose-trace
     number: 'I.5'
     title: 'Транспонирование, симметрия, след'
+    requires: [foundations/linear-algebra/matrix-multiplication]
+    cs229: ['Linear regression']
   - slug: systems-rank
     number: 'I.6'
     title: 'Системы уравнений и ранг'
+    requires: [foundations/linear-algebra/vectors-span, foundations/linear-algebra/matrix-as-map]
   - slug: inverse-determinant
     number: 'I.7'
     title: 'Обратная матрица и определитель'
+    requires: [foundations/linear-algebra/matrix-as-map, foundations/linear-algebra/systems-rank]
+    cs229: ['Generative learning algorithms', 'Independent components analysis']
   - slug: orthogonality-projections
     number: 'I.8'
     title: 'Ортогональность и проекции'
+    requires: [foundations/linear-algebra/dot-product-norms, foundations/linear-algebra/systems-rank]
+    cs229: ['Linear regression', 'Support vector machines']
   - slug: eigen
     number: 'I.9'
     title: 'Собственные значения и векторы'
+    requires: [foundations/linear-algebra/matrix-as-map, foundations/linear-algebra/inverse-determinant]
+    cs229: ['Principal components analysis']
   - slug: quadratic-forms
     number: 'I.10'
     title: 'Квадратичные формы и знакоопределённость'
+    requires: [foundations/linear-algebra/transpose-trace, foundations/linear-algebra/eigen]
+    cs229: ['Kernel methods', 'Generative learning algorithms']
   - slug: svd-pseudoinverse
     number: 'I.11'
     title: 'Сингулярное разложение и псевдообратная'
+    requires: [foundations/linear-algebra/eigen, foundations/linear-algebra/quadratic-forms]
+    cs229: ['Principal components analysis', 'Generalization']
   - slug: capstone-least-squares
     number: 'I.12'
     title: 'Капстоун: МНК как проекция'
+    requires: [foundations/linear-algebra/systems-rank, foundations/linear-algebra/inverse-determinant, foundations/linear-algebra/orthogonality-projections, foundations/linear-algebra/eigen, foundations/linear-algebra/quadratic-forms, foundations/linear-algebra/svd-pseudoinverse]

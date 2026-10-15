@@ -98,6 +98,34 @@ export function validateContent(root: string): ValidationResult {
     }
   }
 
+  // ───────── граф уроков: requires ─────────
+  for (const [key, l] of lessons) {
+    l.requires?.forEach((r, i) => {
+      if (r === key) report(l.file, `урок ${key}: requires[${i}] — сам урок`);
+      else if (!lessons.has(r)) report(l.file, `урок ${key}: requires[${i}]: нет урока «${r}»`);
+    });
+  }
+  {
+    const state = new Map<string, 1 | 2>();
+    const path: string[] = [];
+    const dfs = (key: string): boolean => {
+      state.set(key, 1);
+      path.push(key);
+      for (const r of lessons.get(key)?.requires ?? []) {
+        if (!lessons.has(r)) continue;
+        if (state.get(r) === 1) {
+          report(lessons.get(r)!.file, `граф уроков: цикл ${[...path.slice(path.indexOf(r)), r].join(" → ")}`);
+          return true;
+        }
+        if (!state.has(r) && dfs(r)) return true;
+      }
+      path.pop();
+      state.set(key, 2);
+      return false;
+    };
+    for (const key of lessons.keys()) if (!state.has(key) && dfs(key)) break;
+  }
+
   // ───────── MDX уроков: frontmatter и тело ─────────
   interface Mdx {
     file: string;
@@ -278,6 +306,7 @@ export function validateContent(root: string): ValidationResult {
     const bad = PROSE_MATH.exec(outside);
     if (bad) report(file, `${where}: «${bad[0]}» вне формулы — пишите математику в $…$`);
   };
+  for (const { file, data } of concepts.values()) checkProse(data.summary, file, `${data.id}.summary`, []);
   for (const { file, data } of [...rules.values(), ...formulas.values()]) {
     data.symbols.forEach((x, i) => checkProse(x.meaning, file, `symbols[${i}].meaning`, data.symbols));
     checkProse(data.pitfall, file, "pitfall", data.symbols);
@@ -394,8 +423,8 @@ export function validateContent(root: string): ValidationResult {
   };
 }
 
-/** Математика в тексте вне $…$: индекс, степень, команда TeX, греческая буква, надстрочные знаки, знаки операций. */
-const PROSE_MATH = /[_^]|\\[A-Za-z]+|[\u0370-\u03ff]|[\u1d40-\u1d7f\u2070-\u209f]|[∑∏∩∪∈∉⊂⊆≤≥≠⊤∣√∞∇]/u;
+/** Математика в тексте вне $…$: индекс, степень, «|» условной вероятности, команда TeX, греческая буква, надстрочные и подстрочные знаки, знаки операций. */
+const PROSE_MATH = /[_^|]|\\[A-Za-z]+|[\u0370-\u03ff]|[\u02b0-\u02ff\u1d40-\u1d7f\u2070-\u209f]|[∑∏∩∪∈∉⊂⊆≤≥≠⊤∣√∞∇‖]/u;
 
 /** Убирает вызовы \sym{name}{…} целиком (с вложенными скобками во втором аргументе). */
 export function stripSym(tex: string): string {
