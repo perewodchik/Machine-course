@@ -1,0 +1,12 @@
+budget: 25
+items:
+  - lesson: demo/basics/next
+    gen: basics.argmin
+    minutes: 2
+    requires: [demo/basics/intro]
+  - lesson: demo/basics/intro
+    gen: basics.nope
+    minutes: 2
+  - lesson: demo/basics/missing
+    gen: la.dot
+    minutes: 2

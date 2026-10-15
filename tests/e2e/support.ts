@@ -18,6 +18,8 @@ export const layoutPages = {
   iii3: "/foundations/probability/bayes/",
   puzzle: "/games/matrix-puzzle/",
   detective: "/games/bayes-detective/",
+  // этап 3: урок 0.2 с диагностикой
+  start2: "/foundations/start/how-the-course-works/",
 } as const;
 
 /** Ставит тему и поля в localStorage до загрузки страницы — как их оставил бы ученик. */

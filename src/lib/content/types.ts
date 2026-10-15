@@ -122,6 +122,25 @@ export interface GlossaryEntry {
   note?: Localized;
 }
 
+/** Задача входной диагностики: итоговое задание урока (генератор) и уроки, без которых его не решить. */
+export interface DiagnosticItem {
+  lesson: LessonKey;
+  /** ID генератора из src/lib/exercises/generators. */
+  gen: string;
+  seed?: number;
+  /** Оценка времени на задачу, минуты. */
+  minutes: number;
+  /** Уроки банка, на которые задача опирается: если одна из них решена неверно, задача пропускается. */
+  requires?: LessonKey[];
+}
+
+/** Входная диагностика курса (урок 0.2): content/diagnostic.yaml. Порядок задач — порядок вопросов. */
+export interface Diagnostic {
+  /** Сколько минут занимает диагностика самое большее. */
+  budget: number;
+  items: DiagnosticItem[];
+}
+
 /** Переименования: content/redirects.yaml, «старое → новое». Записи не удаляются. */
 export interface Redirects {
   concepts?: Record<string, ConceptId>;

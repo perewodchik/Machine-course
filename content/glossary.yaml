@@ -60,3 +60,7 @@
 - id: bayes-rule
   ru: 'формула Байеса'
   en: "Bayes' rule"
+- id: lecture-notes
+  ru: 'конспект лекций'
+  en: 'lecture notes'
+  note: 'Основной текст CS229; разделы на полях указаны по названиям, а не по номерам глав.'

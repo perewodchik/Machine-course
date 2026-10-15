@@ -1,6 +1,7 @@
 // Компоненты, которые сайт передаёт в MDX урока (<Content components={lessonComponents} />): в MDX импортов нет.
 import Block from "./Block.astro";
 import Derivation from "./Derivation.astro";
+import Diagnostic from "./Diagnostic.astro";
 import Exercise from "./Exercise.astro";
 import ExerciseSet from "./ExerciseSet.astro";
 import Formula from "./Formula.astro";
@@ -16,5 +17,5 @@ import PyCell from "../python/PyCell.astro";
 import PyCode from "../python/PyCode.astro";
 
 // виджеты — обёртки .astro с островами React
-export const lessonComponents = { Block, Derivation, Exercise, ExerciseSet, Formula, Note, Pilot, Prereqs, SymbolLegend, FitLine, GridMap, BayesGrid, PyCode, PyCell, OpenIn };
-export { BayesGrid, Block, Derivation, Exercise, ExerciseSet, FitLine, Formula, GridMap, Note, Pilot, OpenIn, Prereqs, PyCell, PyCode, SymbolLegend };
+export const lessonComponents = { Block, Derivation, Diagnostic, Exercise, ExerciseSet, Formula, Note, Pilot, Prereqs, SymbolLegend, FitLine, GridMap, BayesGrid, PyCode, PyCell, OpenIn };
+export { BayesGrid, Block, Derivation, Diagnostic, Exercise, ExerciseSet, FitLine, Formula, GridMap, Note, Pilot, OpenIn, Prereqs, PyCell, PyCode, SymbolLegend };

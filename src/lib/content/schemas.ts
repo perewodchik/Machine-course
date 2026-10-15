@@ -164,6 +164,22 @@ export const glossaryEntry = z.strictObject({
   note: localized.optional(),
 });
 
+/** content/diagnostic.yaml: банк входной диагностики (урок 0.2). */
+export const diagnostic = z.strictObject({
+  budget: z.number().positive().max(60),
+  items: z
+    .array(
+      z.strictObject({
+        lesson: lessonKey,
+        gen: z.string().regex(/^[a-z]+\.[a-z0-9-]+$/, "ID генератора: «раздел.имя», например «basics.argmin»"),
+        seed: z.number().int().positive().optional(),
+        minutes: z.number().positive().max(10),
+        requires: z.array(lessonKey).optional(),
+      }),
+    )
+    .min(1),
+});
+
 /** content/redirects.yaml: старый ID или ключ → новый. Записи не удаляются. */
 // Ключи словаря проверяются отдельно: у z.record сообщение о ключе безликое («Неверный ключ в record»)
 const renames = (id: z.ZodType<string>) =>

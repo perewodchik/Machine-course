@@ -4,6 +4,8 @@ import { rng } from "../math/rng";
 import { checkMatrix, checkNumeric, checkOrder, closeEnough, scrambled } from "./check";
 import { generator, generators } from "./generators";
 import { formatNumber, parseNumber } from "./parse";
+import { renderInline } from "../../markdown/core/inline";
+import type { ExerciseSpec } from "./types";
 
 describe("разбор ответа", () => {
   it.each([
@@ -88,6 +90,101 @@ describe("генераторы", () => {
       const shapes = generator("la.shapes").make(s);
       if (shapes.kind !== "choice") throw new Error("ожидался выбор");
       expect(shapes.options.filter((o) => o.correct)).toHaveLength(1);
+    }
+  });
+
+  // задачи диагностики (content/diagnostic.yaml): ответ пересчитывается по числам из условия
+  const num = (spec: ReturnType<typeof make>) => {
+    if (spec.kind !== "numeric") throw new Error(`ожидалась числовая задача: ${spec.prompt}`);
+    return spec;
+  };
+  const make = (id: string, s: number) => generator(id).make(s);
+  const coefOf = (c: string) => (c === "" ? 1 : c === "-" ? -1 : Number(c));
+  const signed = (sign: string | undefined, v: string | undefined) => (v === undefined ? 0 : sign === "-" ? -Number(v) : Number(v));
+
+  it("задачи модуля 0: ответы сходятся с условием", () => {
+    for (let s = 1; s <= 40; s++) {
+      const am = num(make("basics.argmin", s));
+      const [, sign, shift, b] = /f\(x\) = \(x(?: ([-+]) (\d+))?\)\^2 \+ (\d+)/.exec(am.prompt)!;
+      const a = sign === "-" ? Number(shift) : sign === "+" ? -Number(shift) : 0;
+      expect(am.answer).toBe(a);
+      expect(Number(b)).not.toBe(a);
+
+      const ind = num(make("basics.indicator-sum", s));
+      const xs = /x = \(([^)]*)\)/.exec(ind.prompt)![1]!.split(", ").map(Number);
+      const t = Number(/x_i > (-?\d+)/.exec(ind.prompt)![1]);
+      expect(xs).toContain(t);
+      expect(ind.answer).toBe(xs.filter((x) => x > t).reduce((acc, x) => acc + x, 0));
+
+      const sg = num(make("basics.sigmoid", s));
+      const p = Number(/\\sigma\(z\) = (0\.\d+)/.exec(sg.prompt)![1]);
+      expect(sg.answer).toBeCloseTo(1 - p, 10);
+
+      const ch = num(make("basics.chain-rule", s));
+      const [, ca, bs, bv, k] = /\((-?\d*)x(?: ([-+]) (\d+))?\)\^(\d)/.exec(ch.prompt)!;
+      const x0 = Number(/f'\((-?\d+)\)/.exec(ch.prompt)![1]);
+      const [aa, bb, kk] = [coefOf(ca!), signed(bs, bv), Number(k)];
+      expect(ch.answer).toBe(kk * aa * (aa * x0 + bb) ** (kk - 1));
+
+      const ig = num(make("basics.integral", s));
+      const [, c, m, qs, qv] = /\\int_0\^\{(\d+)\} \((\d*)x(?: ([-+]) (\d+))?\)/.exec(ig.prompt)!;
+      const [cc, mm, qq] = [Number(c), coefOf(m!), signed(qs, qv)];
+      expect(ig.answer).toBeCloseTo((mm * cc * cc) / 2 + qq * cc, 10);
+
+      const np = make("basics.numpy-shapes", s);
+      if (np.kind !== "choice") throw new Error("ожидался выбор");
+      const [, n, d] = /np\.ones\(\((\d+), (\d+)\)\)/.exec(np.prompt)!.map(Number);
+      const code = /форма у \$\\texttt\{([^}]*)\}/.exec(np.prompt)![1];
+      const expected = { "X @ theta": `(${n},)`, "X.mean(axis=0)": `(${d},)`, "X.T @ X": `(${d}, ${d})` }[code!];
+      const right = np.options.filter((o) => o.correct);
+      expect(right).toHaveLength(1);
+      expect(right[0]!.text).toContain(expected!);
+
+      const nt = make("basics.notation", s);
+      if (nt.kind !== "choice") throw new Error("ожидался выбор");
+      const [, i, j] = /x\^\{\((\d+)\)\}_(\d+)/.exec(nt.prompt)!;
+      expect(nt.options.filter((o) => o.correct).map((o) => o.text)).toEqual([`${j}-й признак ${i}-го объекта`]);
+    }
+  });
+
+  it("задачи модулей I и III для диагностики: ответы сходятся с условием", () => {
+    for (let s = 1; s <= 40; s++) {
+      const lc = make("la.lincomb", s);
+      if (lc.kind !== "matrix") throw new Error("ожидалась матрица");
+      const vecs = [...lc.prompt.matchAll(/pmatrix\}(-?\d+) \\\\ (-?\d+)\\end/g)].map((mm) => [Number(mm[1]), Number(mm[2])]);
+      const [, ac, bsign, bc] = /Вычислите \$(-?\d*)u ([-+]) (\d*)v\$/.exec(lc.prompt)!;
+      const [a, b] = [coefOf(ac!), (bsign === "-" ? -1 : 1) * (bc === "" ? 1 : Number(bc))];
+      const [u, v] = vecs as [number[], number[]];
+      expect(lc.answer).toEqual([[a * u[0]! + b * v[0]!], [a * u[1]! + b * v[1]!]]);
+
+      const dt = num(make("la.dot", s));
+      const [uu, vv] = [...dt.prompt.matchAll(/= \(([^)]*)\)/g)].map((mm) => mm[1]!.split(", ").map(Number)) as [number[], number[]];
+      expect(dt.answer).toBe(uu.reduce((acc, x, k) => acc + x * vv[k]!, 0));
+
+      const un = num(make("prob.union", s));
+      const [pa, pb, pab] = [...un.prompt.matchAll(/= (0\.\d+)/g)].map((mm) => Number(mm[1]));
+      expect(un.answer).toBeCloseTo(pa! + pb! - pab!, 10);
+      expect(pab!).toBeLessThan(Math.min(pa!, pb!));
+
+      const ct = num(make("prob.conditional-table", s));
+      const [, n11, n12] = /\\text\{ходил\} & (\d+) & (\d+)/.exec(ct.prompt)!.map(Number);
+      expect(ct.answer).toBeCloseTo(n11! / (n11! + n12!), 3);
+    }
+  });
+
+  it("все тексты задач разбираются KaTeX", () => {
+    const texts = (sp: ExerciseSpec) => [
+      sp.prompt,
+      ...(sp.hints ?? []),
+      sp.right ?? "",
+      sp.wrong ?? "",
+      ...("label" in sp ? [sp.label] : []),
+      ...("options" in sp ? sp.options.flatMap((o) => [o.text, o.why]) : []),
+      ...("reveal" in sp ? [sp.reveal] : []),
+      ...("steps" in sp ? sp.steps : []),
+    ];
+    for (const g of generators.values()) {
+      for (let s = 1; s <= 12; s++) for (const t of texts(g.make(s))) expect(() => renderInline(t), `${g.id}, seed ${s}: ${t}`).not.toThrow();
     }
   });
 

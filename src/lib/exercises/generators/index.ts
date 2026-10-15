@@ -1,9 +1,16 @@
 // Реестр генераторов: <Exercise gen="la.det2" /> находит генератор по ID.
 import type { Generator } from "../types";
-import { composeOrder, det2, fromImages, matmul2, shapes, slope3 } from "./la";
-import { bayesTest, totalProbability } from "./prob";
+import { argmin, chainRule, indicatorSum, integralLinear, notation, numpyShapes, sigmoidSymmetry } from "./basics";
+import { composeOrder, det2, dot, fromImages, lincomb, matmul2, shapes, slope3 } from "./la";
+import { bayesTest, conditionalTable, totalProbability, union } from "./prob";
 
-export const generators: ReadonlyMap<string, Generator> = new Map([det2, matmul2, slope3, shapes, fromImages, composeOrder, totalProbability, bayesTest].map((g) => [g.id, g]));
+export const generators: ReadonlyMap<string, Generator> = new Map(
+  [
+    ...[argmin, indicatorSum, sigmoidSymmetry, chainRule, integralLinear, numpyShapes, notation],
+    ...[det2, matmul2, slope3, shapes, fromImages, composeOrder, lincomb, dot],
+    ...[totalProbability, bayesTest, union, conditionalTable],
+  ].map((g) => [g.id, g]),
+);
 
 export function generator(id: string): Generator {
   const g = generators.get(id);

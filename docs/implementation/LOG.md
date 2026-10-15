@@ -17,6 +17,13 @@
 
 ---
 
+### 2026-10-15 — S3.01 Входная диагностика и урок 0.2 — готова
+- **Сделано:** Диагностика по банку content/diagnostic.yaml в уроке 0.2 (написан целиком: L-0.2). Пропуск задач — только по прямым requires неверной задачи, без цепочки: иначе одна ошибка в 0.4 обрывала бы диагностику. Генераторы модуля 0 — basics.* (будущие итоговые проверки уроков 0.3–0.9). exercise:result теперь несёт attempt и hints. Проценты в генераторах вероятности — с неразрывным пробелом.
+- **Файлы:** content/diagnostic.yaml, content/courses/foundations/start/how-the-course-works.mdx, src/components/pedagogy/Diagnostic.astro, src/client/diagnostic.ts, src/lib/diagnostic/plan.ts, src/lib/exercises/generators/basics.ts, tests/e2e/diagnostic.spec.ts
+- **Проверка:** vitest 276; e2e: diagnostic, layout, know, hosting, pilot, iii3 — 131; lint, check, validate, check_consistency — чисто
+- **Следующий шаг:** S3.02 — карта курса и навигация по графу.
+- **Вопросы пользователю:** —
+
 ### 2026-10-15 — S2.12 Итог этапа 2 — готова
 - **Сделано:** Срез готов: уроки V.1, I.4, III.3 с выводами, виджетами, Python и итоговыми проверками; игры «Матрица-пазл» и «Байес-детектив»; лабораторная с Colab; режим пилота с опросом и отчётом; ревью S2.11 закрыто. Пользователю отправлены скриншоты, задан вопрос о pull request этапа 2.
 - **Файлы:** docs/implementation/PLAN.md (S2.14)

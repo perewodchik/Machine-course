@@ -16,6 +16,9 @@ export interface ExerciseResultDetail {
   item: string;
   lesson: string;
   correct: boolean;
+  /** Номер попытки с единицы и сколько подсказок открыто: диагностика засчитывает только первую без подсказок. */
+  attempt: number;
+  hints: number;
 }
 
 function init(root: HTMLElement): void {
@@ -58,7 +61,7 @@ function init(root: HTMLElement): void {
       generatorVersion: version ? Number(version) : undefined,
       at: new Date().toISOString(),
     });
-    root.dispatchEvent(new CustomEvent<ExerciseResultDetail>("exercise:result", { bubbles: true, detail: { uid, item, lesson, correct } }));
+    root.dispatchEvent(new CustomEvent<ExerciseResultDetail>("exercise:result", { bubbles: true, detail: { uid, item, lesson, correct, attempt, hints } }));
     if (correct && root.hasAttribute("data-final")) {
       // после того как отзыв уже показан: слушатель (прогресс) может дописать в него «Урок отмечен»
       queueMicrotask(() => root.dispatchEvent(new CustomEvent("exercise:final-correct", { bubbles: true, detail: { lesson } })));

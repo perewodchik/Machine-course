@@ -3,6 +3,8 @@ import { rng } from "../../math/rng";
 import type { Generator } from "../types";
 
 const pm = (rows: number[][]) => String.raw`\begin{pmatrix}${rows.map((r) => r.join(" & ")).join(String.raw` \\ `)}\end{pmatrix}`;
+/** Отрицательное число в произведении — в скобках: «2 · (−3)». */
+const par = (x: number) => (x < 0 ? `(${x})` : String(x));
 /** Матрица в строке текста — только smallmatrix (docs/conventions/authoring.md, «Типографика»). */
 const sm = (rows: number[][]) => String.raw`\left(\begin{smallmatrix}${rows.map((r) => r.join(" & ")).join(String.raw` \\ `)}\end{smallmatrix}\right)`;
 
@@ -164,6 +166,53 @@ export const composeOrder: Generator = {
         { text: String.raw`$${P.tex} + ${Q.tex}$`, why: "Сумма матриц — не композиция: она складывает образы, а не применяет отображения по очереди." },
       ]),
       hints: [String.raw`$(AB)x = A(Bx)$: первым действует правый множитель.`],
+    };
+  },
+};
+
+export const lincomb: Generator = {
+  id: "la.lincomb",
+  version: 1,
+  title: "Линейная комбинация векторов",
+  make(seed) {
+    const r = rng(seed);
+    const u = [r.nonzero(-3, 3), r.int(-3, 3)];
+    const v = [r.int(-3, 3), r.nonzero(-3, 3)];
+    const a = r.pick([2, 3, -1, -2]);
+    const b = r.pick([2, -1, -2, -3]);
+    const w = [a * u[0]! + b * v[0]!, a * u[1]! + b * v[1]!];
+    const comb = String.raw`${a === -1 ? "-" : a}u ${b < 0 ? "-" : "+"} ${Math.abs(b) === 1 ? "" : Math.abs(b)}v`;
+    return {
+      kind: "matrix",
+      prompt: String.raw`$u = ${pm([[u[0]!], [u[1]!]])}$, $v = ${pm([[v[0]!], [v[1]!]])}$. Вычислите $${comb}$.`,
+      label: String.raw`$${comb} =$`,
+      answer: [[w[0]!], [w[1]!]],
+      tol: 0,
+      hints: [String.raw`Линейная комбинация считается покоординатно: первая координата — $${par(a)} \cdot ${par(u[0]!)} + ${par(b)} \cdot ${par(v[0]!)}$.`],
+      right: String.raw`$${comb} = (${w[0]}, ${w[1]})$.`,
+      wrong: "Отмеченные координаты неверны. Умножьте каждый вектор на свой коэффициент и сложите координаты с одинаковыми номерами.",
+    };
+  },
+};
+
+export const dot: Generator = {
+  id: "la.dot",
+  version: 1,
+  title: "Скалярное произведение",
+  make(seed) {
+    const r = rng(seed);
+    const u = [r.int(-3, 4), r.int(-3, 4), r.nonzero(-3, 4)];
+    const v = [r.nonzero(-3, 4), r.int(-3, 4), r.int(-3, 4)];
+    const answer = u.reduce((s, x, i) => s + x * v[i]!, 0);
+    return {
+      kind: "numeric",
+      prompt: String.raw`$u = (${u.join(", ")})$, $v = (${v.join(", ")})$. Вычислите $u^\top v$.`,
+      label: String.raw`$u^\top v =$`,
+      answer,
+      tol: 0,
+      hints: [String.raw`$u^\top v = \sum_{j} u_j v_j$ — сумма произведений координат с одинаковыми номерами.`],
+      right: String.raw`$u^\top v = ${u.map((x, i) => `${x < 0 ? `(${x})` : x} \\cdot ${v[i]! < 0 ? `(${v[i]})` : v[i]}`).join(" + ")} = ${answer}$.`,
+      wrong: "Скалярное произведение — число: произведения координат складываются. Проверьте знаки у отрицательных координат.",
     };
   },
 };

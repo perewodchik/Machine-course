@@ -15,7 +15,8 @@ import { MACROS, TRUSTED_COMMANDS } from "../../markdown/core/katex";
 import { ContentError, parseYaml, validate, validateList } from "./files";
 import { loadSnippet } from "./snippets";
 import * as s from "./schemas";
-import type { Concept, Course, Formula, LessonFrontmatter, LessonRef, Localized, Module, Redirects, Rule, SymbolSpec } from "./types";
+import type { Concept, Course, Diagnostic, Formula, LessonFrontmatter, LessonRef, Localized, Module, Redirects, Rule, SymbolSpec } from "./types";
+import { generators } from "../exercises/generators";
 
 interface Entry<T> {
   file: string;
@@ -366,6 +367,25 @@ export function validateContent(root: string): ValidationResult {
   if (existsSync(gfile)) {
     const raw = readYamlFile(gfile);
     if (raw !== undefined) guard(() => validateList(s.glossaryEntry, raw, rel(gfile)));
+  }
+
+  // ───────── входная диагностика ─────────
+  const dfile = join(root, "content/diagnostic.yaml");
+  if (existsSync(dfile)) {
+    const raw = readYamlFile(dfile);
+    const diag = raw === undefined ? undefined : guard(() => validate(s.diagnostic, raw, rel(dfile)) as Diagnostic);
+    const f = rel(dfile);
+    const seen = new Set<string>();
+    diag?.items.forEach((it, i) => {
+      if (!lessons.has(it.lesson)) report(f, `items[${i}].lesson: нет урока «${it.lesson}»`);
+      if (!generators.has(it.gen)) report(f, `items[${i}].gen: нет генератора задач «${it.gen}» (src/lib/exercises/generators)`);
+      if (seen.has(it.lesson)) report(f, `items[${i}].lesson: урок «${it.lesson}» уже есть в банке`);
+      it.requires?.forEach((r, j) => {
+        // задача спрашивается после тех, на которые опирается: иначе пропуск по неверному ответу не сработает
+        if (!seen.has(r)) report(f, `items[${i}].requires[${j}]: «${r}» — не урок из задач выше по списку`);
+      });
+      seen.add(it.lesson);
+    });
   }
 
   return {

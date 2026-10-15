@@ -49,6 +49,14 @@ describe("каждая проверка ловит свою фикстуру", (
     ["sym-bare", [/next\.mdx: строка \d+: символ «X» \(роль data\) написан без \\sym/]],
     ["role-conflict", [/символ «theta»: роль (target|param), а в .* — (param|target)/]],
     ["note-label", [/next\.mdx: строка 11: заметка <Note> без подписи label/]],
+    [
+      "diagnostic-refs",
+      [
+        "diagnostic.yaml: items[0].requires[0]: «demo/basics/intro» — не урок из задач выше по списку",
+        "diagnostic.yaml: items[1].gen: нет генератора задач «basics.nope»",
+        "diagnostic.yaml: items[2].lesson: нет урока «demo/basics/missing»",
+      ],
+    ],
     ["prose-math", ["dot-symmetric.yaml: corollary: «ᵀ» вне формулы", "dot-symmetric.yaml: pitfall: «_» вне формулы"]],
     ["lesson-duplicate", ["lessons[1].number: номер «1.1» уже занят", "lessons[2].slug: урок «intro» повторяется в модуле"]],
     ["course-requires", ["requires: нет курса «no-such-course»"]],
