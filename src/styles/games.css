@@ -1,0 +1,79 @@
+/*
+ * Мини-игры (S2.07): оболочка GameShell и «Матрица-пазл». Перенесено из прототипа (prototype/assets/proto-extra.css,
+ * раздел «Игра»). Только токены. Синяя ручка — то, что делает ученик; цвета столбцов — те же, что у стрелок Ae₁, Ae₂.
+ */
+@layer components {
+  .game.shell { max-width: 1180px; }
+  .game__lead { max-width: 44rem; }
+  .game__layout { display: grid; grid-template-columns: minmax(0, 560px) minmax(0, 1fr); gap: var(--space-7); align-items: start; margin-top: var(--space-4); }
+
+  /* поле */
+  .game__figure { margin: 0; border: 1px solid var(--rule); border-radius: var(--radius-panel); background: var(--surface); overflow: hidden; }
+  .game__legend { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-4); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule); font-family: var(--font-ui); font-size: 14px; color: var(--ink-2); }
+  .game__legend .key { display: inline-flex; align-items: center; gap: 6px; }
+  .game__swatch { width: 18px; height: 0; border-top: 2px solid; }
+  .game__swatch--target { border-top-style: dashed; color: var(--ink-3); }
+  .game__swatch--pen { color: var(--pen); }
+  .game__swatch--s1 { color: var(--sym-1); }
+  .game__swatch--s2 { color: var(--sym-2); }
+
+  /* панель */
+  .game__top { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-4); margin-top: var(--space-5); }
+  .game__top .game__levels { margin: 0; }
+  .game__level { margin: 0; font-family: var(--font-ui); font-size: var(--text-sm); color: var(--ink-2); }
+  .game__level:focus-visible { outline: 2px solid var(--pen); outline-offset: 4px; border-radius: 2px; }
+  .game__levels { display: flex; flex-wrap: wrap; gap: 6px; padding: 0; list-style: none; }
+  .game__level-btn { width: 32px; height: 32px; display: grid; place-items: center; border: 1px solid var(--rule); border-radius: var(--radius-control); background: var(--surface); font: 500 13px var(--font-ui); font-variant-numeric: tabular-nums; color: var(--ink-2); cursor: pointer; }
+  .game__level-btn:hover { border-color: var(--control-border); color: var(--ink); }
+  .game__level-btn.is-done { background: var(--paper-2); color: var(--green-pen); }
+  .game__level-btn[aria-current="step"] { border-color: var(--pen); color: var(--pen); box-shadow: inset 0 0 0 1px var(--pen); }
+  .game__level-btn:focus-visible { outline: 2px solid var(--pen); outline-offset: 2px; }
+
+  /* матрица из счётчиков: скобки — линейки цвета чернил */
+  .game-matrix { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-4); margin: 0 0 var(--space-4); font-family: var(--font-ui); }
+  .game-matrix__name { font: italic 22px var(--font-text); white-space: nowrap; }
+  .game-matrix__name i { font-style: italic; }
+  .game-matrix__grid { position: relative; display: inline-grid; grid-template-columns: repeat(2, auto); gap: 8px 10px; padding: 8px 14px; }
+  .game-matrix__grid::before, .game-matrix__grid::after { content: ""; position: absolute; top: 0; bottom: 0; width: 7px; border: 2px solid var(--ink); }
+  .game-matrix__grid::before { left: 0; border-right: 0; }
+  .game-matrix__grid::after { right: 0; border-left: 0; }
+  .game-matrix__facts { display: grid; gap: 4px; font-size: 14px; color: var(--ink-2); }
+  .game-matrix__facts b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; }
+  .game-matrix__facts i { font-family: var(--font-text); }
+
+  .stepper { display: inline-flex; align-items: center; height: 36px; border: 1px solid var(--control-border); border-radius: var(--radius-control); background: var(--surface); overflow: hidden; }
+  .stepper button { width: 30px; height: 100%; border: 0; background: transparent; color: var(--ink-2); font: 500 16px var(--font-ui); cursor: pointer; }
+  .stepper button:hover:not(:disabled) { background: var(--paper-2); color: var(--ink); }
+  .stepper button:disabled { color: var(--ink-3); cursor: default; }
+  .stepper button:focus-visible { outline: 2px solid var(--pen); outline-offset: -2px; }
+  .stepper output { min-width: 2.8em; text-align: center; font: 500 15px var(--font-ui); font-variant-numeric: tabular-nums; color: var(--ink); }
+  .stepper--col1 { box-shadow: inset 3px 0 0 var(--sym-1); }
+  .stepper--col2 { box-shadow: inset 3px 0 0 var(--sym-2); }
+
+  .game__status { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); padding: var(--space-3) 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); font-family: var(--font-ui); font-size: 14px; color: var(--ink-2); }
+  .game__status b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .game__feedback { margin: var(--space-3) 0 0; font-family: var(--font-ui); font-size: var(--text-sm); line-height: 1.5; color: var(--ink-2); }
+  .game__feedback.is-solved { color: var(--green-pen); }
+  .game__hint { margin: var(--space-2) 0 0; font-family: var(--font-ui); font-size: var(--text-sm); line-height: 1.5; color: var(--ink-2); }
+  .game__hint:empty { display: none; }
+  .game__hint b { color: var(--ink); font-weight: 600; }
+  .game__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: var(--space-4) 0; }
+  .game__debrief .game__answer { margin-bottom: 0; }
+  .game__keys { margin: var(--space-4) 0; font-family: var(--font-ui); font-size: 14px; color: var(--ink-2); }
+  .game__keys summary { cursor: pointer; color: var(--pen); }
+  .game__keys dl { margin: var(--space-2) 0 0; display: grid; gap: 4px; }
+  .game__keys dl > div { display: grid; grid-template-columns: 11rem minmax(0, 1fr); gap: var(--space-3); }
+  .game__keys dt { color: var(--ink); font-weight: 500; }
+  .game__keys dd { margin: 0; }
+  .game__teaches { font-size: 15px; color: var(--ink-2); }
+
+  @media (max-width: 900px) {
+    .game__layout { grid-template-columns: minmax(0, 1fr); gap: var(--space-5); }
+    .game__keys dl > div { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  }
+  @media (pointer: coarse) {
+    .game__level-btn { width: var(--target-touch); height: var(--target-touch); }
+    .stepper { height: var(--target-touch); }
+    .stepper button { width: 40px; }
+  }
+}

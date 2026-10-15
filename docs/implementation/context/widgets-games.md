@@ -16,6 +16,12 @@
 - **Тесты:** Vitest для моделей; fast-check — детерминизм и решаемость уровней; Playwright с `?seed=` — уровень проходится с клавиатуры, axe без ошибок.
 - **Эталоны:** рисунок регрессии — `prototype/assets/proto.js` (`initRegression`); игра — `prototype/assets/game.js`.
 
+## Где в коде (игры, S2.07)
+
+- Контракт — `src/games/_engine/types.ts` (`GameSpec`, `GameResult`; `Rng` — общий ГПСЧ `src/lib/math/rng.ts`). Оболочка — `src/games/_engine/GameShell.tsx`: игра передаёт `spec` и `view` (`board`, `controls`, `feedback`, `optimal`, `debrief`, `keys`). Уровень k строится из `rng(seed · 1000 + k)`, партия по ссылке — `?seed=&level=`. Строка уровня над полем (на телефоне матрица сразу под рисунком), описание для скринридера — `describe` с задержкой 400 мс, после решения фокус на «Следующий уровень», результат — `GameEvent` в журнале.
+- Эталон игры — `src/games/matrix-puzzle/` (`model.ts`, `model.test.ts` с fast-check, `MatrixPuzzle.tsx`, `README.md`), страница `src/pages/games/matrix-puzzle.astro`, стили `src/styles/games.css`, e2e `tests/e2e/matrix-puzzle.spec.ts`.
+- `_kit/Polygon` — фигура: `tone="aux"` (цель пунктиром) или `tone="pen"` (то, что строит ученик).
+
 ## Источники (только если нужно)
 
 - `docs/program/interactives.md` — какие виджеты, игры и лабораторные у каждого урока; читать только раздел своего модуля.

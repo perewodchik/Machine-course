@@ -57,6 +57,7 @@
     "eslint-plugin-astro": "3.2.1",
     "eslint-plugin-better-tailwindcss": "4.9.1",
     "eslint-plugin-boundaries": "7.2.0",
+    "fast-check": "4.10.2",
     "globals": "17.13.0",
     "pyodide": "314.0.7",
     "rehype-stringify": "10.0.1",

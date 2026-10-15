@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-15 — S2.07 S2.07 — игра «Матрица-пазл» — готова
+- **Сделано:** Игра по контракту с чистой моделью и оболочкой GameShell; уровень проходится только с клавиатуры, axe чисто. Попутно: `_kit/Polygon`, `GameEvent` в журнале, общий `Rng` в контракте игр; S1.14 отмечена — этап 1 слит в main (PR #1).
+- **Файлы:** src/games/_engine/GameShell.tsx, src/games/matrix-puzzle/*, src/pages/games/matrix-puzzle.astro, src/styles/games.css, src/widgets/_kit/Polygon.tsx, tests/e2e/matrix-puzzle.spec.ts
+- **Проверка:** lint, astro check, vitest 235 (11 игры, fast-check), validate, build, e2e 146 passed (axe чисто); design-critique и accessibility-review по скриншотам — правки внесены
+- **Отклонения от плана и решения:** Паузы в GameShell нет: ни одна игра пока не использует время (tick). В прототипе уровень «сжатие в линию» был недостижим шагом 1 — здесь шаг 0.5. Строка уровня поднята над полем по итогам ревью (мобильный).
+- **Следующий шаг:** S2.08 — уроки I.4 и III.3.
+- **Вопросы пользователю:** —
+
 ### 2026-10-15 — S2.06 S2.06 — урок V.1 — готова
 - **Сделано:** Первый урок в MDX: 4 цикла с проверками, 3 формулы из реестра с выводами, ячейка Python (θ закреплено тестом), итоговая проверка ставит «знаю». Маршрут урока: `lead` и заметка CS229 из frontmatter, тексты через `lessonText` (без 113 предупреждений), таблицы в прокручиваемой обёртке, маркеры списков.
 - **Файлы:** content/courses/foundations/bridge/linear-regression.mdx, content/formulas/{la/residual-orthogonality,stat/linreg-likelihood}.yaml, content/concepts/{prob,stat}.yaml, src/pages/[course]/[module]/[lesson].astro, src/lib/content/cs229.ts, tests/e2e/lesson-v1.spec.ts

@@ -42,6 +42,10 @@
   .kit-vector.r2 polygon { fill: var(--sym-2); }
   .kit-vector.r3 polygon { fill: var(--sym-3); }
   .kit-vector.r4 polygon { fill: var(--ink-3); }
+  /* многоугольник: цель — пунктир карандашом, фигура ученика — синяя ручка с лёгкой заливкой */
+  .kit-polygon { stroke-width: 2; stroke-linejoin: round; }
+  .kit-polygon--aux { fill: none; stroke: var(--ink-3); stroke-dasharray: 6 5; }
+  .kit-polygon--pen { fill: var(--pen-wash); stroke: var(--pen); }
 
   /* Ползунок: бегунок цвета величины, которую он двигает */
   .kit-slider { --thumb: var(--pen); display: grid; grid-template-columns: 2.4em minmax(0, 1fr) 3.4em; align-items: center; gap: 10px; font-family: var(--font-ui); font-size: var(--text-sm); }

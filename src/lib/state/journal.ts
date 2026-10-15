@@ -1,9 +1,12 @@
-// Журнал событий обучения (без сервера): попытки упражнений. Хранится в localStorage, последние 2000 записей.
+// Журнал событий обучения (без сервера): попытки упражнений и уровни игр. Хранится в localStorage, последние 2000 записей.
 // Из него — отчёт ученика файлом и график калибровки уверенности (S4.01); смены галочки «знаю» — тоже здесь.
 import { atom } from "nanostores";
+import type { GameResult } from "../../games/_engine/types";
 import type { AttemptEvent, MarkEvent } from "../exercises/types";
 
-export type JournalEvent = AttemptEvent | MarkEvent;
+/** Результат уровня игры: практика, на галочку «знаю» не влияет. */
+export type GameEvent = { type: "game" } & GameResult;
+export type JournalEvent = AttemptEvent | MarkEvent | GameEvent;
 
 const KEY = "mlf:journal:v1";
 const LIMIT = 2000;
