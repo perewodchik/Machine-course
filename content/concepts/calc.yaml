@@ -74,3 +74,12 @@
   prerequisites: [calc.derivative, nota.sets]
   core: true
 
+- id: calc.integral
+  title:
+    ru: 'Интеграл'
+    en: 'integral'
+  summary: '$\int_a^b f(x)\, dx$ — площадь под графиком, предел сумм прямоугольников; $\int_a^b f(x)\, dx = F(b) - F(a)$, где $F'' = f$.'
+  lesson: integral
+  prerequisites: [calc.derivative, nota.sums]
+  core: true
+

@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-15 — L-0.7 Интеграл — готов
+- **Сделано:** Урок 0.7: три цикла (площадь как сумма; первообразная и замена переменной; несобственный интеграл). Виджет «Сумма прямоугольников → площадь» (src/widgets/calc/riemann: x², e⁻ˣ, e^(−x²/2); левые, средние, правые точки; n до 64), рисунки 1–2. Формула f.exponential-normalization с выводом, правило rule.gaussian-integral (без вывода, вывод — II.10), понятие calc.integral. Ячейка Монте-Карло start/monte_carlo.py, вывод закреплён в code/tests/test_monte_carlo.py.
+- **Файлы:** content/courses/foundations/start/integral.mdx, src/widgets/calc/riemann/*, src/components/widgets/Riemann.astro, content/formulas/calc/exponential-normalization.yaml, content/formulas/rules/gaussian-integral.yaml, code/snippets/start/monte_carlo.py
+- **Проверка:** vitest, pytest, e2e урока 0.7 — 2; lint, check, validate, check_consistency — чисто; скриншоты 1440/390
+- **Отклонения от плана и решения:** Интегралы в проверках формул — суммы по средним точкам на широком отрезке (без np.trapezoid: его нет в NumPy 1.x). У правила гауссова интеграла символов нет — проверка работает и с пустым списком. Ошибка меньше 10⁻⁴ в виджете пишется словами, иначе показание «0.0000» выглядело бы точным ответом.
+- **Следующий шаг:** L-0.8 — минимум NumPy и лабораторная «NumPy за час».
+- **Вопросы пользователю:** —
+
 ### 2026-10-15 — L-0.6 Производная и правило цепочки — готов
 - **Сделано:** Урок 0.6: три цикла (производная; правило цепочки; численная проверка). Формула f.log-sigmoid-derivative (d/dz log g = 1 − g, четыре шага с проверкой градиента), понятия calc.derivative и calc.chain-rule, генератор basics.derivative (многочлен или произведение скобок в точке). Ячейка Python start/numdiff.py: прямая и центральная разности для x³ при h от 0.1 до 10⁻¹²; вывод закреплён в code/tests/test_numdiff.py.
 - **Файлы:** content/courses/foundations/start/derivative-refresher.mdx, content/formulas/calc/log-sigmoid-derivative.yaml, code/snippets/start/numdiff.py, code/tests/test_numdiff.py, src/lib/exercises/generators/basics.ts

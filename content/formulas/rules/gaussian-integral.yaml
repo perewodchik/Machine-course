@@ -1,0 +1,22 @@
+id: rule.gaussian-integral
+kind: rule
+title:
+  ru: 'Гауссов интеграл'
+  en: 'Gaussian integral'
+statement: '\int_{-\infty}^{\infty} e^{-x^2/2}\, dx = \sqrt{2\pi}'
+# Проверка — сумма по средним точкам на [−12, 12]: за её пределами e^{−x²/2} < 10⁻³¹. Вывод — урок II.10.
+symbols: []
+concept: calc.integral
+corollary: 'Поэтому плотность стандартного нормального распределения — $\frac{1}{\sqrt{2\pi}} e^{-x^2/2}$: делитель $\sqrt{2\pi}$ делает интеграл равным единице.'
+pitfall: 'Путать $\sqrt{2\pi}$ и $\sqrt{\pi}$: $\int e^{-x^2}\, dx = \sqrt{\pi}$, а с половиной в показателе — $\sqrt{2\pi}$.'
+checks:
+  - kind: identity
+    lhs: 'np.sum(np.exp(-((np.arange(240000) + 0.5) * 1e-4 - 12) ** 2 / 2)) * 1e-4'
+    rhs: 'np.sqrt(2 * np.pi)'
+mutations:
+  - tex: '\sqrt{\pi}'
+    py: 'np.sqrt(np.pi)'
+    why: 'Это интеграл $e^{-x^2}$, без половины в показателе. С половиной кривая шире в $\sqrt{2}$ раз — и площадь тоже.'
+  - tex: '1'
+    py: '1.0'
+    why: 'Единице равен интеграл плотности $\frac{1}{\sqrt{2\pi}} e^{-x^2/2}$, а не самой экспоненты.'

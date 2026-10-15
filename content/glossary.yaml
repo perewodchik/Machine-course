@@ -115,3 +115,16 @@
 - id: log-sum-exp
   ru: 'логарифм суммы экспонент'
   en: 'log-sum-exp'
+- id: integral
+  ru: 'определённый интеграл, первообразная'
+  en: 'definite integral, antiderivative'
+- id: improper-integral
+  ru: 'несобственный интеграл'
+  en: 'improper integral'
+- id: substitution
+  ru: 'замена переменной'
+  en: 'substitution, change of variables'
+- id: monte-carlo
+  ru: 'метод Монте-Карло'
+  en: 'Monte Carlo method'
+  note: 'Оценка интеграла средним значением функции в случайных точках; ошибка убывает как $1/\sqrt{n}$.'
