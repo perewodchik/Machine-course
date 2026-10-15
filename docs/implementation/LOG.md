@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-15 — S2.13 S2.13 — игра «Байес-детектив» — готова
+- **Сделано:** Вторая игра среза; GameShell обобщён: счёт — `view.stats`, действия в журнал — `view.actions`. На телефоне текущая улика повторяется над бегунком.
+- **Файлы:** src/games/bayes-detective/*, src/pages/games/bayes-detective.astro, src/games/_engine/GameShell.tsx, src/styles/games.css, tests/e2e/bayes-detective.spec.ts
+- **Проверка:** lint, astro check, vitest 257, validate, build, e2e 164 passed (axe чисто); скриншоты 1440/390 — правки по ревью внесены
+- **Отклонения от плана и решения:** Нет.
+- **Следующий шаг:** S2.09 — лабораторные в CI и кнопки открытия.
+- **Вопросы пользователю:** —
+
 ### 2026-10-15 — S2.08 S2.08 — уроки I.4 и III.3 — готова
 - **Сделано:** Два урока с виджетами, формулами в реестре и параметрическими задачами; итоговые проверки ставят «знаю». Попутно: типограф видит абзац целиком (кавычки вокруг формул), матрицы в условиях генераторов — smallmatrix в строке, sample: simplex для проверки вероятностных формул.
 - **Файлы:** content/courses/foundations/{linear-algebra/matrix-as-map,probability/bayes}.mdx, src/widgets/{la/grid-map,prob/bayes-grid}/*, content/formulas/{rules/matvec-columns,rules/matmul-composition,prob/bayes}.yaml, src/lib/exercises/generators/{la,prob}.ts, code/snippets/prob/bayes.py, tests/e2e/lesson-{i4,iii3}.spec.ts

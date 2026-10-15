@@ -14,10 +14,11 @@ export interface ShellView<State, Action, Params> {
   levelName(params: Params): string;
   /** Видимая обратная связь: что получилось и что дальше. */
   feedback(state: State): string;
-  moves(state: State): number;
+  /** Строка счёта под управлением: «Ходы: 3», «Минимум на уровне: 2» или «Очки: 87 из 100». */
+  stats(state: State): readonly (readonly [string, string | number])[];
+  /** Число действий игрока — в журнал (GameResult.actions). */
+  actions(state: State): number;
   hints(state: State): number;
-  /** Наименьшее число ходов на уровне. */
-  optimal(state: State): number;
   debrief?(params: Params): { question: string; answer: string };
   /** Поле игры (рисунок). */
   board(state: State): ReactNode;
@@ -79,7 +80,7 @@ export function GameShell<State, Action, Params>({ spec, view, levels, seed: ini
   }, [spec, state]);
 
   const log = (isSolved: boolean) =>
-    logEvent({ type: "game", gameId: spec.id, version: spec.version, seed, level: level + 1, solved: isSolved, hints: view.hints(state), actions: view.moves(state) });
+    logEvent({ type: "game", gameId: spec.id, version: spec.version, seed, level: level + 1, solved: isSolved, hints: view.hints(state), actions: view.actions(state) });
 
   useEffect(() => {
     if (!solved || logged.current) return;
@@ -135,12 +136,11 @@ export function GameShell<State, Action, Params>({ spec, view, levels, seed: ini
           {view.controls(state, dispatch)}
 
           <div className="game__status">
-            <span>
-              Ходы: <b>{view.moves(state)}</b>
-            </span>
-            <span>
-              Минимум на уровне: <b>{view.optimal(state)}</b>
-            </span>
+            {view.stats(state).map(([label, value]) => (
+              <span key={label}>
+                {label}: <b>{value}</b>
+              </span>
+            ))}
           </div>
           <p className={["game__feedback", solved && "is-solved"].filter(Boolean).join(" ")}>{view.feedback(state)}</p>
           <p className="visually-hidden" aria-live="polite">

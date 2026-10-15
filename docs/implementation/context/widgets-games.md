@@ -24,6 +24,7 @@
 ## Где в коде (игры, S2.07)
 
 - Контракт — `src/games/_engine/types.ts` (`GameSpec`, `GameResult`; `Rng` — общий ГПСЧ `src/lib/math/rng.ts`). Оболочка — `src/games/_engine/GameShell.tsx`: игра передаёт `spec` и `view` (`board`, `controls`, `feedback`, `optimal`, `debrief`, `keys`). Уровень k строится из `rng(seed · 1000 + k)`, партия по ссылке — `?seed=&level=`. Строка уровня над полем (на телефоне матрица сразу под рисунком), описание для скринридера — `describe` с задержкой 400 мс, после решения фокус на «Следующий уровень», результат — `GameEvent` в журнале.
+- Игры: `src/games/matrix-puzzle/` (I.4, ходы против минимума) и `src/games/bayes-detective/` (III.3, логарифмическое правило: очки шага — 100 · 2^(−KL(p ‖ q)) в битах). Счёт под управлением — `view.stats`, число действий в журнал — `view.actions`.
 - Эталон игры — `src/games/matrix-puzzle/` (`model.ts`, `model.test.ts` с fast-check, `MatrixPuzzle.tsx`, `README.md`), страница `src/pages/games/matrix-puzzle.astro`, стили `src/styles/games.css`, e2e `tests/e2e/matrix-puzzle.spec.ts`.
 - `_kit/Polygon` — фигура: `tone="aux"` (цель пунктиром) или `tone="pen"` (то, что строит ученик).
 

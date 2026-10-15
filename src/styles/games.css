@@ -67,6 +67,34 @@
   .game__keys dd { margin: 0; }
   .game__teaches { font-size: 15px; color: var(--ink-2); }
 
+  /* Байес-детектив: дело с уликами и шкала 0–100 % — синяя ручка: ответ ученика, зелёная: байесовский ответ */
+  .detective__case { padding: var(--space-4) var(--space-5); border: 1px solid var(--rule); border-radius: var(--radius-panel); background: var(--surface); }
+  .detective__case p { margin: 0; }
+  .detective__hypothesis { font-size: var(--text-lg, 1.15rem); }
+  .detective__prior { margin-top: var(--space-1) !important; font-family: var(--font-ui); font-size: 14px; color: var(--ink-2); }
+  .detective__prior b, .detective__lik b, .detective__result b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .detective__evidence { margin: var(--space-4) 0 0; padding: 0; list-style: none; counter-reset: clue; display: grid; gap: var(--space-3); }
+  .detective__evidence > li { counter-increment: clue; padding: var(--space-3) 0 0 var(--space-4); border-top: 1px solid var(--rule); border-left: 2px solid transparent; }
+  .detective__evidence > li.is-current { border-left-color: var(--pen); }
+  .detective__fact::before { content: "Улика " counter(clue) ". "; font-family: var(--font-ui); font-size: 14px; font-weight: 600; color: var(--ink-2); }
+  .detective__lik, .detective__result { margin-top: 4px !important; font-family: var(--font-ui); font-size: 14px; color: var(--ink-2); }
+  .detective__result .is-you { color: var(--pen); }
+  .detective__result .is-bayes { color: var(--green-pen); }
+  .detective__scale { position: relative; height: 12px; margin-top: var(--space-2); border-bottom: 1px solid var(--control-border); }
+  .detective__mark { position: absolute; bottom: -5px; width: 10px; height: 10px; margin-left: -5px; border-radius: 50%; }
+  .detective__mark--you { background: var(--pen); }
+  .detective__mark--bayes { background: none; border: 2px solid var(--green-pen); }
+  .detective__legend { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-top: var(--space-4) !important; font-family: var(--font-ui); font-size: 13px; color: var(--ink-2); }
+  .detective__key { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
+  .detective__key--you { background: var(--pen); }
+  .detective__key--bayes { border: 2px solid var(--green-pen); margin-left: var(--space-3); }
+  .detective__current { display: none; margin: 0 0 var(--space-2); padding-left: var(--space-3); border-left: 2px solid var(--pen); color: var(--ink); }
+  @media (max-width: 900px) { .detective__current { display: block; } }
+  .detective__answer { margin: 0 0 var(--space-4); font-family: var(--font-ui); font-size: var(--text-sm); color: var(--ink-2); }
+  .detective__input { display: grid; grid-template-columns: minmax(0, 1fr) 3.5em auto; align-items: center; gap: var(--space-3); margin-top: var(--space-2); }
+  .detective__input input[type="range"] { width: 100%; accent-color: var(--pen); }
+  .detective__input output { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--ink); }
+
   @media (max-width: 900px) {
     .game__layout { grid-template-columns: minmax(0, 1fr); gap: var(--space-5); }
     .game__keys dl > div { grid-template-columns: minmax(0, 1fr); gap: 0; }

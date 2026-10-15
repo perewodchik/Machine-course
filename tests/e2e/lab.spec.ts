@@ -4,7 +4,7 @@ import { layoutPages } from "./support";
 
 test("витрина показывает токены обеих тем с контрастом", async ({ page }) => {
   await page.goto(layoutPages.lab);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Дизайн-система «Тетрадь в клетку»");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Дизайн-система «Тетрадь в\u00a0клетку»");
   const ink = page.locator(".swatch", { hasText: "--ink-2" });
   await expect(ink).toContainText("#48505e");
   await expect(ink).toContainText("#c5c4bd");
