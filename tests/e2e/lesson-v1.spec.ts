@@ -45,6 +45,13 @@ test("ячейка печатает веса, закреплённые тест�
   await expect(cell.locator("[data-py-output]")).toHaveText("θ = [0.798 0.548]\nсовпадает с lstsq: True\n");
 });
 
+test("«Открыть в Colab» ведёт на ученическую версию лабораторной в публичном репозитории", async ({ page }) => {
+  await page.goto(url);
+  const link = page.locator("[data-py-cell]").getByRole("link", { name: /Открыть в Colab/ });
+  await expect(link).toHaveAttribute("href", "https://colab.research.google.com/github/perewodchik/Machine-course/blob/main/notebooks/la/normal_equations.ipynb");
+  await expect(link).toHaveAttribute("target", "_blank");
+});
+
 test("верная итоговая проверка ставит галочку «знаю»", async ({ page }) => {
   await page.goto(url);
   const final = page.locator("[data-exercise][data-final]");

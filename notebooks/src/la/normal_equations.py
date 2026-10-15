@@ -37,12 +37,6 @@ import numpy as np
 
 # %%
 # snippet: la/normal_equations.py#data
-def make_data(n: int = 12, seed: int = 7):
-    rng = np.random.default_rng(seed=seed)
-    x = rng.uniform(0.5, 9.5, size=n)
-    y = 1.2 + 0.55 * x + rng.normal(0, 0.6, size=n)
-    X = np.column_stack([np.ones(n), x])  # n × 2: столбец единиц и признак
-    return X, y
 
 
 X, y = make_data()

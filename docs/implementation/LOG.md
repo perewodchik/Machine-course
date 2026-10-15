@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-15 — S2.09 S2.09 — лабораторные в CI и кнопки открытия — готова
+- **Сделано:** Единый источник кода урока и лабораторной; публикация для Colab — из этого же репозитория.
+- **Файлы:** code/mlf/snippets.py, code/tests/test_snippets.py, scripts/build_notebooks.py, notebooks/src/la/normal_equations.py, notebooks/la/normal_equations.ipynb, tests/e2e/lesson-v1.spec.ts
+- **Проверка:** pytest 55, сборка лабораторных + nbmake, git diff notebooks/ после сборки — только ожидаемые правки, check_consistency, build, e2e V.1 и Python 20 passed
+- **Отклонения от плана и решения:** Решение пользователя «публичный репозиторий или отдельный» не понадобилось: репозиторий уже публичный. Ссылка — на main, а не на тег релиза: тегов пока нет; переключить в S2.12 после первого релиза.
+- **Следующий шаг:** S2.10 — пилот: журнал, опрос, отчёт.
+- **Вопросы пользователю:** —
+
 ### 2026-10-15 — S2.13 S2.13 — игра «Байес-детектив» — готова
 - **Сделано:** Вторая игра среза; GameShell обобщён: счёт — `view.stats`, действия в журнал — `view.actions`. На телефоне текущая улика повторяется над бегунком.
 - **Файлы:** src/games/bayes-detective/*, src/pages/games/bayes-detective.astro, src/games/_engine/GameShell.tsx, src/styles/games.css, tests/e2e/bayes-detective.spec.ts

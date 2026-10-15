@@ -20,6 +20,11 @@
 - COOP/COEP: в проде — `public/_headers`, в `astro dev`/`preview` — `server.headers` в `astro.config.mjs`.
 - Тесты: `tests/e2e/python.spec.ts` (θ из сниппета, «Стоп» без перезагрузки Python, правка, без JS), юнит — `snippets`, `python`, `traceback`.
 
+## Лабораторные (S2.09)
+
+- `scripts/build_notebooks.py` раскрывает `# snippet: путь#регион` через `code/mlf/snippets.py` (те же правила регионов, что `src/lib/content/snippets.ts`; общая фикстура `tests/fixtures/snippets`). Над кодом региона — комментарий, откуда он; неразрешённая ссылка роняет сборку.
+- Репозиторий публичный: Colab открывает ученическую версию из `main` (`NOTEBOOKS.ref` в `src/python/links.ts`); после первого релиза — переключить на тег.
+
 ## Источники (только если нужно)
 
 - `docs/conventions/python.md`, `docs/adr/0002-python-runtime.md`.
