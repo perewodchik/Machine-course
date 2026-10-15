@@ -23,6 +23,7 @@ export const layoutPages = {
   map: "/map/",
   start1: "/foundations/start/regression-by-hand/",
   fitgame: "/games/fit-line/",
+  start3: "/foundations/start/language-of-math/",
   concept: "/concepts/la.dot-product/",
 } as const;
 

@@ -47,7 +47,18 @@ const SEP = "\uE000";
 const MATH = "\uE001";
 const BLOCKS = new Set(["p", "li", "td", "th", "h1", "h2", "h3", "h4", "h5", "h6", "figcaption", "dt", "dd", "summary", "caption"]);
 
-function typografBlock(block: Element): void {
+/**
+ * Компонент MDX с текстом в одну строку (`<Note>текст $x$</Note>`): абзаца внутри нет, текст и формулы лежат прямо
+ * в узле компонента. Внутри абзаца (mdxJsxTextElement) он типографится вместе с абзацем, без абзаца — как абзац.
+ */
+interface MdxJsx {
+  type: "mdxJsxFlowElement" | "mdxJsxTextElement";
+  children: ElementContent[];
+}
+const isMdxJsx = (node: { type: string }): node is MdxJsx => node.type === "mdxJsxFlowElement" || node.type === "mdxJsxTextElement";
+const hasInlineText = (node: MdxJsx) => node.children.some((c) => c.type === "text" && c.value.trim() !== "");
+
+function typografBlock(block: { children: ElementContent[] }): void {
   const texts: { value: string }[] = [];
   let joined = "";
   const walk = (children: ElementContent[]) => {
@@ -58,7 +69,7 @@ function typografBlock(block: Element): void {
       } else if (child.type === "element") {
         if (RAW_TAGS.has(child.tagName) || isMath(child)) joined += MATH;
         else walk(child.children);
-      }
+      } else if (isMdxJsx(child)) walk(child.children);
     }
   };
   walk(block.children);
@@ -75,8 +86,8 @@ export function rehypeTypograf() {
   return (tree: HastRoot) => {
     visit(tree, (node) => {
       if (node.type === "element" && (RAW_TAGS.has(node.tagName) || isMath(node))) return SKIP;
-      if (node.type === "element" && BLOCKS.has(node.tagName)) {
-        typografBlock(node);
+      if ((node.type === "element" && BLOCKS.has(node.tagName)) || (isMdxJsx(node) && hasInlineText(node))) {
+        typografBlock(node as { children: ElementContent[] });
         return SKIP;
       }
       if (node.type === "text") node.value = typograf(node.value);
@@ -104,8 +115,9 @@ function mathText(node: ElementContent): string {
 export function rehypeMathGlue() {
   return (tree: HastRoot) => {
     visit(tree, "element", (node: Element, index, parent) => {
-      if (!parent || index === undefined || parent.type !== "element") return;
-      if (hasClass(node, "katex-display") || hasClass(parent, "math-glue")) return SKIP;
+      // родитель — элемент, корень или компонент MDX с текстом в одну строку (<Note>…</Note>)
+      if (!parent || index === undefined) return;
+      if (hasClass(node, "katex-display") || (parent.type === "element" && hasClass(parent, "math-glue"))) return SKIP;
       if (!hasClass(node, "katex")) return;
       const next = parent.children[index + 1];
       const punct = next?.type === "text" ? (PUNCT_AFTER.exec(next.value)?.[0] ?? "") : "";

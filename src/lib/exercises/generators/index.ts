@@ -1,12 +1,12 @@
 // Реестр генераторов: <Exercise gen="la.det2" /> находит генератор по ID.
 import type { Generator } from "../types";
-import { argmin, chainRule, indicatorSum, integralLinear, notation, numpyShapes, sigmoidSymmetry, sse } from "./basics";
+import { argmin, chainRule, indicatorSum, integralLinear, notation, numpyShapes, readNotation, sigmoidSymmetry, sse } from "./basics";
 import { composeOrder, det2, dot, fromImages, lincomb, matmul2, shapes, slope3 } from "./la";
 import { bayesTest, conditionalTable, totalProbability, union } from "./prob";
 
 export const generators: ReadonlyMap<string, Generator> = new Map(
   [
-    ...[sse, argmin, indicatorSum, sigmoidSymmetry, chainRule, integralLinear, numpyShapes, notation],
+    ...[sse, readNotation, argmin, indicatorSum, sigmoidSymmetry, chainRule, integralLinear, numpyShapes, notation],
     ...[det2, matmul2, slope3, shapes, fromImages, composeOrder, lincomb, dot],
     ...[totalProbability, bayesTest, union, conditionalTable],
   ].map((g) => [g.id, g]),

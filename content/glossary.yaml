@@ -68,3 +68,19 @@
   ru: 'модель'
   en: 'model, hypothesis'
   note: 'В CS229 модель называют гипотезой (hypothesis).'
+- id: set
+  ru: 'множество, элемент, подмножество'
+  en: 'set, element, subset'
+- id: map
+  ru: 'отображение (функция)'
+  en: 'map, function'
+  note: 'Множество, откуда берут аргумент, — область определения (domain); куда попадают значения — codomain; множество всех значений — образ (image, range).'
+- id: quantifier
+  ru: 'квантор: «для всех», «существует»'
+  en: 'quantifier: for all, there exists'
+- id: argmin
+  ru: 'аргмин, точка минимума'
+  en: 'argmin, minimizer'
+- id: proportional
+  ru: 'пропорционально'
+  en: 'proportional to'

@@ -1,5 +1,6 @@
 // Модуль 0 (S3.L0): урок 0.1 — рисунок без кнопки минимума, итоговая проверка ставит «знаю»; игра «Подгони прямую»
-// проходится с клавиатуры по бегункам; партия по ссылке ?seed=&level= совпадает с моделью. axe.
+// проходится с клавиатуры по бегункам; партия по ссылке ?seed=&level= совпадает с моделью.
+// Урок 0.3 — перевод записей в обе стороны с разбором ошибок, композиция, итоговая проверка. axe.
 import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 import { generator } from "../../src/lib/exercises/generators";
@@ -47,5 +48,41 @@ test("«Подгони прямую»: уровень «наклон» прох�
   await page.getByRole("button", { name: "Сдать прямую" }).click();
   await expect(page.locator(".game__feedback")).toContainText("Принято");
   await expect(page.getByRole("button", { name: "Следующий уровень" })).toBeFocused();
+  await expectNoAxeViolations(page);
+});
+
+test("урок 0.3: перевод записей в обе стороны, разбор ошибки, итоговая проверка ставит «знаю»", async ({ page }) => {
+  await page.goto("/foundations/start/language-of-math/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Язык математики: множества, отображения, кванторы");
+
+  // перевод: первый вариант — от символов к словам; неверный вариант объясняет путаницу ∈ и ⊂
+  const practice = page.locator("[data-exercise][data-item='basics.read-notation']");
+  const visible = practice.locator("[data-variant]:not([hidden])");
+  const spec = generator("basics.read-notation").make(1);
+  if (spec.kind !== "choice") throw new Error("ожидался выбор");
+  await expect(visible).toContainText("Как читается запись");
+  await visible.locator("[data-option]").nth(spec.options.findIndex((o) => o.text.includes("множество векторов"))).click();
+  await expect(practice.locator("[data-feedback]")).toContainText("подмножеством");
+  await visible.locator("[data-option]").nth(spec.options.findIndex((o) => o.correct)).click();
+  await expect(practice.locator("[data-feedback]")).toContainText("Верно.");
+  // через восемь вариантов — те же записи в обратную сторону
+  for (let k = 0; k < 8; k++) await practice.getByRole("button", { name: "Ещё задача" }).click();
+  await expect(visible).toContainText("Как записать символами");
+
+  // композиция: обратный порядок функций узнаётся по ответу
+  const compose = page.locator("[data-exercise][data-item='start3.compose']");
+  await compose.locator("input[data-input]").fill("7");
+  await compose.getByRole("button", { name: "Проверить" }).click();
+  await expect(compose.locator("[data-feedback]")).toContainText("в обратном порядке");
+  await compose.locator("input[data-input]").fill("8");
+  await compose.getByRole("button", { name: "Проверить" }).click();
+  await expect(compose.locator("[data-feedback]")).toContainText("Верно.");
+
+  const final = page.locator("[data-exercise][data-final]");
+  const argmin = generator("basics.argmin").make(31);
+  if (argmin.kind !== "numeric") throw new Error("ожидалась числовая задача");
+  await final.locator("[data-variant]:not([hidden]) input[data-input]").fill(String(argmin.answer));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
   await expectNoAxeViolations(page);
 });

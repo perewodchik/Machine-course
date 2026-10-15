@@ -240,3 +240,100 @@ export const notation: Generator = {
     };
   },
 };
+
+interface Reading {
+  tex: string;
+  text: string;
+  /** Неверные прочтения — типичные ошибки: та же запись, прочитанная не так. */
+  wrong: { tex: string; text: string; why: string }[];
+}
+
+/** Записи урока 0.3: символы ↔ слова. Неверный вариант — частая путаница (∈ и ⊂, ∀ и ∃, min и argmin, ∝ и =). */
+const READINGS: Reading[] = [
+  {
+    tex: String.raw`\theta \in \mathbb{R}^d`,
+    text: String.raw`$\theta$ — вектор из $d$ вещественных чисел`,
+    wrong: [
+      { tex: String.raw`\theta \subset \mathbb{R}^d`, text: String.raw`$\theta$ — множество векторов из $d$ чисел`, why: String.raw`$\in$ — «является элементом»: $\theta$ — один вектор. Множество векторов было бы подмножеством, $\subset$.` },
+      { tex: String.raw`\theta = d`, text: String.raw`$\theta$ — число $d$`, why: String.raw`$\mathbb{R}^d$ — наборы из $d$ чисел; $d$ — длина набора, а не значение $\theta$.` },
+    ],
+  },
+  {
+    tex: String.raw`f\colon \mathbb{R}^d \to \mathbb{R}`,
+    text: String.raw`$f$ сопоставляет вектору из $d$ чисел одно число`,
+    wrong: [
+      { tex: String.raw`f\colon \mathbb{R} \to \mathbb{R}^d`, text: String.raw`$f$ сопоставляет числу вектор из $d$ чисел`, why: "Стрелка идёт от того, что подают на вход, к тому, что получают: слева — область определения." },
+      { tex: String.raw`f \in \mathbb{R}^d`, text: String.raw`$f$ — вектор из $d$ чисел`, why: "Запись с двоеточием и стрелкой описывает функцию — правило, а не значение." },
+    ],
+  },
+  {
+    tex: String.raw`\forall i\colon y^{(i)} \in \{0, 1\}`,
+    text: "у каждого объекта ответ — 0 или 1",
+    wrong: [
+      { tex: String.raw`\exists\, i\colon y^{(i)} \in \{0, 1\}`, text: "хотя бы у одного объекта ответ — 0 или 1", why: String.raw`$\forall$ — «для всех», $\exists$ — «существует хотя бы один».` },
+      { tex: String.raw`y \in \{0, 1\}`, text: "вектор ответов — это 0 или 1", why: "Ответ один на объект: условие наложено на каждый $y^{(i)}$, а не на вектор целиком." },
+    ],
+  },
+  {
+    tex: String.raw`\exists\, \theta\colon J(\theta) = 0`,
+    text: "есть веса, при которых потери равны нулю",
+    wrong: [
+      { tex: String.raw`\forall \theta\colon J(\theta) = 0`, text: "при любых весах потери равны нулю", why: String.raw`$\exists$ — «найдётся хотя бы один», а не «для всех».` },
+      { tex: String.raw`J = 0`, text: "функция потерь — это ноль", why: String.raw`Утверждается не про функцию целиком, а про её значение в каком-то $\theta$.` },
+    ],
+  },
+  {
+    tex: String.raw`\hat\theta = \arg\min_\theta J(\theta)`,
+    text: String.raw`$\hat\theta$ — веса, при которых $J$ наименьшая`,
+    wrong: [
+      { tex: String.raw`\hat\theta = \min_\theta J(\theta)`, text: String.raw`$\hat\theta$ — наименьшее значение $J$`, why: String.raw`$\min$ — само наименьшее значение, $\arg\min$ — точка, где оно достигается.` },
+      { tex: String.raw`\hat\theta = \arg\max_\theta J(\theta)`, text: String.raw`$\hat\theta$ — веса, при которых $J$ наибольшая`, why: "Потери минимизируют: max был бы худшими весами." },
+    ],
+  },
+  {
+    tex: String.raw`p(\theta \mid x) \propto p(x \mid \theta)\, p(\theta)`,
+    text: String.raw`левая часть равна правой с точностью до множителя, не зависящего от $\theta$`,
+    wrong: [
+      { tex: String.raw`p(\theta \mid x) = p(x \mid \theta)\, p(\theta)`, text: "левая часть равна правой", why: String.raw`$\propto$ — не равенство: справа не хватает множителя $1/p(x)$, он не зависит от $\theta$.` },
+      { tex: String.raw`p(\theta \mid x) \ge p(x \mid \theta)\, p(\theta)`, text: "левая часть не меньше правой", why: String.raw`$\propto$ — «пропорционально», а не неравенство.` },
+    ],
+  },
+  {
+    tex: String.raw`A \subset B`,
+    text: String.raw`каждый элемент $A$ лежит в $B$`,
+    wrong: [
+      { tex: String.raw`A \in B`, text: String.raw`$A$ — один из элементов $B$`, why: String.raw`$\in$ — «элемент», $\subset$ — «часть»: все элементы $A$ лежат в $B$.` },
+      { tex: String.raw`A = B`, text: String.raw`$A$ и $B$ совпадают`, why: String.raw`Подмножество может быть меньше: $B$ может содержать элементы, которых нет в $A$.` },
+    ],
+  },
+  {
+    tex: String.raw`(g \circ f)(x)`,
+    text: String.raw`сначала применить $f$ к $x$, потом $g$ к результату`,
+    wrong: [
+      { tex: String.raw`(f \circ g)(x)`, text: String.raw`сначала применить $g$, потом $f$`, why: String.raw`Композиция читается справа налево: $(g \circ f)(x) = g(f(x))$, первой действует $f$.` },
+      { tex: String.raw`g(x)\, f(x)`, text: String.raw`умножить $g(x)$ на $f(x)$`, why: "Кружок — не умножение, а последовательное применение функций." },
+    ],
+  },
+];
+
+export const readNotation: Generator = {
+  id: "basics.read-notation",
+  version: 1,
+  title: "Перевод записей: символы и слова",
+  make(seed) {
+    const r = rng(seed);
+    const item = READINGS[(seed - 1) % READINGS.length]!;
+    // нечётный круг — от символов к словам, чётный — от слов к символам
+    const toWords = Math.floor((seed - 1) / READINGS.length) % 2 === 0;
+    const options: ChoiceOption[] = toWords
+      ? [{ text: item.text, correct: true, why: "Так и читается." }, ...item.wrong.map((w) => ({ text: w.text, why: w.why }))]
+      : [{ text: `$${item.tex}$`, correct: true, why: "Так и записывается." }, ...item.wrong.map((w) => ({ text: `$${w.tex}$`, why: w.why }))];
+    return {
+      kind: "choice",
+      prompt: toWords ? String.raw`Как читается запись $${item.tex}$?` : `Как записать символами: «${item.text}»?`,
+      options: r.shuffle(options),
+      hints: ["Разберите запись по знакам: что слева от знака, что справа и что знак утверждает."],
+    };
+  },
+};
+

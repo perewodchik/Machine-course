@@ -1,5 +1,7 @@
 // Конвейер Markdown через общее ядро: роли символов, блокировка HTML-команд KaTeX, типограф, ошибки TeX.
+import type { Element, ElementContent, Root as HastRoot } from "hast";
 import rehypeStringify from "rehype-stringify";
+import remarkMdx from "remark-mdx";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { unified } from "unified";
@@ -114,5 +116,21 @@ describe("типограф", () => {
     expect(html).toContain("«в\u00a0кавычках»");
     expect(html).toContain('<code>x = "a - b"</code>');
     expect(html).not.toContain("a — b");
+  });
+
+  it("однострочный компонент MDX: кавычка после формулы закрывается, короткая формула не рвётся", async () => {
+    // <Note>текст</Note> в одну строку — абзац с узлом mdxJsxTextElement, текст и формулы лежат прямо в нём
+    const mdx = ["mdxJsxFlowElement", "mdxJsxTextElement", "mdxFlowExpression", "mdxTextExpression", "mdxjsEsm"];
+    const processor = unified().use(remarkParse).use(remarkMdx);
+    for (const plugin of remarkPlugins) processor.use(plugin);
+    processor.use(remarkRehype, { passThrough: mdx });
+    for (const plugin of rehypePlugins) processor.use(...((Array.isArray(plugin) ? plugin : [plugin]) as [never]));
+    const tree = (await processor.run(processor.parse('<Note label="x">Пишут «функция $J(\\theta)$», хотя $A = B$ — значение.</Note>\n'))) as HastRoot;
+    const para = tree.children.find((c): c is Element => c.type === "element" && c.tagName === "p");
+    const note = para?.children.find((c) => (c as { type: string }).type === "mdxJsxTextElement") as unknown as { children: ElementContent[] };
+    const text = (n: ElementContent): string => (n.type === "text" ? n.value : n.type === "element" && !(n.properties.className as string[] | undefined)?.includes("katex") ? n.children.map(text).join("") : n.type === "element" ? "$" : "");
+    expect(JSON.stringify(note.children.map(text).join(""))).toBe(JSON.stringify("Пишут «функция $», хотя $\u00a0— значение."));
+    const glued = note.children.filter((c): c is Element => c.type === "element" && (c.properties.className as string[]).includes("math-glue"));
+    expect(glued.map((g) => (g.properties.className as string[]).join(" "))).toEqual(["math-glue is-short", "math-glue is-short"]);
   });
 });
