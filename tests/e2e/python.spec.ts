@@ -25,6 +25,8 @@ test("ячейка урока выполняет сниппет и печата�
   await expect(status(cell)).toHaveText(/^готово/, { timeout: BOOT });
   await expect(output(cell)).toHaveText("θ = [0.798 0.548]\nсовпадает с lstsq: True\n");
   await expect(cell.locator("[data-py-time]")).toHaveText(/^\d+(\.\d)? с$/);
+  // формы присвоенных массивов (S3.06)
+  await expect(cell.locator("[data-py-shapes-list] li")).toHaveText(["X (12, 2)", "y (12,)", "theta (2,)", "ref (2,)"]);
   expect(foreign).toEqual([]);
 
   // повторный запуск: Python уже загружен, у ячейки свежее пространство имён
@@ -69,6 +71,24 @@ test("«Изменить»: правка выполняется, Ctrl+Enter за
   await loop.getByRole("button", { name: "Вернуть как было" }).click();
   await expect(editor).toBeHidden();
   await expect(loop.locator("[data-py-view]")).toContainText("while True");
+});
+
+test("формы произведений: результат после запуска, несовпавшие размеры — при ошибке", async ({ page }) => {
+  await page.goto(layoutPages.lab);
+  const cell = cells(page).first();
+  await cell.getByRole("button", { name: "Изменить" }).click();
+  const editor = cell.getByRole("textbox", { name: /Код ячейки/ });
+  await editor.fill("import numpy as np\nX = np.ones((3, 2))\ntheta = np.ones(2)\nprint((X.T @ X).sum(), (X @ theta).sum())");
+  await editor.press("Control+Enter");
+  await expect(output(cell)).toHaveText("12.0 6.0\n", { timeout: BOOT });
+  const shapes = cell.locator("[data-py-shapes-list] li");
+  await expect(shapes).toContainText(["X.T @ X (2, 3) @ (3, 2) → (2, 2)", "X @ theta (3, 2) @ (2,) → (3,)"]);
+
+  await editor.fill("import numpy as np\nX = np.ones((3, 2))\ntheta = np.ones(3)\nprint(X @ theta)");
+  await editor.press("Control+Enter");
+  await expect(cell.locator("[data-py-status]")).toHaveText(/ошибка/);
+  await expect(shapes).toHaveText(["X @ theta (3, 2) @ (3,): внутренние размеры 2 и 3 не совпадают"]);
+  await expect(shapes.first()).toHaveClass(/is-bad/);
 });
 
 test("без JavaScript видна программа, кнопок запуска нет", async ({ browser }) => {

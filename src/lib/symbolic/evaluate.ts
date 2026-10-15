@@ -119,6 +119,9 @@ export function evaluate(e: Json, env: Env): Mat {
     // {num: "…"} — число в виде строки
     const num = (e as { num?: string }).num;
     if (num !== undefined) return scalar(Number(num));
+    // выражение с позицией в исходнике: {fn: [...], sourceOffsets}
+    const fn = (e as { fn?: Json }).fn;
+    if (fn !== undefined) return evaluate(fn, env);
     throw new EvalError("непонятная запись", "syntax");
   }
   const [head, ...args] = e as [string, ...Json[]];

@@ -115,6 +115,8 @@ function answerData(s: ExerciseSpec, seedValue: number) {
             <input class="input input--tex" id={`${vid}-input`} autocomplete="off" spellcheck="false" data-formula-input placeholder="например, X^\top y" aria-label={inlineText(sp.label).replace(/=$/, "").trim()} />
           </div>
         )}
+        {/* форма выражения по ходу ввода (S3.06): src/client/formula-input.ts */}
+        {sp.kind === "formula" && <p class="formula-shape" data-shape aria-live="polite"></p>}
 
         {sp.kind === "steps" && (
           <div class="steps-input" data-steps>
@@ -124,6 +126,7 @@ function answerData(s: ExerciseSpec, seedValue: number) {
               {Array.from({ length: sp.lines ?? 6 }, (_, k) => (
                 <li class="steps-input__row" data-step-row hidden={k >= 3}>
                   <input class="input input--tex" id={`${vid}-row-${k}`} autocomplete="off" spellcheck="false" data-formula-input aria-label={`Строка ${k + 2}`} placeholder={k === 0 ? "= …" : undefined} />
+                  <p class="formula-shape" data-shape aria-live="polite"></p>
                   <p class="steps-input__msg" data-row-msg hidden></p>
                 </li>
               ))}

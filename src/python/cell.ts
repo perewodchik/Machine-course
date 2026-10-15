@@ -19,6 +19,8 @@ function setup(cell: HTMLElement): void {
   const outBox = q("[data-py-out]");
   const output = q("[data-py-output]");
   const time = q("[data-py-time]");
+  const shapesBox = q("[data-py-shapes]");
+  const shapesList = q("[data-py-shapes-list]");
   const source = JSON.parse(q("[data-py-source]").textContent ?? "{}") as { code: string; setup: string };
 
   let job: PyJob | null = null;
@@ -100,6 +102,8 @@ function setup(cell: HTMLElement): void {
   const run = () => {
     if (job) return job.stop();
     output.textContent = "";
+    shapesList.textContent = "";
+    shapesBox.hidden = true;
     pending = "";
     length = 0;
     time.textContent = "";
@@ -112,6 +116,17 @@ function setup(cell: HTMLElement): void {
         status.textContent = $pyState.get() === "ready" ? "выполняется…" : "загружаем Python и NumPy (≈ 16 MB, один раз)…";
       },
       onOut: (text, stream) => write(text, stream === "stderr" ? "code-cell__error" : undefined),
+      onShapes: (items) => {
+        for (const it of items) {
+          const li = document.createElement("li");
+          li.className = it.bad ? "is-bad" : "";
+          const code = document.createElement("code");
+          code.textContent = it.expr;
+          li.append(code, ` ${it.shape}`);
+          shapesList.append(li);
+        }
+        shapesBox.hidden = false;
+      },
     });
     // загрузка закончилась, ячейка начала выполняться
     const unbind = $pyState.listen((state) => {

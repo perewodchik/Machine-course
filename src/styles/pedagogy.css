@@ -156,7 +156,7 @@
   .input.is-wrong { border-color: var(--red-pen); box-shadow: inset 0 0 0 1px var(--red-pen); }
   .input--cell { width: 4.2rem; text-align: center; }
   /* формула: поле TeX без JS, редактор MathLive с JS (src/client/formula-input.ts) */
-  .input--tex { width: min(100%, 22rem); font-family: var(--font-mono); }
+  .input--tex { width: min(100%, 22rem); font-family: var(--font-code); }
   .formula-input {
     min-width: min(100%, 16rem); max-width: 100%; padding: 4px 10px; border: 1px solid var(--control-border); border-radius: var(--radius-control);
     background: var(--surface); color: var(--ink); font-size: 1.15rem; --caret-color: var(--pen); --selection-background-color: var(--pen-wash);
@@ -171,6 +171,9 @@
   .steps-input__expr { grid-column: 2; }
   .steps-input__row .formula-input, .steps-input__row .input { grid-column: 2; width: 100%; }
   .steps-input__msg { grid-column: 2; margin: 0; font: var(--text-sm) / 1.45 var(--font-ui); color: var(--red-pen); }
+  .formula-shape { min-height: 1.4em; margin: 4px 0 0; font: 13px / 1.4 var(--font-ui); color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .formula-shape.is-bad { color: var(--red-pen); }
+  .steps-input__row .formula-shape { grid-column: 2; margin: 0; min-height: 0; }
   .formula-input:focus-within { outline: 2px solid var(--pen); outline-offset: 1px; border-color: var(--pen); }
   .formula-input.is-right { border-color: var(--green-pen); box-shadow: inset 0 0 0 1px var(--green-pen); }
   .formula-input.is-wrong { border-color: var(--red-pen); box-shadow: inset 0 0 0 1px var(--red-pen); }

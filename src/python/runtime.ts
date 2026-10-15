@@ -3,6 +3,7 @@
 // без изоляции — запасной путь: воркер завершается, следующий запуск загрузит Python заново.
 import { atom } from "nanostores";
 import type { FromWorker, ToWorker } from "./protocol";
+import type { ShapeItem } from "./shapes";
 
 export type PyState = "idle" | "loading" | "ready";
 export const $pyState = atom<PyState>("idle");
@@ -15,6 +16,8 @@ export interface RunHandlers {
   /** Ячейку отправили в воркер (до этого она ждёт в очереди) */
   onStart?: () => void;
   onOut?: (text: string, stream: "stdout" | "stderr") => void;
+  /** Формы промежуточных выражений (S3.06) — до конца запуска. */
+  onShapes?: (items: ShapeItem[]) => void;
 }
 
 export interface PyJob {
@@ -67,6 +70,7 @@ function receive(msg: FromWorker): void {
   if (msg.type === "fatal") return fail(msg.message);
   if (!active || msg.id !== active.id) return; // хвост прерванного запуска
   if (msg.type === "out") active.handlers.onOut?.(msg.text, msg.stream);
+  else if (msg.type === "shapes") active.handlers.onShapes?.(msg.items);
   else if (msg.type === "done") finish({ ok: true, ms: msg.ms });
   else finish({ ok: false, ms: msg.ms, kind: msg.kind, message: msg.message });
 }

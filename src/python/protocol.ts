@@ -1,4 +1,5 @@
 // Сообщения между страницей и воркером Pyodide. Один воркер на страницу, запуски идут по очереди.
+import type { ShapeItem } from "./shapes";
 
 /** Страница → воркер. */
 export type ToWorker =
@@ -11,6 +12,8 @@ export type ToWorker =
 export type FromWorker =
   | { type: "ready"; ms: number }
   | { type: "out"; id: number; stream: "stdout" | "stderr"; text: string }
+  /** Формы промежуточных выражений ячейки (S3.06): приходят перед done или error. */
+  | { type: "shapes"; id: number; items: ShapeItem[] }
   | { type: "done"; id: number; ms: number }
   | { type: "error"; id: number; ms: number; kind: "python" | "interrupted" | "package" | "internal"; message: string }
   | { type: "fatal"; message: string };

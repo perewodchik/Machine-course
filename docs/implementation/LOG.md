@@ -17,6 +17,13 @@
 
 ---
 
+### 2026-10-15 — S3.06 Размерности в реальном времени — готова
+- **Сделано:** Анализ форм в Python — по AST кода ячейки в её же пространстве имён, только верхний уровень (в функциях имена значат другое) и без вызовов функций (побочные эффекты). Найдено: ast.Name без номеров строк не компилировался — fix_missing_locations; ошибки разбора Compute Engine приходят в обёртке {fn: …}.
+- **Файлы:** src/lib/symbolic/shape.ts, src/client/formula-input.ts, src/python/{shapes,worker,runtime,protocol,cell}.ts, src/components/python/PyCell.astro, tests/e2e/{formula,python}.spec.ts
+- **Проверка:** vitest 309; e2e 248 (90 пропущено); lint, check, validate — чисто
+- **Следующий шаг:** S3.L0 — уроки модуля 0 (дальше L-0.1).
+- **Вопросы пользователю:** —
+
 ### 2026-10-15 — S3.05 Диагноз ошибок по мутациям — готова
 - **Сделано:** Мутация с ошибкой формы (XᵀΘᵀ) не вычисляется — сравнивается запись без скобок; иначе — значение на случайных матрицах. Подстановка символов в TeX — токенизатором: AB — два символа, буквы \\top — нет. Неверный градиент из теста S3.04 теперь называется прямо («знак»).
 - **Файлы:** content/formulas/rules/*.yaml, code/mlf/formulas.py, code/tests/test_formulas.py, src/lib/content/rule-instance.ts, src/lib/symbolic/{check,derivation,equivalent}.ts, src/components/pedagogy/Exercise.astro, src/client/exercise.ts

@@ -90,3 +90,26 @@ test("типичная ошибка называется прямо; вариа�
   await expect(choice.locator("[data-feedback]")).toContainText("Транспонирование без смены порядка");
 });
 
+test("форма выражения по ходу ввода: под полем формулы и у строки вывода", async ({ page }) => {
+  await page.goto(url);
+  const ex = page.locator("[data-exercise][data-item='v1.gradient-formula']");
+  await ex.scrollIntoViewIfNeeded();
+  const type = (field: Locator, tex: string) =>
+    field.evaluate((el, value) => {
+      (el as HTMLElement & { value: string }).value = value;
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+    }, tex);
+  const field = ex.locator("math-field[data-formula-input]");
+  await expect(field).toBeAttached();
+  await type(field, String.raw`X^\top X\theta`);
+  await expect(ex.locator("[data-shape]")).toHaveText("форма 3\u202f×\u202f1");
+  await type(field, String.raw`X\theta^\top`);
+  await expect(ex.locator("[data-shape]")).toContainText("произведение 7\u202f×\u202f3 на 1\u202f×\u202f3");
+  await expect(ex.locator("[data-shape]")).toHaveClass(/is-bad/);
+
+  const steps = page.locator("[data-exercise][data-item='v1.derive-steps']");
+  const row = steps.locator("[data-step-row]").first();
+  await type(row.locator("math-field"), String.raw`X^\top X\theta = X^\top y`);
+  await expect(row.locator("[data-shape]")).toHaveText("уравнение, форма 3\u202f×\u202f1");
+});
+

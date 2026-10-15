@@ -22,3 +22,30 @@ if (inputs.length) {
       // без MathLive остаётся поле для TeX: проверка работает так же
     });
 }
+
+// Форма выражения по ходу ввода (S3.06, идея A6): «форма 3 × 1» под полем, а если формы не сходятся — где.
+// Формы символов — из данных проверки задачи; модуль разбора грузится при первом вводе.
+const timers = new WeakMap<Element, number>();
+document.addEventListener("input", (e) => {
+  const field = e.target instanceof Element ? e.target.closest<HTMLElement & { value: string }>("[data-formula-input]") : null;
+  if (!field) return;
+  clearTimeout(timers.get(field));
+  timers.set(
+    field,
+    window.setTimeout(() => void showShape(field), 400),
+  );
+});
+
+async function showShape(field: HTMLElement & { value: string }): Promise<void> {
+  const row = field.closest("[data-step-row]");
+  const variant = field.closest("[data-variant]");
+  const out = (row ?? variant)?.querySelector<HTMLElement>("[data-shape]");
+  const data = variant?.querySelector("script[data-answer]")?.textContent;
+  if (!out || !data) return;
+  const { symbols } = JSON.parse(data) as { symbols?: { name: string; shape?: (number | string)[] }[] };
+  const { lineShape, shapeOf } = await import("../lib/symbolic/shape");
+  const note = (row ? lineShape : shapeOf)(field.value ?? "", symbols ?? []);
+  out.textContent = note ? note.text : "";
+  out.classList.toggle("is-bad", !!note && !note.ok);
+}
+
