@@ -1,0 +1,20 @@
+id: rule.matvec-columns
+kind: rule
+title:
+  ru: 'Произведение матрицы на вектор — комбинация столбцов'
+  en: 'matrix-vector product as a combination of columns'
+statement: 'A x = x_1 A_{:,1} + x_2 A_{:,2} + \ldots + x_d A_{:,d}'
+symbols:
+  - name: A
+    tex: 'A'
+    shape: [m, d]
+  - name: x
+    tex: 'x'
+    shape: [d, 1]
+concept: la.linear-map
+corollary: 'Столбец A_{:,j} = A e_j — образ j-го базисного вектора: чтобы задать линейное отображение, достаточно сказать, куда уходят e₁, …, e_d.'
+pitfall: 'Брать строки вместо столбцов: строки A дают скалярные произведения с x, а образы базиса — это столбцы.'
+checks:
+  - kind: identity
+    lhs: 'A @ x'
+    rhs: 'np.sum(A * x, axis=1)'

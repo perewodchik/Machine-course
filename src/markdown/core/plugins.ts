@@ -40,11 +40,44 @@ const isMath = (el: Element) => {
   return Array.isArray(cls) && cls.some((c) => c === "katex" || c === "katex-display" || c === "math-inline" || c === "math-display");
 };
 
-/** Типограф по текстовым узлам; код, формулы и SVG пропускаются. */
+// Абзац типографится целиком: иначе кавычки, разорванные формулой («сначала $A$, потом $B$»), типограф
+// видит по кускам и разворачивает. Границы текстовых узлов — символ SEP, формула или код на месте — MATH.
+const SEP = "\uE000";
+const MATH = "\uE001";
+const BLOCKS = new Set(["p", "li", "td", "th", "h1", "h2", "h3", "h4", "h5", "h6", "figcaption", "dt", "dd", "summary", "caption"]);
+
+function typografBlock(block: Element): void {
+  const texts: { value: string }[] = [];
+  let joined = "";
+  const walk = (children: ElementContent[]) => {
+    for (const child of children) {
+      if (child.type === "text") {
+        texts.push(child);
+        joined += child.value + SEP;
+      } else if (child.type === "element") {
+        if (RAW_TAGS.has(child.tagName) || isMath(child)) joined += MATH;
+        else walk(child.children);
+      }
+    }
+  };
+  walk(block.children);
+  const parts = typograf(joined).split(SEP);
+  if (parts.length !== texts.length + 1) {
+    texts.forEach((t) => (t.value = typograf(t.value))); // правило съело границу — по узлам, как раньше
+    return;
+  }
+  texts.forEach((t, i) => (t.value = parts[i]!.replaceAll(MATH, "")));
+}
+
+/** Типограф: абзацы и ячейки — целиком, остальной текст — по узлам; код, формулы и SVG пропускаются. */
 export function rehypeTypograf() {
   return (tree: HastRoot) => {
     visit(tree, (node) => {
       if (node.type === "element" && (RAW_TAGS.has(node.tagName) || isMath(node))) return SKIP;
+      if (node.type === "element" && BLOCKS.has(node.tagName)) {
+        typografBlock(node);
+        return SKIP;
+      }
       if (node.type === "text") node.value = typograf(node.value);
       return undefined;
     });

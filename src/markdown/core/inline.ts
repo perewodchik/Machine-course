@@ -7,16 +7,23 @@ import { typograf } from "./typograf";
 const escapeHtml = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const text = (s: string) => escapeHtml(typograf(s.replace(/\\\$/g, "$")));
 
+const MATH = "\uE001"; // место формулы: типограф видит фразу целиком, и кавычки вокруг формул не разворачиваются
+
 export function renderInline(source: string, symbols?: readonly SymbolSpec[]): string {
   const re = /\$\$([\s\S]+?)\$\$|\$((?:\\.|[^$\\])+?)\$/g;
-  let out = "";
+  const maths: string[] = [];
+  const texts: string[] = [];
   let last = 0;
   for (let m = re.exec(source); m; m = re.exec(source)) {
-    out += text(source.slice(last, m.index));
-    out += m[1] !== undefined ? renderTex(m[1], { display: true, symbols }) : renderTex(m[2]!, { symbols });
+    texts.push(source.slice(last, m.index));
+    maths.push(m[1] !== undefined ? renderTex(m[1], { display: true, symbols }) : renderTex(m[2]!, { symbols }));
     last = re.lastIndex;
   }
-  return out + text(source.slice(last));
+  texts.push(source.slice(last));
+  const parts = typograf(texts.join(MATH).replace(/\\\$/g, "$")).split(MATH);
+  // правило типографа съело метку — по кускам, как раньше
+  const safe = parts.length === texts.length ? parts.map(escapeHtml) : texts.map(text);
+  return safe.map((t, i) => t + (maths[i] ?? "")).join("");
 }
 
 /** Тот же текст без разметки — для aria-label: формулы заменены их текстом из MathML («θ1 =»). */

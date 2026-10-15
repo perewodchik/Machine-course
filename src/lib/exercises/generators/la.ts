@@ -3,6 +3,8 @@ import { rng } from "../../math/rng";
 import type { Generator } from "../types";
 
 const pm = (rows: number[][]) => String.raw`\begin{pmatrix}${rows.map((r) => r.join(" & ")).join(String.raw` \\ `)}\end{pmatrix}`;
+/** Матрица в строке текста — только smallmatrix (docs/conventions/authoring.md, «Типографика»). */
+const sm = (rows: number[][]) => String.raw`\left(\begin{smallmatrix}${rows.map((r) => r.join(" & ")).join(String.raw` \\ `)}\end{smallmatrix}\right)`;
 
 export const det2: Generator = {
   id: "la.det2",
@@ -30,7 +32,7 @@ export const det2: Generator = {
 
 export const matmul2: Generator = {
   id: "la.matmul2",
-  version: 2,
+  version: 3,
   title: "Произведение матриц 2 × 2",
   make(seed) {
     const r = rng(seed);
@@ -48,7 +50,7 @@ export const matmul2: Generator = {
         String.raw`$(AB)_{11} = a_{11} b_{11} + a_{12} b_{21}$.`,
         String.raw`$(AB)_{11} = ${AB[0]![0]}$, $(AB)_{12} = ${AB[0]![1]}$.`,
       ],
-      right: String.raw`$AB = ${pm(AB)}$.`,
+      right: String.raw`$AB = ${sm(AB)}$.`,
       wrong: "Неверные клетки отмечены: пересчитайте строку на столбец.",
     };
   },
@@ -96,6 +98,72 @@ export const shapes: Generator = {
         { text: String.raw`$1 \times ${d}$`, why: String.raw`Строка получилась бы у $\theta^\top X^\top X$: транспонирование переставляет множители.` },
       ]),
       hints: ["Перемножайте формы слева направо: внутренние размеры совпадают и сокращаются."],
+    };
+  },
+};
+
+export const fromImages: Generator = {
+  id: "la.from-images",
+  version: 1,
+  title: "Матрица по образам базисных векторов",
+  make(seed) {
+    const r = rng(seed);
+    // столбцы разные и не совпадают с базисом, иначе задача угадывается
+    let a: [number, number];
+    let b: [number, number];
+    do {
+      a = [r.int(-2, 2), r.int(-2, 2)];
+      b = [r.int(-2, 2), r.int(-2, 2)];
+    } while (a[0] * b[1] - a[1] * b[0] === 0 || (a[0] === 1 && a[1] === 0 && b[0] === 0 && b[1] === 1) || a[0] === a[1] || b[0] === b[1]);
+    const A = [[a[0], b[0]], [a[1], b[1]]];
+    return {
+      kind: "matrix",
+      prompt: String.raw`Линейное отображение переводит $e_1$ в точку $(${a[0]}, ${a[1]})$, а $e_2$ — в $(${b[0]}, ${b[1]})$. Запишите его матрицу $A$.`,
+      label: "$A =$",
+      answer: A,
+      tol: 0,
+      hints: [
+        String.raw`Столбец $j$ матрицы — это $Ae_j$, образ $j$-го базисного вектора.`,
+        String.raw`Первый столбец — $(${a[0]}, ${a[1]})$, записанный сверху вниз.`,
+      ],
+      right: String.raw`$A = ${sm(A)}$: столбцы — образы $e_1$ и $e_2$.`,
+      wrong: "Отмеченные клетки неверны. Образы базисных векторов записываются в столбцы, а не в строки.",
+    };
+  },
+};
+
+const NAMED: readonly { name: string; tex: string; M: number[][] }[] = [
+  { name: "поворот на 90°", tex: "R", M: [[0, -1], [1, 0]] },
+  { name: "растяжение вдвое по оси x", tex: "S", M: [[2, 0], [0, 1]] },
+  { name: "сдвиг", tex: "H", M: [[1, 1], [0, 1]] },
+  { name: "отражение относительно оси x", tex: "F", M: [[1, 0], [0, -1]] },
+];
+const mul = (A: number[][], B: number[][]) => A.map((row) => [0, 1].map((j) => row[0]! * B[0]![j]! + row[1]! * B[1]![j]!));
+const same = (A: number[][], B: number[][]) => A.every((row, i) => row.every((v, j) => v === B[i]![j]));
+
+export const composeOrder: Generator = {
+  id: "la.compose-order",
+  version: 1,
+  title: "Порядок в композиции отображений",
+  make(seed) {
+    const r = rng(seed);
+    let P: (typeof NAMED)[number];
+    let Q: (typeof NAMED)[number];
+    // только некоммутирующие пары: иначе порядок не виден
+    do {
+      [P, Q] = r.shuffle(NAMED).slice(0, 2) as [(typeof NAMED)[number], (typeof NAMED)[number]];
+    } while (same(mul(Q.M, P.M), mul(P.M, Q.M)));
+    const QP = mul(Q.M, P.M);
+    const PQ = mul(P.M, Q.M);
+    return {
+      kind: "choice",
+      prompt: String.raw`Сначала применили ${P.name} $${P.tex}$, потом ${Q.name} $${Q.tex}$: $$${P.tex} = ${pm(P.M)}, \qquad ${Q.tex} = ${pm(Q.M)}.$$ Какая матрица у результата?`,
+      options: r.shuffle([
+        { text: String.raw`$${Q.tex}${P.tex} = ${sm(QP)}$`, correct: true, why: String.raw`$(${Q.tex}${P.tex})x = ${Q.tex}(${P.tex}x)$: правая матрица действует первой.` },
+        { text: String.raw`$${P.tex}${Q.tex} = ${sm(PQ)}$`, why: String.raw`Это «сначала ${Q.name}, потом ${P.name}»: произведение отображений читается справа налево.` },
+        { text: String.raw`$${P.tex} + ${Q.tex}$`, why: "Сумма матриц — не композиция: она складывает образы, а не применяет отображения по очереди." },
+      ]),
+      hints: [String.raw`$(AB)x = A(Bx)$: первым действует правый множитель.`],
     };
   },
 };

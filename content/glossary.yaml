@@ -36,3 +36,12 @@
 - id: cost-function
   ru: 'функция потерь'
   en: 'cost function (loss)'
+- id: linear-map
+  ru: 'линейное отображение'
+  en: 'linear map'
+- id: image
+  ru: 'образ (вектора при отображении)'
+  en: 'image'
+- id: composition
+  ru: 'композиция отображений'
+  en: 'composition'

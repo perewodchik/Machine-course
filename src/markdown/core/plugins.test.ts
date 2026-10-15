@@ -95,6 +95,14 @@ describe("типограф", () => {
     expect(typograf("функция f(x) ")).toBe("функция f(x) ");
   });
 
+  it("кавычки, разорванные формулой, остаются на местах", async () => {
+    const html = await md("Читать $AB$ как «сначала $A$, потом $B$». Для поворота «сначала $R$, потом $S$» — это $SR$.");
+    expect(html).not.toContain("„");
+    expect(html.match(/«/g)).toHaveLength(2);
+    expect(html.match(/»/g)).toHaveLength(2);
+    expect(html).toMatch(/<\/span>»\. Для/);
+  });
+
   it("в MDX: текст типографится, код и формулы — нет", async () => {
     const html = await md('Текст "в кавычках" и `x = "a - b"` и $a - b$');
     expect(html).toContain("«в\u00a0кавычках»");

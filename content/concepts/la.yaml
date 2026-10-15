@@ -119,3 +119,12 @@
   lesson: quadratic-forms
   prerequisites: [la.symmetric, la.dot-product]
   core: true
+
+- id: la.linear-map
+  title:
+    ru: 'Линейное отображение'
+    en: 'linear map'
+  summary: 'Сохраняет сложение и умножение на число; задаётся матрицей, столбцы которой — образы базисных векторов. Композиция — произведение матриц.'
+  lesson: matrix-as-map
+  prerequisites: [la.matmul, la.span]
+  core: true
