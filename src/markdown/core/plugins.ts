@@ -9,6 +9,7 @@ import type { VFile } from "vfile";
 import type { SymbolSpec } from "../../lib/content/types";
 import { assignRoles, katexOptions } from "./katex";
 import { glueClass, isShortMath, nbspBeforeMath, PUNCT_AFTER } from "./nobr";
+import { pythonTokens } from "./python";
 import { typograf } from "./typograf";
 
 interface AstroData {
@@ -145,6 +146,36 @@ export function rehypeFailOnMathErrors() {
   };
 }
 
+/**
+ * Блоки ```python в уроке — той же подсветкой «карандашом», что ячейки кода (src/markdown/core/python.ts).
+ * Shiki в astro.config.mjs выключен: его темы красят мимо токенов и не проходят контраст на фоне блоков.
+ */
+export function rehypeHighlightPython() {
+  return (tree: HastRoot) => {
+    visit(tree, "element", (node: Element) => {
+      if (node.tagName !== "pre") return;
+      const code = node.children.find((c): c is Element => c.type === "element" && c.tagName === "code");
+      if (!code || !hasClass(code, "language-python")) return;
+      const text = code.children.map((c) => (c.type === "text" ? c.value : "")).join("").replace(/\n$/, "");
+      code.children = pythonTokens(text).map((t) => (t.cls ? { type: "element", tagName: "span", properties: { className: [t.cls] }, children: [{ type: "text", value: t.text }] } : { type: "text", value: t.text }));
+      node.properties = { ...node.properties, className: ["code", "code-listing"] };
+      return SKIP;
+    });
+  };
+}
+
+/** Короткий код в строке — `(n, 1)`, `A @ B` — не рвётся посередине: класс nowrap (src/styles/base.css). */
+export function rehypeShortCode() {
+  return (tree: HastRoot) => {
+    visit(tree, "element", (node: Element, _i, parent) => {
+      if (node.tagName === "pre") return SKIP;
+      if (node.tagName !== "code" || (parent?.type === "element" && parent.tagName === "pre")) return;
+      const text = node.children.map((c) => (c.type === "text" ? c.value : "")).join("");
+      if (text.length <= 16) node.properties = { ...node.properties, className: ["nowrap"] };
+    });
+  };
+}
+
 export const remarkPlugins = [remarkMath, remarkSymbolRoles];
 /** Текст ячейки заголовка: у формулы — из MathML, без дубля из katex-html. */
 function cellText(node: ElementContent): string {
@@ -177,4 +208,4 @@ export function rehypeWrapTables() {
   };
 }
 
-export const rehypePlugins = [[rehypeKatex, katexOptions], rehypeFailOnMathErrors, rehypeTypograf, rehypeMathGlue, rehypeWrapTables] as const;
+export const rehypePlugins = [[rehypeKatex, katexOptions], rehypeFailOnMathErrors, rehypeHighlightPython, rehypeShortCode, rehypeTypograf, rehypeMathGlue, rehypeWrapTables] as const;

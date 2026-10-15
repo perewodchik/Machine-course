@@ -34,3 +34,13 @@
   lesson: sums-products-indicators
   prerequisites: [nota.sums]
   core: true
+
+- id: nota.arrays
+  title:
+    ru: 'Массивы и формы NumPy'
+    en: 'arrays and shapes'
+  summary: 'Данные — массив $X$ формы $(n, d)$; $X\theta$ — это `X @ theta`, а `*` — поэлементно; broadcasting растягивает оси размера $1$.'
+  lesson: numpy-minimum
+  prerequisites: [nota.sums]
+  core: true
+

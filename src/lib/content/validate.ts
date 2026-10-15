@@ -344,6 +344,8 @@ export function validateContent(root: string): ValidationResult {
       checkProse(x.meaning, m.file, `symbols[${i}].meaning`, m.frontmatter?.symbols ?? []);
     });
     for (const f of m.frontmatter?.lead?.matchAll(/\$((?:\\.|[^$\\])+?)\$/g) ?? []) checkTex(f[1]!, m.file, "lead", m.frontmatter?.symbols);
+    // лид рисуется как текст с формулами: код в обратных кавычках остался бы кавычками, а « - » типограф сделал бы тире
+    if (m.frontmatter?.lead?.includes("`")) report(m.file, "lead: код в обратных кавычках в лиде не отображается — перескажите словами");
     let tree: MdastRoot;
     try {
       tree = mdxParser.parse(m.body);
