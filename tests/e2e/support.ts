@@ -32,6 +32,8 @@ export const layoutPages = {
   start7: "/foundations/start/integral/",
   start8: "/foundations/start/numpy-minimum/",
   start9: "/foundations/start/notation/",
+  i1: "/foundations/linear-algebra/vectors-span/",
+  spangame: "/games/span-hit/",
   concept: "/concepts/la.dot-product/",
 } as const;
 

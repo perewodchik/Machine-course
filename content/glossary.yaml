@@ -128,3 +128,12 @@
   ru: 'метод Монте-Карло'
   en: 'Monte Carlo method'
   note: 'Оценка интеграла средним значением функции в случайных точках; ошибка убывает как $1/\sqrt{n}$.'
+- id: linear-combination
+  ru: 'линейная комбинация, линейная оболочка'
+  en: 'linear combination, span'
+- id: linear-independence
+  ru: 'линейная независимость'
+  en: 'linear independence'
+- id: basis
+  ru: 'базис, размерность, подпространство'
+  en: 'basis, dimension, subspace'

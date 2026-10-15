@@ -70,7 +70,7 @@
   title:
     ru: 'Линейная оболочка'
     en: 'span'
-  summary: 'Все линейные комбинации набора векторов.'
+  summary: 'Все линейные комбинации $c_1 v_1 + \ldots + c_k v_k$ набора векторов; у двух непараллельных векторов плоскости — вся плоскость.'
   lesson: vectors-span
   prerequisites: []
   core: true
@@ -128,3 +128,13 @@
   lesson: matrix-as-map
   prerequisites: [la.matmul, la.span]
   core: true
+
+- id: la.basis
+  title:
+    ru: 'Базис и размерность'
+    en: 'basis and dimension'
+  summary: 'Базис — независимый набор, порождающий подпространство; размерность — число векторов в базисе: у $\mathbb{R}^d$ она равна $d$.'
+  lesson: vectors-span
+  prerequisites: [la.span, la.linear-independence]
+  core: true
+

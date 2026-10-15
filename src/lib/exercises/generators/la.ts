@@ -1,6 +1,6 @@
 // Параметрические задачи по линейной алгебре и уроку V.1. Числа «ручные»: небольшие целые, ответ без длинной арифметики.
 import { rng } from "../../math/rng";
-import type { Generator } from "../types";
+import type { ChoiceOption, Generator } from "../types";
 
 const pm = (rows: number[][]) => String.raw`\begin{pmatrix}${rows.map((r) => r.join(" & ")).join(String.raw` \\ `)}\end{pmatrix}`;
 /** Отрицательное число в произведении — в скобках: «2 · (−3)». */
@@ -213,6 +213,90 @@ export const dot: Generator = {
       hints: [String.raw`$u^\top v = \sum_{j} u_j v_j$ — сумма произведений координат с одинаковыми номерами.`],
       right: String.raw`$u^\top v = ${u.map((x, i) => `${x < 0 ? `(${x})` : x} \\cdot ${v[i]! < 0 ? `(${v[i]})` : v[i]}`).join(" + ")} = ${answer}$.`,
       wrong: "Скалярное произведение — число: произведения координат складываются. Проверьте знаки у отрицательных координат.",
+    };
+  },
+};
+
+/** Урок I.1: лежит ли t в оболочке a, b — единственным способом, бесконечным числом способов или нет. */
+export const inSpan: Generator = {
+  id: "la.in-span",
+  version: 1,
+  title: "Вектор в оболочке",
+  make(seed) {
+    const r = rng(seed);
+    const kind = (["unique", "many", "none"] as const)[(seed - 1) % 3]!;
+    let a: number[];
+    let b: number[];
+    let t: number[];
+    if (kind === "unique") {
+      do {
+        a = [r.int(-2, 2), r.int(-2, 2)];
+        b = [r.int(-2, 2), r.int(-2, 2)];
+      } while (a[0]! * b[1]! - a[1]! * b[0]! === 0);
+      const c = [r.nonzero(-2, 2), r.nonzero(-2, 2)];
+      t = [c[0]! * a[0]! + c[1]! * b[0]!, c[0]! * a[1]! + c[1]! * b[1]!];
+    } else {
+      a = r.pick([[1, 2], [2, 1], [1, -1], [3, 1]]);
+      const k = r.pick([2, -1, -2, 3]);
+      b = [k * a[0]!, k * a[1]!];
+      const s = r.pick([2, -2, 3]);
+      t = kind === "many" ? [s * a[0]!, s * a[1]!] : [s * a[0]! + 1, s * a[1]!];
+    }
+    const vec = (v: number[]) => sm([[v[0]!], [v[1]!]]);
+    const options: ChoiceOption[] = [
+      {
+        text: "Да, и коэффициенты $c_1$, $c_2$ определены однозначно",
+        correct: kind === "unique",
+        why: kind === "unique" ? String.raw`$a$ и $b$ не параллельны: их оболочка — вся плоскость, а система $c_1 a + c_2 b = t$ имеет одно решение.` : String.raw`$a$ и $b$ параллельны: ${kind === "many" ? "если комбинация попадает в $t$, то пар коэффициентов бесконечно много" : "их комбинации не выходят за одну прямую"}.`,
+      },
+      {
+        text: "Да, и подходящих пар $c_1$, $c_2$ бесконечно много",
+        correct: kind === "many",
+        why: kind === "many" ? String.raw`$b$ кратен $a$, а $t$ лежит на их прямой: можно взять $c_2 = 0$, а можно добавить к $b$ компенсирующую часть $a$ — пар бесконечно много.` : kind === "unique" ? String.raw`Несколько решений бывает только у параллельных векторов, а здесь $a$ и $b$ не параллельны.` : String.raw`Все комбинации параллельных $a$ и $b$ лежат на одной прямой, а $t$ — вне её.`,
+      },
+      {
+        text: String.raw`Нет: $t$ вне оболочки $a$ и $b$`,
+        correct: kind === "none",
+        why: kind === "none" ? String.raw`$b$ кратен $a$: все комбинации лежат на прямой через $a$, а $t$ на ней не лежит.` : String.raw`Попробуйте подобрать коэффициенты: ${kind === "unique" ? "непараллельные векторы порождают всю плоскость" : "$t$ кратен $a$"}.`,
+      },
+    ];
+    return {
+      kind: "choice",
+      prompt: String.raw`$a = ${vec(a)}$, $b = ${vec(b)}$, $t = ${vec(t)}$. Лежит ли $t$ в оболочке $a$ и $b$?`,
+      options,
+      hints: [String.raw`Сначала проверьте, параллельны ли $a$ и $b$: пропорциональны ли их координаты.`],
+    };
+  },
+};
+
+/** Урок I.1: независимы ли три вектора ℝ³. Зависимость — третий есть комбинация первых двух. */
+export const independence: Generator = {
+  id: "la.independence",
+  version: 1,
+  title: "Линейная независимость",
+  make(seed) {
+    const r = rng(seed);
+    const dependent = seed % 2 === 0;
+    const v1 = [1, r.int(-2, 2), r.int(-2, 2)];
+    const v2 = [0, 1, r.int(-2, 2)];
+    const [p, q] = [r.nonzero(-2, 2), r.nonzero(-2, 2)];
+    // независимый третий — «треугольный»: третья координата не даёт выразить его через первые два
+    const v3 = dependent ? v1.map((x, i) => p * x + q * v2[i]!) : [0, 0, r.nonzero(-2, 2)];
+    const order = r.shuffle([v1, v2, v3]);
+    const names = ["v_1", "v_2", "v_3"];
+    const vec = (v: number[]) => sm(v.map((x) => [x]));
+    const k = (c: number) => (c === 1 ? "" : c === -1 ? "-" : String(c));
+    const how = dependent ? String.raw`${names[order.indexOf(v3)]} = ${k(p)}${names[order.indexOf(v1)]} ${q < 0 ? "-" : "+"} ${k(Math.abs(q))}${names[order.indexOf(v2)]}` : "";
+    const options: ChoiceOption[] = [
+      { text: "Независимы: это базис $\\mathbb{R}^3$", correct: !dependent, why: dependent ? String.raw`Один вектор выражается через два других: $${how}$.` : String.raw`Нулевая комбинация возможна только с нулевыми коэффициентами — три независимых вектора в $\mathbb{R}^3$ образуют базис.` },
+      { text: "Зависимы: один из них — комбинация двух других", correct: dependent, why: dependent ? String.raw`Верно: $${how}$.` : String.raw`Попробуйте выразить: из третьих координат и вторых следует, что все коэффициенты нулевые.` },
+      { text: "Векторов три в $\\mathbb{R}^3$ — значит, они обязательно базис", why: String.raw`Трёх векторов мало: нужна ещё независимость. Три вектора одной плоскости базисом $\mathbb{R}^3$ не будут.` },
+    ];
+    return {
+      kind: "choice",
+      prompt: String.raw`Векторы $${names[0]} = ${vec(order[0]!)}$, $${names[1]} = ${vec(order[1]!)}$, $${names[2]} = ${vec(order[2]!)}$. Линейно независимы ли они?`,
+      options,
+      hints: [String.raw`Попробуйте выразить один вектор через два других: $v = \alpha u + \beta w$ — система из трёх уравнений на два неизвестных.`, String.raw`Или посчитайте определитель матрицы со столбцами $v_1, v_2, v_3$: ноль — значит, зависимы.`],
     };
   },
 };
