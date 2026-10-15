@@ -101,3 +101,17 @@
 - id: discount-factor
   ru: 'коэффициент дисконтирования'
   en: 'discount factor'
+- id: natural-log
+  ru: 'натуральный логарифм, экспонента'
+  en: 'natural logarithm, exponential'
+  note: 'В CS229 и в NumPy (np.log) $\log$ — натуральный логарифм, по основанию $e$.'
+- id: sigmoid
+  ru: 'сигмоида, логистическая функция'
+  en: 'sigmoid, logistic function'
+- id: underflow
+  ru: 'потеря значимости снизу, исчезновение порядка'
+  en: 'underflow'
+  note: 'Результат меньше самого маленького числа float64 записывается нулём — без ошибки и предупреждения.'
+- id: log-sum-exp
+  ru: 'логарифм суммы экспонент'
+  en: 'log-sum-exp'

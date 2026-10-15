@@ -26,6 +26,8 @@ export const layoutPages = {
   start3: "/foundations/start/language-of-math/",
   start4: "/foundations/start/sums-products-indicators/",
   sumgame: "/games/sum-translator/",
+  start5: "/foundations/start/exp-log-sigmoid/",
+  undergame: "/games/underflow/",
   concept: "/concepts/la.dot-product/",
 } as const;
 

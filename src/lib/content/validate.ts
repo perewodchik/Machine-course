@@ -352,6 +352,15 @@ export function validateContent(root: string): ValidationResult {
       continue;
     }
     const line = (n: { position?: { start: { line: number } } }) => (n.position ? m.bodyLine + n.position.start.line : "?");
+    // заголовок таблицы из одной формулы axe считает пустым (видимый текст KaTeX скрыт от скринридера): «Аргумент $z$»
+    const rows = m.body.split("\n");
+    rows.forEach((row, i) => {
+      if (!row.trim().startsWith("|") || !/^\s*\|\s*:?-{3,}/.test(rows[i + 1] ?? "")) return;
+      const cells = row.trim().replace(/^\||\|$/g, "").split("|").map((c) => c.trim());
+      cells.forEach((c, k) => {
+        if (/^\$[^$]+\$$/.test(c)) report(m.file, `строка ${m.bodyLine + i + 1}: заголовок столбца ${k + 1} — только формула «${c}»; добавьте слово, например «Аргумент ${c}»`);
+      });
+    });
     visit(tree, (node) => {
       if (node.type === "math" || node.type === "inlineMath") {
         checkTex(node.value, m.file, `строка ${line(node)}`, m.frontmatter?.symbols);

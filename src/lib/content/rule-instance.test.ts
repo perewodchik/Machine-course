@@ -1,6 +1,6 @@
 // Правило с подставленными символами: правая и левая части, мутации; буквы внутри команд не трогаются.
 import { describe, expect, it } from "vitest";
-import { instantiate, substitute } from "./rule-instance";
+import { instantiate, substitute, topLevelEq } from "./rule-instance";
 import type { Rule } from "./types";
 
 const transpose: Rule = {
@@ -29,5 +29,12 @@ describe("правило с подставленными символами", ()
   it("буквы внутри команд и имён не заменяются", () => {
     const syms = [{ name: "A", tex: "A" }, { name: "x", tex: "x" }] as Rule["symbols"];
     expect(substitute(String.raw`\max_x A x + \exp(x) + Ax_1`, { A: "M", x: "v" }, syms)).toBe(String.raw`\max_{v} {M} {v} + \exp({v}) + {M}{v}_1`);
+  });
+
+  it("левая часть кончается на «=» вне скобок: знаки в пределах суммы и внутри \\{ \\} не считаются", () => {
+    const tex = String.raw`\log \prod_{i=1}^{n} p_i = \sum_{i=1}^{n} \log p_i`;
+    expect(tex.slice(0, topLevelEq(tex)).trim()).toBe(String.raw`\log \prod_{i=1}^{n} p_i`);
+    expect(topLevelEq(String.raw`1\{y = k\} = 1`)).toBe(String.raw`1\{y = k\} `.length);
+    expect(topLevelEq("x_{i=1}")).toBe(-1);
   });
 });

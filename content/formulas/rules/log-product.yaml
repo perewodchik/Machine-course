@@ -1,0 +1,26 @@
+id: rule.log-product
+kind: rule
+title:
+  ru: 'Логарифм произведения — сумма логарифмов'
+  en: 'log of a product is a sum of logs'
+statement: '\log \prod_{i=1}^{n} p_i = \sum_{i=1}^{n} \log p_i'
+symbols:
+  - name: p
+    tex: 'p'
+    shape: [n, 1]
+    sample: positive
+concept: calc.log-exp
+corollary: 'Поэтому вместо правдоподобия $\prod_i p(y^{(i)} \mid x^{(i)}; \theta)$ максимизируют его логарифм $\sum_i \log p(y^{(i)} \mid x^{(i)}; \theta)$: логарифм возрастает и точку максимума не меняет, а сумма не обращается в ноль во float.'
+pitfall: 'Проносить логарифм через сумму: $\log(a + b) \ne \log a + \log b$.'
+checks:
+  - kind: identity
+    lhs: 'np.log(np.prod(p))'
+    rhs: 'np.sum(np.log(p))'
+# типичные ошибки (S3.05): неверные варианты в задачах с выбором и диагноз ответа ученика
+mutations:
+  - tex: '\prod_{i=1}^{n} \log p_i'
+    py: 'np.prod(np.log(p))'
+    why: 'Логарифм превращает умножение в сложение: произведение логарифмов здесь ни при чём.'
+  - tex: '\log \sum_{i=1}^{n} p_i'
+    py: 'np.log(np.sum(p))'
+    why: 'Под логарифмом было произведение, а не сумма. И логарифм суммы не раскладывается: $\log(a + b) \ne \log a + \log b$.'

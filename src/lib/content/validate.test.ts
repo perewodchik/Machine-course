@@ -49,6 +49,7 @@ describe("каждая проверка ловит свою фикстуру", (
     ["sym-bare", [/next\.mdx: строка \d+: символ «X» \(роль data\) написан без \\sym/]],
     ["role-conflict", [/символ «theta»: роль (target|param), а в .* — (param|target)/]],
     ["note-label", [/next\.mdx: строка 11: заметка <Note> без подписи label/]],
+    ["table-header", [/next\.mdx: строка 11: заголовок столбца 1 — только формула «\$x\$»/]],
     [
       "diagnostic-refs",
       [

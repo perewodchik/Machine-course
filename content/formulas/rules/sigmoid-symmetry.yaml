@@ -1,0 +1,24 @@
+id: rule.sigmoid-symmetry
+kind: rule
+title:
+  ru: 'Симметрия сигмоиды'
+  en: 'sigmoid symmetry'
+statement: '1 - g(z) = g(-z)'
+symbols:
+  - name: z
+    tex: 'z'
+    shape: []
+concept: calc.sigmoid
+corollary: 'Если $g(z)$ — вероятность класса $1$, то вероятность класса $0$ — та же сигмоида от $-z$: $P(y = 0) = g(-z)$.'
+pitfall: 'Считать, что $1 - g(z) = -g(z)$ или $g(1 - z)$: вычитание из единицы — это смена знака аргумента.'
+checks:
+  - kind: identity
+    lhs: '1 - 1 / (1 + np.exp(-z))'
+    rhs: '1 / (1 + np.exp(z))'
+mutations:
+  - tex: '-g(z)'
+    py: '-1 / (1 + np.exp(-z))'
+    why: 'Вероятность не бывает отрицательной: $1 - g(z)$ лежит между $0$ и $1$, а $-g(z)$ — между $-1$ и $0$.'
+  - tex: 'g(1 - z)'
+    py: '1 / (1 + np.exp(-(1 - z)))'
+    why: 'Из единицы вычитается значение сигмоиды, а не аргумент: $1 - g(z) = \frac{e^{-z}}{1 + e^{-z}} = \frac{1}{1 + e^{z}} = g(-z)$.'

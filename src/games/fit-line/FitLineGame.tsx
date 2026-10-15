@@ -74,7 +74,7 @@ const view: ShellView<State, Action, Level> = {
   board: (s) => <Board state={s} />,
   controls: (s, dispatch) => <Controls state={s} dispatch={dispatch} />,
   keys: [
-    ["Стрелки на бегунке", "сдвинуть на шаг; Page Up и Page Down — на десять шагов"],
+    ["Стрелки на бегунке", "сдвинуть на шаг; Page Up и Page Down — на десятую часть шкалы"],
     ["Tab", "перейти к следующему бегунку или кнопке"],
     ["Подсказка", "сначала на что смотреть, потом в какую сторону двигать, потом где минимум"],
   ],
