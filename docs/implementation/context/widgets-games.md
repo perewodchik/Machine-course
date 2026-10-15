@@ -5,7 +5,7 @@
 ## Главное
 
 - **Виджет = чистая модель + тонкое представление** (`src/widgets/<раздел>/<имя>/`: `model.ts`, `model.test.ts`, `<Имя>.tsx`, `index.ts` с `meta`, `README.md`). Пропсы: `initial`, `lock`, `show`, `seed` — только сериализуемые.
-- **`widgets/_kit`** — свой SVG-слой на `d3-scale`: `Plane` (клетка совпадает с делениями осей), `Axis`, `Point`, `Line` и `Ellipse` с `clipPath` по области графика, `Vector`, `ParamSlider` (бегунок цвета роли), `Readout`, `Scrub` (живое число в тексте). `viewBox` пересчитывается по ширине (ResizeObserver).
+- **`widgets/_kit`** (готов, S2.01; таблица элементов — `src/widgets/_kit/README.md`, стили — `src/styles/kit.css`) — свой SVG-слой на `d3-scale`: `Plane` (клетка совпадает с делениями осей), `Axis`, `Point`, `Line` и `Ellipse` с `clipPath` по области графика, `Vector`, `ParamSlider` (бегунок цвета роли), `Readout`, `Scrub` (живое число в тексте). `viewBox` пересчитывается по ширине (ResizeObserver).
 - **Подписи на рисунке** — шрифт формул (`--font-math`) с подложкой цвета фона; индексы 0.7em; подпись у видимого конца линии, если линия вне графика — скрыта.
 - **Цвета** — роли урока (`--sym-1…3`), вспомогательное — карандаш `--ink-3` пунктиром.
 - **Детерминизм и SSR:** состояние из `seed`, без `Math.random` и `Date`.

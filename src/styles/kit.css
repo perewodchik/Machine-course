@@ -1,0 +1,92 @@
+/*
+ * Набор для рисунков (src/widgets/_kit): плоскость, оси, точки, линии, эллипсы, векторы, ползунки, показания,
+ * «живое число». Цвета — роли символов (r1–r3) и карандаш (r4); ручки интерфейса рисунок не красят.
+ * Перенесено из прототипа (prototype/assets/proto.css, «Рисунок»).
+ */
+@layer components {
+  .kit-plane { width: 100%; }
+  .kit-plane svg { display: block; width: 100%; height: auto; }
+  .kit-grid line { stroke: var(--grid); stroke-width: 1; }
+  .kit-axes .axis { stroke: var(--ink-3); stroke-width: 1.25; }
+  .kit-axes .tick { fill: var(--ink-3); font: 12px var(--font-ui); font-variant-numeric: tabular-nums; }
+
+  /* Подписи шрифтом формул с подложкой цвета поля: читаются поверх клетки и линий */
+  .kit-label { font: 17px var(--font-math); fill: var(--ink-2); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
+  .kit-label .sub { font-size: 0.7em; }
+  .kit-label.axis-label { font-size: 16px; font-style: italic; }
+  .kit-label.r1 { fill: var(--sym-1-text); }
+  .kit-label.r2 { fill: var(--sym-2-text); }
+  .kit-label.r3 { fill: var(--sym-3-text); }
+  .kit-label.r4 { fill: var(--ink-3); }
+
+  .kit-point circle { stroke: var(--surface); stroke-width: 2; transition: r var(--duration-ui) var(--ease-out); }
+  .kit-point.r1 circle { fill: var(--sym-1); }
+  .kit-point.r2 circle { fill: var(--sym-2); }
+  .kit-point.r3 circle { fill: var(--sym-3); }
+  .kit-point.r4 circle { fill: var(--ink-3); }
+
+  .kit-line line, .kit-vector line { stroke-width: 2.5; stroke-linecap: round; }
+  .kit-line.is-dashed line { stroke-width: 1.5; stroke-dasharray: 4 3; }
+  .kit-line.is-lit line, .kit-vector.is-lit line { stroke-width: 4; }
+  .kit-ellipse circle { fill: none; stroke-width: 2; }
+  .kit-ellipse.is-lit circle { stroke-width: 3.5; }
+  /* цвет линий, эллипсов и векторов — по роли; точки красятся заливкой (выше) */
+  .kit-line.r1 line, .kit-vector.r1 line, .kit-ellipse.r1 circle { stroke: var(--sym-1); }
+  .kit-line.r2 line, .kit-vector.r2 line, .kit-ellipse.r2 circle { stroke: var(--sym-2); }
+  .kit-line.r3 line, .kit-vector.r3 line, .kit-ellipse.r3 circle { stroke: var(--sym-3); }
+  .kit-line.r4 line, .kit-vector.r4 line, .kit-ellipse.r4 circle { stroke: var(--ink-3); }
+  .kit-ellipse.is-filled.r1 circle { fill: var(--sym-1); fill-opacity: 0.12; }
+  .kit-ellipse.is-filled.r2 circle { fill: var(--sym-2); fill-opacity: 0.12; }
+  .kit-ellipse.is-filled.r3 circle { fill: var(--sym-3); fill-opacity: 0.12; }
+  .kit-vector.r1 polygon { fill: var(--sym-1); }
+  .kit-vector.r2 polygon { fill: var(--sym-2); }
+  .kit-vector.r3 polygon { fill: var(--sym-3); }
+  .kit-vector.r4 polygon { fill: var(--ink-3); }
+
+  /* Ползунок: бегунок цвета величины, которую он двигает */
+  .kit-slider { --thumb: var(--pen); display: grid; grid-template-columns: 2.4em minmax(0, 1fr) 3.4em; align-items: center; gap: 10px; font-family: var(--font-ui); font-size: var(--text-sm); }
+  .kit-slider.r1 { --thumb: var(--sym-1); }
+  .kit-slider.r2 { --thumb: var(--sym-2); }
+  .kit-slider.r3 { --thumb: var(--sym-3); }
+  .kit-slider__name { font-family: var(--font-math); font-style: italic; font-size: 1.1em; color: var(--ink); }
+  .kit-slider.r1 .kit-slider__name { color: var(--sym-1-text); }
+  .kit-slider.r2 .kit-slider__name { color: var(--sym-2-text); }
+  .kit-slider.r3 .kit-slider__name { color: var(--sym-3-text); }
+  .kit-slider__value { text-align: right; font-variant-numeric: tabular-nums; font-weight: 500; color: var(--ink); }
+  .kit-slider input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 22px; margin: 0; background: transparent; }
+  .kit-slider input[type="range"]::-webkit-slider-runnable-track { height: 2px; border-radius: 1px; background: var(--control-border); }
+  .kit-slider input[type="range"]::-moz-range-track { height: 2px; border-radius: 1px; background: var(--control-border); }
+  .kit-slider input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; margin-top: -7px; border: 2px solid var(--surface); border-radius: 50%; background: var(--thumb); box-shadow: 0 0 0 1px var(--thumb); cursor: grab; }
+  .kit-slider input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 2px solid var(--surface); border-radius: 50%; background: var(--thumb); box-shadow: 0 0 0 1px var(--thumb); cursor: grab; }
+  .kit-slider input[type="range"]:focus-visible { outline: 2px solid var(--pen); outline-offset: 2px; border-radius: 2px; }
+
+  /* Показание и шкала до минимума */
+  .kit-readout { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; font-family: var(--font-ui); font-size: var(--text-sm); color: var(--ink-2); }
+  .kit-readout__name { font-family: var(--font-math); font-style: italic; font-size: 1.1em; color: var(--ink); }
+  .kit-readout__value { min-width: 3.2em; font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .kit-readout__hint { flex-basis: 100%; color: var(--ink-3); }
+  .kit-meter { position: relative; flex: 1; min-width: 6rem; height: 6px; overflow: hidden; border: 1px solid var(--rule); border-radius: 3px; background: var(--paper-2); }
+  .kit-meter > span { position: absolute; inset: 0 auto 0 0; border-radius: 3px; background: var(--ink-3); transition: width var(--duration-ui) var(--ease-out); }
+  .kit-meter > i { position: absolute; top: -2px; bottom: -2px; width: 2px; background: var(--ink); }
+
+  /* «Живое число» в тексте: тянется вбок, меняется стрелками */
+  .kit-scrub { padding: 0 2px; border-bottom: 1px dashed currentColor; border-radius: 2px; font-family: var(--font-ui); font-weight: 500; font-variant-numeric: tabular-nums; cursor: ew-resize; touch-action: none; user-select: none; }
+  .kit-scrub.r1 { color: var(--sym-1-text); }
+  .kit-scrub.r2 { color: var(--sym-2-text); }
+  .kit-scrub.r3 { color: var(--sym-3-text); }
+  .kit-scrub:hover, .kit-scrub:focus-visible, .kit-scrub.is-lit { background: color-mix(in oklab, currentColor 12%, transparent); }
+
+  @media (pointer: coarse) {
+    .kit-slider input[type="range"] { height: var(--target-touch); }
+    .kit-scrub { display: inline-block; min-height: var(--target-touch); line-height: var(--target-touch); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .kit-point circle, .kit-meter > span { transition: none; }
+  }
+}
+
+@layer components {
+  .kit-demo__controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2) var(--space-5); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule); }
+  .kit-demo__controls .kit-readout { grid-column: 1 / -1; }
+  @media (max-width: 900px) { .kit-demo__controls { grid-template-columns: minmax(0, 1fr); } }
+}

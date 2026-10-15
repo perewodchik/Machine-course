@@ -17,6 +17,15 @@
 
 ---
 
+### 2026-10-15 — S2.01 набор widgets/_kit — готова
+- **Сделано:** src/widgets/_kit/* (логика layout/clip/format/scrub + 10 элементов + KitDemo, README), src/styles/kit.css, раздел «Набор для рисунков» на /lab (остров client:visible). Тесты: kit.test.ts (шкалы, клетка совпадает с делениями при 300–1200 px, обрезка Лианга — Барски, подписи, клавиатура), render.test.tsx (SSR: viewBox, clipPath, подписи, ARIA), e2e: стрелки и Shift+стрелка, End, прямая вне графика без подписи, подсветка X из рисунка в формулах. Зависимости: d3-scale 4.0.2, @nanostores/react 2.0.1.
+- **Файлы:** src/widgets/_kit/*, src/styles/kit.css, src/pages/lab.astro, tests/e2e/lab.spec.ts
+- **Проверка:** lint, astro check 0, vitest 156, build, e2e 93
+- **Отклонения от плана и решения:** Подпись прямой сдвигается вниз с учётом наклона и ширины подписи — иначе на узком рисунке налезает на линию (в прототипе отступ был постоянный). Ellipse рисуется матрицей преобразования единичной окружности (разные масштабы осей) с vector-effect: non-scaling-stroke.
+- **Где остановился:** —
+- **Следующий шаг:** S2.02.
+- **Вопросы пользователю:** —
+
 ### 2026-10-14 — S1.13 Подключение Cloudflare — ждёт пользователя
 - **Сделано:** пользователь создал проект Workers `machine-course` (не Pages), продакшен — `main`. ADR 0005 (Workers со статическими ассетами) заменяет 0003. `wrangler.jsonc` отдаёт `dist/`, `public/_headers` без изменений. В `main` положена заглушка (`placeholder/`, коммит 5321d89); ветка слила `main` и убрала заглушку, так что слияние ветки в `main` пройдёт без конфликтов.
 - **Файлы:** wrangler.jsonc, docs/adr/0005-hosting-workers.md, README.md (раздел «Хостинг»), docs/implementation/context/{site-foundation,00-project}.md
