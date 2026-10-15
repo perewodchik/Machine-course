@@ -12,7 +12,7 @@ symbols:
     tex: 'x'
     shape: [d, 1]
 concept: calc.matrix-calculus
-corollary: 'Для симметричной A: ∇ xᵀAx = 2Ax.'
+corollary: 'Для симметричной $A$: $\nabla_x\, x^\top A x = 2Ax$.'
 checks:
   - kind: gradient
     f: 'x @ A @ x'

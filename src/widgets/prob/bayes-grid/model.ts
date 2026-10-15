@@ -48,11 +48,10 @@ export function pct(v: number): string {
   return `${s.replace(/\.0+$/, "")}\u00a0%`;
 }
 
-export function describe(p: Params): string {
+/** Текст рисунка для скринридера; concealed — без ответа P(болен | +), пока ученик его не открыл. */
+export function describe(p: Params, concealed = false): string {
   const c = counts(p);
   const pos = c.tp + c.fp;
-  return (
-    `Из ${POPULATION} человек больны ${c.tp + c.fn}. Тест положителен у ${c.tp} больных и у ${c.fp} здоровых: ` +
-    `из ${pos} положительных больны ${c.tp}. P(болен | +) = ${pct(posterior(p))}.`
-  );
+  const head = `Из ${POPULATION} человек больны ${c.tp + c.fn}. Тест положителен у ${c.tp} больных и у ${c.fp} здоровых`;
+  return concealed ? `${head}.` : `${head}: из ${pos} положительных больны ${c.tp}. P(болен | +) = ${pct(posterior(p))}.`;
 }

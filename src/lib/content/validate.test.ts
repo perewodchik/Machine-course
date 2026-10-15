@@ -49,6 +49,7 @@ describe("каждая проверка ловит свою фикстуру", (
     ["sym-bare", [/next\.mdx: строка \d+: символ «X» \(роль data\) написан без \\sym/]],
     ["role-conflict", [/символ «theta»: роль (target|param), а в .* — (param|target)/]],
     ["note-label", [/next\.mdx: строка 11: заметка <Note> без подписи label/]],
+    ["prose-math", ["dot-symmetric.yaml: corollary: «ᵀ» вне формулы", "dot-symmetric.yaml: pitfall: «_» вне формулы"]],
     ["lesson-duplicate", ["lessons[1].number: номер «1.1» уже занят", "lessons[2].slug: урок «intro» повторяется в модуле"]],
     ["course-requires", ["requires: нет курса «no-such-course»"]],
     ["redirect-target", ["цели «demo/basics/intro-renamed» нет среди уроков", "lessons.demo/basics/intro: старый ключ всё ещё занят уроком"]],

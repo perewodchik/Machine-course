@@ -3,8 +3,8 @@
 // от скринридеров (aria-hidden), поэтому подсветка с клавиатуры идёт через фокус на легенде (src/client/symbols.ts).
 import type { SymbolSpec } from "../../lib/content/types";
 import { ru } from "../../lib/content/catalog";
+import { inlineText, renderInline } from "../../markdown/core/inline";
 import { ROLE_SLOT, renderTex, texToText } from "../../markdown/core/katex";
-import { typograf } from "../../markdown/core/typograf";
 
 interface Props {
   symbols: readonly SymbolSpec[];
@@ -13,7 +13,8 @@ interface Props {
   class?: string;
 }
 const { symbols, prefix = "где", class: className } = Astro.props;
-const shape = (s: SymbolSpec) => (s.shape?.length ? s.shape.join("\u202f×\u202f") : undefined);
+// форма — формулой: n и d — переменные, курсивом, как в тексте урока
+const shape = (s: SymbolSpec) => (s.shape?.length ? renderTex(s.shape.join(" \\times ")) : undefined);
 const last = symbols.length - 1;
 ---
 <p class:list={["sym-legend", className]}>
@@ -24,11 +25,11 @@ const last = symbols.length - 1;
         type="button"
         class:list={["sym-key", s.role && `s${ROLE_SLOT[s.role]}`]}
         data-sym-key={s.name}
-        aria-label={s.meaning ? `${texToText(s.tex)} — ${ru(s.meaning)}` : texToText(s.tex)}
+        aria-label={s.meaning ? `${texToText(s.tex)} — ${inlineText(ru(s.meaning))}` : texToText(s.tex)}
         set:html={renderTex(s.tex)}
       />
-      {s.meaning && <>{"\u00a0— "}{typograf(ru(s.meaning))}</>}
-      {shape(s) && <>, <span class="sym-legend__shape">{shape(s)}</span></>}
+      {s.meaning && <>{"\u00a0— "}<Fragment set:html={renderInline(ru(s.meaning), symbols)} /></>}
+      {shape(s) && <>, <span class="sym-legend__shape" set:html={shape(s)} /></>}
       {i < last ? "; " : ""}
     </>
   ))}

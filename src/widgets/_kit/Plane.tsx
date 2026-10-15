@@ -41,8 +41,9 @@ export function Plane({ label, xLabel = "x", yLabel = "y", initialWidth = 660, c
           ))}
         </g>
         <PlaneContext.Provider value={{ layout, box, clipId }}>
-          <Axis xLabel={xLabel} yLabel={yLabel} />
+          <Axis part="lines" />
           <g clipPath={`url(#${clipId})`}>{children}</g>
+          <Axis part="labels" xLabel={xLabel} yLabel={yLabel} />
         </PlaneContext.Provider>
       </svg>
     </div>

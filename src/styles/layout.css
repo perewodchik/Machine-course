@@ -16,7 +16,7 @@
   /* ───────── Шапка ───────── */
   .site-header {
     position: sticky; top: 0; z-index: 20;
-    background: color-mix(in oklab, var(--paper) 94%, transparent);
+    background: var(--paper); /* непрозрачный: текст урока не просвечивает за названием курса */
     border-bottom: 1px solid var(--rule);
     font-family: var(--font-ui); font-size: var(--text-sm);
   }
@@ -55,6 +55,17 @@
   /* ───────── Кнопки ───────── */
   /* обёртку ставит rehypeWrapTables: широкая таблица прокручивается внутри колонки */
   .table-wrap { margin: var(--space-5) 0; overflow-x: auto; }
+  /* на телефоне строка широкой таблицы — карточка: подпись столбца над значением (data-label от rehypeWrapTables) */
+  @media (max-width: 480px) {
+    .table-wrap--stack thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .table-wrap--stack tr { display: block; padding: var(--space-3) 0; border-bottom: 1px solid var(--rule); }
+    .table-wrap--stack td { display: block; padding: 2px 0; border: 0; }
+    .table-wrap--stack td:first-child { font-weight: 600; }
+    .table-wrap--stack td:not(:first-child)::before {
+      content: attr(data-label); display: block; margin-top: var(--space-2);
+      font: 500 var(--text-sm) / 1.4 var(--font-ui); color: var(--ink-3);
+    }
+  }
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
     height: 36px; padding: 0 14px; border-radius: var(--radius-control);
@@ -256,6 +267,8 @@
 
 @layer components {
   /* Прогресс файлом: на главной и странице курса */
+  /* сразу после списка (курсов или уроков) линия уже есть — вторая дала бы двойной разделитель */
+  .course-list + .progress-file, .lesson-list + .progress-file { border-top: 0; }
   .progress-file { margin-top: var(--space-7); padding-top: var(--space-4); border-top: 1px solid var(--rule); font-family: var(--font-ui); font-size: var(--text-sm); color: var(--ink-2); }
   .progress-file p { max-width: var(--measure); margin: 0 0 var(--space-3); }
   .progress-file__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }

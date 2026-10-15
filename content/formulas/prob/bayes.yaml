@@ -10,7 +10,7 @@ statement: 'P(B_k \mid A) = \frac{P(A \mid B_k)\, P(B_k)}{\sum_{j=1}^{K} P(A \mi
 symbols:
   - name: P
     tex: 'P'
-    meaning: 'таблица совместных вероятностей гипотез B_k и события A'
+    meaning: 'таблица совместных вероятностей гипотез $B_k$ и события $A$'
     shape: [k, 2]
     sample: simplex
 
@@ -19,8 +19,9 @@ dependsOn:
   rules: []
 
 conditions:
-  - tex: 'B_i \cap B_j = \varnothing \ (i \ne j), \quad B_1 \cup \ldots \cup B_K = \Omega'
-    why: 'Гипотезы попарно несовместны и вместе покрывают все исходы: каждый исход A попадает ровно в одну B_j — это нужно для формулы полной вероятности в знаменателе.'
+  # части в фигурных скобках не рвутся по «=»; перенос — только между ними (\allowbreak)
+  - tex: '{B_i \cap B_j = \varnothing \ (i \ne j)},\quad\allowbreak {B_1 \cup \ldots \cup B_K = \Omega}'
+    why: 'Гипотезы попарно несовместны и вместе покрывают все исходы: каждый исход $A$ попадает ровно в одну $B_j$ — это нужно для формулы полной вероятности в знаменателе.'
     concept: prob.total-probability
   - tex: 'P(A) > 0'
     why: 'Условная вероятность по событию нулевой вероятности не определена.'
@@ -29,8 +30,8 @@ conditions:
 derivation:
   plan:
     - 'Записать определение условной вероятности'
-    - 'Выразить совместную вероятность через P(A | B_k)'
-    - 'Разложить P(A) по гипотезам'
+    - 'Выразить совместную вероятность через $P(A \mid B_k)$'
+    - 'Разложить $P(A)$ по гипотезам'
   steps:
     - goal: 0
       tex: 'P(B_k \mid A) = \frac{P(A \cap B_k)}{P(A)}'
@@ -42,21 +43,21 @@ derivation:
     - goal: 1
       tex: '= \frac{\changed{P(A \mid B_k)\, P(B_k)}}{P(A)}'
       by: [prob.conditional]
-      note: 'То же определение для P(A | B_k): P(A ∩ B_k) = P(A | B_k) P(B_k).'
+      note: 'То же определение для $P(A \mid B_k)$: $P(A \cap B_k) = P(A \mid B_k)\, P(B_k)$.'
       check:
         kind: same
         py: '(P[:, 0] / np.sum(P, axis=1)) * np.sum(P, axis=1) / np.sum(P[:, 0])'
     - goal: 2
       tex: '= \frac{P(A \mid B_k)\, P(B_k)}{\changed{\sum_{j=1}^{K} P(A \mid B_j)\, P(B_j)}}'
       by: [prob.total-probability]
-      note: 'A разбивается на непересекающиеся части A ∩ B_j: P(A) = Σ P(A ∩ B_j) = Σ P(A | B_j) P(B_j).'
+      note: '$A$ разбивается на непересекающиеся части $A \cap B_j$: $P(A) = \sum_j P(A \cap B_j) = \sum_j P(A \mid B_j)\, P(B_j)$.'
       check:
         kind: same
         py: '(P[:, 0] / np.sum(P, axis=1)) * np.sum(P, axis=1) / np.sum((P[:, 0] / np.sum(P, axis=1)) * np.sum(P, axis=1))'
 
 pitfalls:
-  - 'Путать P(A | B) и P(B | A): «тест находит 90 % больных» — это P(+ | болен), а не P(болен | +).'
-  - 'Игнорировать базовую частоту P(B_k): при редкой болезни большинство положительных тестов — ложные.'
+  - 'Путать $P(A \mid B)$ и $P(B \mid A)$: «тест находит 90 % больных» — это $P(+ \mid \text{болен})$, а не $P(\text{болен} \mid +)$.'
+  - 'Игнорировать базовую частоту $P(B_k)$: при редкой болезни большинство положительных тестов — ложные.'
 
 cs229:
   - edition: main-notes-2026-spring

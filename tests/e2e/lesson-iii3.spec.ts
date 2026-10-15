@@ -15,6 +15,10 @@ test("сетка: 98 положительных, из них 9 больных; �
   await page.goto(url);
   const grid = page.locator(".bayes-grid");
   await hydrated(grid);
+  // рисунок под вопросом «Предскажите»: доля больных скрыта до первого действия
+  await expect(grid.locator(".bayes-grid__summary")).toContainText("Положительных: 98. Какая доля из них больна?");
+  await expect(grid.getByText("P(болен | +)")).toHaveCount(0);
+  await grid.getByRole("button", { name: "Показать долю" }).click();
   await expect(grid.locator(".bayes-grid__summary")).toContainText("Положительных: 98, из них больны 9");
   await expect(grid.locator("svg:visible .bayes-grid__cell--tp")).toHaveCount(9);
   await grid.getByRole("radio", { name: "по результату теста" }).check();

@@ -133,8 +133,13 @@
     .prereqs li .know { margin-top: 2px; }
     .derivation__controls .spacer { display: none; }
   }
+  /* зона касания — невидимым псевдоэлементом: высота кнопки не раздувает строку легенды */
   @media (pointer: coarse) {
-    .sym-key { min-height: var(--target-touch); align-items: center; }
+    .sym-key { position: relative; }
+    .sym-key::after {
+      content: ""; position: absolute; left: 50%; top: 50%;
+      width: max(100%, var(--target-touch)); height: var(--target-touch); transform: translate(-50%, -50%);
+    }
   }
   @media (prefers-reduced-motion: reduce) {
     .step, .switch input, .switch input::after { transition: none; }
@@ -150,8 +155,9 @@
   .input.is-right { border-color: var(--green-pen); box-shadow: inset 0 0 0 1px var(--green-pen); }
   .input.is-wrong { border-color: var(--red-pen); box-shadow: inset 0 0 0 1px var(--red-pen); }
   .input--cell { width: 4.2rem; text-align: center; }
-  .matrix-input { border-collapse: separate; border-spacing: 6px; border-left: 2px solid var(--ink-2); border-right: 2px solid var(--ink-2); border-radius: 8px; }
-  .matrix-input td { padding: 0; }
+  /* по размеру клеток, а не во всю колонку (у table в base.css width: 100%) — рядом с подписью «A =» */
+  .matrix-input { width: auto; border-collapse: separate; border-spacing: 6px; border-left: 2px solid var(--ink-2); border-right: 2px solid var(--ink-2); border-radius: 8px; }
+  .matrix-input td { padding: 0; border: 0; }
 
   .exercise__bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-top: var(--space-3); }
   .exercise__hints { margin: var(--space-3) 0 0; padding-left: 1.4em; font-size: var(--text-sm); color: var(--ink-2); }
@@ -170,6 +176,9 @@
   .choices { display: grid; gap: 6px; margin-top: var(--space-2); }
   .choices button { padding: 8px 12px; border: 1px solid var(--control-border); border-radius: var(--radius-control); background: var(--surface); color: var(--ink); font: var(--text-sm) / 1.45 var(--font-ui); text-align: left; cursor: pointer; transition: border-color var(--duration-ui) var(--ease-out), background var(--duration-ui) var(--ease-out); }
   .choices button:hover { border-color: var(--pen); }
+  /* вариант с матрицей — выключной формулой (матрица в строке — только smallmatrix), прижатой влево */
+  .choices button .katex-display { margin: 2px 0; }
+  .choices button .katex-display > .katex { text-align: left; }
   .choices button.is-right { border-color: var(--green-pen); box-shadow: inset 3px 0 0 var(--green-pen); }
   .choices button.is-wrong { border-color: var(--red-pen); box-shadow: inset 3px 0 0 var(--red-pen); }
 

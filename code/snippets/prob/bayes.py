@@ -8,8 +8,13 @@ import numpy as np
 
 
 # region formula
-def posterior(prevalence: float, sensitivity: float, false_positive: float) -> float:
-    """P(болен | +) по формуле Байеса; знаменатель — формула полной вероятности P(+)."""
+def posterior(
+    prevalence: float, sensitivity: float, false_positive: float
+) -> float:
+    """P(болен | +) по формуле Байеса.
+
+    Знаменатель — формула полной вероятности P(+).
+    """
     evidence = sensitivity * prevalence + false_positive * (1 - prevalence)
     return sensitivity * prevalence / evidence
 # endregion

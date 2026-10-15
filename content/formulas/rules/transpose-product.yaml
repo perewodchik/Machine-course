@@ -12,7 +12,7 @@ symbols:
     tex: 'B'
     shape: [k, p]
 concept: la.transpose
-pitfall: 'Порядок множителей меняется: (AB)ᵀ ≠ AᵀBᵀ. Подсказка — размерности: AᵀBᵀ это (k×m)(p×k), такое произведение обычно не определено.'
+pitfall: 'Порядок множителей меняется: $(AB)^\top \ne A^\top B^\top$. Подсказка — размерности: $A^\top B^\top$ это $(k \times m)(p \times k)$, такое произведение обычно не определено.'
 checks:
   - kind: identity
     lhs: '(A @ B).T'

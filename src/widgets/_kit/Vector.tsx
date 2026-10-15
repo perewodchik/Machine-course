@@ -16,6 +16,15 @@ interface Props {
 const HEAD = 10; // px
 const HALF = 4.5; // px
 
+/**
+ * Подпись за остриём: над стрелкой, а у стрелки вниз — под ней; у стрелки влево — левее острия. Деления осей
+ * стоят слева и снизу от осей, поэтому подпись вектора, лежащего на оси, не наезжает на число.
+ */
+function labelAt(x1: number, y1: number, ux: number, uy: number): { x: number; y: number; anchor: "start" | "end" } {
+  const left = ux < -0.5;
+  return { x: x1 + ux * 10 + (left ? 0 : 4), y: y1 + uy * 10 + (uy > 0.3 ? 14 : -6), anchor: left ? "end" : "start" };
+}
+
 export function Vector({ to, from = [0, 0], role = "data", sym, label }: Props) {
   const { layout } = usePlane();
   const lit = useLit(sym);
@@ -34,7 +43,7 @@ export function Vector({ to, from = [0, 0], role = "data", sym, label }: Props) 
     <g data-sym={sym} className={["kit-vector", roleClass(role), lit && "is-lit"].filter(Boolean).join(" ")}>
       <line x1={x0} y1={y0} x2={bx} y2={by} />
       <polygon points={head} />
-      {label && <MathText x={x1 + ux * 10 + 4} y={y1 + uy * 10 + 4} label={label} role={role} />}
+      {label && <MathText {...labelAt(x1, y1, ux, uy)} label={label} role={role} />}
     </g>
   );
 }

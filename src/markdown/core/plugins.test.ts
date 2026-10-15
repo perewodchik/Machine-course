@@ -100,7 +100,13 @@ describe("типограф", () => {
     expect(html).not.toContain("„");
     expect(html.match(/«/g)).toHaveLength(2);
     expect(html.match(/»/g)).toHaveLength(2);
-    expect(html).toMatch(/<\/span>»\. Для/);
+    expect(html).toMatch(/<\/span>»\.<\/span> Для/);
+  });
+
+  it("формула и знак после неё неразрывны, предлог перед формулой не висит", async () => {
+    const html = await md("Ближайшая к $y$ точка, а потом $X^\\top X\\theta = X^\\top y$, и всё.");
+    expect(html).toContain("к\u00a0<span class=\"math-glue is-short\">");
+    expect(html).toMatch(/<span class="math-glue is-short">(?:(?!math-glue)[\s\S])*<\/span>,<\/span> и/);
   });
 
   it("в MDX: текст типографится, код и формулы — нет", async () => {

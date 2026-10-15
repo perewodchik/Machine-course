@@ -1,7 +1,8 @@
 // Виджет «Сетка из 1000 человек» (урок III.3): каждый квадрат — человек. Цвет — болен (пурпур, роль «ответ»)
 // или здоров (карандаш), заливка — тест положителен, контур — отрицателен. «По тесту» собирает положительных
 // вместе: видно, что среди них больных меньшинство, хотя тест «точный». Эталонные числа — model.test.ts.
-import { useId, useState } from "react";
+// conceal: рисунок стоит под вопросом «Предскажите» — доля больных среди положительных скрыта до первого действия.
+import { useId, useRef, useState } from "react";
 import { ParamSlider, Readout, useLiveText } from "../../_kit";
 import { arrange, counts, DEFAULT, describe, evidence, pct, posterior, POPULATION, type Group, type Order, type Params } from "./model";
 
@@ -10,6 +11,8 @@ export interface BayesGridProps {
   /** Какие параметры можно менять; по умолчанию — все. */
   controls?: (keyof Params)[];
   order?: Order;
+  /** Скрыть ответ P(болен | +), пока ученик не тронет рисунок или не нажмёт «Показать долю». */
+  conceal?: boolean;
 }
 
 const GROUP_TEXT: Record<Group, string> = {
@@ -32,22 +35,28 @@ function Board({ cells, cols, label, variant }: { cells: Group[]; cols: number; 
   );
 }
 
-export default function BayesGrid({ initial, controls = ["prevalence", "sensitivity", "falsePositive"], order: initialOrder = "disease" }: BayesGridProps) {
+export default function BayesGrid({ initial, controls = ["prevalence", "sensitivity", "falsePositive"], order: initialOrder = "disease", conceal = false }: BayesGridProps) {
   const [p, setP] = useState<Params>({ ...DEFAULT, ...initial });
   const [order, setOrder] = useState<Order>(initialOrder);
+  const [concealed, setConcealed] = useState(conceal);
+  const summary = useRef<HTMLParagraphElement>(null);
   const group = useId();
   const c = counts(p);
   const cells = arrange(c, order);
-  const live = useLiveText(describe(p));
-  const set = (key: keyof Params) => (v: number) => setP((q) => ({ ...q, [key]: v }));
+  const text = describe(p, concealed);
+  const live = useLiveText(text);
+  const set = (key: keyof Params) => (v: number) => {
+    setP((q) => ({ ...q, [key]: v }));
+    setConcealed(false);
+  };
   const pos = c.tp + c.fp;
 
   return (
     <div className="bayes-grid">
       <div className="bayes-grid__board">
         {/* две раскладки с постоянным viewBox, выбор — CSS по ширине: разметка не прыгает при гидратации */}
-        <Board cells={cells} cols={40} label={describe(p)} variant="wide" />
-        <Board cells={cells} cols={25} label={describe(p)} variant="tall" />
+        <Board cells={cells} cols={40} label={text} variant="wide" />
+        <Board cells={cells} cols={25} label={text} variant="tall" />
       </div>
       <ul className="bayes-grid__legend">
         {(["tp", "fn", "fp", "tn"] as const).map((g) => (
@@ -57,9 +66,26 @@ export default function BayesGrid({ initial, controls = ["prevalence", "sensitiv
           </li>
         ))}
       </ul>
-      <p className="bayes-grid__summary">
-        Положительных: <b>{pos}</b>, из них больны <b>{c.tp}</b> — это {pos ? pct(c.tp / pos) : "—"} положительных.
-      </p>
+      {concealed ? (
+        <p className="bayes-grid__summary">
+          Положительных: <b>{pos}</b>. Какая доля из них больна? Сначала ответьте на вопрос выше.{" "}
+          <button
+            type="button"
+            className="btn btn--sm btn--quiet"
+            onClick={() => {
+              setConcealed(false);
+              // кнопка исчезает — фокус переходит на открывшийся ответ, а не теряется
+              requestAnimationFrame(() => summary.current?.focus());
+            }}
+          >
+            Показать долю
+          </button>
+        </p>
+      ) : (
+        <p className="bayes-grid__summary" ref={summary} tabIndex={-1}>
+          Положительных: <b>{pos}</b>, из них больны <b>{c.tp}</b> — это {pos ? pct(c.tp / pos) : "—"} положительных.
+        </p>
+      )}
       <div className="bayes-grid__controls">
         {controls.includes("prevalence") && (
           <ParamSlider name="P(болен)" value={p.prevalence} min={0.001} max={0.5} step={0.001} digits={3} role="target" onChange={set("prevalence")} />
@@ -78,14 +104,22 @@ export default function BayesGrid({ initial, controls = ["prevalence", "sensitiv
             ] as const
           ).map(([o, text]) => (
             <label key={o} className="bayes-grid__choice">
-              <input type="radio" name={group} checked={order === o} onChange={() => setOrder(o)} />
+              <input
+                type="radio"
+                name={group}
+                checked={order === o}
+                onChange={() => {
+                  setOrder(o);
+                  setConcealed(false);
+                }}
+              />
               {text}
             </label>
           ))}
         </div>
         <div className="bayes-grid__readouts">
           <Readout name="P(+)" value={evidence(p)} digits={4} />
-          <Readout name="P(болен | +)" value={posterior(p)} digits={3} />
+          {!concealed && <Readout name="P(болен | +)" value={posterior(p)} digits={3} />}
         </div>
       </div>
       <p className="visually-hidden" aria-live="polite">

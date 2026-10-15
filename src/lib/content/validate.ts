@@ -15,7 +15,7 @@ import { MACROS, TRUSTED_COMMANDS } from "../../markdown/core/katex";
 import { ContentError, parseYaml, validate, validateList } from "./files";
 import { loadSnippet } from "./snippets";
 import * as s from "./schemas";
-import type { Concept, Course, Formula, LessonFrontmatter, LessonRef, Module, Redirects, Rule, SymbolSpec } from "./types";
+import type { Concept, Course, Formula, LessonFrontmatter, LessonRef, Localized, Module, Redirects, Rule, SymbolSpec } from "./types";
 
 interface Entry<T> {
   file: string;
@@ -265,6 +265,33 @@ export function validateContent(root: string): ValidationResult {
     if (colored.size > 3) problems.push(`${at}: больше трёх цветных ролей в одной формуле`);
   };
 
+  // Текстовые поля формул и правил: формулы в них — только в $…$ (renderInline), иначе на странице сырой TeX
+  // («B_k») или символы шрифтом текста (Literata рисует курсивную θ как ϑ)
+  const checkProse = (text: Localized | undefined, file: string, where: string, symbols: readonly SymbolSpec[]) => {
+    if (text === undefined) return;
+    const source = typeof text === "string" ? text : text.ru;
+    const outside = source.replace(/\$\$([\s\S]+?)\$\$|\$((?:\\.|[^$\\])+?)\$/g, (_m, display: string | undefined, inline: string | undefined) => {
+      checkTex(display ?? inline ?? "", file, where, symbols);
+      return " ";
+    });
+    const bad = PROSE_MATH.exec(outside);
+    if (bad) report(file, `${where}: «${bad[0]}» вне формулы — пишите математику в $…$`);
+  };
+  for (const { file, data } of [...rules.values(), ...formulas.values()]) {
+    data.symbols.forEach((x, i) => checkProse(x.meaning, file, `symbols[${i}].meaning`, data.symbols));
+    checkProse(data.pitfall, file, "pitfall", data.symbols);
+    if (data.kind === "rule") checkProse(data.corollary, file, "corollary", data.symbols);
+    if (data.kind === "formula") {
+      data.conditions?.forEach((c, i) => checkProse(c.why, file, `conditions[${i}].why`, data.symbols));
+      data.derivation?.plan.forEach((g, i) => checkProse(g, file, `derivation.plan[${i}]`, data.symbols));
+      data.derivation?.steps.forEach((st, i) => {
+        checkProse(st.note, file, `derivation.steps[${i}].note`, data.symbols);
+        checkProse(st.why, file, `derivation.steps[${i}].why`, data.symbols);
+      });
+      data.pitfalls?.forEach((p, i) => checkProse(p, file, `pitfalls[${i}]`, data.symbols));
+    }
+  }
+
   for (const { file, data } of [...rules.values(), ...formulas.values()]) {
     checkTex(data.statement, file, "statement", data.symbols);
     data.symbols.forEach((x, i) => checkTex(x.tex, file, `symbols[${i}].tex`));
@@ -276,7 +303,10 @@ export function validateContent(root: string): ValidationResult {
 
   const mdxParser = unified().use(remarkParse).use(remarkMdx).use(remarkMath);
   for (const m of mdx) {
-    m.frontmatter?.symbols?.forEach((x, i) => checkTex(x.tex, m.file, `symbols[${i}].tex`));
+    m.frontmatter?.symbols?.forEach((x, i) => {
+      checkTex(x.tex, m.file, `symbols[${i}].tex`);
+      checkProse(x.meaning, m.file, `symbols[${i}].meaning`, m.frontmatter?.symbols ?? []);
+    });
     for (const f of m.frontmatter?.lead?.matchAll(/\$((?:\\.|[^$\\])+?)\$/g) ?? []) checkTex(f[1]!, m.file, "lead", m.frontmatter?.symbols);
     let tree: MdastRoot;
     try {
@@ -343,6 +373,9 @@ export function validateContent(root: string): ValidationResult {
     stats: { courses: courses.size, lessons: lessons.size, mdx: mdx.length, concepts: concepts.size, rules: rules.size, formulas: formulas.size, tex: texCount },
   };
 }
+
+/** Математика в тексте вне $…$: индекс, степень, команда TeX, греческая буква, надстрочные знаки, знаки операций. */
+const PROSE_MATH = /[_^]|\\[A-Za-z]+|[\u0370-\u03ff]|[\u1d40-\u1d7f\u2070-\u209f]|[∑∏∩∪∈∉⊂⊆≤≥≠⊤∣√∞∇]/u;
 
 /** Убирает вызовы \sym{name}{…} целиком (с вложенными скобками во втором аргументе). */
 export function stripSym(tex: string): string {

@@ -4,8 +4,8 @@
 // Поведение — src/client/derivation.ts.
 import { loadRegistry, refLink } from "../../lib/content/registry";
 import { ru } from "../../lib/content/catalog";
+import { renderInline } from "../../markdown/core/inline";
 import { renderTex } from "../../markdown/core/katex";
-import { typograf } from "../../markdown/core/typograf";
 
 interface Props {
   formula: string;
@@ -28,7 +28,7 @@ const stepClass = (i: number) => [i === first && "is-current", i > first && "is-
 ---
 <div class="derivation-box" data-derivation data-formula={formula} data-start={first} data-predict={predict ? "on" : "off"}>
   <ol class="plan" aria-label="План вывода">
-    {plan.map((g, i) => <li class:list={[i === steps[first]!.goal && "is-current"]}>{typograf(g)}</li>)}
+    {plan.map((g, i) => <li class:list={[i === steps[first]!.goal && "is-current"]} set:html={renderInline(g, f.symbols)} />)}
   </ol>
   <ol class="derivation" aria-label="Шаги вывода">
     {steps.map((st, i) => (
@@ -36,7 +36,7 @@ const stepClass = (i: number) => [i === first && "is-current", i > first && "is-
         <span class="step__n" aria-hidden="true">{i + 1}</span>
         <div class="step__math" set:html={renderTex(st.tex, { symbols: f.symbols })} />
         <div class="step__why">
-          {st.note && <>{typograf(ru(st.note))} </>}
+          {st.note && <><Fragment set:html={renderInline(ru(st.note), f.symbols)} />{" "}</>}
           {st.by.map((id, k) => {
             const link = refLink(reg, id);
             const rule = id.startsWith("rule.") ? reg.rules.get(id) : undefined;
@@ -48,7 +48,7 @@ const stepClass = (i: number) => [i === first && "is-current", i > first && "is-
                 <summary>{link.title}</summary>
                 <span class="rule-ref__body">
                   <span set:html={renderTex(rule.statement, { display: true, symbols: rule.symbols })} />
-                  {rule.corollary && <span>{typograf(ru(rule.corollary))} </span>}
+                  {rule.corollary && <span set:html={`${renderInline(ru(rule.corollary), rule.symbols)} `} />}
                   {link.href && <a href={link.href}>Урок {link.lesson}</a>}
                 </span>
               </details></>
@@ -61,7 +61,7 @@ const stepClass = (i: number) => [i === first && "is-current", i > first && "is-
           {st.why && (
             <details class="step__more">
               <summary>Почему так?</summary>
-              {typograf(ru(st.why))}
+              <Fragment set:html={renderInline(ru(st.why), f.symbols)} />
             </details>
           )}
         </div>

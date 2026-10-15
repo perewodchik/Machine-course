@@ -3,18 +3,19 @@ kind: formula
 title:
   ru: 'Правдоподобие линейной регрессии'
   en: 'log-likelihood of linear regression'
-statement: '\ell(\sym{theta}{\theta}) = n \log \frac{1}{\sqrt{2\pi}\,\sym{sigma}{\sigma}} - \frac{1}{2\sym{sigma}{\sigma}^2} \sum_{i=1}^{n} \bigl(\sym{y}{y}^{(i)} - \sym{theta}{\theta}^\top \sym{x}{x}^{(i)}\bigr)^2'
+# две строки: в одну формула не помещается в карточку на телефоне
+statement: '\begin{aligned} \ell(\sym{theta}{\theta}) &= n \log \frac{1}{\sqrt{2\pi}\,\sym{sigma}{\sigma}} \\ &\quad - \frac{1}{2\sym{sigma}{\sigma}^2} \sum_{i=1}^{n} \bigl(\sym{y}{y}^{(i)} - \sym{theta}{\theta}^\top \sym{x}{x}^{(i)}\bigr)^2 \end{aligned}'
 
 # x⁽ⁱ⁾ — i-я строка X; в проверках вся выборка: X (n × d), y (n), σ — положительное число.
 symbols:
   - name: X
     tex: 'X'
-    meaning: 'матрица признаков; строка — объект x⁽ⁱ⁾ᵀ'
+    meaning: 'матрица признаков; строка — объект $x^{(i)\top}$'
     shape: [n, d]
     role: data
   - name: x
     tex: 'x'
-    meaning: 'признаки одного объекта (строка X), столбец'
+    meaning: 'признаки одного объекта (строка $X$), столбец'
     shape: [d, 1]
     role: data
   - name: theta
@@ -24,7 +25,7 @@ symbols:
     role: param
   - name: y
     tex: 'y'
-    meaning: 'вектор ответов; y⁽ⁱ⁾ — ответ на i-м объекте'
+    meaning: 'вектор ответов; $y^{(i)}$ — ответ на $i$-м объекте'
     shape: [n, 1]
     role: target
   - name: sigma
@@ -56,7 +57,7 @@ derivation:
     - goal: 0
       tex: '\ell(\sym{theta}{\theta}) = \log \prod_{i=1}^{n} \frac{1}{\sqrt{2\pi}\,\sym{sigma}{\sigma}} \exp\left(-\frac{(\sym{y}{y}^{(i)} - \sym{theta}{\theta}^\top \sym{x}{x}^{(i)})^2}{2\sym{sigma}{\sigma}^2}\right)'
       by: [prob.independence, prob.normal]
-      note: 'Шумы независимы, поэтому плотность выборки — произведение плотностей N(θᵀx⁽ⁱ⁾, σ²) по объектам.'
+      note: 'Шумы независимы, поэтому плотность выборки — произведение плотностей $\mathcal{N}(\theta^\top x^{(i)}, \sigma^2)$ по объектам.'
       check:
         kind: same
         py: 'np.log(np.prod(np.exp(-(y - X @ theta) ** 2 / (2 * sigma ** 2)) / (np.sqrt(2 * np.pi) * sigma)))'
@@ -70,21 +71,21 @@ derivation:
     - goal: 2
       tex: '= n \log \frac{1}{\sqrt{2\pi}\,\sym{sigma}{\sigma}} \changed{- \frac{1}{2\sym{sigma}{\sigma}^2} \sum_{i=1}^{n} (\sym{y}{y}^{(i)} - \sym{theta}{\theta}^\top \sym{x}{x}^{(i)})^2}'
       by: [calc.log-exp]
-      note: 'log(ab) = log a + log b и log eᵘ = u; первое слагаемое одинаково у всех n объектов.'
+      note: '$\log(ab) = \log a + \log b$ и $\log e^u = u$; первое слагаемое одинаково у всех $n$ объектов.'
       check:
         kind: same
         py: 'y.size * np.log(1 / (np.sqrt(2 * np.pi) * sigma)) - np.sum((y - X @ theta) ** 2) / (2 * sigma ** 2)'
     - goal: 2
       tex: '= n \log \frac{1}{\sqrt{2\pi}\,\sym{sigma}{\sigma}} - \frac{1}{\sym{sigma}{\sigma}^2}\, \changed{J(\sym{theta}{\theta})}'
       by: [la.norm]
-      note: 'Сумма квадратов остатков — это ‖Xθ − y‖² = 2J(θ): максимизировать ℓ — то же, что минимизировать J.'
+      note: 'Сумма квадратов остатков — это $\lVert X\theta - y \rVert^2 = 2J(\theta)$: максимизировать $\ell$ — то же, что минимизировать $J$.'
       check:
         kind: same
         py: 'y.size * np.log(1 / (np.sqrt(2 * np.pi) * sigma)) - 0.5 * (X @ theta - y) @ (X @ theta - y) / sigma ** 2'
     - goal: 3
       tex: '\nabla_{\sym{theta}{\theta}} \ell = \frac{1}{\sym{sigma}{\sigma}^2}\, \sym{X}{X}^\top (\sym{y}{y} - \sym{X}{X}\sym{theta}{\theta})'
       by: [rule.grad-quadratic, rule.grad-linear]
-      note: 'Первое слагаемое от θ не зависит; градиент J уже найден в способе 2.'
+      note: 'Первое слагаемое от $\theta$ не зависит; градиент $J$ уже найден в способе 2.'
       check:
         kind: gradient
         py: 'X.T @ (y - X @ theta) / sigma ** 2'
@@ -92,15 +93,15 @@ derivation:
     - goal: 3
       tex: '\sym{theta}{\theta}^{\star} = (\sym{X}{X}^\top \sym{X}{X})^{-1} \sym{X}{X}^\top \sym{y}{y}'
       by: [calc.stationary-point, calc.convexity]
-      note: 'Множитель 1/σ² не меняет точку, где градиент равен нулю: σ не влияет на веса.'
+      note: 'Множитель $1/\sigma^2$ не меняет точку, где градиент равен нулю: $\sigma$ не влияет на веса.'
       check:
         kind: solution
         py: 'np.linalg.solve(X.T @ X, X.T @ y)'
         wrt: theta
 
 pitfalls:
-  - 'Считать, что σ влияет на оптимальные веса: от σ зависит только масштаб ℓ, но не точка максимума.'
-  - 'Путать N(μ, σ²) и N(μ, σ): второй параметр — дисперсия; в NumPy scale — это σ.'
+  - 'Считать, что $\sigma$ влияет на оптимальные веса: от $\sigma$ зависит только масштаб $\ell$, но не точка максимума.'
+  - 'Путать $\mathcal{N}(\mu, \sigma^2)$ и $\mathcal{N}(\mu, \sigma)$: второй параметр — дисперсия; в NumPy `scale` — это $\sigma$.'
 
 cs229:
   - edition: main-notes-2026-spring

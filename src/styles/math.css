@@ -18,6 +18,35 @@
   .katex { font-size: 1.06em; }
   .katex-display { margin: var(--space-5) 0; overflow-x: auto; overflow-y: hidden; padding-block: 2px; }
   .katex-display > .katex { font-size: 1.12em; }
+  /* на телефоне выключная формула — в размер текста: так в колонку помещается больше формул без прокрутки */
+  @media (max-width: 480px) { .katex-display > .katex { font-size: 0.95em; } }
+
+  /* Формула со знаком препинания после неё (src/markdown/core/nobr.ts): знак не уходит на новую строку.
+     Длинная формула внутри обёртки переносится по-прежнему, короткая — нет */
+  .math-glue { white-space: nowrap; }
+  .math-glue:not(.is-short) > .katex { white-space: normal; }
+
+  /* Выключная формула и шаг вывода шире колонки прокручиваются; край, за которым есть продолжение, растворяется.
+     Только где есть анимация по прокрутке: без неё формула просто прокручивается */
+  @supports (animation-timeline: scroll()) {
+    .katex-display, .step__math {
+      /* stylelint-disable-next-line function-disallowed-list -- маска прозрачности края, а не цвет */
+      mask-image: linear-gradient(to right, transparent 0, var(--ink) var(--math-fade-start), var(--ink) calc(100% - var(--math-fade-end)), transparent 100%);
+      animation: math-scroll-fade linear both;
+      animation-timeline: scroll(self inline);
+    }
+  }
 
   @media (prefers-reduced-motion: reduce) { .sym { transition: none; } }
+}
+
+@property --math-fade-start { syntax: "<length>"; inherits: false; initial-value: 0px; }
+@property --math-fade-end { syntax: "<length>"; inherits: false; initial-value: 0px; }
+
+/* Прокрутки нет — шкала неактивна и маска остаётся без растворения (оба края — 0px) */
+@keyframes math-scroll-fade {
+  0% { --math-fade-start: 0px; --math-fade-end: 2.5rem; }
+  8% { --math-fade-start: 2.5rem; }
+  92% { --math-fade-end: 2.5rem; }
+  100% { --math-fade-start: 2.5rem; --math-fade-end: 0px; }
 }

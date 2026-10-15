@@ -19,6 +19,20 @@ describe("renderInline", () => {
   });
 });
 
+describe("переносы рядом с формулами", () => {
+  it("знак препинания после формулы — в одной обёртке с ней", () => {
+    expect(renderInline("Ответ $x$. Дальше")).toMatch(/<span class="math-glue is-short"><span class="katex">[\s\S]*<\/span>\.<\/span> Дальше/);
+  });
+
+  it("длинная формула без знака после неё не оборачивается", () => {
+    expect(renderInline("Сумма $a_1 + a_2 + a_3 + a_4 + a_5 + a_6 + a_7$ и всё")).not.toContain("math-glue");
+  });
+
+  it("после однобуквенного предлога перед формулой — неразрывный пробел", () => {
+    expect(renderInline("ближайшая к $y$ точка")).toContain("к\u00a0<span");
+  });
+});
+
 describe("inlineText", () => {
   it("формулы — текстом, для доступного имени", () => {
     expect(inlineText("$\\theta_1 =$")).toBe("θ1=");
