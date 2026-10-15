@@ -8,25 +8,39 @@ lessons:
   - slug: descriptive
     number: 'IV.1'
     title: 'Выборка и описательная статистика'
+    requires: [foundations/probability/expectation-variance]
   - slug: estimators
     number: 'IV.2'
     title: 'Оценки: смещение, разброс, MSE'
+    requires: [foundations/statistics/descriptive, foundations/probability/limit-theorems]
+    cs229: ['Generalization']
   - slug: mle
     number: 'IV.3'
     title: 'Метод максимального правдоподобия'
+    requires: [foundations/statistics/estimators, foundations/probability/discrete-distributions, foundations/probability/continuous-distributions, foundations/calculus/convexity]
+    cs229: ['Linear regression', 'Classification and logistic regression', 'Generative learning algorithms']
   - slug: multivariate-mle
     number: 'IV.4'
     title: 'Многомерный MLE'
+    requires: [foundations/statistics/mle, foundations/probability/multivariate-normal, foundations/calculus/matrix-calculus]
+    cs229: ['Generative learning algorithms']
   - slug: exponential-family
     number: 'IV.5'
     title: 'Экспоненциальное семейство'
+    requires: [foundations/statistics/mle, foundations/calculus/convexity]
+    cs229: ['Generalized linear models']
   - slug: bayes-map
     number: 'IV.6'
     title: 'Байесовский подход и MAP'
+    requires: [foundations/statistics/mle, foundations/probability/bayes, foundations/probability/continuous-distributions]
+    cs229: ['Regularization and model selection', 'Generative learning algorithms']
   - slug: risk-generalization
     number: 'IV.7'
     title: 'Риск, обобщение, кросс-валидация'
+    requires: [foundations/statistics/estimators]
+    cs229: ['Generalization', 'Regularization and model selection']
   - slug: intervals-tests
     number: 'IV.8'
     title: 'Доверительные интервалы и проверка гипотез'
     optional: true  # углубление: не блокирует прогресс
+    requires: [foundations/probability/limit-theorems, foundations/statistics/estimators]

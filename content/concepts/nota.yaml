@@ -5,5 +5,24 @@
     en: 'summation notation'
   summary: 'Сумма по индексу: сколько слагаемых, что меняется от слагаемого к слагаемому, что выносится за знак.'
   lesson: sums-products-indicators
+  prerequisites: [nota.sets]
+  core: true
+
+- id: nota.sets
+  title:
+    ru: 'Множества и отображения'
+    en: 'sets and maps'
+  summary: '$x \in A$ — элемент, $A \subset B$ — подмножество, $f\colon A \to B$ — правило, по которому каждому элементу $A$ сопоставлен элемент $B$; $\R^d$ — наборы из $d$ чисел.'
+  lesson: language-of-math
   prerequisites: []
   core: true
+
+- id: nota.argmin
+  title:
+    ru: 'Аргмин и пропорциональность'
+    en: 'argmin and proportionality'
+  summary: '$\arg\min_x f(x)$ — точка, где достигается минимум, а не сам минимум; $p \propto g$ — равенство с точностью до множителя, не зависящего от переменной.'
+  lesson: language-of-math
+  prerequisites: [nota.sets]
+  core: true
+

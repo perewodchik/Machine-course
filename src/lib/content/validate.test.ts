@@ -49,10 +49,28 @@ describe("каждая проверка ловит свою фикстуру", (
     ["sym-bare", [/next\.mdx: строка \d+: символ «X» \(роль data\) написан без \\sym/]],
     ["role-conflict", [/символ «theta»: роль (target|param), а в .* — (param|target)/]],
     ["note-label", [/next\.mdx: строка 11: заметка <Note> без подписи label/]],
+    [
+      "diagnostic-refs",
+      [
+        "diagnostic.yaml: items[0].requires[0]: «demo/basics/intro» — не урок из задач выше по списку",
+        "diagnostic.yaml: items[1].gen: нет генератора задач «basics.nope»",
+        "diagnostic.yaml: items[2].lesson: нет урока «demo/basics/missing»",
+      ],
+    ],
+    ["lesson-graph", ["урок demo/basics/next: requires[1]: нет урока «demo/basics/nowhere»", /граф уроков: цикл demo\/basics\/(intro|next) → demo\/basics\/(next|intro) → demo\/basics\/\1/]],
+    ["prose-math", ["dot-symmetric.yaml: corollary: «ᵀ» вне формулы", "dot-symmetric.yaml: pitfall: «_» вне формулы"]],
     ["lesson-duplicate", ["lessons[1].number: номер «1.1» уже занят", "lessons[2].slug: урок «intro» повторяется в модуле"]],
     ["course-requires", ["requires: нет курса «no-such-course»"]],
     ["redirect-target", ["цели «demo/basics/intro-renamed» нет среди уроков", "lessons.demo/basics/intro: старый ключ всё ещё занят уроком"]],
     ["mdx-orphan", ["extra.mdx: урока «extra» нет в module.yaml", "next.mdx: title: «Другое название», а в"]],
+    [
+      "pycode-refs",
+      [
+        /next\.mdx: строка 13: сниппет «la\/fit\.py#solv»: нет региона «solv»; в файле есть: solve/,
+        "next.mdx: строка 13: лабораторной notebooks/la/no-such-lab.ipynb нет",
+        "next.mdx: строка 15: лабораторной notebooks/la/missing.ipynb нет",
+      ],
+    ],
   ];
 
   it.each(cases)("%s", (name, expected) => {

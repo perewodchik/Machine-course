@@ -1,0 +1,47 @@
+---
+// Итоговая проверка модуля: перемешанный (seed) набор задач нескольких уроков, сводка «верно k из n» и по урокам.
+// Проверяет понимание, но ничего не блокирует; расхождения с галочкой «знаю» мягко покажет S2.04.
+import type { ExerciseSpec } from "../../lib/exercises/types";
+import { loadRegistry } from "../../lib/content/registry";
+import { rng } from "../../lib/math/rng";
+import Exercise from "./Exercise.astro";
+
+type Item = { lesson: string; gen: string; seed?: number } | { lesson: string; spec: ExerciseSpec; id: string };
+
+interface Props {
+  items: Item[];
+  seed?: number;
+  title?: string;
+}
+const { items, seed = 1, title = "Итоговая проверка" } = Astro.props;
+const reg = await loadRegistry();
+const order = rng(seed).shuffle(items.map((_, i) => i));
+const lessons = [...new Set(items.map((it) => it.lesson))].map((key) => {
+  const l = reg.lessonsByKey.get(key);
+  if (!l) throw new Error(`<ExerciseSet>: нет урока «${key}»`);
+  return { key, number: l.number, title: l.title, href: l.href, total: items.filter((it) => it.lesson === key).length };
+});
+const headingId = `set-${seed}`;
+---
+<section class="exercise-set" data-exercise-set aria-labelledby={headingId}>
+  <h3 id={headingId}>{title}</h3>
+  <p class="exercise-set__intro">Задачи по&nbsp;всем урокам модуля вперемешку. Проверка ничего не&nbsp;блокирует: она показывает, что стоит повторить.</p>
+  {order.map((i, k) => {
+    const it = items[i]!;
+    return "gen" in it ? (
+      <Exercise gen={it.gen} seed={it.seed ?? seed * 100 + i} variants={1} n={k + 1} title="Задача" lesson={it.lesson} />
+    ) : (
+      <Exercise spec={it.spec} id={it.id} n={k + 1} title="Задача" lesson={it.lesson} />
+    );
+  })}
+  <div class="exercise-set__summary" role="status">
+    <p data-summary data-total={items.length}>Решено верно: 0 из&nbsp;{items.length}.</p>
+    <ul>
+      {lessons.map((l) => (
+        <li data-set-lesson={l.key} data-total={l.total}>
+          <a href={l.href}>{l.number} {l.title}</a>: <span data-count>0</span> из&nbsp;{l.total}
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>

@@ -48,14 +48,14 @@ const layerPolicies = [
   { from: anyOf("game"), disallow: { to: { element: { type: "widget" }, file: { path: "**/!(model).{ts,tsx}" } } } },
   // Python в браузере: только состояние и примитивы
   { from: anyOf("python"), disallow: { to: except("python", "lib-state", "ds-primitives") } },
-  // сборочные модули (граф, KaTeX, Markdown) не попадают в браузерный код
-  { from: anyOf("client", "widget", "game", "engine", "kit", "python"), disallow: { to: anyOf("lib-build") } },
+  // сборочные модули (граф, KaTeX, Markdown) не попадают в браузерный код; import type стирается при сборке — можно
+  { from: anyOf("client", "widget", "game", "engine", "kit", "python"), disallow: { to: anyOf("lib-build"), dependency: { kind: "value" } } },
 ];
 
 export default tseslint.config(
   {
     ignores: [
-      "dist/**", ".astro/**", "node_modules/**", ".venv/**",
+      "dist/**", ".astro/**", "node_modules/**", ".venv/**", "public/py/**",
       "prototype/**", "code/**", "notebooks/**", "docs/**",
       "tests/fixtures/**", "test-results/**", "test-screens/**", "playwright-report/**",
     ],
@@ -82,7 +82,7 @@ export default tseslint.config(
     files: ["**/*.tsx"],
     plugins: { boundaries },
     rules: {
-      "boundaries/dependencies": ["error", { default: "allow", policies: [...layerPolicies, { disallow: { to: anyOf("lib-build") } }] }],
+      "boundaries/dependencies": ["error", { default: "allow", policies: [...layerPolicies, { disallow: { to: anyOf("lib-build"), dependency: { kind: "value" } } }] }],
     },
   },
   {

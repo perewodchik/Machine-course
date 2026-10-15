@@ -37,12 +37,6 @@ import numpy as np
 
 # %%
 # snippet: la/normal_equations.py#data
-def make_data(n: int = 12, seed: int = 7):
-    rng = np.random.default_rng(seed=seed)
-    x = rng.uniform(0.5, 9.5, size=n)
-    y = 1.2 + 0.55 * x + rng.normal(0, 0.6, size=n)
-    X = np.column_stack([np.ones(n), x])  # n × 2: столбец единиц и признак
-    return X, y
 
 
 X, y = make_data()
@@ -120,3 +114,25 @@ print("lstsq:", theta_min_norm.round(3))
 
 # %% [markdown]
 # **Вопрос для самопроверки.** Почему `lstsq` всё равно находит решение и почему оно делит вес поровну между одинаковыми столбцами? Ответ связан с псевдообратной матрицей из урока I.11.
+
+# %% [markdown]
+# ## Задание 5. Решение для любых данных
+#
+# Напишите `fit(X, y)`, которая находит веса для **любой** матрицы признаков — в том числе с одним объектом
+# или с зависимыми столбцами. Проверка запускает вашу функцию на десятках случайных задач разного размера
+# и, если что-то не так, показывает самый маленький пример, на котором она ломается.
+
+# %%
+def fit(X, y):
+    # BEGIN SOLUTION
+    return np.linalg.lstsq(X, y, rcond=None)[0]
+    # END SOLUTION
+
+
+check.matches(fit, lambda X, y: np.linalg.lstsq(X, y, rcond=None)[0], name="fit")
+check.passed()
+
+# %% [markdown]
+# **Попробуйте.** Замените решение на `np.linalg.solve(X.T @ X, X.T @ y)` и запустите проверку ещё раз:
+# на каком примере оно падает и почему?
+

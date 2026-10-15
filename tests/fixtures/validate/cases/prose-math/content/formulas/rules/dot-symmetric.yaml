@@ -1,0 +1,19 @@
+id: rule.dot-symmetric
+kind: rule
+title:
+  ru: 'Симметрия скалярного произведения'
+statement: 'x^\top y = y^\top x'
+symbols:
+  - name: x
+    tex: 'x'
+    shape: [d, 1]
+  - name: y
+    tex: 'y'
+    shape: [d, 1]
+concept: la.dot
+checks:
+  - kind: identity
+    lhs: 'x @ y'
+    rhs: 'y @ x'
+corollary: 'Поэтому xᵀy = yᵀx для любых векторов.'
+pitfall: 'Писать $x^\top y$ как x_i y_i без суммы.'

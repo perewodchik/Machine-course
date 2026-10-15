@@ -8,31 +8,51 @@ lessons:
   - slug: gradient
     number: 'II.1'
     title: 'Частные производные и градиент'
+    requires: [foundations/start/derivative-refresher, foundations/linear-algebra/dot-product-norms]
+    cs229: ['Linear regression']
   - slug: chain-rule-jacobian
     number: 'II.2'
     title: 'Многомерное правило цепочки и якобиан'
+    requires: [foundations/calculus/gradient, foundations/linear-algebra/matrix-multiplication]
+    cs229: ['Deep learning']
   - slug: matrix-calculus
     number: 'II.3'
     title: 'Матричное дифференцирование'
+    requires: [foundations/calculus/gradient, foundations/calculus/chain-rule-jacobian, foundations/linear-algebra/transpose-trace]
+    cs229: ['Linear regression', 'Generative learning algorithms']
   - slug: hessian-taylor
     number: 'II.4'
     title: 'Гессиан, ряд Тейлора, критические точки'
+    requires: [foundations/calculus/matrix-calculus, foundations/linear-algebra/quadratic-forms]
+    cs229: ['Classification and logistic regression']
   - slug: convexity
     number: 'II.5'
     title: 'Выпуклость'
+    requires: [foundations/calculus/hessian-taylor]
+    cs229: ['Classification and logistic regression', 'Generalized linear models']
   - slug: gradient-descent
     number: 'II.6'
     title: 'Градиентный спуск и SGD'
+    requires: [foundations/calculus/convexity]
+    cs229: ['Linear regression', 'Classification and logistic regression', 'Clustering and the k-means algorithm']
   - slug: newton
     number: 'II.7'
     title: 'Метод Ньютона'
+    requires: [foundations/calculus/hessian-taylor, foundations/calculus/gradient-descent]
+    cs229: ['Classification and logistic regression']
   - slug: lagrange
     number: 'II.8'
     title: 'Множители Лагранжа'
+    requires: [foundations/calculus/convexity, foundations/linear-algebra/quadratic-forms]
+    cs229: ['Principal components analysis', 'Generative learning algorithms', 'The EM algorithm']
   - slug: duality-kkt
     number: 'II.9'
     title: 'Двойственность и условия KKT'
     optional: true  # углубление: не блокирует прогресс
+    requires: [foundations/calculus/lagrange]
+    cs229: ['Support vector machines']
   - slug: multiple-integrals
     number: 'II.10'
     title: 'Кратные интегралы и замена переменных'
+    requires: [foundations/start/integral, foundations/calculus/chain-rule-jacobian, foundations/linear-algebra/inverse-determinant]
+    cs229: ['Independent components analysis', 'Probability review']

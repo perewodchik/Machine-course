@@ -24,3 +24,20 @@ def test_broken_derivation_is_caught():
     data = yaml.safe_load((ROOT / "content/formulas/calc/normal-equations.yaml").read_text(encoding="utf-8"))
     data["derivation"]["steps"][2]["check"]["py"] = "0.5 * (theta @ X.T @ X @ theta - y @ X @ theta + y @ y)"
     assert not check_formula(data).ok
+
+
+def test_rules_have_mutations():
+    """У каждого правила есть хотя бы одна типичная ошибка (S3.05): из них строятся неверные варианты ответа."""
+    for path in (ROOT / "content/formulas/rules").glob("*.yaml"):
+        data = yaml.safe_load(path.read_text(encoding="utf-8"))
+        assert data.get("mutations"), f"{path.name}: нет mutations"
+
+
+def test_mutation_equal_to_answer_is_caught():
+    """«Мутация», которая совпадает с верным ответом, — ошибка в контенте: харнесс её ловит."""
+    data = yaml.safe_load((ROOT / "content/formulas/rules/transpose-product.yaml").read_text(encoding="utf-8"))
+    data["mutations"].append({"tex": "B^\\top A^\\top", "py": "B.T @ A.T", "why": "—"})
+    report = check_formula(data)
+    assert not report.ok
+    assert "совпадает с верным ответом" in report.problems[0]
+

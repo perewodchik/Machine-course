@@ -38,7 +38,7 @@ export const symbolSpec = z.strictObject({
   meaning: localized.optional(),
   shape: z.array(z.union([z.string(), z.number().int().positive()])).optional(),
   role: z.enum(["data", "param", "target", "aux"]).optional(),
-  sample: z.enum(["normal", "invertible", "spd"]).optional(),
+  sample: z.enum(["normal", "invertible", "spd", "positive", "simplex"]).optional(),
 });
 
 export const check = z.discriminatedUnion("kind", [
@@ -76,6 +76,7 @@ export const rule = z.strictObject({
   concept: conceptId,
   corollary: localized.optional(),
   checks: z.array(check).min(1, "у правила нужна хотя бы одна численная проверка"),
+  mutations: z.array(z.strictObject({ tex, py: z.string().min(1), why: localized })).optional(),
 });
 
 export const formula = z
@@ -134,6 +135,8 @@ export const lessonRef = z.strictObject({
   number: z.string().min(1),
   title: z.string().min(1),
   optional: z.boolean().optional(),
+  requires: z.array(lessonKey).optional(),
+  cs229: z.array(z.string().min(1)).optional(),
 });
 
 export const module = z.strictObject({
@@ -151,6 +154,8 @@ export const lessonFrontmatter = z.strictObject({
   number: z.string().min(1),
   concepts: z.array(conceptId),
   minutes: z.number().int().positive(),
+  /** Вводный абзац под заголовком («зачем»): текст с $…$, до строки «Знаю эту тему». */
+  lead: z.string().min(1).optional(),
   cs229: z.array(cs229Ref).optional(),
   symbols: z.array(symbolSpec).optional(),
 });
@@ -160,6 +165,22 @@ export const glossaryEntry = z.strictObject({
   ru: z.string().min(1),
   en: z.string().min(1),
   note: localized.optional(),
+});
+
+/** content/diagnostic.yaml: банк входной диагностики (урок 0.2). */
+export const diagnostic = z.strictObject({
+  budget: z.number().positive().max(60),
+  items: z
+    .array(
+      z.strictObject({
+        lesson: lessonKey,
+        gen: z.string().regex(/^[a-z]+\.[a-z0-9-]+$/, "ID генератора: «раздел.имя», например «basics.argmin»"),
+        seed: z.number().int().positive().optional(),
+        minutes: z.number().positive().max(10),
+        requires: z.array(lessonKey).optional(),
+      }),
+    )
+    .min(1),
 });
 
 /** content/redirects.yaml: старый ID или ключ → новый. Записи не удаляются. */

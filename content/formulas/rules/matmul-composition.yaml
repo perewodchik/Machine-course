@@ -1,0 +1,28 @@
+id: rule.matmul-composition
+kind: rule
+title:
+  ru: 'Композиция отображений — произведение матриц'
+  en: 'composition of linear maps'
+statement: '(AB)\,x = A\,(Bx)'
+symbols:
+  - name: A
+    tex: 'A'
+    shape: [m, k]
+  - name: B
+    tex: 'B'
+    shape: [k, d]
+  - name: x
+    tex: 'x'
+    shape: [d, 1]
+concept: la.linear-map
+corollary: 'AB действует так: сначала B, потом A. Читать произведение отображений нужно справа налево.'
+pitfall: 'Читать AB слева направо как «сначала A»: у некоммутирующих A и B (поворот и растяжение) получится другая матрица.'
+checks:
+  - kind: identity
+    lhs: '(A @ B) @ x'
+    rhs: 'A @ (B @ x)'
+# типичные ошибки (S3.05): неверные варианты в задачах с выбором и диагноз ответа ученика
+mutations:
+  - tex: 'B\,(Ax)'
+    py: 'B @ (A @ x)'
+    why: 'Первым действует правый множитель: $(AB)x = A(Bx)$ — сначала $B$, потом $A$.'

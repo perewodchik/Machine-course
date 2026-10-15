@@ -14,6 +14,36 @@
 - **Хранилище:** nanostores + localStorage; `schemaVersion` и миграции; `navigator.storage.persist()`; экспорт и импорт прогресса файлом (Safari стирает localStorage через 7 дней без визитов). Переименования уроков применяются из `content/redirects.yaml`.
 - **Журнал событий** (без бэкенда): `{lesson, item, seed, attempt, correct, hints, ms, confidence?, generatorVersion}` и смены галочки `{lesson, known, by}` (`confidence` — необязательная отметка уверенности перед ответом, идея B6; из неё S4.01 строит график калибровки); кнопка «Отправить отчёт» (файл); микроопрос в конце урока «понятно 1–5, где споткнулись».
 
+## Где в коде (S2.03–S2.04)
+
+- `src/lib/progress/marks.ts` — чистая логика: `setMark`, `isKnown`, `countKnown` (★ не считаются), `migrate` (v1 «модуль/slug» → `foundations/…`, затем цепочки переименований), `mergeMarks` (по уроку побеждает поздняя отметка), `exportMarks` / `importMarks`, `MarksFormatError`. `SCHEMA_VERSION = 2`.
+- `src/lib/state/marks.ts` — стор `$marks` (localStorage `mlf:marks`), `mark(key, known, by)` пишет `MarkEvent` в журнал и просит `storage.persist()`; `exportFile`, `importFile` (слияние). Переименования берёт из `<script id="lesson-redirects">` (`BaseLayout`, коллекция `redirects`).
+- `src/lib/state/journal.ts` — журнал `$journal` (`mlf:journal:v1`), `logEvent`; типы событий — `src/lib/exercises/types.ts`.
+- `src/client/know.ts` — все `input[data-know]` страницы, счётчики `[data-progress-lessons]` (шапка, главная, страница курса) и модулей оглавления; событие `exercise:final-correct` (итоговая проверка, `<Exercise final lesson="…">`) ставит отметку `lesson-check`; кнопки `[data-marks-export]`, `[data-marks-import]`.
+- `src/components/layout/ProgressFile.astro` — «Сохранить / Загрузить прогресс» (главная, страница курса). Тесты: `marks.test.ts`, `tests/e2e/know.spec.ts`.
+- Клиент импортирует из `lib/content` только типы (`import type`), значения сборочных модулей — запрещено линтером.
+
+## Входная диагностика (S3.01)
+
+- Урок 0.2 `start/how-the-course-works` содержит `<Diagnostic />` (`src/components/pedagogy/Diagnostic.astro`). Банк — `content/diagnostic.yaml`: по задаче на урок (генератор = итоговое задание урока), `minutes`, `requires` (уроки банка выше по списку), `budget` 25 минут; валидатор проверяет уроки, генераторы и порядок `requires`.
+- Логика — `src/lib/diagnostic/plan.ts` (`advance`, `minutesLeft`, `summarize`): задачи по порядку; задача пропускается, если неверно решена задача из её `requires` (пропуск дальше не тянется); конец — задачи кончились или не влезают в бюджет.
+- Клиент — `src/client/diagnostic.ts`: засчитывается первая попытка без подсказок (`exercise:result` несёт `attempt` и `hints`; подсказки в диагностике скрыты); верно → `mark(lesson, true, "diagnostic")`; «Не знаю» — неверно. Ход — `localStorage` `mlf:diagnostic:v1`; «Пройти заново» стирает ход, но не отметки. Итог: отмеченные уроки и маршрут (остальные уроки банка по порядку). Тест — `tests/e2e/diagnostic.spec.ts`.
+- Итоговые проверки уроков 0.3–0.9 пишутся тем же генератором, что в банке (`basics.*`), с другим `seed`.
+
+## Граф уроков, карта и понятия (S3.02)
+
+- **Граф уроков** — `requires` у уроков в `module.yaml` («Опирается на» из карточки) и `cs229` (разделы конспекта из строки «CS229» карточки). `scripts/check_consistency.py` сверяет оба поля с карточками, валидатор — что ключи существуют и циклов нет. Новый урок или правка карточки — правка обоих мест.
+- Функции графа — `src/lib/progress/graph.ts`: `dependents`, `available` (без галочки, все опоры отмечены), `pathForward` (кратчайший путь вперёд до урока-цели).
+- **Карта** `/map/` — `src/components/layout/CourseMap.astro` + `src/client/map.ts`: модули — столбцы, рёбра рисуются по положению узлов (ниже 1100 px скрыты, опоры — текстом), «Можно начинать» и классы `is-known` / `is-next` следуют за `$marks`; фокус или наведение подсвечивают опоры (`is-before`, синие рёбра) и зависимые уроки (`is-after`, пунктир); несвязанные уроки приглушаются цветом, не прозрачностью (контраст).
+- **Понятия** — `/concepts/` и `/concepts/<id>/`: сводка, урок, «Опирается на», «Нужно для», формулы, «Зачем это мне» — путь по `requires` всех курсов до первого урока с `cs229`. Сводки понятий — с `$…$` (валидатор).
+- **Справка по опоре** — `PrereqHelp.astro` на странице урока (опоры урока со сводкой понятия); после второй неверной попытки упражнение показывает первую опору без галочки «знаю» (не в диагностике).
+
+## Пилот (S2.10)
+
+- Режим пилота — `?pilot=1` (флаг `mlf:pilot`, атрибут `data-pilot` ставит скрипт в `<head>`); `<Pilot>` показывает задания «до урока» (`id="pre.<урок>"`), итоговая проверка — `id="post.<урок>"`.
+- Микроопрос — `LessonSurvey` в конце каждого урока с текстом (маршрут урока), события `SurveyEvent`; шаги вывода — `StepEvent` (`src/client/derivation.ts`).
+- Отчёт — кнопка «Скачать отчёт» (`src/client/survey.ts`): журнал + отметки + случайный ID браузера; формат и сводка — `src/lib/pilot/report.ts`, `npm run pilot:report -- папка/`. Инструкция — `docs/pilot/README.md`.
+
 ## Источники (только если нужно)
 
 - `docs/conventions/pedagogy.md` — разделы «Прогресс: галочка „знаю“» и «Учебная аналитика».

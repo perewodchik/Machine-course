@@ -1,0 +1,83 @@
+id: f.residual-orthogonality
+kind: formula
+title:
+  ru: 'Остаток перпендикулярен столбцам'
+  en: 'orthogonality of the residual'
+statement: '\sym{X}{X}^\top \bigl(\sym{y}{y} - \sym{X}{X}\sym{theta}{\theta}^{\star}\bigr) = 0'
+
+# Геометрический вывод нормальных уравнений (урок V.1, способ 1): Xθ пробегает пространство столбцов X,
+# ближайшая к y точка — ортогональная проекция. Проверки вычисляются в найденной точке θ*.
+symbols:
+  - name: X
+    tex: 'X'
+    meaning: 'матрица признаков со столбцом единиц; её столбцы натягивают пространство $\operatorname{col} X$'
+    shape: [n, d]
+    role: data
+  - name: theta
+    tex: '\theta'
+    meaning: 'вектор весов модели'
+    shape: [d, 1]
+    role: param
+  - name: y
+    tex: 'y'
+    meaning: 'вектор правильных ответов, точка в $\R^n$'
+    shape: [n, 1]
+    role: target
+
+dependsOn:
+  concepts: [la.span, la.projection, la.dot-product, la.matmul, la.transpose]
+  rules: []
+
+conditions:
+  - tex: '\operatorname{rank} \sym{X}{X} = d'
+    why: 'Проекция единственна всегда, а веса — только при линейно независимых столбцах $X$.'
+    concept: la.rank
+
+derivation:
+  plan:
+    - 'Остаток перпендикулярен каждому столбцу'
+    - 'Собрать d условий в одно равенство'
+    - 'Решить систему'
+  steps:
+    - goal: 0
+      tex: '\sym{X}{X}_{:,j}^\top \bigl(\sym{y}{y} - \sym{X}{X}\sym{theta}{\theta}\bigr) = 0, \quad j = 0, \ldots, d - 1'
+      by: [la.projection, la.dot-product]
+      note: 'Ближайшая к $y$ точка плоскости — проекция: остаток перпендикулярен плоскости, то есть каждому столбцу $X$.'
+      check:
+        kind: stationary
+        lhs: 'np.einsum("ij,i->j", X, y - X @ theta)'
+        rhs: '0 * theta'
+    - goal: 1
+      tex: '\changed{\sym{X}{X}^\top} \bigl(\sym{y}{y} - \sym{X}{X}\sym{theta}{\theta}\bigr) = 0'
+      by: [la.matmul, la.transpose]
+      note: 'Столбцы $X$ — строки $X^\top$: $d$ скалярных произведений — это одно произведение матрицы на вектор.'
+      check:
+        kind: stationary
+        lhs: 'X.T @ (y - X @ theta)'
+        rhs: '0 * theta'
+    - goal: 1
+      tex: '\sym{X}{X}^\top \sym{X}{X} \sym{theta}{\theta} = \sym{X}{X}^\top \sym{y}{y}'
+      by: [la.matmul]
+      note: 'Раскрыли скобки и перенесли слагаемое: те же нормальные уравнения, что в способе 2.'
+      check:
+        kind: stationary
+        lhs: 'X.T @ X @ theta'
+        rhs: 'X.T @ y'
+    - goal: 2
+      tex: '\sym{theta}{\theta}^{\star} = (\sym{X}{X}^\top \sym{X}{X})^{-1} \sym{X}{X}^\top \sym{y}{y}'
+      by: [la.inverse, la.rank]
+      note: 'При $\operatorname{rank} X = d$ матрица $X^\top X$ обратима, и решение единственно.'
+      check:
+        kind: solution
+        py: 'np.linalg.solve(X.T @ X, X.T @ y)'
+        wrt: theta
+
+pitfalls:
+  - 'Считать, что остаток перпендикулярен строкам $X$: строки — объекты, векторы из $\R^d$, а остаток живёт в $\R^n$.'
+  - 'Искать проекцию $y$ на сам вектор $X\theta$ при фиксированных весах: проецируют на всю плоскость $\operatorname{col} X$.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Linear regression / The normal equations'
+
+usedIn: [ml.least-squares]

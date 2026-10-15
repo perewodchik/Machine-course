@@ -4,10 +4,9 @@
  * Партия = seed + журнал действий, поэтому её можно воспроизвести в тесте и по ссылке.
  */
 
-export interface Rng {
-  next(): number; // [0, 1)
-  int(min: number, max: number): number;
-}
+// ГПСЧ с seed — тот же, что у упражнений и виджетов (mulberry32): next, int, nonzero, pick, shuffle
+import type { Rng } from "../../lib/math/rng";
+export type { Rng };
 
 export type GameStatus = "playing" | "solved" | "failed";
 

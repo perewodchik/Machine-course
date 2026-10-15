@@ -1,0 +1,44 @@
+---
+// Микроопрос в конце урока (S2.10): понятность 1–5, где споткнулись, комментарий. Ответ пишется в журнал браузера
+// (src/client/survey.ts); «Скачать отчёт» сохраняет журнал и отметки «знаю» файлом — его участник пилота присылает.
+interface Props {
+  lesson: string;
+  /** Разделы урока для вопроса «где споткнулись». */
+  sections: string[];
+}
+const { lesson, sections } = Astro.props;
+const id = `survey-${lesson.replace(/[^a-z0-9]+/gi, "-")}`;
+const CLARITY = ["совсем непонятно", "скорее непонятно", "местами понятно", "в основном понятно", "всё понятно"];
+---
+<section class="survey" data-survey data-lesson={lesson} aria-labelledby={`${id}-title`}>
+  <h2 class="survey__title" id={`${id}-title`}>Как прошёл урок?</h2>
+  <form class="survey__form">
+    <fieldset class="survey__scale">
+      <legend>Насколько понятно объяснение?</legend>
+      {CLARITY.map((text, i) => (
+        <label class="survey__option">
+          <input type="radio" name={`${id}-clarity`} value={i + 1} required />
+          <span><b>{i + 1}</b> {text}</span>
+        </label>
+      ))}
+    </fieldset>
+    <label class="survey__field">
+      <span>Где споткнулись?</span>
+      <select class="input" name="stuck">
+        <option value="">Нигде</option>
+        {/* значение — с обычными пробелами: типограф ставит в заголовки неразрывные, а в журнал и сводку идёт текст */}
+        {sections.map((s) => <option value={s.replace(/\s+/g, " ")}>{s}</option>)}
+      </select>
+    </label>
+    <label class="survey__field">
+      <span>Комментарий — по желанию</span>
+      <textarea class="input survey__comment" name="comment" rows="2" maxlength="500"></textarea>
+    </label>
+    <div class="survey__actions">
+      <button type="submit" class="btn btn--sm">Сохранить ответ</button>
+      <button type="button" class="btn btn--sm btn--quiet" data-report-download>Скачать отчёт</button>
+    </div>
+    <p class="survey__status" role="status" data-survey-status></p>
+  </form>
+  <p class="survey__note">Ответ и попытки упражнений хранятся только в этом браузере. Участники пилота скачивают отчёт и присылают его организатору.</p>
+</section>

@@ -133,10 +133,150 @@
     .prereqs li .know { margin-top: 2px; }
     .derivation__controls .spacer { display: none; }
   }
+  /* зона касания — невидимым псевдоэлементом: высота кнопки не раздувает строку легенды */
   @media (pointer: coarse) {
-    .sym-key { min-height: var(--target-touch); align-items: center; }
+    .sym-key { position: relative; }
+    .sym-key::after {
+      content: ""; position: absolute; left: 50%; top: 50%;
+      width: max(100%, var(--target-touch)); height: var(--target-touch); transform: translate(-50%, -50%);
+    }
   }
   @media (prefers-reduced-motion: reduce) {
     .step, .switch input, .switch input::after { transition: none; }
   }
 }
+
+/* ───────── Упражнения ───────── */
+@layer components {
+  .exercise__variant:focus { outline: none; }
+  .field { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); margin-top: var(--space-3); font-family: var(--font-ui); font-size: var(--text-sm); }
+  .input { width: 7.5rem; height: 36px; padding: 0 10px; border: 1px solid var(--control-border); border-radius: var(--radius-control); background: var(--surface); color: var(--ink); font: 500 var(--text-sm) var(--font-ui); font-variant-numeric: tabular-nums; }
+  .input:focus-visible { outline: 2px solid var(--pen); outline-offset: 1px; border-color: var(--pen); }
+  .input.is-right { border-color: var(--green-pen); box-shadow: inset 0 0 0 1px var(--green-pen); }
+  .input.is-wrong { border-color: var(--red-pen); box-shadow: inset 0 0 0 1px var(--red-pen); }
+  .input--cell { width: 4.2rem; text-align: center; }
+  /* формула: поле TeX без JS, редактор MathLive с JS (src/client/formula-input.ts) */
+  .input--tex { width: min(100%, 22rem); font-family: var(--font-code); }
+  .formula-input {
+    min-width: min(100%, 16rem); max-width: 100%; padding: 4px 10px; border: 1px solid var(--control-border); border-radius: var(--radius-control);
+    background: var(--surface); color: var(--ink); font-size: 1.15rem; --caret-color: var(--pen); --selection-background-color: var(--pen-wash);
+    --primary-color: var(--pen); --contains-highlight-background-color: var(--pen-wash);
+  }
+  /* вывод по шагам: первая строка дана, дальше — поля; номер строки — счётчиком */
+  .steps-input__goal { margin: var(--space-2) 0; font-family: var(--font-ui); font-size: var(--text-sm); color: var(--ink-2); }
+  .steps-input__lines { display: grid; gap: var(--space-2); margin: var(--space-2) 0; padding: 0; list-style: none; counter-reset: step; }
+  .steps-input__lines > li { display: grid; grid-template-columns: 2rem minmax(0, 1fr); align-items: center; gap: 2px var(--space-2); counter-increment: step; }
+  .steps-input__lines > li[hidden] { display: none; }
+  .steps-input__lines > li::before { content: counter(step); grid-row: 1; font: var(--text-sm) var(--font-ui); color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .steps-input__expr { grid-column: 2; }
+  .steps-input__row .formula-input, .steps-input__row .input { grid-column: 2; width: 100%; }
+  .steps-input__msg { grid-column: 2; margin: 0; font: var(--text-sm) / 1.45 var(--font-ui); color: var(--red-pen); }
+  .formula-shape { min-height: 1.4em; margin: 4px 0 0; font: 13px / 1.4 var(--font-ui); color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .formula-shape.is-bad { color: var(--red-pen); }
+  .steps-input__row .formula-shape { grid-column: 2; margin: 0; min-height: 0; }
+  .formula-input:focus-within { outline: 2px solid var(--pen); outline-offset: 1px; border-color: var(--pen); }
+  .formula-input.is-right { border-color: var(--green-pen); box-shadow: inset 0 0 0 1px var(--green-pen); }
+  .formula-input.is-wrong { border-color: var(--red-pen); box-shadow: inset 0 0 0 1px var(--red-pen); }
+  /* по размеру клеток, а не во всю колонку (у table в base.css width: 100%) — рядом с подписью «A =» */
+  .matrix-input { width: auto; border-collapse: separate; border-spacing: 6px; border-left: 2px solid var(--ink-2); border-right: 2px solid var(--ink-2); border-radius: 8px; }
+  .matrix-input td { padding: 0; border: 0; }
+
+  .exercise__bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-top: var(--space-3); }
+  .exercise__hints { margin: var(--space-3) 0 0; padding-left: 1.4em; font-size: var(--text-sm); color: var(--ink-2); }
+  .exercise__hints li + li { margin-top: 4px; }
+  .exercise__why, .exercise__reveal { margin-top: var(--space-2); }
+  /* справка по опоре урока после второй неверной попытки (PrereqHelp.astro) */
+  .exercise .prereq-help { margin: var(--space-2) 0 0; padding: var(--space-2) var(--space-3); border-left: 2px solid var(--pen); background: var(--paper-2); font: var(--text-sm) / 1.5 var(--font-ui); color: var(--ink-2); }
+  .exercise__reveal { padding: var(--space-2) var(--space-3); border-left: 2px solid var(--rule); background: var(--paper-2); }
+  .exercise [data-why] { display: none; } /* разбор варианта показывается в строке ответа */
+
+  .feedback { display: flex; flex-wrap: wrap; gap: 4px 8px; margin: var(--space-3) 0 0; font-family: var(--font-ui); font-size: var(--text-sm); line-height: 1.5; color: var(--ink-2); }
+  .feedback:empty { display: none; }
+  .feedback b { font-weight: 600; color: var(--ink); }
+  .feedback--right b { color: var(--green-pen); }
+  .feedback--wrong b { color: var(--red-pen); }
+  .feedback span { color: var(--ink-2); }
+
+  .choices { display: grid; gap: 6px; margin-top: var(--space-2); }
+  .choices button { padding: 8px 12px; border: 1px solid var(--control-border); border-radius: var(--radius-control); background: var(--surface); color: var(--ink); font: var(--text-sm) / 1.45 var(--font-ui); text-align: left; cursor: pointer; transition: border-color var(--duration-ui) var(--ease-out), background var(--duration-ui) var(--ease-out); }
+  .choices button:hover { border-color: var(--pen); }
+  /* вариант с матрицей — выключной формулой (матрица в строке — только smallmatrix), прижатой влево */
+  .choices button .katex-display { margin: 2px 0; }
+  .choices button .katex-display > .katex { text-align: left; }
+  .choices button.is-right { border-color: var(--green-pen); box-shadow: inset 3px 0 0 var(--green-pen); }
+  .choices button.is-wrong { border-color: var(--red-pen); box-shadow: inset 3px 0 0 var(--red-pen); }
+
+  .order { display: grid; gap: 6px; margin: var(--space-2) 0 0; padding: 0; list-style: none; counter-reset: order; }
+  .order li { display: flex; flex-wrap: wrap; align-items: center; gap: 4px var(--space-3); padding: 6px 6px 6px 12px; border: 1px solid var(--rule); border-radius: var(--radius-control); background: var(--surface); counter-increment: order; }
+  .order li::before { content: counter(order) "."; min-width: 1.4em; font-family: var(--font-ui); font-size: var(--text-sm); color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .order__text { flex: 1; min-width: 12rem; }
+  .order__moves { display: flex; gap: 2px; }
+  .order li.is-right { border-color: var(--green-pen); }
+  .order li.is-wrong { border-color: var(--red-pen); }
+
+  .confidence { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-4); margin: var(--space-3) 0 0; padding: 0; border: 0; font-family: var(--font-ui); font-size: var(--text-sm); color: var(--ink-2); }
+  .confidence legend { float: left; margin-right: var(--space-2); padding: 0; color: var(--ink-3); }
+  .confidence label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+  .confidence input { accent-color: var(--pen); }
+
+  .exercise-set { margin: var(--space-6) 0; }
+  .exercise-set__intro { color: var(--ink-2); }
+  .exercise-set__summary { margin-top: var(--space-4); padding: var(--space-3) var(--space-4); border: 1px solid var(--rule); border-radius: var(--radius-panel); background: var(--surface); font-family: var(--font-ui); font-size: var(--text-sm); }
+  .exercise-set__summary p { margin: 0 0 var(--space-2); font-weight: 500; }
+  .exercise-set__summary ul { margin: 0; padding-left: 1.2em; color: var(--ink-2); }
+
+  @media (pointer: coarse) {
+    .input, .choices button { min-height: var(--target-touch); }
+  }
+
+  /* Пилот (S2.10): задания «до урока» видны только с ?pilot=1 */
+  [data-pilot-only] { display: none; }
+  :root[data-pilot="on"] [data-pilot-only] { display: block; }
+  .pilot { margin: var(--space-5) 0; padding: var(--space-3) var(--space-4); border: 1px dashed var(--control-border); border-radius: var(--radius-panel); }
+  .pilot__label { margin: 0 0 var(--space-2); font-family: var(--font-ui); font-size: 14px; font-weight: 600; color: var(--ink-2); }
+  .pilot > :last-child { margin-bottom: 0; }
+
+  /* Микроопрос в конце урока */
+  .survey { margin: var(--space-7) 0 var(--space-5); padding-top: var(--space-4); border-top: 1px solid var(--rule); font-family: var(--font-ui); }
+  .survey__title { margin: 0 0 var(--space-3); font-size: var(--text-lg); }
+  .survey__form { display: grid; gap: var(--space-3); }
+  .survey__scale { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: 0; padding: 0; border: 0; }
+  .survey__scale legend { margin-bottom: var(--space-2); padding: 0; font-size: var(--text-sm); color: var(--ink); }
+  .survey__option { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 4px 10px; border: 1px solid var(--control-border); border-radius: var(--radius-control); background: var(--surface); font-size: 14px; color: var(--ink-2); cursor: pointer; }
+  .survey__option b { color: var(--ink); font-weight: 600; }
+  .survey__option:has(input:checked) { border-color: var(--pen); box-shadow: inset 0 0 0 1px var(--pen); color: var(--ink); }
+  .survey__option input { margin: 0; accent-color: var(--pen); }
+  .survey__field { display: grid; gap: 4px; max-width: 32rem; font-size: var(--text-sm); color: var(--ink); }
+  .survey__field .input { width: 100%; height: auto; min-height: 36px; padding: 6px 10px; }
+  .survey__comment { resize: vertical; font: inherit; }
+  .survey__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .survey__status { margin: 0; font-size: var(--text-sm); color: var(--green-pen); }
+  .survey__status:empty { display: none; }
+  .survey__note { margin: var(--space-3) 0 0; font-size: 13px; color: var(--ink-3); }
+}
+
+/* ───────── Входная диагностика (урок 0.2, Diagnostic.astro) ───────── */
+@layer components {
+  .diagnostic { margin: var(--space-6) 0; padding: var(--space-5); border: 1px solid var(--rule); border-radius: var(--radius-panel); background: var(--surface); }
+  .diagnostic__intro p { margin: 0 0 var(--space-4); }
+  .diagnostic__done-note { color: var(--ink-2); font-family: var(--font-ui); font-size: var(--text-sm); }
+  .diagnostic__progress { display: grid; gap: var(--space-2); margin-bottom: var(--space-4); font-family: var(--font-ui); font-size: var(--text-sm); color: var(--ink); }
+  .diagnostic__progress p { margin: 0; }
+  .diagnostic__progress progress { appearance: none; width: 100%; height: 4px; border: 0; border-radius: 2px; background: var(--rule); color: var(--pen); }
+  .diagnostic__progress progress::-webkit-progress-bar { border-radius: 2px; background: var(--rule); }
+  .diagnostic__progress progress::-webkit-progress-value { border-radius: 2px; background: var(--pen); }
+  .diagnostic__progress progress::-moz-progress-bar { border-radius: 2px; background: var(--pen); }
+  .diagnostic__item:focus { outline: none; }
+  .diagnostic__item:focus-visible { outline: 2px solid var(--pen); outline-offset: 4px; border-radius: 2px; }
+  .diagnostic__topic { margin: 0 0 var(--space-2); font-family: var(--font-ui); font-size: var(--text-sm); color: var(--ink-2); }
+  .diagnostic__item .block--exercise { margin: 0; }
+  /* в диагностике без подсказок: задача засчитывается только с первой попытки и без помощи */
+  .diagnostic [data-hint-next] { display: none; }
+  .diagnostic__bar { display: flex; flex-wrap: wrap; gap: var(--space-2); justify-content: flex-end; margin-top: var(--space-3); }
+  .diagnostic__result:focus { outline: none; }
+  .diagnostic__result h3 { margin-top: 0; }
+  .diagnostic__result h4 { margin: var(--space-4) 0 var(--space-2); font-family: var(--font-ui); font-size: var(--text-sm); color: var(--ink-2); }
+  .diagnostic__list { margin: 0; padding-left: 1.4em; }
+  .diagnostic__list li + li { margin-top: 4px; }
+}
+

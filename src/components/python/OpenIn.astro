@@ -1,0 +1,32 @@
+---
+// Кнопки «Открыть в Colab» и «Открыть в браузере» (JupyterLite) для лабораторной. Ноутбука нет — сборка падает.
+import { existsSync } from "node:fs";
+import path from "node:path";
+import Icon from "../layout/Icon.astro";
+import { ContentError } from "../../lib/content/files";
+import { colabUrl, liteUrl, NOTEBOOKS } from "../../python/links";
+
+interface Props {
+  /** Путь от notebooks/ без расширения: «la/normal_equations» */
+  notebook: string;
+  /** Маленькие кнопки — в полосе ячейки кода */
+  compact?: boolean;
+}
+const { notebook, compact = false } = Astro.props;
+const file = path.join(NOTEBOOKS.dir, `${notebook}.ipynb`);
+if (!existsSync(path.join(process.cwd(), file))) {
+  throw new ContentError([`OpenIn: лабораторной ${file} нет — соберите ноутбуки: python scripts/build_notebooks.py`]);
+}
+const lite = liteUrl(notebook);
+const size = compact ? "btn--sm" : "";
+---
+<span class="open-in">
+  <a class:list={["btn", size]} href={colabUrl(notebook)} target="_blank" rel="noopener">
+    Открыть в Colab<Icon name="external" /><span class="visually-hidden"> (в новой вкладке)</span>
+  </a>
+  {lite && (
+    <a class:list={["btn", "btn--quiet", size]} href={lite} target="_blank" rel="noopener">
+      Открыть в браузере<Icon name="external" /><span class="visually-hidden"> (в новой вкладке)</span>
+    </a>
+  )}
+</span>

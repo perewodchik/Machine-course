@@ -3,6 +3,7 @@
 import "../styles/global.css";
 import SiteHeader from "../components/layout/SiteHeader.astro";
 import type { CourseTree } from "../lib/content/catalog";
+import { getEntry } from "astro:content";
 
 interface Props {
   title: string;
@@ -14,6 +15,8 @@ interface Props {
 }
 const { title, description, course, withToc = false, noindex = false } = Astro.props;
 const fullTitle = course ? `${title} — ${course.title}` : title;
+// переименования уроков (content/redirects.yaml): по ним мигрируют сохранённые отметки «знаю»
+const lessonRedirects = (await getEntry("redirects", "lessons"))?.data ?? {};
 ---
 <!doctype html>
 <html lang="ru">
@@ -29,10 +32,17 @@ const fullTitle = course ? `${title} — ${course.title}` : title;
       (() => {
         const root = document.documentElement;
         root.classList.add("js"); // компоненты с поведением прячут лишнее до отрисовки, без JS видно всё
-        let theme, margins;
-        try { theme = localStorage.getItem("theme"); margins = localStorage.getItem("margins"); } catch { /* приватный режим */ }
+        let theme, margins, pilot;
+        try {
+          // режим пилота (S2.10): ?pilot=1 включает задания «до урока», ?pilot=0 выключает; запоминается в браузере
+          const flag = new URLSearchParams(location.search).get("pilot");
+          if (flag === "1") localStorage.setItem("mlf:pilot", "1");
+          if (flag === "0") localStorage.removeItem("mlf:pilot");
+          theme = localStorage.getItem("theme"); margins = localStorage.getItem("margins"); pilot = localStorage.getItem("mlf:pilot");
+        } catch { /* приватный режим */ }
         if (theme === "light" || theme === "dark") root.dataset.theme = theme;
         if (margins === "hidden") root.dataset.margins = "hidden";
+        if (pilot === "1") root.dataset.pilot = "on";
       })();
     </script>
   </head>
@@ -40,12 +50,20 @@ const fullTitle = course ? `${title} — ${course.title}` : title;
     <a class="skip-link" href="#content">К содержимому</a>
     <SiteHeader course={course} withToc={withToc} />
     <slot />
+    <script type="application/json" id="lesson-redirects" set:html={JSON.stringify(lessonRedirects)} />
     <script>
       import "../client/layout";
       import "../client/symbols";
       import "../client/scrollable";
       import "../client/tabs";
       import "../client/derivation";
+      import "../client/exercise";
+      import "../client/formula-input";
+      import "../client/know";
+      import "../client/diagnostic";
+      import "../client/map";
+      import "../python/cell";
+      import "../client/survey";
     </script>
   </body>
 </html>

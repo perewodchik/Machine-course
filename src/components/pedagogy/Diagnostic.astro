@@ -1,0 +1,68 @@
+---
+// Входная диагностика курса (урок 0.2, S3.01): задачи по одной, по порядку банка content/diagnostic.yaml.
+// Задачи отрисованы при сборке (KaTeX в браузер не попадает) и скрыты; какую показать, решает src/client/diagnostic.ts
+// по src/lib/diagnostic/plan.ts. Верно с первой попытки и без подсказок — урок получает «знаю» (by: diagnostic).
+import { loadCourse } from "../../lib/content/collections";
+import { loadDiagnostic } from "../../lib/content/diagnostic";
+import Exercise from "./Exercise.astro";
+
+const bank = loadDiagnostic();
+const course = await loadCourse("foundations");
+const items = bank.items.map((it) => {
+  const lesson = course.lessons.find((l) => l.key === it.lesson);
+  if (!lesson) throw new Error(`<Diagnostic>: нет урока ${it.lesson} (content/diagnostic.yaml)`);
+  return { ...it, info: lesson };
+});
+const total = items.reduce((sum, it) => sum + it.minutes, 0);
+const minutes = Math.min(bank.budget, Math.ceil(total));
+// данные для плана: уроки, минуты, на что опираются
+const plan = items.map((it) => ({ lesson: it.lesson, minutes: it.minutes, requires: it.requires ?? [] }));
+---
+<section class="diagnostic" data-diagnostic data-budget={bank.budget} aria-label="Входная диагностика">
+  <script type="application/json" data-diag-plan set:html={JSON.stringify(plan)} />
+
+  <div class="diagnostic__intro" data-diag-intro>
+    <p>
+      {items.length}&nbsp;задач, не больше {minutes}&nbsp;минут. Решайте без подсказок и без калькулятора; если задача незнакома, нажмите «Не знаю» —
+      это честный ответ, а не ошибка. Урокам с верно решёнными задачами курс поставит галочку «знаю». Если ответ неверен, задачи по урокам, которые на этот
+      урок опираются, диагностика пропустит.
+    </p>
+    <button type="button" class="btn btn--primary" data-diag-start>Начать диагностику</button>
+    <p class="diagnostic__done-note" data-diag-resume hidden>Диагностика пройдена раньше: итог ниже.</p>
+  </div>
+
+  <div class="diagnostic__progress" data-diag-progress hidden>
+    <p><span data-diag-count></span><span class="muted" data-diag-left></span></p>
+    <progress max={items.length} value="0" data-diag-meter aria-label="Пройдено задач"></progress>
+  </div>
+
+  {items.map((it, i) => (
+    <div class="diagnostic__item" data-diag-item={it.lesson} hidden tabindex="-1" aria-labelledby={`diag-topic-${i}`}>
+      <p class="diagnostic__topic" id={`diag-topic-${i}`}>Урок {it.info.number}. {it.info.title}</p>
+      <Exercise gen={it.gen} variants={1} seed={it.seed ?? 1} lesson={it.lesson} id={`diag.${it.info.slug}`} title="Задача" />
+      <div class="diagnostic__bar">
+        <button type="button" class="btn btn--sm btn--quiet" data-diag-unknown>Не знаю</button>
+        <button type="button" class="btn btn--sm btn--primary" data-diag-next hidden>Следующая задача</button>
+      </div>
+    </div>
+  ))}
+
+  <div class="diagnostic__result" data-diag-result hidden tabindex="-1" aria-labelledby="diag-result-title">
+    <h3 id="diag-result-title">Итог диагностики</h3>
+    <p data-diag-summary></p>
+    <div data-diag-known-block>
+      <h4>Отмечено «знаю»</h4>
+      <ul class="diagnostic__list">
+        {items.map((it) => <li data-diag-known={it.lesson} hidden><a href={it.info.href}>{it.info.number}. {it.info.title}</a></li>)}
+      </ul>
+    </div>
+    <div data-diag-route-block>
+      <h4>С чего начать</h4>
+      <ol class="diagnostic__list">
+        {items.map((it) => <li data-diag-route={it.lesson} hidden><a href={it.info.href}>{it.info.number}. {it.info.title}</a></li>)}
+      </ol>
+      <p class="muted">Остальные уроки курса — в оглавлении слева: отметить «знаю» можно и вручную.</p>
+    </div>
+    <button type="button" class="btn btn--sm" data-diag-restart>Пройти заново</button>
+  </div>
+</section>

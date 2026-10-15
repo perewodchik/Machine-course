@@ -17,6 +17,179 @@
 
 ---
 
+### 2026-10-15 — L-0.3 Язык математики: множества, отображения, кванторы — готов
+- **Сделано:** Урок 0.3: три цикла (множества и ℝᵈ, ∈ и ⊂; отображения — функция, значение, образ, композиция; аргмин, кванторы, ∝) и практика «перевод туда и обратно» — генератор basics.read-notation (8 записей × 2 стороны, неверные варианты — типичные путаницы). Ошибки ∈↔⊂, min↔argmin, ∝↔=. Понятия nota.sets и nota.argmin, глоссарий. Итоговая проверка — basics.argmin. Типограф: однострочные компоненты MDX (<Note>…</Note>) типографятся как абзац — кавычка после формулы больше не разворачивается («…«), короткие формулы в заметках не рвутся.
+- **Файлы:** content/courses/foundations/start/language-of-math.mdx, content/concepts/nota.yaml, content/glossary.yaml, src/lib/exercises/generators/basics.ts, src/markdown/core/plugins.ts, tests/e2e/lesson-start.spec.ts
+- **Проверка:** vitest 315; e2e урок 0.3 и layout — 123; lint, check, validate, check_consistency — чисто; скриншоты 1440/390 без горизонтальной прокрутки
+- **Отклонения от плана и решения:** Таблица значений f(x) — вертикальная: строчная таблица на телефоне складывалась в карточки без подписи «точка x». Формулу Байеса в тексте разбивать можно только по ∝ (группы в фигурных скобках).
+- **Следующий шаг:** L-0.4 — суммы, произведения, индикатор и игра «Переводчик сумм».
+- **Вопросы пользователю:** —
+
+### 2026-10-15 — L-0.1 Регрессия руками за 15 минут — готов
+- **Сделано:** Урок 0.1: два цикла (прямая на глаз — модель, ошибка, J; чего не хватает — карта модулей I–IV), рисунок «Подгонка прямой» без кнопки минимума, ошибка «сумма со знаком», генератор basics.sse (итоговая проверка). Набор «Квартиры» (code/mlf/datasets.py, экспорт и тест). Игра «Подгони прямую» (/games/fit-line): уровни «наклон», «наклон и сдвиг» (+3 млн), «выброс»; сдача — J не больше минимума на 5 %; решаемость на сетке бегунков — fast-check. Понятие ml.loss.
+- **Файлы:** content/courses/foundations/start/regression-by-hand.mdx, code/mlf/datasets.py, src/games/fit-line/*, src/pages/games/fit-line.astro, src/lib/exercises/generators/basics.ts
+- **Проверка:** vitest 314; pytest 66; e2e урок 0.1 и игра — 4; lint, check, validate, check_consistency — чисто; скриншоты 1440/390 без горизонтальной прокрутки
+- **Отклонения от плана и решения:** Шаги бегунков игры — 0.1 и 0.002: при 0.25 и 0.005 на части выборок минимум не достигался в пределах 5 % (поймал fast-check). Уровень «наклон и сдвиг» — цены +3 млн («с ремонтом»), иначе прямая через ноль почти не хуже.
+- **Следующий шаг:** L-0.3 — язык математики.
+- **Вопросы пользователю:** —
+
+### 2026-10-15 — S3.06 Размерности в реальном времени — готова
+- **Сделано:** Анализ форм в Python — по AST кода ячейки в её же пространстве имён, только верхний уровень (в функциях имена значат другое) и без вызовов функций (побочные эффекты). Найдено: ast.Name без номеров строк не компилировался — fix_missing_locations; ошибки разбора Compute Engine приходят в обёртке {fn: …}.
+- **Файлы:** src/lib/symbolic/shape.ts, src/client/formula-input.ts, src/python/{shapes,worker,runtime,protocol,cell}.ts, src/components/python/PyCell.astro, tests/e2e/{formula,python}.spec.ts
+- **Проверка:** vitest 309; e2e 248 (90 пропущено); lint, check, validate — чисто
+- **Следующий шаг:** S3.L0 — уроки модуля 0 (дальше L-0.1).
+- **Вопросы пользователю:** —
+
+### 2026-10-15 — S3.05 Диагноз ошибок по мутациям — готова
+- **Сделано:** Мутация с ошибкой формы (XᵀΘᵀ) не вычисляется — сравнивается запись без скобок; иначе — значение на случайных матрицах. Подстановка символов в TeX — токенизатором: AB — два символа, буквы \\top — нет. Неверный градиент из теста S3.04 теперь называется прямо («знак»).
+- **Файлы:** content/formulas/rules/*.yaml, code/mlf/formulas.py, code/tests/test_formulas.py, src/lib/content/rule-instance.ts, src/lib/symbolic/{check,derivation,equivalent}.ts, src/components/pedagogy/Exercise.astro, src/client/exercise.ts
+- **Проверка:** pytest 63; vitest 306; e2e formula и v1 — 20; lint, validate, check_consistency — чисто
+- **Следующий шаг:** S3.06 — размерности в реальном времени.
+- **Вопросы пользователю:** —
+
+### 2026-10-15 — S3.04 Проверка вывода ученика по шагам — готова
+- **Сделано:** Парсер не знает \\nabla — вид строки определяется по тексту до разбора; «= 0» с матрицей слева — ноль-число как нулевая матрица; вырожденная обратная — ошибка формы (попытка засчитывается). Харнесс повторяет виды проверок code/mlf/formulas.py (same, gradient, stationary, solution) на тех же размерах.
+- **Файлы:** src/lib/symbolic/derivation.ts, derivation.test.ts, src/client/exercise.ts, src/components/pedagogy/Exercise.astro, linear-regression.mdx, tests/e2e/formula.spec.ts
+- **Проверка:** vitest 300; e2e formula, v1, layout — 117; lint, check, validate — чисто
+- **Следующий шаг:** S3.05 — диагноз ошибок по мутациям.
+- **Вопросы пользователю:** —
+
+### 2026-10-15 — S3.03 Ввод формул и проверка символьных ответов — готова
+- **Сделано:** Из Compute Engine взят только модуль latex-syntax (парсер в MathJSON, 415 КБ): вычислительное ядро (3.4 МБ) не нужно — значения считает свой вычислитель с матрицами (сложение, произведение, транспонирование, обратная, след, определитель, норма, log/exp/σ, x^{(i)}). Особенности парсера: \det A \det B = det(A det B); x^{(i)\top} читается как (i)·True — обработано. MathLive и парсер — отдельные чанки; npm audit — старые уязвимости braces в инструментах линтинга, не от новых пакетов.
+- **Файлы:** src/lib/symbolic/{evaluate,equivalent,parse,check}.ts, src/client/formula-input.ts, src/client/exercise.ts, src/components/pedagogy/Exercise.astro, tests/e2e/formula.spec.ts
+- **Проверка:** vitest 288; e2e formula, v1, hosting, pilot, know — 68; lint, check, validate, check_consistency — чисто
+- **Следующий шаг:** S3.04 — проверка вывода ученика по шагам.
+- **Вопросы пользователю:** —
+
+### 2026-10-15 — S3.02 Карта курса, понятия, справка по опоре — готова
+- **Сделано:** requires/cs229 перенесены из карточек в module.yaml скриптом и сверяются с карточками (V.2: «модули 0–IV» — пояснение, опора — V.1). Карта рисует рёбра клиентом по положению узлов; ниже 1100 px — списки. Путь «зачем это мне» — BFS вперёд по requires всех курсов до урока с cs229. Справка по опоре — первая опора без «знаю». axe поймал приглушение прозрачностью — заменено цветом.
+- **Файлы:** content/courses/*/*/module.yaml, src/components/layout/CourseMap.astro, src/client/map.ts, src/lib/progress/graph.ts, src/pages/{map,concepts/index,concepts/[id]}.astro, src/components/pedagogy/PrereqHelp.astro, tests/e2e/map.spec.ts
+- **Проверка:** vitest 280; e2e 236 (90 пропущено); pytest 61; lint, check, validate, check_consistency — чисто
+- **Следующий шаг:** S3.03 — ввод формул и проверка символьных ответов.
+- **Вопросы пользователю:** —
+
+### 2026-10-15 — S3.01 Входная диагностика и урок 0.2 — готова
+- **Сделано:** Диагностика по банку content/diagnostic.yaml в уроке 0.2 (написан целиком: L-0.2). Пропуск задач — только по прямым requires неверной задачи, без цепочки: иначе одна ошибка в 0.4 обрывала бы диагностику. Генераторы модуля 0 — basics.* (будущие итоговые проверки уроков 0.3–0.9). exercise:result теперь несёт attempt и hints. Проценты в генераторах вероятности — с неразрывным пробелом.
+- **Файлы:** content/diagnostic.yaml, content/courses/foundations/start/how-the-course-works.mdx, src/components/pedagogy/Diagnostic.astro, src/client/diagnostic.ts, src/lib/diagnostic/plan.ts, src/lib/exercises/generators/basics.ts, tests/e2e/diagnostic.spec.ts
+- **Проверка:** vitest 276; e2e: diagnostic, layout, know, hosting, pilot, iii3 — 131; lint, check, validate, check_consistency — чисто
+- **Следующий шаг:** S3.02 — карта курса и навигация по графу.
+- **Вопросы пользователю:** —
+
+### 2026-10-15 — S2.12 Итог этапа 2 — готова
+- **Сделано:** Срез готов: уроки V.1, I.4, III.3 с выводами, виджетами, Python и итоговыми проверками; игры «Матрица-пазл» и «Байес-детектив»; лабораторная с Colab; режим пилота с опросом и отчётом; ревью S2.11 закрыто. Пользователю отправлены скриншоты, задан вопрос о pull request этапа 2.
+- **Файлы:** docs/implementation/PLAN.md (S2.14)
+- **Проверка:** все проверки S2.11 зелёные
+- **Отклонения от плана и решения:** Пилот — ворота этапа 2 в обзоре плана; пользователь велел продолжать без остановок, поэтому пилот вынесен в отдельную задачу S2.14 [u], а этап 3 начат. Итоги пилота превратятся в задачи правок.
+- **Следующий шаг:** S3.01 — диагностика (урок 0.2).
+- **Вопросы пользователю:** Открыть pull request этапа 2 (docs/course-analysis → main)?
+
+### 2026-10-15 — S2.11 Ревью среза: формулы, KaTeX в слое, переносы, виджеты — готова
+- **Сделано:** Субагент снял 144 экрана и прогнал axe (0 нарушений). Критичное: формула полной вероятности обрезана, сырой LaTeX в карточке Байеса — исправлено; валидатор ловит математику вне $…$ в полях формул (29 мест исправлено). Найдено: katex.min.css был вне слоёв и перебивал все наши правила для формул (1.06em, отступы) — теперь слой katex. Важное: ввод матрицы, подписи GridMap, таблица V.1 (карточки на телефоне), переносы (src/markdown/core/nobr.ts), шапка, легенда символов, спойлер в III.3, матрицы в вариантах — исправлено.
+- **Файлы:** src/markdown/core/{nobr,inline,plugins}.ts, src/styles/{global,math,layout,pedagogy,kit}.css, src/components/pedagogy/{Formula,Derivation,SymbolLegend}.astro, src/widgets/_kit/{Axis,Plane,Vector}.tsx, src/widgets/prob/bayes-grid/*, src/lib/content/validate.ts, content/formulas/**, bayes.mdx
+- **Проверка:** vitest 267; e2e 202 (74 пропущено); pytest 61; nbmake 1; lint, check, validate, check_consistency — чисто
+- **Отклонения от плана и решения:** «Матрица-пазл» на 390: рисунок и матрица помещаются в один экран после одной прокрутки к рисунку (637 px из 787) — не менял. Мелочи не исправлены: квадратные скобки в игре, курсивное det в виджетах, нативный бегунок детектива, «Q-» в конце строки каталога, ссылки-названия в каталоге.
+- **Следующий шаг:** S2.12 — итог этапа 2.
+- **Вопросы пользователю:** —
+
+### 2026-10-15 — S3.07 S3.07 — проверка кода свойствами — готова
+- **Сделано:** Сделана параллельно с ревью среза: зависит только от S2.09.
+- **Файлы:** code/mlf/check.py, code/tests/test_check_properties.py, code/pyproject.toml, notebooks/src/la/normal_equations.py
+- **Проверка:** pytest 61, сборка лабораторных + nbmake
+- **Отклонения от плана и решения:** Нет.
+- **Следующий шаг:** S2.11 — ревью среза (в работе: визуальное ревью идёт).
+- **Вопросы пользователю:** —
+
+### 2026-10-15 — S2.10 S2.10 — пилот: журнал, опрос, отчёт — готова
+- **Сделано:** Инструменты пилота без сервера: всё в браузере участника, результаты — файлом, сводка — скриптом.
+- **Файлы:** src/lib/pilot/report.ts, scripts/pilot-report.ts, src/client/survey.ts, src/components/pedagogy/{LessonSurvey,Pilot}.astro, src/client/derivation.ts, docs/pilot/README.md, tests/e2e/pilot.spec.ts
+- **Проверка:** lint, astro check, vitest 262, validate, check_consistency, build, e2e 170 passed (axe чисто)
+- **Отклонения от плана и решения:** Пилот запускает пользователь: набрать 6–10 участников и разослать ссылку с ?pilot=1 (docs/pilot/README.md).
+- **Следующий шаг:** S2.11 — ревью среза.
+- **Вопросы пользователю:** —
+
+### 2026-10-15 — S2.09 S2.09 — лабораторные в CI и кнопки открытия — готова
+- **Сделано:** Единый источник кода урока и лабораторной; публикация для Colab — из этого же репозитория.
+- **Файлы:** code/mlf/snippets.py, code/tests/test_snippets.py, scripts/build_notebooks.py, notebooks/src/la/normal_equations.py, notebooks/la/normal_equations.ipynb, tests/e2e/lesson-v1.spec.ts
+- **Проверка:** pytest 55, сборка лабораторных + nbmake, git diff notebooks/ после сборки — только ожидаемые правки, check_consistency, build, e2e V.1 и Python 20 passed
+- **Отклонения от плана и решения:** Решение пользователя «публичный репозиторий или отдельный» не понадобилось: репозиторий уже публичный. Ссылка — на main, а не на тег релиза: тегов пока нет; переключить в S2.12 после первого релиза.
+- **Следующий шаг:** S2.10 — пилот: журнал, опрос, отчёт.
+- **Вопросы пользователю:** —
+
+### 2026-10-15 — S2.13 S2.13 — игра «Байес-детектив» — готова
+- **Сделано:** Вторая игра среза; GameShell обобщён: счёт — `view.stats`, действия в журнал — `view.actions`. На телефоне текущая улика повторяется над бегунком.
+- **Файлы:** src/games/bayes-detective/*, src/pages/games/bayes-detective.astro, src/games/_engine/GameShell.tsx, src/styles/games.css, tests/e2e/bayes-detective.spec.ts
+- **Проверка:** lint, astro check, vitest 257, validate, build, e2e 164 passed (axe чисто); скриншоты 1440/390 — правки по ревью внесены
+- **Отклонения от плана и решения:** Нет.
+- **Следующий шаг:** S2.09 — лабораторные в CI и кнопки открытия.
+- **Вопросы пользователю:** —
+
+### 2026-10-15 — S2.08 S2.08 — уроки I.4 и III.3 — готова
+- **Сделано:** Два урока с виджетами, формулами в реестре и параметрическими задачами; итоговые проверки ставят «знаю». Попутно: типограф видит абзац целиком (кавычки вокруг формул), матрицы в условиях генераторов — smallmatrix в строке, sample: simplex для проверки вероятностных формул.
+- **Файлы:** content/courses/foundations/{linear-algebra/matrix-as-map,probability/bayes}.mdx, src/widgets/{la/grid-map,prob/bayes-grid}/*, content/formulas/{rules/matvec-columns,rules/matmul-composition,prob/bayes}.yaml, src/lib/exercises/generators/{la,prob}.ts, code/snippets/prob/bayes.py, tests/e2e/lesson-{i4,iii3}.spec.ts
+- **Проверка:** lint, astro check, vitest 249, pytest 48, validate, check_consistency, build, e2e 160 passed (axe чисто); content-review — правки внесены; скриншоты 1440/390 без горизонтальной прокрутки
+- **Отклонения от плана и решения:** Игра «Байес-детектив» из карточки III.3 — не в этой задаче (в плане её нет), записать в план отдельно. Длинный \\text в условии формулы ломал ширину на телефоне — условия в карточке пишем короткой формулой, слова — в why.
+- **Следующий шаг:** S2.09 — лабораторные в CI и кнопки открытия.
+- **Вопросы пользователю:** —
+
+### 2026-10-15 — S2.07 S2.07 — игра «Матрица-пазл» — готова
+- **Сделано:** Игра по контракту с чистой моделью и оболочкой GameShell; уровень проходится только с клавиатуры, axe чисто. Попутно: `_kit/Polygon`, `GameEvent` в журнале, общий `Rng` в контракте игр; S1.14 отмечена — этап 1 слит в main (PR #1).
+- **Файлы:** src/games/_engine/GameShell.tsx, src/games/matrix-puzzle/*, src/pages/games/matrix-puzzle.astro, src/styles/games.css, src/widgets/_kit/Polygon.tsx, tests/e2e/matrix-puzzle.spec.ts
+- **Проверка:** lint, astro check, vitest 235 (11 игры, fast-check), validate, build, e2e 146 passed (axe чисто); design-critique и accessibility-review по скриншотам — правки внесены
+- **Отклонения от плана и решения:** Паузы в GameShell нет: ни одна игра пока не использует время (tick). В прототипе уровень «сжатие в линию» был недостижим шагом 1 — здесь шаг 0.5. Строка уровня поднята над полем по итогам ревью (мобильный).
+- **Следующий шаг:** S2.08 — уроки I.4 и III.3.
+- **Вопросы пользователю:** —
+
+### 2026-10-15 — S2.06 S2.06 — урок V.1 — готова
+- **Сделано:** Первый урок в MDX: 4 цикла с проверками, 3 формулы из реестра с выводами, ячейка Python (θ закреплено тестом), итоговая проверка ставит «знаю». Маршрут урока: `lead` и заметка CS229 из frontmatter, тексты через `lessonText` (без 113 предупреждений), таблицы в прокручиваемой обёртке, маркеры списков.
+- **Файлы:** content/courses/foundations/bridge/linear-regression.mdx, content/formulas/{la/residual-orthogonality,stat/linreg-likelihood}.yaml, content/concepts/{prob,stat}.yaml, src/pages/[course]/[module]/[lesson].astro, src/lib/content/cs229.ts, tests/e2e/lesson-v1.spec.ts
+- **Проверка:** validate, pytest (35), vitest 224, lint, astro check, build, e2e 140 passed (axe чисто), check_consistency; content-review — правки внесены; скриншоты 1440/390 без горизонтальной прокрутки
+- **Отклонения от плана и решения:** Игра «Подгони прямую» — этап 3 (S3), в уроке пока не упоминается. Исправлено попутно: текст урока попадал в слот intro (выражение со slot), слипались ссылки-обоснования в шагах вывода, матрицы в условиях генераторов — выключными формулами (версии 2). sample: positive для скаляров в проверке формул.
+- **Следующий шаг:** S2.07 — игра «Матрица-пазл».
+- **Вопросы пользователю:** —
+
+### 2026-10-15 — S2.05 S2.05 — Python в уроке — готова
+- **Сделано:** Воркер, очередь и «Стоп» (`src/python/`), компоненты `components/python/`, регионы сниппетов (`lib/content/snippets.ts`) с проверкой в валидаторе, подсветка «карандашом» при сборке, COOP/COEP в dev и preview, кэш Pyodide в CI.
+- **Файлы:** scripts/fetch-pyodide.ts, src/python/*, src/components/python/*, src/lib/content/snippets.ts, src/markdown/core/python.ts, src/styles/python.css, tests/e2e/python.spec.ts
+- **Проверка:** lint, astro check, vitest 218, validate, build, e2e 130 passed (axe чисто), pytest code/, сборка лабораторных, check_consistency; design-critique и accessibility-review по скриншотам — правки внесены
+- **Отклонения от плана и решения:** jsDelivr закрыт в этой сети — numpy извлекается из архива релиза на GitHub (fallback в скрипте). Кнопка JupyterLite скрыта до своей сборки (этап 3, notebooks/README.md). Сверх плана: правка кода в ячейке (PRIMM «измени»). Компоненты ячейки — .astro + скрипт, не React (src/README.md обновлён).
+- **Следующий шаг:** S2.06 — урок V.1.
+- **Вопросы пользователю:** —
+
+### 2026-10-15 — S2.04 S2.04 — галочка «знаю» — готова
+- **Сделано:** Логика в `lib/progress/marks.ts`, стор в `lib/state/marks.ts`, клиент `client/know.ts`, компонент `ProgressFile`; итоговая проверка демо-урока ставит отметку сама.
+- **Файлы:** src/lib/progress/marks.ts, src/lib/state/marks.ts, src/client/know.ts, src/components/layout/ProgressFile.astro, tests/e2e/know.spec.ts, eslint.config.js
+- **Проверка:** lint, astro check, vitest 199, validate, build 127 страниц, e2e 122 passed (axe чисто)
+- **Отклонения от плана и решения:** Правило слоёв: клиенту разрешён `import type` из сборочных модулей (`dependency.kind: value`), фикстура `ok-type-import-build.ts`. Сообщение «Урок отмечен» — через `queueMicrotask`, чтобы его не затирал отзыв упражнения.
+- **Следующий шаг:** S2.05 — Python в уроке (Pyodide в Web Worker, PyCell, PyCode, OpenIn).
+- **Вопросы пользователю:** —
+
+### 2026-10-15 — S2.03 движок упражнений — готова
+- **Сделано:** src/lib/math/rng.ts (mulberry32), src/lib/exercises/{types,parse,check}.ts, generators/{la,index}.ts (det2, matmul2, slope3, shapes), src/markdown/core/inline.ts (renderInline, inlineText), src/components/pedagogy/{Exercise,ExerciseSet}.astro, src/client/exercise.ts, src/lib/state/journal.ts, стили в pedagogy.css, раздел «Упражнения» на /lab. Тесты: exercises.test.ts (разбор «0,5», «−3/4», «1e-3»; проверки; детерминизм генераторов), inline.test.ts, tests/e2e/exercise.spec.ts (все типы с клавиатуры, журнал, итоговая проверка).
+- **Файлы:** src/lib/math/rng.ts, src/lib/exercises/*, src/markdown/core/inline.ts, src/components/pedagogy/{Exercise,ExerciseSet}.astro, src/client/exercise.ts, src/lib/state/journal.ts, src/styles/pedagogy.css, src/pages/lab.astro, tests/e2e/exercise.spec.ts
+- **Проверка:** vitest 192, lint, astro check 0, build, e2e 114 (axe /lab в обеих темах)
+- **Отклонения от плана и решения:** KaTeX не уходит в браузер: «Ещё задача» переключает заранее собранные варианты (по умолчанию 8), а не генерирует новые на клиенте — набор вариантов конечен. Варианты и поля, подпись которых — одна формула, получают aria-label из текста MathML (axe не читает MathML). Расхождения «знаю» ↔ итоговая проверка модуля — после S2.04.
+- **Где остановился:** —
+- **Следующий шаг:** S2.04.
+- **Вопросы пользователю:** —
+
+### 2026-10-15 — S2.02 виджет «Подгонка прямой» — готова
+- **Сделано:** src/widgets/la/fit-line/{model.ts,model.test.ts,FitLine.tsx,index.ts,README.md,data.json}, src/components/widgets/FitLine.astro, scripts/export_widget_data.py (data.json виджетов сайта), code/tests/test_normal_equations.py::test_widget_export_matches_generator, tests/e2e/fit-line.spec.ts; FitLine в lessonComponents; демо-урок использует виджет вместо заглушки.
+- **Файлы:** src/widgets/la/fit-line/*, src/components/widgets/FitLine.astro, src/components/pedagogy/index.ts, scripts/export_widget_data.py, code/tests/test_normal_equations.py, tests/e2e/fit-line.spec.ts, src/pages/demo/lesson.astro
+- **Проверка:** vitest 163 (θ* = (0.798, 0.548), J(2.5, 0.25) = 5.23, J(θ*) = 1.466), pytest 28, lint, astro check 0, build, e2e 100 (крайние значения ползунков — всё внутри области графика, подписи не ниже оси; минимум; сброс; подсветка из формулы)
+- **Отклонения от плана и решения:** Нижний предел подписей на рисунке поднят до 12 px от оси: индекс опускается ниже базовой линии и вылезал на 1.5 px. Ползунки показывают три знака (θ* в тексте урока — с тремя).
+- **Где остановился:** —
+- **Следующий шаг:** S2.03.
+- **Вопросы пользователю:** —
+
+### 2026-10-15 — S2.01 набор widgets/_kit — готова
+- **Сделано:** src/widgets/_kit/* (логика layout/clip/format/scrub + 10 элементов + KitDemo, README), src/styles/kit.css, раздел «Набор для рисунков» на /lab (остров client:visible). Тесты: kit.test.ts (шкалы, клетка совпадает с делениями при 300–1200 px, обрезка Лианга — Барски, подписи, клавиатура), render.test.tsx (SSR: viewBox, clipPath, подписи, ARIA), e2e: стрелки и Shift+стрелка, End, прямая вне графика без подписи, подсветка X из рисунка в формулах. Зависимости: d3-scale 4.0.2, @nanostores/react 2.0.1.
+- **Файлы:** src/widgets/_kit/*, src/styles/kit.css, src/pages/lab.astro, tests/e2e/lab.spec.ts
+- **Проверка:** lint, astro check 0, vitest 156, build, e2e 93
+- **Отклонения от плана и решения:** Подпись прямой сдвигается вниз с учётом наклона и ширины подписи — иначе на узком рисунке налезает на линию (в прототипе отступ был постоянный). Ellipse рисуется матрицей преобразования единичной окружности (разные масштабы осей) с vector-effect: non-scaling-stroke.
+- **Где остановился:** —
+- **Следующий шаг:** S2.02.
+- **Вопросы пользователю:** —
+
 ### 2026-10-14 — S1.13 Подключение Cloudflare — ждёт пользователя
 - **Сделано:** пользователь создал проект Workers `machine-course` (не Pages), продакшен — `main`. ADR 0005 (Workers со статическими ассетами) заменяет 0003. `wrangler.jsonc` отдаёт `dist/`, `public/_headers` без изменений. В `main` положена заглушка (`placeholder/`, коммит 5321d89); ветка слила `main` и убрала заглушку, так что слияние ветки в `main` пройдёт без конфликтов.
 - **Файлы:** wrangler.jsonc, docs/adr/0005-hosting-workers.md, README.md (раздел «Хостинг»), docs/implementation/context/{site-foundation,00-project}.md

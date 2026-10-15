@@ -6,11 +6,16 @@
 
 1. Найди карточку урока: Grep `### <номер>.` в `docs/program/` (например `### III.11.`) и прочитай **только её**: цели, понятия, формулы, ошибки, практика.
 2. Проверь граф: понятия урока есть в `content/concepts/`, пререквизиты существуют. Нет — добавь (скилл `new-formula` для формул, запись в `content/concepts/*.yaml` для понятий).
+   Опоры урока (`requires`) и разделы CS229 (`cs229`) уже в `module.yaml` — из карточки; `<Prereqs lessons>` в начале урока перечисляет те же уроки. Сводка понятия — с формулами в `$…$`.
 3. Напиши урок по скиллу `new-lesson`: 2–4 цикла по 7–12 минут; в каждом — попытка или предсказание, исследование, название, вывод, проверка.
 4. Формулы с выводом — через реестр и скилл `new-formula`; `cd code && pytest`.
 5. Код — сниппет в `code/snippets`, числа в тексте — тест в `code/tests`.
 6. Виджет или игра из карточки — по пакету `widgets-games.md`; если их ещё нет — сначала задача на виджет.
 7. Проверь скиллом `content-review`; сними скриншоты урока (1440 и 390 px).
+
+## Эталон
+
+Урок V.1 — `content/courses/foundations/bridge/linear-regression.mdx` (S2.06): frontmatter с `lead`, `cs229`, `symbols`; `Prereqs`; циклы с упражнениями `spec={{…}}`; формулы из реестра (`f.residual-orthogonality`, `f.normal-equations`, `f.linreg-likelihood`); ячейка `PyCode`; итоговая проверка `final`. Текст урока ищет маршрут `src/pages/[course]/[module]/[lesson].astro` через `lessonText` (`src/lib/content/collections.ts`); e2e — `tests/e2e/lesson-v1.spec.ts`.
 
 ## Определение готовности урока
 

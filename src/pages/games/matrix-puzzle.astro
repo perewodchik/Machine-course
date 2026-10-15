@@ -1,0 +1,26 @@
+---
+// Игра «Матрица-пазл» (S2.07): остров React с оболочкой GameShell. Блок «Чему учит игра» — статичный HTML.
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { MatrixPuzzle, meta } from "../../games/matrix-puzzle";
+import { loadCourse } from "../../lib/content/collections";
+
+const course = await loadCourse("foundations");
+const lesson = course.lessons.find((l) => l.key === meta.lesson);
+if (!lesson) throw new Error(`игра ${meta.id}: нет урока ${meta.lesson}`);
+const module = course.modules.find((m) => m.id === lesson.module);
+---
+<BaseLayout title={meta.title} description="Подберите матрицу 2 × 2, которая переводит букву F в контур: столбцы матрицы — образы базисных векторов." course={course}>
+  <main class="game shell" id="content">
+    <nav class="breadcrumb" aria-label="Путь">
+      <a href={`${course.href}#m-${lesson.module}`}>{module?.title}</a><span aria-hidden="true">/</span><span>Игра к уроку {lesson.number}</span>
+    </nav>
+    <h1>{meta.title}</h1>
+    <p class="lead game__lead">Подберите матрицу 2&nbsp;×&nbsp;2, которая переводит букву F в&nbsp;пунктирный контур. Каждое нажатие&nbsp;— ход: чем их меньше, тем лучше. Партия&nbsp;— 3–5&nbsp;минут.</p>
+    <MatrixPuzzle client:load>
+      <div class="block block--intuition game__teaches">
+        <p><span class="block__title">Чему учит игра.</span> Столбцы матрицы&nbsp;— образы базисных векторов: первый столбец показывает, куда попадает <i>e</i><sub>1</sub>, второй&nbsp;— куда попадает <i>e</i><sub>2</sub>. Поняв это, любую матрицу 2&nbsp;×&nbsp;2 можно собрать почти без проб.</p>
+        <p><a href={lesson.href}>Урок {lesson.number}. {lesson.title}</a></p>
+      </div>
+    </MatrixPuzzle>
+  </main>
+</BaseLayout>

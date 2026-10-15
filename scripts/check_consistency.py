@@ -3,6 +3,7 @@
 Проверяет:
 - уроки в content/courses/*/ — ключи <курс>/<модуль>/<slug> уникальны, requires существуют;
 - карточки программы совпадают с module.yaml (номер и название), где карточки уже есть;
+- requires и cs229 уроков в module.yaml совпадают с «Опирается на» и «CS229» карточек;
 - в docs/implementation/PLAN.md каждый урок встречается ровно один раз с верными номером, названием и ключом;
 - задачи плана: ID уникальны, зависимости существуют и идут раньше, пакеты из «Контекста» существуют;
 - ссылки на ID задач в документах существуют; цели content/redirects.yaml существуют;
@@ -43,7 +44,8 @@ for cfile in sorted((ROOT / "content/courses").glob("*/course.yaml")):
             if key in lessons:
                 err(f"дубль ключа урока {key}")
             lessons[key] = {"course": cid, "module": mid, "number": str(le["number"]),
-                            "title": le["title"], "optional": bool(le.get("optional"))}
+                            "title": le["title"], "optional": bool(le.get("optional")),
+                            "requires": le.get("requires") or [], "cs229": le.get("cs229") or []}
 for cid, c in courses.items():
     for r in c.get("requires", []) or []:
         if r not in courses:
@@ -69,6 +71,65 @@ def check_cards(cid: str, files: list[Path]) -> None:
         extra = [f for f in found if f not in expected]
         err(f"{cid}: карточки ≠ module.yaml; нет: {missing[:3]}; лишние: {extra[:3]}")
 
+
+# ───────── граф уроков: requires и cs229 в module.yaml = «Опирается на» и «CS229» карточки ─────────
+NUM = r"(?:[IVX]+|\d+)\.\d+"
+COURSE_ALIASES = {"математика": "foundations", "основы ml": "ml-basics"}
+
+
+def numbers_of(cid: str) -> dict[str, str]:
+    return {v["number"]: k for k, v in lessons.items() if v["course"] == cid}
+
+
+def card_requires(cid: str, text: str) -> list[str]:
+    """«I.6–I.11», «математика — 0.8, IV.1; основы ML — 1.1»; слова вроде «модули 0–IV» — пояснение, не урок."""
+    text = text.strip().rstrip(".")
+    if text in ("—", ""):
+        return []
+    out: list[str] = []
+    for part in (p.strip() for p in text.split(";")):
+        target, rest = cid, part
+        m = re.match(r"^([^—]+?)\s+—\s+(.*)$", part)
+        if m and not re.match(NUM, m[1].strip()):
+            name = m[1].strip().lower()
+            target = COURSE_ALIASES.get(name, "")
+            if target not in courses:
+                err(f"{cid}: «Опирается на»: неизвестный курс «{name}»")
+                continue
+            rest = m[2]
+        nums = numbers_of(target)
+        order = list(nums)
+        for tok in (t.strip() for t in re.split(r",\s*", rest)):
+            rng = re.fullmatch(rf"({NUM})\s*[–-]\s*({NUM})", tok)
+            if rng and rng[1] in nums and rng[2] in nums:
+                out += [nums[n] for n in order[order.index(rng[1]) : order.index(rng[2]) + 1]]
+            elif tok in nums:
+                out.append(nums[tok])
+            elif re.fullmatch(NUM, tok):
+                err(f"{cid}: «Опирается на»: нет урока {tok} в курсе {target}")
+    return out
+
+
+def check_graph(cid: str, files: list[Path]) -> None:
+    text = "".join(f.read_text() for f in files)
+    nums = numbers_of(cid)
+    for block in re.split(r"^### ", text, flags=re.M)[1:]:
+        hm = re.match(rf"({NUM})\. ", block)
+        if not hm or hm[1] not in nums:
+            continue
+        key = nums[hm[1]]
+        req = re.search(r"\*\*Опирается на:\*\* (.*?)(?:\. \*\*|\.\s*$|\.\n)", block, flags=re.M)
+        if req and card_requires(cid, req[1]) != lessons[key]["requires"]:
+            err(f"{key}: requires в module.yaml ≠ «Опирается на» карточки {hm[1]}")
+        cs = re.search(r"\*\*CS229:\*\* (.*?)(?:\n|$)", block)
+        if (re.findall(r"«([^»]+)»", cs[1]) if cs else []) != lessons[key]["cs229"]:
+            err(f"{key}: cs229 в module.yaml ≠ «CS229» карточки {hm[1]}")
+
+
+check_graph("foundations", sorted((ROOT / "docs/program").glob("0*.md")))
+for cid in courses:
+    if cid != "foundations" and (cards := sorted((ROOT / "docs/program" / cid).glob("0*.md"))):
+        check_graph(cid, cards)
 
 check_cards("foundations", sorted((ROOT / "docs/program").glob("0*.md")))
 for cid in courses:
@@ -129,7 +190,7 @@ for m in re.finditer(r"^### (S\d\.(?:\d\d|L[A-Z0-9]))\..*?(?=^### |^## |\Z)", pl
         for f in re.findall(r"`((?:docs|src|prototype|code|content|scripts|notebooks)/[\w./-]+\.\w+)`", ctx.group(1)):
             if not (ROOT / f).exists():
                 err(f"{tid}: в «Контексте» нет файла {f}")
-now = re.search(r"\*\*Задача:\*\* (S\d\.\d\d)", plan)
+now = re.search(r"\*\*Задача:\*\* (S\d\.(?:\d\d|L[A-Z0-9]+))", plan)
 if not now or now.group(1) not in order:
     err("план: в блоке «Сейчас» задача не найдена")
 

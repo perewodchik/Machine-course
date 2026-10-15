@@ -8,18 +8,30 @@ lessons:
   - slug: learning-problem
     number: '1.1'
     title: 'Задача обучения: данные, модель, потери, обобщение'
+    requires: [foundations/start/numpy-minimum, foundations/statistics/descriptive, foundations/statistics/risk-generalization, foundations/bridge/linear-regression]
+    cs229: ['Supervised learning']
   - slug: linear-regression-lms
     number: '1.2'
     title: 'Линейная регрессия и LMS: пакетный и стохастический спуск'
+    requires: [foundations/linear-algebra/eigen, foundations/linear-algebra/quadratic-forms, foundations/calculus/matrix-calculus, foundations/calculus/gradient-descent, foundations/bridge/linear-regression, ml-basics/linear-models/learning-problem]
+    cs229: ['Linear regression']
   - slug: features-lwr
     number: '1.3'
     title: 'Признаки, полиномы и локально взвешенная регрессия'
+    requires: [foundations/linear-algebra/orthogonality-projections, foundations/statistics/risk-generalization, foundations/bridge/linear-regression, ml-basics/linear-models/learning-problem, ml-basics/linear-models/linear-regression-lms]
+    cs229: ['Linear regression']
   - slug: logistic-regression
     number: '1.4'
     title: 'Логистическая регрессия и метод Ньютона'
+    requires: [foundations/start/exp-log-sigmoid, foundations/linear-algebra/quadratic-forms, foundations/calculus/convexity, foundations/calculus/newton, foundations/probability/information, foundations/statistics/mle, ml-basics/linear-models/linear-regression-lms, ml-basics/linear-models/features-lwr]
+    cs229: ['Classification and logistic regression']
   - slug: perceptron-softmax
     number: '1.5'
     title: 'Перцептрон и многоклассовая классификация'
+    requires: [foundations/start/sums-products-indicators, foundations/probability/discrete-distributions, foundations/probability/information, foundations/statistics/mle, ml-basics/linear-models/logistic-regression]
+    cs229: ['Classification and logistic regression']
   - slug: glm
     number: '1.6'
     title: 'Обобщённые линейные модели'
+    requires: [foundations/calculus/convexity, foundations/probability/discrete-distributions, foundations/probability/continuous-distributions, foundations/statistics/mle, foundations/statistics/exponential-family, ml-basics/linear-models/linear-regression-lms, ml-basics/linear-models/logistic-regression, ml-basics/linear-models/perceptron-softmax]
+    cs229: ['Generalized linear models']

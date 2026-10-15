@@ -17,3 +17,70 @@
   ru: 'формула умножения вероятностей'
   en: 'chain rule of probability'
   note: 'Не путать с правилом цепочки для производных (chain rule).'
+- id: residual
+  ru: 'остаток'
+  en: 'residual'
+  note: 'Разница ответа и предсказания на объекте при выбранных весах; в модели шума CS229 — error term ε⁽ⁱ⁾.'
+- id: least-squares
+  ru: 'метод наименьших квадратов (МНК)'
+  en: 'least squares'
+- id: column-space
+  ru: 'пространство столбцов'
+  en: 'column space (range)'
+- id: log-likelihood
+  ru: 'логарифм правдоподобия'
+  en: 'log-likelihood'
+- id: intercept
+  ru: 'свободный член'
+  en: 'intercept (bias term)'
+- id: cost-function
+  ru: 'функция потерь'
+  en: 'cost function (loss)'
+- id: linear-map
+  ru: 'линейное отображение'
+  en: 'linear map'
+- id: image
+  ru: 'образ (вектора при отображении)'
+  en: 'image'
+- id: composition
+  ru: 'композиция отображений'
+  en: 'composition'
+- id: prior
+  ru: 'априорная вероятность'
+  en: "prior"
+- id: posterior
+  ru: 'апостериорная вероятность'
+  en: "posterior"
+- id: base-rate
+  ru: 'базовая частота'
+  en: "base rate"
+- id: total-probability
+  ru: 'формула полной вероятности'
+  en: "law of total probability"
+- id: bayes-rule
+  ru: 'формула Байеса'
+  en: "Bayes' rule"
+- id: lecture-notes
+  ru: 'конспект лекций'
+  en: 'lecture notes'
+  note: 'Основной текст CS229; разделы на полях указаны по названиям, а не по номерам глав.'
+- id: model
+  ru: 'модель'
+  en: 'model, hypothesis'
+  note: 'В CS229 модель называют гипотезой (hypothesis).'
+- id: set
+  ru: 'множество, элемент, подмножество'
+  en: 'set, element, subset'
+- id: map
+  ru: 'отображение (функция)'
+  en: 'map, function'
+  note: 'Множество, откуда берут аргумент, — область определения (domain); куда попадают значения — codomain; множество всех значений — образ (image, range).'
+- id: quantifier
+  ru: 'квантор: «для всех», «существует»'
+  en: 'quantifier: for all, there exists'
+- id: argmin
+  ru: 'аргмин, точка минимума'
+  en: 'argmin, minimizer'
+- id: proportional
+  ru: 'пропорционально'
+  en: 'proportional to'

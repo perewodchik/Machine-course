@@ -1,0 +1,72 @@
+---
+// Карта курса (S3.02, идея A7): модули — столбцы, уроки — узлы с галочкой «знаю», рёбра — «Опирается на»
+// (requires в module.yaml). Рёбра рисует src/client/map.ts по положению узлов; без JS у каждого узла — список пререквизитов.
+import type { CourseTree } from "../../lib/content/catalog";
+import { plural } from "../../i18n/ru";
+import Know from "./Know.astro";
+
+interface Props {
+  course: CourseTree;
+}
+const { course } = Astro.props;
+const byKey = new Map<string, (typeof course.lessons)[number]>(course.lessons.map((l) => [l.key, l]));
+const numberOf = (key: string) => byKey.get(key)?.number ?? key;
+const graph = course.lessons.map((l) => ({ key: l.key, requires: (l.requires ?? []).filter((r) => byKey.has(r)) }));
+const id = (key: string) => `map-${key.replaceAll("/", "-")}`;
+---
+<div class="course-map" data-course-map>
+  <script type="application/json" data-map-graph set:html={JSON.stringify(graph)} />
+
+  <section class="course-map__next" aria-labelledby="map-next-title">
+    <h2 id="map-next-title">Можно начинать</h2>
+    <p class="muted" data-map-next-empty hidden>Все уроки курса отмечены «знаю».</p>
+    <ul class="course-map__chips">
+      {course.lessons.map((l) => (
+        <li data-map-next={l.key} hidden><a href={l.href}>{l.number}. {l.title}</a></li>
+      ))}
+    </ul>
+    <ul class="course-map__legend">
+      <li><span class="course-map__key course-map__key--known" aria-hidden="true"></span>знаю</li>
+      <li><span class="course-map__key course-map__key--next" aria-hidden="true"></span>можно начинать: все уроки, на&nbsp;которые он&nbsp;опирается, отмечены</li>
+      <li class="course-map__legend-edge"><span class="course-map__key course-map__key--edge" aria-hidden="true"></span>опирается на: наведите на&nbsp;урок или перейдите к&nbsp;нему с&nbsp;клавиатуры</li>
+    </ul>
+  </section>
+
+  <div class="course-map__board">
+    <svg class="course-map__edges" aria-hidden="true" data-map-edges></svg>
+    <ol class="course-map__modules">
+      {course.modules.map((m) => (
+        <li class="course-map__module" aria-labelledby={`map-m-${m.id}`}>
+          <h2 class="course-map__module-title" id={`map-m-${m.id}`}>
+            <span class="n">{m.number}</span>
+            <span>{m.title}</span>
+          </h2>
+          <p class="course-map__count" data-progress-lessons={JSON.stringify(m.lessons.filter((l) => !l.optional).map((l) => l.key))}>
+            знаю <span data-known-total>0</span> из {m.required}
+          </p>
+          <ol class="course-map__lessons">
+            {m.lessons.map((l) => {
+              const req = (l.requires ?? []).filter((r) => byKey.has(r));
+              return (
+                <li class="map-node" id={id(l.key)} data-map-node={l.key}>
+                  <Know lesson={l} />
+                  <a class="map-node__link" href={l.href}>
+                    <span class="map-node__n">{l.number}</span> {l.title}{l.optional ? " ★" : ""}
+                  </a>
+                  {req.length > 0 && (
+                    <span class="map-node__req">
+                      опирается на {req.map(numberOf).join(", ")}
+                    </span>
+                  )}
+                </li>
+              );
+            })}
+          </ol>
+        </li>
+      ))}
+    </ol>
+  </div>
+  <p class="muted course-map__total">
+    {course.lessons.length}&nbsp;{plural(course.lessons.length, "урок", "урока", "уроков")} в&nbsp;{course.modules.length}&nbsp;модулях. Понятия уроков и&nbsp;путь каждого до&nbsp;конспекта CS229&nbsp;— на&nbsp;странице <a href="/concepts/">«Понятия»</a>.
+  </p>
+</div>

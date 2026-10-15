@@ -1,12 +1,24 @@
 # Понятия машинного обучения, на которые ссылаются формулы курса математики («Где используется»).
 # Основной граф понятий курсов ML появится вместе с их уроками (docs/program/catalog.md).
+- id: ml.least-squares
+  title:
+    ru: 'Метод наименьших квадратов'
+    en: 'least squares'
+  summary: 'Веса минимизируют $\tfrac12 \lVert X\theta - y \rVert^2$; решение — нормальные уравнения $X^\top X\theta = X^\top y$, остаток перпендикулярен столбцам $X$.'
+  lesson: linear-regression
+  prerequisites: [ml.loss, la.projection, calc.matrix-calculus, calc.convexity]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Linear regression / The normal equations'
+
 - id: ml.linear-regression-probabilistic
   title:
     ru: 'Вероятностная модель линейной регрессии'
     en: 'probabilistic interpretation of linear regression'
   summary: 'При гауссовом шуме максимум правдоподобия совпадает с минимумом суммы квадратов остатков.'
   lesson: linear-regression
-  prerequisites: [la.projection, calc.matrix-calculus]
+  prerequisites: [ml.least-squares, stat.mle, prob.normal]
   core: true
   cs229:
     - edition: main-notes-2026-spring
@@ -16,10 +28,20 @@
   title:
     ru: 'Гребневая регрессия'
     en: 'ridge regression'
-  summary: 'Штраф ½λ‖θ‖² к сумме квадратов; решение (XᵀX + λI)⁻¹Xᵀy существует и при неполном ранге X.'
+  summary: 'Штраф $\tfrac12 \lambda \lVert \theta \rVert^2$ к сумме квадратов; решение $(X^\top X + \lambda I)^{-1} X^\top y$ существует и при неполном ранге $X$.'
   lesson: regularization
   prerequisites: [la.inverse, la.psd]
   core: true
   cs229:
     - edition: main-notes-2026-spring
       section: 'Regularization and model selection'
+
+- id: ml.loss
+  title:
+    ru: 'Функция потерь'
+    en: 'loss function'
+  summary: 'Число, которое измеряет, насколько модель плоха на данных; у регрессии — половина суммы квадратов ошибок $J = \tfrac12 \sum_i (y^{(i)} - \hat y^{(i)})^2$.'
+  lesson: regression-by-hand
+  prerequisites: []
+  core: true
+

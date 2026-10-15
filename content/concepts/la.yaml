@@ -4,7 +4,7 @@
   title:
     ru: 'Умножение матриц'
     en: 'matrix multiplication'
-  summary: '(AB)_{ij} = сумма по k произведений A_{ik} B_{kj}; определено, когда столбцов у A столько же, сколько строк у B.'
+  summary: '$(AB)_{ij} = \sum_k A_{ik} B_{kj}$; определено, когда столбцов у $A$ столько же, сколько строк у $B$.'
   lesson: matrix-multiplication
   prerequisites: [nota.sums, la.dot-product]
   core: true
@@ -13,7 +13,7 @@
   title:
     ru: 'Транспонирование'
     en: 'transpose'
-  summary: 'Строки становятся столбцами; (AB)ᵀ = BᵀAᵀ.'
+  summary: 'Строки становятся столбцами; $(AB)^\top = B^\top A^\top$.'
   lesson: transpose-trace
   prerequisites: [la.matmul]
   core: true
@@ -43,7 +43,7 @@
   title:
     ru: 'Положительно полуопределённая матрица'
     en: 'positive semidefinite matrix'
-  summary: 'Симметричная A, для которой xᵀAx ≥ 0 при всех x; все собственные значения неотрицательны.'
+  summary: 'Симметричная $A$, для которой $x^\top A x \ge 0$ при всех $x$; все собственные значения неотрицательны.'
   lesson: quadratic-forms
   prerequisites: [la.symmetric, la.eigen, la.quadratic-form]
   core: true
@@ -52,7 +52,7 @@
   title:
     ru: 'Скалярное произведение'
     en: 'dot product'
-  summary: 'xᵀy — сумма произведений координат; ноль у перпендикулярных векторов.'
+  summary: '$x^\top y$ — сумма произведений координат; ноль у перпендикулярных векторов.'
   lesson: dot-product-norms
   prerequisites: [nota.sums]
   core: true
@@ -61,7 +61,7 @@
   title:
     ru: 'Норма вектора'
     en: 'norm'
-  summary: 'Длина вектора; евклидова норма — корень из скалярного квадрата, ‖x‖² = xᵀx.'
+  summary: 'Длина вектора; евклидова норма — корень из скалярного квадрата, $\lVert x \rVert^2 = x^\top x$.'
   lesson: dot-product-norms
   prerequisites: [la.dot-product]
   core: true
@@ -88,7 +88,7 @@
   title:
     ru: 'Симметричная матрица'
     en: 'symmetric matrix'
-  summary: 'Квадратная матрица, равная своей транспонированной: Aᵀ = A.'
+  summary: 'Квадратная матрица, равная своей транспонированной: $A^\top = A$.'
   lesson: transpose-trace
   prerequisites: [la.transpose]
   core: true
@@ -97,7 +97,7 @@
   title:
     ru: 'Обратная матрица'
     en: 'inverse matrix'
-  summary: 'A⁻¹ с AA⁻¹ = A⁻¹A = I; существует, когда квадратная A полного ранга.'
+  summary: '$A^{-1}$ с $AA^{-1} = A^{-1}A = I$; существует, когда квадратная $A$ полного ранга.'
   lesson: inverse-determinant
   prerequisites: [la.matmul, la.rank]
   core: true
@@ -106,7 +106,7 @@
   title:
     ru: 'Собственные значения и векторы'
     en: 'eigenvalues and eigenvectors'
-  summary: 'Av = λv: направление v матрица только растягивает в λ раз.'
+  summary: '$Av = \lambda v$: направление $v$ матрица только растягивает в $\lambda$ раз.'
   lesson: eigen
   prerequisites: [la.matmul]
   core: true
@@ -115,7 +115,16 @@
   title:
     ru: 'Квадратичная форма'
     en: 'quadratic form'
-  summary: 'xᵀAx — число, квадратичное по x; матрицу A можно считать симметричной.'
+  summary: '$x^\top A x$ — число, квадратичное по $x$; матрицу $A$ можно считать симметричной.'
   lesson: quadratic-forms
   prerequisites: [la.symmetric, la.dot-product]
+  core: true
+
+- id: la.linear-map
+  title:
+    ru: 'Линейное отображение'
+    en: 'linear map'
+  summary: 'Сохраняет сложение и умножение на число; задаётся матрицей, столбцы которой — образы базисных векторов. Композиция — произведение матриц.'
+  lesson: matrix-as-map
+  prerequisites: [la.matmul, la.span]
   core: true

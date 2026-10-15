@@ -12,9 +12,17 @@ symbols:
     tex: 'x'
     shape: [d, 1]
 concept: calc.matrix-calculus
-corollary: 'Для симметричной A: ∇ xᵀAx = 2Ax.'
+corollary: 'Для симметричной $A$: $\nabla_x\, x^\top A x = 2Ax$.'
 checks:
   - kind: gradient
     f: 'x @ A @ x'
     grad: '(A + A.T) @ x'
     wrt: x
+# типичные ошибки (S3.05): неверные варианты в задачах с выбором и диагноз ответа ученика
+mutations:
+  - tex: '2Ax'
+    py: '2 * A @ x'
+    why: '$2Ax$ верно только для симметричной $A$; в общем случае $(A + A^\top)x$.'
+  - tex: 'Ax'
+    py: 'A @ x'
+    why: 'Потерян второй вклад: $x$ входит в $x^\top A x$ дважды, поэтому получается $(A + A^\top)x$.'

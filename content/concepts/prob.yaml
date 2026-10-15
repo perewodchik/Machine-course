@@ -1,0 +1,53 @@
+# Понятия теории вероятностей. Формат — content/concepts/la.yaml; программа — docs/program/03-probability.md.
+# Граф модуля III дополняется вместе с его уроками (этап 4); здесь — то, на что уже ссылаются формулы и уроки.
+- id: prob.independence
+  title:
+    ru: 'Независимость'
+    en: 'independence'
+  summary: 'События или величины независимы, если совместная вероятность (плотность) равна произведению отдельных.'
+  lesson: conditional-independence
+  prerequisites: []
+  core: true
+
+- id: prob.normal
+  title:
+    ru: 'Нормальное распределение'
+    en: 'normal (Gaussian) distribution'
+  summary: 'Плотность $\frac{1}{\sqrt{2\pi}\,\sigma} \exp\bigl(-\frac{(x - \mu)^2}{2\sigma^2}\bigr)$; второй параметр $\mathcal{N}(\mu, \sigma^2)$ — дисперсия.'
+  lesson: continuous-distributions
+  prerequisites: [calc.log-exp]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Linear regression / Probabilistic interpretation'
+
+- id: prob.conditional
+  title:
+    ru: 'Условная вероятность'
+    en: 'conditional probability'
+  summary: '$P(A \mid B) = P(A \cap B) / P(B)$: вероятность $A$, когда известно, что произошло $B$.'
+  lesson: conditional-independence
+  prerequisites: []
+  core: true
+
+- id: prob.total-probability
+  title:
+    ru: 'Формула полной вероятности'
+    en: 'law of total probability'
+  summary: 'Если $B_1, \ldots, B_K$ разбивают пространство исходов, то $P(A) = \sum_k P(A \mid B_k)\, P(B_k)$.'
+  lesson: bayes
+  prerequisites: [prob.conditional]
+  core: true
+
+- id: prob.bayes
+  title:
+    ru: 'Формула Байеса'
+    en: "Bayes' rule"
+  summary: '$P(B \mid A) = P(A \mid B)\, P(B) / P(A)$: апостериорная вероятность из априорной и правдоподобия; знаменатель — формула полной вероятности.'
+  lesson: bayes
+  prerequisites: [prob.conditional, prob.total-probability]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Generative learning algorithms'
+

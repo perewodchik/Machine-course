@@ -13,8 +13,10 @@ import { unified } from "unified";
 import { visit } from "unist-util-visit";
 import { MACROS, TRUSTED_COMMANDS } from "../../markdown/core/katex";
 import { ContentError, parseYaml, validate, validateList } from "./files";
+import { loadSnippet } from "./snippets";
 import * as s from "./schemas";
-import type { Concept, Course, Formula, LessonFrontmatter, LessonRef, Module, Redirects, Rule, SymbolSpec } from "./types";
+import type { Concept, Course, Diagnostic, Formula, LessonFrontmatter, LessonRef, Localized, Module, Redirects, Rule, SymbolSpec } from "./types";
+import { generators } from "../exercises/generators";
 
 interface Entry<T> {
   file: string;
@@ -32,12 +34,12 @@ export function validateContent(root: string): ValidationResult {
   const problems: string[] = [];
   const rel = (path: string) => relative(root, path);
   const report = (file: string, message: string) => problems.push(`${file}: ${message}`);
-  /** Выполняет проверку схемой; ошибки — в общий список, результат — undefined. */
-  const guard = <T>(run: () => T): T | undefined => {
+  /** Выполняет проверку схемой; ошибки — в общий список (с приставкой prefix), результат — undefined. */
+  const guard = <T>(run: () => T, prefix = ""): T | undefined => {
     try {
       return run();
     } catch (e) {
-      if (e instanceof ContentError) problems.push(...e.problems);
+      if (e instanceof ContentError) problems.push(...e.problems.map((p) => prefix + p));
       else throw e;
       return undefined;
     }
@@ -94,6 +96,34 @@ export function validateContent(root: string): ValidationResult {
         slugs.add(l.slug);
       });
     }
+  }
+
+  // ───────── граф уроков: requires ─────────
+  for (const [key, l] of lessons) {
+    l.requires?.forEach((r, i) => {
+      if (r === key) report(l.file, `урок ${key}: requires[${i}] — сам урок`);
+      else if (!lessons.has(r)) report(l.file, `урок ${key}: requires[${i}]: нет урока «${r}»`);
+    });
+  }
+  {
+    const state = new Map<string, 1 | 2>();
+    const path: string[] = [];
+    const dfs = (key: string): boolean => {
+      state.set(key, 1);
+      path.push(key);
+      for (const r of lessons.get(key)?.requires ?? []) {
+        if (!lessons.has(r)) continue;
+        if (state.get(r) === 1) {
+          report(lessons.get(r)!.file, `граф уроков: цикл ${[...path.slice(path.indexOf(r)), r].join(" → ")}`);
+          return true;
+        }
+        if (!state.has(r) && dfs(r)) return true;
+      }
+      path.pop();
+      state.set(key, 2);
+      return false;
+    };
+    for (const key of lessons.keys()) if (!state.has(key) && dfs(key)) break;
   }
 
   // ───────── MDX уроков: frontmatter и тело ─────────
@@ -264,6 +294,40 @@ export function validateContent(root: string): ValidationResult {
     if (colored.size > 3) problems.push(`${at}: больше трёх цветных ролей в одной формуле`);
   };
 
+  // Текстовые поля формул и правил: формулы в них — только в $…$ (renderInline), иначе на странице сырой TeX
+  // («B_k») или символы шрифтом текста (Literata рисует курсивную θ как ϑ)
+  const checkProse = (text: Localized | undefined, file: string, where: string, symbols: readonly SymbolSpec[]) => {
+    if (text === undefined) return;
+    const source = typeof text === "string" ? text : text.ru;
+    const outside = source.replace(/\$\$([\s\S]+?)\$\$|\$((?:\\.|[^$\\])+?)\$/g, (_m, display: string | undefined, inline: string | undefined) => {
+      checkTex(display ?? inline ?? "", file, where, symbols);
+      return " ";
+    });
+    const bad = PROSE_MATH.exec(outside);
+    if (bad) report(file, `${where}: «${bad[0]}» вне формулы — пишите математику в $…$`);
+  };
+  for (const { file, data } of concepts.values()) checkProse(data.summary, file, `${data.id}.summary`, []);
+  for (const { file, data } of [...rules.values(), ...formulas.values()]) {
+    data.symbols.forEach((x, i) => checkProse(x.meaning, file, `symbols[${i}].meaning`, data.symbols));
+    checkProse(data.pitfall, file, "pitfall", data.symbols);
+    if (data.kind === "rule") {
+      checkProse(data.corollary, file, "corollary", data.symbols);
+      data.mutations?.forEach((m, i) => {
+        checkTex(m.tex, file, `mutations[${i}].tex`, data.symbols);
+        checkProse(m.why, file, `mutations[${i}].why`, data.symbols);
+      });
+    }
+    if (data.kind === "formula") {
+      data.conditions?.forEach((c, i) => checkProse(c.why, file, `conditions[${i}].why`, data.symbols));
+      data.derivation?.plan.forEach((g, i) => checkProse(g, file, `derivation.plan[${i}]`, data.symbols));
+      data.derivation?.steps.forEach((st, i) => {
+        checkProse(st.note, file, `derivation.steps[${i}].note`, data.symbols);
+        checkProse(st.why, file, `derivation.steps[${i}].why`, data.symbols);
+      });
+      data.pitfalls?.forEach((p, i) => checkProse(p, file, `pitfalls[${i}]`, data.symbols));
+    }
+  }
+
   for (const { file, data } of [...rules.values(), ...formulas.values()]) {
     checkTex(data.statement, file, "statement", data.symbols);
     data.symbols.forEach((x, i) => checkTex(x.tex, file, `symbols[${i}].tex`));
@@ -275,7 +339,11 @@ export function validateContent(root: string): ValidationResult {
 
   const mdxParser = unified().use(remarkParse).use(remarkMdx).use(remarkMath);
   for (const m of mdx) {
-    m.frontmatter?.symbols?.forEach((x, i) => checkTex(x.tex, m.file, `symbols[${i}].tex`));
+    m.frontmatter?.symbols?.forEach((x, i) => {
+      checkTex(x.tex, m.file, `symbols[${i}].tex`);
+      checkProse(x.meaning, m.file, `symbols[${i}].meaning`, m.frontmatter?.symbols ?? []);
+    });
+    for (const f of m.frontmatter?.lead?.matchAll(/\$((?:\\.|[^$\\])+?)\$/g) ?? []) checkTex(f[1]!, m.file, "lead", m.frontmatter?.symbols);
     let tree: MdastRoot;
     try {
       tree = mdxParser.parse(m.body);
@@ -287,6 +355,19 @@ export function validateContent(root: string): ValidationResult {
     visit(tree, (node) => {
       if (node.type === "math" || node.type === "inlineMath") {
         checkTex(node.value, m.file, `строка ${line(node)}`, m.frontmatter?.symbols);
+      }
+      if ((node.type === "mdxJsxFlowElement" || node.type === "mdxJsxTextElement") && (node.name === "PyCode" || node.name === "OpenIn")) {
+        // ссылки на код и лабораторные: PyCode и OpenIn уронят сборку — валидатор говорит об этом раньше и с номером строки
+        const attr = (name: string) => {
+          const a = node.attributes.find((x): x is MdxJsxAttribute => x.type === "mdxJsxAttribute" && x.name === name);
+          return typeof a?.value === "string" ? a.value : undefined;
+        };
+        const src = attr("src");
+        if (src !== undefined) guard(() => loadSnippet(src, root), `${m.file}: строка ${line(node)}: `);
+        const lab = attr(node.name === "PyCode" ? "lab" : "notebook");
+        if (lab !== undefined && !existsSync(join(root, "notebooks", `${lab}.ipynb`))) {
+          report(m.file, `строка ${line(node)}: лабораторной notebooks/${lab}.ipynb нет`);
+        }
       }
       if ((node.type === "mdxJsxFlowElement" || node.type === "mdxJsxTextElement") && node.name === "Note") {
         const label = node.attributes.find((a): a is MdxJsxAttribute => a.type === "mdxJsxAttribute" && a.name === "label");
@@ -323,11 +404,33 @@ export function validateContent(root: string): ValidationResult {
     if (raw !== undefined) guard(() => validateList(s.glossaryEntry, raw, rel(gfile)));
   }
 
+  // ───────── входная диагностика ─────────
+  const dfile = join(root, "content/diagnostic.yaml");
+  if (existsSync(dfile)) {
+    const raw = readYamlFile(dfile);
+    const diag = raw === undefined ? undefined : guard(() => validate(s.diagnostic, raw, rel(dfile)) as Diagnostic);
+    const f = rel(dfile);
+    const seen = new Set<string>();
+    diag?.items.forEach((it, i) => {
+      if (!lessons.has(it.lesson)) report(f, `items[${i}].lesson: нет урока «${it.lesson}»`);
+      if (!generators.has(it.gen)) report(f, `items[${i}].gen: нет генератора задач «${it.gen}» (src/lib/exercises/generators)`);
+      if (seen.has(it.lesson)) report(f, `items[${i}].lesson: урок «${it.lesson}» уже есть в банке`);
+      it.requires?.forEach((r, j) => {
+        // задача спрашивается после тех, на которые опирается: иначе пропуск по неверному ответу не сработает
+        if (!seen.has(r)) report(f, `items[${i}].requires[${j}]: «${r}» — не урок из задач выше по списку`);
+      });
+      seen.add(it.lesson);
+    });
+  }
+
   return {
     problems,
     stats: { courses: courses.size, lessons: lessons.size, mdx: mdx.length, concepts: concepts.size, rules: rules.size, formulas: formulas.size, tex: texCount },
   };
 }
+
+/** Математика в тексте вне $…$: индекс, степень, «|» условной вероятности, команда TeX, греческая буква, надстрочные и подстрочные знаки, знаки операций. */
+const PROSE_MATH = /[_^|]|\\[A-Za-z]+|[\u0370-\u03ff]|[\u02b0-\u02ff\u1d40-\u1d7f\u2070-\u209f]|[∑∏∩∪∈∉⊂⊆≤≥≠⊤∣√∞∇‖]/u;
 
 /** Убирает вызовы \sym{name}{…} целиком (с вложенными скобками во втором аргументе). */
 export function stripSym(tex: string): string {

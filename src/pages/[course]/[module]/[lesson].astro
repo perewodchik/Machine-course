@@ -2,12 +2,16 @@
 // Урок курса: текст из content/courses/<курс>/<модуль>/<slug>.mdx, компоненты передаёт сайт (в MDX импортов нет).
 // У урока без текста — страница-заглушка с настоящей раскладкой, чтобы ссылки оглавления вели на существующие страницы.
 import type { GetStaticPaths } from "astro";
-import { getEntry, render } from "astro:content";
+import { render } from "astro:content";
 import LessonLayout from "../../../layouts/LessonLayout.astro";
-import { lessonComponents } from "../../../components/pedagogy";
-import { loadCatalog } from "../../../lib/content/collections";
+import { lessonComponents, Note } from "../../../components/pedagogy";
+import LessonSurvey from "../../../components/pedagogy/LessonSurvey.astro";
+import PrereqHelp from "../../../components/pedagogy/PrereqHelp.astro";
+import { lessonText, loadCatalog } from "../../../lib/content/collections";
 import type { CourseTree, LessonEntry } from "../../../lib/content/catalog";
 import { plural } from "../../../i18n/ru";
+import { cs229Text } from "../../../lib/content/cs229";
+import { renderInline } from "../../../markdown/core/inline";
 
 export const getStaticPaths = (async () =>
   (await loadCatalog()).flatMap((course) =>
@@ -22,16 +26,20 @@ interface Props {
   lesson: LessonEntry;
 }
 const { course, lesson } = Astro.props;
-const entry = await getEntry("lessons", lesson.key);
+const entry = await lessonText(lesson.key);
 const rendered = entry ? await render(entry) : undefined;
 const headings = rendered?.headings.filter((h) => h.depth === 2).map((h) => ({ slug: h.slug, text: h.text }));
 const minutes = entry?.data.minutes;
 const meta = minutes ? `Около ${minutes}\u00a0${plural(minutes, "минуты", "минут", "минут")}.` : undefined;
+const cs229 = entry?.data.cs229?.length ? cs229Text(entry.data.cs229) : undefined;
+const lead = entry?.data.lead ? renderInline(entry.data.lead, entry.data.symbols) : undefined;
 ---
 <LessonLayout course={course} lesson={lesson} headings={headings} meta={meta} noindex={!rendered}>
-  {rendered ? (
-    <rendered.Content components={lessonComponents} />
-  ) : (
-    <p class="lead" slot="intro">Текст этого урока ещё пишется. Соседние уроки&nbsp;— ниже и&nbsp;в&nbsp;оглавлении.</p>
-  )}
+  {cs229 && <Note label="В CS229" slot="intro">{cs229}</Note>}
+  {lead && <p class="lead" slot="intro" set:html={lead} />}
+  {!rendered && <p class="lead" slot="intro">Текст этого урока ещё пишется. Соседние уроки&nbsp;— ниже и&nbsp;в&nbsp;оглавлении.</p>}
+  {/* отдельным выражением: в одном выражении с slot="intro" Astro отправил бы текст урока тоже в intro */}
+  {rendered && <rendered.Content components={lessonComponents} />}
+  {rendered && <PrereqHelp lesson={lesson} />}
+  {rendered && <LessonSurvey lesson={lesson.key} sections={(headings ?? []).map((h) => h.text).filter((t) => t !== "Итог")} />}
 </LessonLayout>

@@ -26,6 +26,11 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      # Pyodide (~16 MB) в git не хранится: npm run build сам вызывает py:fetch, кэш избавляет от скачивания
+      - uses: actions/cache@v4
+        with:
+          path: public/py
+          key: pyodide-${{ hashFiles('src/python/version.ts', 'package-lock.json') }}
       - run: npm run lint
       - run: npm run check
       - run: npm test
@@ -42,6 +47,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: npm ci
+      # Pyodide (~16 MB) в git не хранится: npm run build сам вызывает py:fetch, кэш избавляет от скачивания
+      - uses: actions/cache@v4
+        with:
+          path: public/py
+          key: pyodide-${{ hashFiles('src/python/version.ts', 'package-lock.json') }}
       - run: npm run build
       - run: npm run test:e2e
       - name: Отчёт Playwright

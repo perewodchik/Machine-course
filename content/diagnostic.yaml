@@ -1,0 +1,58 @@
+# Входная диагностика курса математики (урок 0.2). По задаче на урок: итоговое задание урока — тот же генератор.
+# Порядок задач — порядок вопросов. Задача пропускается, если неверно решена задача урока из requires;
+# урок с верно решённой задачей (с первой попытки, без подсказок) получает галочку «знаю» (by: diagnostic).
+# requires — «Опирается на» из карточек docs/program; только уроки этого банка.
+budget: 25
+items:
+  - lesson: foundations/start/language-of-math
+    gen: basics.argmin
+    minutes: 1.5
+  - lesson: foundations/start/sums-products-indicators
+    gen: basics.indicator-sum
+    minutes: 2
+    requires: [foundations/start/language-of-math]
+  - lesson: foundations/start/exp-log-sigmoid
+    gen: basics.sigmoid
+    minutes: 2
+    requires: [foundations/start/sums-products-indicators]
+  - lesson: foundations/start/derivative-refresher
+    gen: basics.chain-rule
+    minutes: 2
+    requires: [foundations/start/exp-log-sigmoid]
+  - lesson: foundations/start/integral
+    gen: basics.integral
+    minutes: 2
+    requires: [foundations/start/derivative-refresher]
+  - lesson: foundations/start/numpy-minimum
+    gen: basics.numpy-shapes
+    minutes: 1.5
+    requires: [foundations/start/sums-products-indicators]
+  - lesson: foundations/start/notation
+    gen: basics.notation
+    minutes: 1
+    requires: [foundations/start/language-of-math, foundations/start/numpy-minimum]
+  - lesson: foundations/linear-algebra/vectors-span
+    gen: la.lincomb
+    minutes: 2
+    requires: [foundations/start/language-of-math, foundations/start/numpy-minimum]
+  - lesson: foundations/linear-algebra/dot-product-norms
+    gen: la.dot
+    minutes: 1.5
+    requires: [foundations/linear-algebra/vectors-span]
+  - lesson: foundations/linear-algebra/matrix-multiplication
+    gen: la.matmul2
+    minutes: 2.5
+    requires: [foundations/linear-algebra/dot-product-norms]
+  - lesson: foundations/linear-algebra/matrix-as-map
+    gen: la.from-images
+    seed: 61
+    minutes: 2
+    requires: [foundations/linear-algebra/matrix-multiplication]
+  - lesson: foundations/probability/probability-space
+    gen: prob.union
+    minutes: 1.5
+    requires: [foundations/start/language-of-math, foundations/start/sums-products-indicators]
+  - lesson: foundations/probability/conditional-independence
+    gen: prob.conditional-table
+    minutes: 2
+    requires: [foundations/probability/probability-space]

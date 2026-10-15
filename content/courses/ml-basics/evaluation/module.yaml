@@ -8,15 +8,25 @@ lessons:
   - slug: classification-metrics
     number: '2.1'
     title: 'Метрики классификации: порог, ROC, PR, калибровка'
+    requires: [foundations/probability/conditional-independence, foundations/probability/bayes, foundations/probability/expectation-variance, ml-basics/linear-models/learning-problem, ml-basics/linear-models/logistic-regression]
+    cs229: ['Classification and logistic regression']
   - slug: bias-variance
     number: '2.2'
     title: 'Смещение и разброс'
+    requires: [foundations/linear-algebra/orthogonality-projections, foundations/probability/expectation-variance, foundations/statistics/estimators, foundations/statistics/risk-generalization, ml-basics/linear-models/learning-problem, ml-basics/linear-models/features-lwr]
+    cs229: ['Generalization']
   - slug: regularization
     number: '2.3'
     title: 'Регуляризация: L2 и L1'
+    requires: [foundations/linear-algebra/eigen, foundations/linear-algebra/quadratic-forms, foundations/calculus/convexity, foundations/calculus/lagrange, foundations/statistics/bayes-map, foundations/bridge/linear-regression, ml-basics/linear-models/linear-regression-lms, ml-basics/linear-models/features-lwr, ml-basics/evaluation/bias-variance]
+    cs229: ['Regularization and model selection']
   - slug: model-selection
     number: '2.4'
     title: 'Выбор модели и кросс-валидация'
+    requires: [foundations/statistics/descriptive, foundations/statistics/risk-generalization, ml-basics/evaluation/classification-metrics, ml-basics/evaluation/bias-variance, ml-basics/evaluation/regularization]
+    cs229: ['Regularization and model selection']
   - slug: ml-practice
     number: '2.5'
     title: 'Кривые обучения, анализ ошибок и утечки'
+    requires: [foundations/statistics/risk-generalization, ml-basics/evaluation/classification-metrics, ml-basics/evaluation/bias-variance, ml-basics/evaluation/regularization, ml-basics/evaluation/model-selection]
+    cs229: ['ML advice']

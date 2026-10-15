@@ -5,7 +5,7 @@ import { expect, type Page } from "@playwright/test";
 export type Theme = "light" | "dark";
 export type Margins = "visible" | "hidden";
 
-/** Страницы, на которых проверяется раскладка: каталог, курс, заглушка урока, демо-урок, демо формул, витрина. */
+/** Страницы, на которых проверяется раскладка: каталог, курс, уроки среза, демо-урок, демо формул, витрина, игры. */
 export const layoutPages = {
   home: "/",
   course: "/foundations/",
@@ -13,6 +13,18 @@ export const layoutPages = {
   demo: "/demo/lesson/",
   math: "/demo/math/",
   lab: "/lab/",
+  // срез этапа 2 (S2.11): ещё два урока и обе игры
+  i4: "/foundations/linear-algebra/matrix-as-map/",
+  iii3: "/foundations/probability/bayes/",
+  puzzle: "/games/matrix-puzzle/",
+  detective: "/games/bayes-detective/",
+  // этап 3: урок 0.2 с диагностикой
+  start2: "/foundations/start/how-the-course-works/",
+  map: "/map/",
+  start1: "/foundations/start/regression-by-hand/",
+  fitgame: "/games/fit-line/",
+  start3: "/foundations/start/language-of-math/",
+  concept: "/concepts/la.dot-product/",
 } as const;
 
 /** Ставит тему и поля в localStorage до загрузки страницы — как их оставил бы ученик. */

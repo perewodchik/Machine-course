@@ -36,7 +36,7 @@ export interface SymbolSpec {
   meaning?: Localized;
   shape?: (string | number)[]; // ["n", "d"]; вектор-столбец — ["d", 1]
   role?: SymbolRole;
-  sample?: "normal" | "invertible" | "spd"; // как генерировать значение для численной проверки
+  sample?: "normal" | "invertible" | "spd" | "positive" | "simplex"; // значение для численной проверки: positive — σ, шаг; simplex — распределение (сумма 1)
 }
 
 /** Численная проверка (выражения на NumPy, см. code/mlf/formulas.py). */
@@ -67,6 +67,14 @@ interface FormulaBase {
   pitfall?: Localized;
 }
 
+/** Типичная ошибка в правиле (идея A2): неверная правая часть, её значение в NumPy и объяснение для ученика. */
+export interface Mutation {
+  tex: string;
+  /** Выражение NumPy в символах правила: харнесс code/mlf/formulas.py проверяет, что оно отличается от верного. */
+  py: string;
+  why: Localized;
+}
+
 export interface Rule extends FormulaBase {
   id: RuleId;
   kind: "rule";
@@ -74,6 +82,8 @@ export interface Rule extends FormulaBase {
   /** Частный случай, который чаще всего нужен: «для симметричной A: ∇ xᵀAx = 2Ax». */
   corollary?: Localized;
   checks: Check[];
+  /** Типичные ошибки: неверные варианты в задачах с выбором и диагноз ответа ученика (S3.05). */
+  mutations?: Mutation[];
 }
 
 export interface Formula extends FormulaBase {
@@ -92,6 +102,10 @@ export interface LessonRef {
   number: string; // «II.3»
   title: string;
   optional?: boolean;
+  /** «Опирается на» из карточки программы: уроки, без которых этот читать трудно (граф курса, карта /map). */
+  requires?: string[]; // ключи уроков (LessonKey), проверяет валидатор
+  /** Разделы конспекта CS229, где нужен урок (названия из карточки): конец пути «зачем это мне». */
+  cs229?: string[];
 }
 
 export interface Module {
@@ -109,7 +123,8 @@ export interface LessonFrontmatter {
   number: string;
   concepts: ConceptId[]; // понятия, которые урок вводит
   minutes: number;
-  cs229?: CS229Ref[];
+  lead?: string; // вводный абзац «зачем» под заголовком, текст с $…$
+  cs229?: CS229Ref[]; // показываются заметкой «В CS229» у заголовка
   symbols?: SymbolSpec[]; // символы с ролями для \sym в разовых формулах урока
 }
 
@@ -119,6 +134,25 @@ export interface GlossaryEntry {
   ru: string;
   en: string;
   note?: Localized;
+}
+
+/** Задача входной диагностики: итоговое задание урока (генератор) и уроки, без которых его не решить. */
+export interface DiagnosticItem {
+  lesson: LessonKey;
+  /** ID генератора из src/lib/exercises/generators. */
+  gen: string;
+  seed?: number;
+  /** Оценка времени на задачу, минуты. */
+  minutes: number;
+  /** Уроки банка, на которые задача опирается: если одна из них решена неверно, задача пропускается. */
+  requires?: LessonKey[];
+}
+
+/** Входная диагностика курса (урок 0.2): content/diagnostic.yaml. Порядок задач — порядок вопросов. */
+export interface Diagnostic {
+  /** Сколько минут занимает диагностика самое большее. */
+  budget: number;
+  items: DiagnosticItem[];
 }
 
 /** Переименования: content/redirects.yaml, «старое → новое». Записи не удаляются. */

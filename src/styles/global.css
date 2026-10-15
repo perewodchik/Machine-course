@@ -1,7 +1,11 @@
 /*
  * Глобальные стили сайта: тема Tailwind из токенов, шрифты (Fontsource, со своего домена — COEP), базовые стили.
  * Дефолтная палитра Tailwind отключена в theme.css: bg-indigo-500 и подобные классы не существуют.
+ *
+ * Порядок слоёв: KaTeX — над сбросом Tailwind (base), но под нашими компонентами. Без слоя стили KaTeX
+ * перебивали бы любые правила для формул из слоёв (размер .katex, отступы .katex-display).
  */
+@layer theme, base, katex, components, utilities;
 @import "@fontsource-variable/literata/opsz.css";
 @import "@fontsource-variable/literata/opsz-italic.css";
 @import "@fontsource/ibm-plex-sans/400.css";
@@ -9,9 +13,12 @@
 @import "@fontsource/ibm-plex-sans/500.css";
 @import "@fontsource/ibm-plex-sans/600.css";
 @import "@fontsource/ibm-plex-mono/400.css";
-@import "katex/dist/katex.min.css";
+@import "katex/dist/katex.min.css" layer(katex);
 @import "../design-system/tokens/theme.css";
 @import "./base.css";
 @import "./layout.css";
 @import "./math.css";
 @import "./pedagogy.css";
+@import "./kit.css";
+@import "./python.css";
+@import "./games.css";

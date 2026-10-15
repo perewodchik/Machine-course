@@ -3,6 +3,7 @@
 import type { GetStaticPaths } from "astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Know from "../../components/layout/Know.astro";
+import ProgressFile from "../../components/layout/ProgressFile.astro";
 import { loadCatalog } from "../../lib/content/collections";
 import type { CourseTree } from "../../lib/content/catalog";
 import { hoursRange, plural } from "../../i18n/ru";
@@ -19,6 +20,9 @@ const { course } = Astro.props;
   <main class="shell" id="content">
     <h1>{course.title}</h1>
     <p class="lead">{course.summary}</p>
+    {course.id === "foundations" && (
+      <p class="course-links"><a href="/map/">Карта курса</a> — уроки и связи между ними; <a href="/concepts/">понятия</a> — и зачем каждое в&nbsp;CS229.</p>
+    )}
     {course.modules.map((m) => (
       <section class="module" id={`m-${m.id}`} aria-labelledby={`m-${m.id}-title`}>
         <h2 id={`m-${m.id}-title`}><span class="n">{m.number}</span><span>{m.title}</span></h2>
@@ -35,5 +39,6 @@ const { course } = Astro.props;
         </ol>
       </section>
     ))}
+    <ProgressFile />
   </main>
 </BaseLayout>

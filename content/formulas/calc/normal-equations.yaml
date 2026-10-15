@@ -29,12 +29,12 @@ dependsOn:
 
 conditions:
   - tex: '\operatorname{rank} \sym{X}{X} = d'
-    why: 'Нужно для единственности решения. Без полного ранга любое решение XᵀXθ = Xᵀy всё равно глобальный минимум.'
+    why: 'Нужно для единственности решения. Без полного ранга любое решение $X^\top X\theta = X^\top y$ всё равно глобальный минимум.'
     concept: la.rank
 
 derivation:
   plan:
-    - 'Записать J через матрицы'
+    - 'Записать $J$ через матрицы'
     - 'Раскрыть скобки'
     - 'Взять градиент'
     - 'Приравнять к нулю и решить'
@@ -49,21 +49,21 @@ derivation:
     - goal: 1
       tex: '= \tfrac12 \left(\sym{theta}{\theta}^\top \sym{X}{X}^\top \sym{X}{X} \sym{theta}{\theta} - \sym{theta}{\theta}^\top \sym{X}{X}^\top \sym{y}{y} - \sym{y}{y}^\top \sym{X}{X} \sym{theta}{\theta} + \sym{y}{y}^\top \sym{y}{y}\right)'
       by: [rule.transpose-product]
-      note: 'Раскрыли скобки, (Xθ)ᵀ = θᵀXᵀ.'
+      note: 'Раскрыли скобки, $(X\theta)^\top = \theta^\top X^\top$.'
       check:
         kind: same
         py: '0.5 * (theta @ X.T @ X @ theta - theta @ X.T @ y - y @ X @ theta + y @ y)'
     - goal: 1
       tex: '= \tfrac12 \left(\sym{theta}{\theta}^\top \sym{X}{X}^\top \sym{X}{X} \sym{theta}{\theta} - \changed{2\, \sym{y}{y}^\top \sym{X}{X} \sym{theta}{\theta}} + \sym{y}{y}^\top \sym{y}{y}\right)'
       by: [rule.scalar-transpose]
-      note: 'θᵀXᵀy — число, а число равно своему транспонированию.'
+      note: '$\theta^\top X^\top y$ — число, а число равно своему транспонированию.'
       check:
         kind: same
         py: '0.5 * (theta @ X.T @ X @ theta - 2 * y @ X @ theta + y @ y)'
     - goal: 2
       tex: '\nabla_{\sym{theta}{\theta}} J = \sym{X}{X}^\top \sym{X}{X} \sym{theta}{\theta} - \sym{X}{X}^\top \sym{y}{y}'
       by: [rule.grad-quadratic, rule.grad-linear]
-      note: 'XᵀX симметрична, поэтому ∇(θᵀAθ) = 2Aθ.'
+      note: '$X^\top X$ симметрична, поэтому $\nabla_\theta(\theta^\top A\theta) = 2A\theta$.'
       check:
         kind: gradient
         py: 'X.T @ X @ theta - X.T @ y'
@@ -71,7 +71,7 @@ derivation:
     - goal: 3
       tex: '\sym{X}{X}^\top \sym{X}{X} \sym{theta}{\theta} = \sym{X}{X}^\top \sym{y}{y}'
       by: [calc.stationary-point, calc.convexity]
-      note: 'Градиент в минимуме равен нулю; J выпукла, поэтому любое решение — глобальный минимум.'
+      note: 'Градиент в минимуме равен нулю; $J$ выпукла, поэтому любое решение — глобальный минимум.'
       check:
         kind: stationary
         lhs: 'X.T @ X @ theta'
@@ -79,14 +79,14 @@ derivation:
     - goal: 3
       tex: '\sym{theta}{\theta}^{\star} = (\sym{X}{X}^\top \sym{X}{X})^{-1} \sym{X}{X}^\top \sym{y}{y}'
       by: [la.inverse, la.rank]
-      note: 'Решение единственно, когда XᵀX обратима, то есть rank X = d.'
+      note: 'Решение единственно, когда $X^\top X$ обратима, то есть $\operatorname{rank} X = d$.'
       check:
         kind: solution
         py: 'np.linalg.solve(X.T @ X, X.T @ y)'
         wrt: theta
 
 pitfalls:
-  - 'Писать (Xθ)ᵀ = Xᵀθᵀ: транспонирование меняет порядок множителей.'
+  - 'Писать $(X\theta)^\top = X^\top \theta^\top$: транспонирование меняет порядок множителей.'
   - 'Считать через np.linalg.inv: решать систему (solve, lstsq) быстрее и точнее.'
 
 cs229:

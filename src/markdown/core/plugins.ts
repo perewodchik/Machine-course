@@ -8,6 +8,7 @@ import { SKIP, visit } from "unist-util-visit";
 import type { VFile } from "vfile";
 import type { SymbolSpec } from "../../lib/content/types";
 import { assignRoles, katexOptions } from "./katex";
+import { glueClass, isShortMath, nbspBeforeMath, PUNCT_AFTER } from "./nobr";
 import { typograf } from "./typograf";
 
 interface AstroData {
@@ -40,13 +41,96 @@ const isMath = (el: Element) => {
   return Array.isArray(cls) && cls.some((c) => c === "katex" || c === "katex-display" || c === "math-inline" || c === "math-display");
 };
 
-/** Типограф по текстовым узлам; код, формулы и SVG пропускаются. */
+// Абзац типографится целиком: иначе кавычки, разорванные формулой («сначала $A$, потом $B$»), типограф
+// видит по кускам и разворачивает. Границы текстовых узлов — символ SEP, формула или код на месте — MATH.
+const SEP = "\uE000";
+const MATH = "\uE001";
+const BLOCKS = new Set(["p", "li", "td", "th", "h1", "h2", "h3", "h4", "h5", "h6", "figcaption", "dt", "dd", "summary", "caption"]);
+
+/**
+ * Компонент MDX с текстом в одну строку (`<Note>текст $x$</Note>`): абзаца внутри нет, текст и формулы лежат прямо
+ * в узле компонента. Внутри абзаца (mdxJsxTextElement) он типографится вместе с абзацем, без абзаца — как абзац.
+ */
+interface MdxJsx {
+  type: "mdxJsxFlowElement" | "mdxJsxTextElement";
+  children: ElementContent[];
+}
+const isMdxJsx = (node: { type: string }): node is MdxJsx => node.type === "mdxJsxFlowElement" || node.type === "mdxJsxTextElement";
+const hasInlineText = (node: MdxJsx) => node.children.some((c) => c.type === "text" && c.value.trim() !== "");
+
+function typografBlock(block: { children: ElementContent[] }): void {
+  const texts: { value: string }[] = [];
+  let joined = "";
+  const walk = (children: ElementContent[]) => {
+    for (const child of children) {
+      if (child.type === "text") {
+        texts.push(child);
+        joined += child.value + SEP;
+      } else if (child.type === "element") {
+        if (RAW_TAGS.has(child.tagName) || isMath(child)) joined += MATH;
+        else walk(child.children);
+      } else if (isMdxJsx(child)) walk(child.children);
+    }
+  };
+  walk(block.children);
+  const parts = nbspBeforeMath(typograf(joined), MATH, SEP).split(SEP);
+  if (parts.length !== texts.length + 1) {
+    texts.forEach((t) => (t.value = typograf(t.value))); // правило съело границу — по узлам, как раньше
+    return;
+  }
+  texts.forEach((t, i) => (t.value = parts[i]!.replaceAll(MATH, "")));
+}
+
+/** Типограф: абзацы и ячейки — целиком, остальной текст — по узлам; код, формулы и SVG пропускаются. */
 export function rehypeTypograf() {
   return (tree: HastRoot) => {
     visit(tree, (node) => {
       if (node.type === "element" && (RAW_TAGS.has(node.tagName) || isMath(node))) return SKIP;
+      if ((node.type === "element" && BLOCKS.has(node.tagName)) || (isMdxJsx(node) && hasInlineText(node))) {
+        typografBlock(node as { children: ElementContent[] });
+        return SKIP;
+      }
       if (node.type === "text") node.value = typograf(node.value);
       return undefined;
+    });
+  };
+}
+
+const hasClass = (node: Element, name: string) => {
+  const cls = node.properties?.className;
+  return Array.isArray(cls) && cls.includes(name);
+};
+
+/** Видимый текст строчной формулы — из её MathML, без исходного TeX (annotation). */
+function mathText(node: ElementContent): string {
+  if (node.type === "text") return node.value;
+  if (node.type !== "element" || node.tagName === "annotation") return "";
+  return node.children.map(mathText).join("");
+}
+
+/**
+ * Строчная формула и знак препинания после неё — в одной обёртке .math-glue, короткая формула — неразрывно
+ * (src/markdown/core/nobr.ts). После типографа: кавычки «» появляются только в нём.
+ */
+export function rehypeMathGlue() {
+  return (tree: HastRoot) => {
+    visit(tree, "element", (node: Element, index, parent) => {
+      // родитель — элемент, корень или компонент MDX с текстом в одну строку (<Note>…</Note>)
+      if (!parent || index === undefined) return;
+      if (hasClass(node, "katex-display") || (parent.type === "element" && hasClass(parent, "math-glue"))) return SKIP;
+      if (!hasClass(node, "katex")) return;
+      const next = parent.children[index + 1];
+      const punct = next?.type === "text" ? (PUNCT_AFTER.exec(next.value)?.[0] ?? "") : "";
+      const mathml = node.children.find((c): c is Element => c.type === "element" && hasClass(c, "katex-mathml"));
+      const cls = glueClass(isShortMath(mathml ? mathText(mathml) : ""), punct !== "");
+      if (!cls) return SKIP;
+      const children: ElementContent[] = [node];
+      if (punct && next?.type === "text") {
+        children.push({ type: "text", value: punct });
+        next.value = next.value.slice(punct.length);
+      }
+      parent.children[index] = { type: "element", tagName: "span", properties: { className: cls }, children };
+      return SKIP;
     });
   };
 }
@@ -62,4 +146,35 @@ export function rehypeFailOnMathErrors() {
 }
 
 export const remarkPlugins = [remarkMath, remarkSymbolRoles];
-export const rehypePlugins = [[rehypeKatex, katexOptions], rehypeFailOnMathErrors, rehypeTypograf] as const;
+/** Текст ячейки заголовка: у формулы — из MathML, без дубля из katex-html. */
+function cellText(node: ElementContent): string {
+  if (node.type === "text") return node.value;
+  if (node.type !== "element" || hasClass(node, "katex-html") || node.tagName === "annotation") return "";
+  return node.children.map(cellText).join("");
+}
+
+/**
+ * Таблица урока — в обёртке .table-wrap: на узком экране прокручивается сама, а не вся страница.
+ * У таблицы из трёх и больше столбцов ячейки получают data-label с заголовком столбца: на телефоне строки
+ * складываются в карточки «заголовок — значение» (.table-wrap--stack, src/styles/layout.css).
+ */
+export function rehypeWrapTables() {
+  return (tree: HastRoot) => {
+    visit(tree, "element", (node: Element, index, parent) => {
+      if (node.tagName !== "table" || !parent || index === undefined) return;
+      if (parent.type === "element" && (parent.properties?.className as string[] | undefined)?.includes("table-wrap")) return;
+      const rows: Element[] = [];
+      visit(node, "element", (el: Element) => {
+        if (el.tagName === "tr") rows.push(el);
+      });
+      const cells = (tr: Element) => tr.children.filter((c): c is Element => c.type === "element" && (c.tagName === "td" || c.tagName === "th"));
+      const head = rows[0] ? cells(rows[0]).map((c) => cellText(c).replace(/\s+/g, " ").trim()) : [];
+      const stack = head.length >= 3 && head.every(Boolean);
+      if (stack) for (const tr of rows.slice(1)) cells(tr).forEach((c, i) => (c.properties = { ...c.properties, dataLabel: head[i] }));
+      parent.children[index] = { type: "element", tagName: "div", properties: { className: stack ? ["table-wrap", "table-wrap--stack"] : ["table-wrap"] }, children: [node] };
+      return SKIP;
+    });
+  };
+}
+
+export const rehypePlugins = [[rehypeKatex, katexOptions], rehypeFailOnMathErrors, rehypeTypograf, rehypeMathGlue, rehypeWrapTables] as const;

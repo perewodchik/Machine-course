@@ -3,8 +3,8 @@
 // вкладки «Вывод / Размерности / Где используется». Вкладки — src/client/tabs.ts, вывод — Derivation.
 import { loadRegistry, refLink } from "../../lib/content/registry";
 import { ru } from "../../lib/content/catalog";
+import { renderInline } from "../../markdown/core/inline";
 import { renderTex } from "../../markdown/core/katex";
-import { typograf } from "../../markdown/core/typograf";
 import Derivation from "./Derivation.astro";
 import SymbolLegend from "./SymbolLegend.astro";
 
@@ -57,7 +57,8 @@ const tabs = [
     {f.conditions?.map((c) => (
       <p>
         <span class="k">Условие</span>
-        <span set:html={renderTex(c.tex, { symbols: f.symbols })} />. {typograf(ru(c.why))}
+        {/* одной строкой разметки: точка после формулы не отрывается от неё (src/markdown/core/nobr.ts) */}
+        <span set:html={renderInline(`$${c.tex}$. ${ru(c.why)}`, f.symbols)} />
       </p>
     ))}
   </div>
@@ -81,7 +82,7 @@ const tabs = [
                   {shapes.map((s) => (
                     <tr>
                       <td set:html={renderTex(s.tex, { symbols: [s] })} />
-                      <td>{s.meaning ? typograf(ru(s.meaning)) : "—"}</td>
+                      <td set:html={s.meaning ? renderInline(ru(s.meaning), f.symbols) : "—"} />
                       <td class="num">{s.shape!.join("\u202f×\u202f")}</td>
                     </tr>
                   ))}

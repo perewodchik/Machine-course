@@ -1,0 +1,12 @@
+# Понятия статистики. Формат — content/concepts/la.yaml; программа — docs/program/04-statistics.md.
+- id: stat.mle
+  title:
+    ru: 'Метод максимального правдоподобия'
+    en: 'maximum likelihood estimation (MLE)'
+  summary: 'Оценка параметров, при которых наблюдаемые данные наиболее вероятны; на практике максимизируют логарифм правдоподобия.'
+  lesson: mle
+  prerequisites: [prob.independence, prob.normal, calc.log-exp, calc.stationary-point]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Linear regression / Probabilistic interpretation'

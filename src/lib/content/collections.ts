@@ -1,5 +1,5 @@
 // Загрузка каталога из коллекций Astro (только для сборки: страницы и раскладки).
-import { getCollection } from "astro:content";
+import { getCollection, type CollectionEntry } from "astro:content";
 import { buildCourseTree, sortCourses, type CourseTree } from "./catalog";
 import type { Module } from "./types";
 
@@ -19,4 +19,12 @@ export async function loadCourse(id: string): Promise<CourseTree> {
   const course = (await loadCatalog()).find((c) => c.id === id);
   if (!course) throw new Error(`нет курса ${id} (content/courses/${id}/course.yaml)`);
   return course;
+}
+
+let texts: Promise<Map<string, CollectionEntry<"lessons">>> | undefined;
+
+/** Текст урока (MDX) по ключу или undefined, если урок ещё не написан: без предупреждений getEntry о пропусках. */
+export async function lessonText(key: string): Promise<CollectionEntry<"lessons"> | undefined> {
+  texts ??= getCollection("lessons").then((all) => new Map(all.map((e) => [e.id, e])));
+  return (await texts).get(key);
 }

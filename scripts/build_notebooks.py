@@ -4,6 +4,8 @@
 - --solutions DIR — версия с решениями для проверки в CI (pytest --nbmake).
 
 Решение в исходнике размечается строками «# BEGIN SOLUTION» и «# END SOLUTION».
+Строка «# snippet: путь#регион» заменяется кодом региона из code/snippets (mlf.snippets): код урока и
+лабораторной один и тот же. Неразрешённая ссылка роняет сборку.
 """
 
 from __future__ import annotations
@@ -13,6 +15,8 @@ import re
 from pathlib import Path
 
 import jupytext
+
+from mlf.snippets import SnippetError, expand
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "notebooks" / "src"
@@ -38,7 +42,11 @@ def build(out_dir: Path, transform) -> list[Path]:
             # детерминированные id: пересборка без изменений не меняет файл
             cell.id = f"{src.stem.replace('_', '-')}-{i:02d}"
             if cell.cell_type == "code":
-                cell.source = transform(cell.source + "\n").rstrip("\n")
+                try:
+                    source = expand(cell.source)
+                except SnippetError as err:
+                    raise SystemExit(f"{src.relative_to(ROOT)}: {err}") from err
+                cell.source = transform(source + "\n").rstrip("\n")
                 cell.outputs, cell.execution_count = [], None
         target = out_dir / src.relative_to(SRC).with_suffix(".ipynb")
         target.parent.mkdir(parents=True, exist_ok=True)

@@ -1,0 +1,22 @@
+---
+// Код из сниппета (code/snippets, src/lib/content/snippets.ts): <PyCode src="la/normal_equations.py#solve+demo" run />.
+// Без run — листинг; с run — ячейка PyCell, которая молча выполняет весь файл сниппета, затем показанные регионы.
+// Неразрешённая ссылка на файл или регион роняет сборку.
+import PyCell from "./PyCell.astro";
+import { loadSnippet } from "../../lib/content/snippets";
+import { highlightPython } from "../../markdown/core/python";
+
+interface Props {
+  /** «путь от code/snippets#регион[+регион…]» */
+  src: string;
+  run?: boolean;
+  lab?: string;
+}
+const { src, run = false, lab } = Astro.props;
+const snippet = loadSnippet(src);
+---
+{run ? (
+  <PyCell code={snippet.code} setup={snippet.source} lab={lab} />
+) : (
+  <pre class="code code-listing" data-snippet={src}><code set:html={highlightPython(snippet.code)} /></pre>
+)}
