@@ -39,8 +39,12 @@ def passed(message: str = "Проверка пройдена.") -> None:
     print(message)
 
 
-def _regression_data(draw, n: tuple[int, int], d: tuple[int, int]):
-    """Случайная задача регрессии: X (n × d) и y (n,) с целыми значениями — контрпример легко прочитать."""
+def regression_data(draw, n: tuple[int, int] = (1, 12), d: tuple[int, int] = (1, 4), with_theta: bool = False):
+    """Случайная задача регрессии: X (n × d) и y (n,), с with_theta — ещё веса θ (d,).
+
+    Значения — целые от −5 до 5: контрпример легко прочитать. Для ``matches(..., inputs=...)``:
+    ``inputs=lambda draw: check.regression_data(draw, with_theta=True)``.
+    """
     from hypothesis import strategies as st
     from hypothesis.extra import numpy as hnp
 
@@ -49,6 +53,8 @@ def _regression_data(draw, n: tuple[int, int], d: tuple[int, int]):
     values = st.integers(-5, 5).map(float)
     X = draw(hnp.arrays(np.float64, (rows, cols), elements=values))
     y = draw(hnp.arrays(np.float64, (rows,), elements=values))
+    if with_theta:
+        return X, y, draw(hnp.arrays(np.float64, (cols,), elements=values))
     return X, y
 
 
@@ -81,7 +87,7 @@ def matches(
     from hypothesis import HealthCheck, given, settings
     from hypothesis import strategies as st
 
-    make = inputs or (lambda draw: _regression_data(draw, n, d))
+    make = inputs or (lambda draw: regression_data(draw, n, d))
     problem: dict[str, str] = {}
 
     # report_multiple_bugs=False: одна ошибка — один (минимальный) контрпример, без группы исключений

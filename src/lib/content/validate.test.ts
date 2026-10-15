@@ -50,6 +50,7 @@ describe("каждая проверка ловит свою фикстуру", (
     ["role-conflict", [/символ «theta»: роль (target|param), а в .* — (param|target)/]],
     ["note-label", [/next\.mdx: строка 11: заметка <Note> без подписи label/]],
     ["table-header", [/next\.mdx: строка 11: заголовок столбца 1 — только формула «\$x\$»/]],
+    ["lead-code", [/next\.mdx: lead: код в обратных кавычках/]],
     [
       "diagnostic-refs",
       [

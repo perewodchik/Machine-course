@@ -30,6 +30,7 @@ export const layoutPages = {
   undergame: "/games/underflow/",
   start6: "/foundations/start/derivative-refresher/",
   start7: "/foundations/start/integral/",
+  start8: "/foundations/start/numpy-minimum/",
   concept: "/concepts/la.dot-product/",
 } as const;
 

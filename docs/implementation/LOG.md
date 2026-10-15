@@ -17,6 +17,11 @@
 
 ---
 
+### 2026-10-15 — L-0.8 Минимум NumPy: массивы, формы, векторизация — готов
+- **Сделано:** Урок 0.8: три цикла (массивы и формы; @, транспонирование, broadcasting, оси; векторизация) и лабораторная «NumPy за час» (notebooks/src/start/numpy_minimum.py: шесть заданий — формы, векторизация J, стандартизация, баг с (n, 1), счёт классов индикатором, время). Сниппет start/numpy_minimum.py (данные, цикл, векторно) общий для урока и лабораторной; вывод ячейки закреплён тестом. Понятие nota.arrays. mlf.check.regression_data — публичный генератор данных для matches, с весами θ. Блоки python в уроке упал на axe: цвета Shiki не проходят контраст на фоне блока «Типичная ошибка». Подсветка переведена на собственные токены, как у ячеек. В лиде код в обратных кавычках не отображался, а « - » типограф делал тире — теперь это ошибка валидатора.
+- **Следующий шаг:** L-0.9 — обозначения курса и CS229.
+- **Вопросы пользователю:** —
+
 ### 2026-10-15 — L-0.7 Интеграл — готов
 - **Сделано:** Урок 0.7: три цикла (площадь как сумма; первообразная и замена переменной; несобственный интеграл). Виджет «Сумма прямоугольников → площадь» (src/widgets/calc/riemann: x², e⁻ˣ, e^(−x²/2); левые, средние, правые точки; n до 64), рисунки 1–2. Формула f.exponential-normalization с выводом, правило rule.gaussian-integral (без вывода, вывод — II.10), понятие calc.integral. Ячейка Монте-Карло start/monte_carlo.py, вывод закреплён в code/tests/test_monte_carlo.py.
 - **Файлы:** content/courses/foundations/start/integral.mdx, src/widgets/calc/riemann/*, src/components/widgets/Riemann.astro, content/formulas/calc/exponential-normalization.yaml, content/formulas/rules/gaussian-integral.yaml, code/snippets/start/monte_carlo.py

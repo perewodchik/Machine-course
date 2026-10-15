@@ -4,7 +4,8 @@
 // Урок 0.4 — задача из правила xᵀAy с разбором перестановки индексов, вывод формулы 1 по шагам, итоговая проверка.
 // Урок 0.5 — задача из правила log ∏ = Σ log, вывод производной сигмоиды в четыре шага, итоговая проверка.
 // Урок 0.6 — разбор «забыта внутренняя производная», вывод производной log g, ячейка с разностями, итоговая проверка.
-// Урок 0.7 — сумма прямоугольников с клавиатуры (n, точка), вывод нормировки экспоненты, итоговая проверка. axe.
+// Урок 0.7 — сумма прямоугольников с клавиатуры (n, точка), вывод нормировки экспоненты, итоговая проверка.
+// Урок 0.8 — разбор broadcasting, ячейка со ссылкой на лабораторную, кнопки Colab, итоговая проверка. axe.
 import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 import { generator } from "../../src/lib/exercises/generators";
@@ -186,6 +187,25 @@ test("урок 0.7: сумма прямоугольников приближае
   if (spec.kind !== "numeric") throw new Error("ожидалась числовая задача");
   await final.locator("[data-variant]:not([hidden]) input[data-input]").fill(String(spec.answer));
   await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await expectNoAxeViolations(page);
+});
+
+test("урок 0.8: разбор broadcasting, лабораторная «NumPy за час», итоговая проверка ставит «знаю»", async ({ page }) => {
+  await page.goto("/foundations/start/numpy-minimum/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Минимум NumPy: массивы, формы, векторизация");
+
+  const broadcast = page.locator("[data-exercise][data-item='start8.broadcast']");
+  await broadcast.locator("[data-option]").nth(2).click();
+  await expect(broadcast.locator("[data-feedback]")).toContainText("растягиваются молча");
+
+  await expect(page.locator("[data-py-cell]")).toHaveCount(1);
+  await expect(page.getByRole("link", { name: /Открыть в Colab/ }).first()).toHaveAttribute("href", /notebooks\/start\/numpy_minimum\.ipynb$/);
+
+  const final = page.locator("[data-exercise][data-final]");
+  const spec = generator("basics.numpy-shapes").make(31);
+  if (spec.kind !== "choice") throw new Error("ожидался выбор");
+  await final.locator("[data-variant]:not([hidden]) [data-option]").nth(spec.options.findIndex((o) => o.correct)).click();
   await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
   await expectNoAxeViolations(page);
 });

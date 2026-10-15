@@ -11,19 +11,25 @@ const TOKEN =
 const escape = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const span = (cls: string, s: string) => `<span class="${cls}">${escape(s)}</span>`;
 
-/** HTML для <pre><code>: текст экранирован, токены — в <span class="tok-…">. */
-export function highlightPython(code: string): string {
-  let out = "";
+/** Код по кускам: у токена — класс tok-c (комментарий), tok-s (строка), tok-n (число), tok-k (ключевое слово). */
+export function pythonTokens(code: string): { text: string; cls?: string }[] {
+  const out: { text: string; cls?: string }[] = [];
   let last = 0;
+  const plain = (text: string) => text && out.push({ text });
   for (const m of code.matchAll(TOKEN)) {
-    out += escape(code.slice(last, m.index));
+    plain(code.slice(last, m.index));
     const [text, comment, string, number, word] = m;
-    if (comment) out += span("tok-c", text);
-    else if (string) out += span("tok-s", text);
-    else if (number) out += span("tok-n", text);
-    else if (word && KEYWORDS.has(word)) out += span("tok-k", text);
-    else out += escape(text);
+    const cls = comment ? "tok-c" : string ? "tok-s" : number ? "tok-n" : word && KEYWORDS.has(word) ? "tok-k" : undefined;
+    out.push(cls ? { text, cls } : { text });
     last = m.index + text.length;
   }
-  return out + escape(code.slice(last));
+  plain(code.slice(last));
+  return out;
+}
+
+/** HTML для <pre><code>: текст экранирован, токены — в <span class="tok-…">. */
+export function highlightPython(code: string): string {
+  return pythonTokens(code)
+    .map((t) => (t.cls ? span(t.cls, t.text) : escape(t.text)))
+    .join("");
 }

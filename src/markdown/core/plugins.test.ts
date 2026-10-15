@@ -114,7 +114,7 @@ describe("типограф", () => {
   it("в MDX: текст типографится, код и формулы — нет", async () => {
     const html = await md('Текст "в кавычках" и `x = "a - b"` и $a - b$');
     expect(html).toContain("«в\u00a0кавычках»");
-    expect(html).toContain('<code>x = "a - b"</code>');
+    expect(html).toContain('<code class="nowrap">x = "a - b"</code>');
     expect(html).not.toContain("a — b");
   });
 
@@ -132,5 +132,19 @@ describe("типограф", () => {
     expect(JSON.stringify(note.children.map(text).join(""))).toBe(JSON.stringify("Пишут «функция $», хотя $\u00a0— значение."));
     const glued = note.children.filter((c): c is Element => c.type === "element" && (c.properties.className as string[]).includes("math-glue"));
     expect(glued.map((g) => (g.properties.className as string[]).join(" "))).toEqual(["math-glue is-short", "math-glue is-short"]);
+  });
+
+  it("блок ```python подсвечен токенами курса, а не Shiki; типограф код не трогает", async () => {
+    const html = await md('```python\nx = "a - b"  # комментарий\nfor i in range(3):\n    pass\n```\n');
+    expect(html).toContain('<pre class="code code-listing">');
+    expect(html).toContain('<span class="tok-s">"a - b"</span>');
+    expect(html).toContain('<span class="tok-c"># комментарий</span>');
+    expect(html).toContain('<span class="tok-k">for</span>');
+  });
+
+  it("короткий код в строке не рвётся, длинный — может", async () => {
+    const html = await md("Формы `(n, 1)` и `np.linalg.solve(X.T @ X, X.T @ y)`.");
+    expect(html).toContain('<code class="nowrap">(n, 1)</code>');
+    expect(html).toContain("<code>np.linalg.solve(X.T @ X, X.T @ y)</code>");
   });
 });
