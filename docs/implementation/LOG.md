@@ -17,6 +17,15 @@
 
 ---
 
+### 2026-10-15 — S2.03 движок упражнений — готова
+- **Сделано:** src/lib/math/rng.ts (mulberry32), src/lib/exercises/{types,parse,check}.ts, generators/{la,index}.ts (det2, matmul2, slope3, shapes), src/markdown/core/inline.ts (renderInline, inlineText), src/components/pedagogy/{Exercise,ExerciseSet}.astro, src/client/exercise.ts, src/lib/state/journal.ts, стили в pedagogy.css, раздел «Упражнения» на /lab. Тесты: exercises.test.ts (разбор «0,5», «−3/4», «1e-3»; проверки; детерминизм генераторов), inline.test.ts, tests/e2e/exercise.spec.ts (все типы с клавиатуры, журнал, итоговая проверка).
+- **Файлы:** src/lib/math/rng.ts, src/lib/exercises/*, src/markdown/core/inline.ts, src/components/pedagogy/{Exercise,ExerciseSet}.astro, src/client/exercise.ts, src/lib/state/journal.ts, src/styles/pedagogy.css, src/pages/lab.astro, tests/e2e/exercise.spec.ts
+- **Проверка:** vitest 192, lint, astro check 0, build, e2e 114 (axe /lab в обеих темах)
+- **Отклонения от плана и решения:** KaTeX не уходит в браузер: «Ещё задача» переключает заранее собранные варианты (по умолчанию 8), а не генерирует новые на клиенте — набор вариантов конечен. Варианты и поля, подпись которых — одна формула, получают aria-label из текста MathML (axe не читает MathML). Расхождения «знаю» ↔ итоговая проверка модуля — после S2.04.
+- **Где остановился:** —
+- **Следующий шаг:** S2.04.
+- **Вопросы пользователю:** —
+
 ### 2026-10-15 — S2.02 виджет «Подгонка прямой» — готова
 - **Сделано:** src/widgets/la/fit-line/{model.ts,model.test.ts,FitLine.tsx,index.ts,README.md,data.json}, src/components/widgets/FitLine.astro, scripts/export_widget_data.py (data.json виджетов сайта), code/tests/test_normal_equations.py::test_widget_export_matches_generator, tests/e2e/fit-line.spec.ts; FitLine в lessonComponents; демо-урок использует виджет вместо заглушки.
 - **Файлы:** src/widgets/la/fit-line/*, src/components/widgets/FitLine.astro, src/components/pedagogy/index.ts, scripts/export_widget_data.py, code/tests/test_normal_equations.py, tests/e2e/fit-line.spec.ts, src/pages/demo/lesson.astro

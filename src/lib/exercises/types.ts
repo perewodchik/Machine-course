@@ -1,0 +1,84 @@
+// Упражнения: описание задачи (что видит ученик и как проверить ответ). Тексты — с $…$ для формул:
+// их отрисовывает сервер (KaTeX в браузер не попадает), клиент получает только данные для проверки.
+// Типы — docs/conventions/pedagogy.md, «Упражнения».
+
+interface Base {
+  /** Условие: текст с $…$. */
+  prompt: string;
+  /** Лесенка подсказок: идея → план → часть решения → решение. */
+  hints?: string[];
+  /** Пояснение после верного ответа. */
+  right?: string;
+  /** Пояснение после неверного ответа (у выбора — у каждого варианта своё). */
+  wrong?: string;
+}
+
+export interface NumericSpec extends Base {
+  kind: "numeric";
+  /** Подпись поля: «$\theta_1 =$». */
+  label: string;
+  answer: number;
+  /** Допуск: абсолютный (по умолчанию 0.005) и относительный. */
+  tol?: number;
+  rel?: number;
+}
+
+export interface ChoiceOption {
+  text: string;
+  correct?: boolean;
+  /** Почему вариант верен или в чём ошибка: неверный вариант — типичная ошибка. */
+  why: string;
+}
+
+export interface ChoiceSpec extends Base {
+  kind: "choice";
+  options: ChoiceOption[];
+}
+
+export interface MatrixSpec extends Base {
+  kind: "matrix";
+  /** Подпись слева от сетки: «$AB =$». */
+  label: string;
+  answer: number[][];
+  tol?: number;
+}
+
+export interface OrderSpec extends Base {
+  kind: "order";
+  /** Шаги в верном порядке; ученику показываются перемешанными (seed). */
+  steps: string[];
+}
+
+export interface PredictSpec extends Base {
+  kind: "predict";
+  /** Вопрос-предсказание и варианты; после выбора открывается ответ. */
+  options: ChoiceOption[];
+  /** Что на самом деле: показывается после предсказания. */
+  reveal: string;
+}
+
+export type ExerciseSpec = NumericSpec | ChoiceSpec | MatrixSpec | OrderSpec | PredictSpec;
+
+/** Генератор параметрической задачи: одна и та же задача при одном seed. */
+export interface Generator {
+  id: string;
+  /** Версия генератора — в журнал: после правки генератора старые записи не смешиваются с новыми. */
+  version: number;
+  title: string;
+  make(seed: number): ExerciseSpec;
+}
+
+/** Запись журнала попыток (docs/implementation/context/progress-learning.md). */
+export interface AttemptEvent {
+  type: "attempt";
+  lesson: string;
+  item: string;
+  seed: number;
+  attempt: number;
+  correct: boolean;
+  hints: number;
+  ms: number;
+  confidence?: 1 | 2 | 3;
+  generatorVersion?: number;
+  at: string;
+}

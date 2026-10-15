@@ -6,7 +6,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Know from "../components/layout/Know.astro";
 import CheckMark from "../components/layout/CheckMark.astro";
 import Icon from "../components/layout/Icon.astro";
-import { Block, Formula, Note, Prereqs } from "../components/pedagogy";
+import { Block, Exercise, ExerciseSet, Formula, Note, Prereqs } from "../components/pedagogy";
+import type { OrderSpec, PredictSpec } from "../lib/exercises/types";
 import SymbolLegend from "../components/pedagogy/SymbolLegend.astro";
 import Tex from "../components/pedagogy/Tex.astro";
 import KitDemo from "../widgets/_kit/KitDemo";
@@ -36,6 +37,29 @@ const reg = await loadRegistry();
 const symbols = reg.formulas.get("f.normal-equations")!.symbols;
 const stats = course.modules.find((m) => m.id === "statistics")!;
 const sample = stats.lessons.slice(5, 8);
+const orderSpec: OrderSpec = {
+  kind: "order",
+  prompt: "Соберите вывод нормальных уравнений: расставьте шаги по порядку.",
+  steps: [
+    String.raw`Записать $J(\theta) = \tfrac12 (X\theta - y)^\top (X\theta - y)$`,
+    String.raw`Раскрыть скобки: $\tfrac12(\theta^\top X^\top X \theta - 2 y^\top X \theta + y^\top y)$`,
+    String.raw`Взять градиент: $\nabla_\theta J = X^\top X \theta - X^\top y$`,
+    String.raw`Приравнять к нулю: $X^\top X \theta = X^\top y$`,
+  ],
+  hints: ["Сначала функция потерь, потом её градиент, в конце — уравнение на минимум."],
+  right: "Это и есть план вывода: записать, раскрыть, продифференцировать, приравнять к нулю.",
+  wrong: "Отмеченные шаги стоят не на своих местах.",
+};
+const predictSpec: PredictSpec = {
+  kind: "predict",
+  prompt: "Добавим в данные двенадцатую точку далеко над прямой. Как изменится наклон прямой наименьших квадратов?",
+  options: [
+    { text: "Вырастет", correct: true, why: "Квадрат остатка большой, и прямая поворачивается к выбросу: МНК чувствителен к выбросам." },
+    { text: "Не изменится", why: "Каждая точка входит в сумму квадратов, и далёкая — с большим весом." },
+    { text: "Уменьшится", why: "Точка выше прямой тянет её вверх, а не вниз." },
+  ],
+  reveal: "Проверьте на рисунке: поднимите θ₁ — остаток выброса сокращается быстрее, чем растут остальные.",
+};
 const regression = course.lessons.find((l) => l.key === "foundations/bridge/linear-regression")!;
 ---
 <BaseLayout title="Витрина дизайн-системы" description="Токены, символы, типографика и компоненты курса." noindex>
@@ -172,6 +196,24 @@ const regression = course.lessons.find((l) => l.key === "foundations/bridge/line
       <h2 id="lab-kit">Набор для рисунков</h2>
       <p class="intro">Плоскость, оси, точки, прямая, эллипс, вектор, ползунки, показание и&nbsp;«живое число» из&nbsp;<code>widgets/_kit</code>. Клетка совпадает с&nbsp;делениями осей, рисунок перестраивается по&nbsp;ширине, всё обрезается областью графика. Наведение на&nbsp;прямую подсвечивает <Tex tex={String.raw`\sym{theta}{\theta}`} symbols={symbols} /> в&nbsp;формулах выше.</p>
       <KitDemo client:visible />
+    </section>
+
+    <section aria-labelledby="lab-exercises">
+      <h2 id="lab-exercises">Упражнения</h2>
+      <p class="intro">Пять типов задач. Параметрические задачи собраны при сборке в&nbsp;нескольких вариантах: «Ещё задача» показывает следующий. Ответ можно писать с&nbsp;точкой или запятой, вывод&nbsp;— с&nbsp;точкой. Подсказки открываются по&nbsp;одной.</p>
+      <Exercise gen="la.slope3" n={1} confidence lesson="foundations/bridge/linear-regression" />
+      <Exercise gen="la.shapes" n={2} lesson="foundations/linear-algebra/matrix-multiplication" />
+      <Exercise gen="la.matmul2" n={3} lesson="foundations/linear-algebra/matrix-multiplication" />
+      <Exercise spec={orderSpec} id="v1.order-derivation" n={4} lesson="foundations/bridge/linear-regression" />
+      <Exercise spec={predictSpec} id="v1.predict-outlier" n={5} title="Предскажите" lesson="foundations/bridge/linear-regression" />
+      <ExerciseSet
+        seed={3}
+        items={[
+          { lesson: "foundations/linear-algebra/matrix-multiplication", gen: "la.matmul2" },
+          { lesson: "foundations/linear-algebra/inverse-determinant", gen: "la.det2" },
+          { lesson: "foundations/bridge/linear-regression", gen: "la.slope3" },
+        ]}
+      />
     </section>
 
     <section aria-labelledby="lab-dont">

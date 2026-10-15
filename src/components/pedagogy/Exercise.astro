@@ -1,0 +1,142 @@
+---
+// Упражнение: числовой ответ, выбор с разбором вариантов, матрица сеткой, порядок шагов, «предскажи, потом проверь».
+// Параметрическая задача (gen) отрисовывается при сборке в нескольких вариантах (seed): «Ещё задача» переключает их,
+// KaTeX в браузер не попадает. Поведение и журнал попыток — src/client/exercise.ts.
+import type { ExerciseSpec } from "../../lib/exercises/types";
+import { generator } from "../../lib/exercises/generators";
+import { scrambled } from "../../lib/exercises/check";
+import { rng } from "../../lib/math/rng";
+import { inlineText, renderInline } from "../../markdown/core/inline";
+
+interface Props {
+  /** Готовая задача. */
+  spec?: ExerciseSpec;
+  /** Или генератор параметрической задачи: id из src/lib/exercises/generators. */
+  gen?: string;
+  /** Сколько вариантов собрать для «Ещё задача». */
+  variants?: number;
+  /** Первый seed; следующие — seed + 1, seed + 2, … */
+  seed?: number;
+  n?: number;
+  /** Заголовок вместо «Упражнение»: «Проверка», «Итоговая проверка». */
+  title?: string;
+  /** ID задачи в журнале; по умолчанию — id генератора. */
+  id?: string;
+  /** Урок (LessonKey) для журнала; по умолчанию — из адреса страницы. */
+  lesson?: string;
+  /** Спросить уверенность перед проверкой (идея B6). */
+  confidence?: boolean;
+  /** Итоговая проверка урока: верный ответ ставит галочку «знаю» (S2.04). */
+  final?: boolean;
+}
+
+const { spec, gen, variants = 8, seed = 1, n, title = "Упражнение", id, lesson, confidence = false, final = false } = Astro.props;
+if (!spec && !gen) throw new Error("<Exercise>: нужен spec или gen");
+const g = gen ? generator(gen) : undefined;
+const seeds = g ? Array.from({ length: Math.max(1, variants) }, (_, i) => seed + i) : [seed];
+const items = seeds.map((s) => ({ seed: s, spec: g ? g.make(s) : spec! }));
+const item = id ?? g?.id ?? `exercise-${n ?? 1}`;
+const lessonKey = lesson ?? Astro.url.pathname.split("/").filter(Boolean).slice(0, 3).join("/");
+const heading = `${title}${n ? `\u00a0${n}` : ""}.`;
+const kind = items[0]!.spec.kind;
+const uid = `ex-${item.replace(/[^a-z0-9]+/gi, "-")}-${n ?? 0}`;
+
+/** Данные для проверки в браузере: только ответы, без текстов. */
+function answerData(s: ExerciseSpec, seedValue: number) {
+  switch (s.kind) {
+    case "numeric":
+      return { kind: s.kind, answer: s.answer, tol: s.tol, rel: s.rel };
+    case "matrix":
+      return { kind: s.kind, answer: s.answer, tol: s.tol };
+    case "choice":
+    case "predict":
+      return { kind: s.kind, correct: s.options.map((o) => !!o.correct) };
+    case "order":
+      return { kind: s.kind, order: scrambled(s.steps.length, (xs) => rng(seedValue).shuffle(xs)) };
+  }
+}
+---
+<div class="block block--exercise exercise" data-exercise data-kind={kind} data-item={item} data-lesson={lessonKey} data-version={g?.version} data-uid={uid} data-final={final ? "" : undefined}>
+  {items.map(({ seed: s, spec: sp }, vi) => {
+    const vid = `${uid}-${vi}`;
+    return (
+      <div class="exercise__variant" data-variant data-seed={s} hidden={vi > 0} tabindex="-1">
+        <p id={`${vid}-prompt`}><span class="block__title">{heading}</span> <Fragment set:html={renderInline(sp.prompt)} /></p>
+
+        {sp.kind === "numeric" && (
+          <div class="field">
+            <label for={`${vid}-input`} set:html={renderInline(sp.label)} />
+            <input class="input" id={`${vid}-input`} inputmode="decimal" autocomplete="off" spellcheck="false" data-input aria-label={inlineText(sp.label).replace(/=$/, "").trim()} />
+          </div>
+        )}
+
+        {sp.kind === "matrix" && (
+          <div class="field field--matrix">
+            <span set:html={renderInline(sp.label)} aria-hidden="true" />
+            <table class="matrix-input" role="presentation">
+              <tbody>
+                {sp.answer.map((row, i) => (
+                  <tr>
+                    {row.map((_, j) => (
+                      <td><input class="input input--cell" inputmode="decimal" autocomplete="off" data-cell={`${i},${j}`} aria-label={`Строка ${i + 1}, столбец ${j + 1}`} /></td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {(sp.kind === "choice" || sp.kind === "predict") && (
+          <div class="choices" role="group" aria-label={sp.kind === "predict" ? "Ваш прогноз" : "Варианты ответа"}>
+            {sp.options.map((o, i) => (
+              <button type="button" data-option={i} aria-pressed="false" aria-label={inlineText(o.text)} set:html={renderInline(o.text)} />
+            ))}
+          </div>
+        )}
+        {(sp.kind === "choice" || sp.kind === "predict") &&
+          sp.options.map((o, i) => <div class="exercise__why" data-why={i} hidden set:html={renderInline(o.why)} />)}
+        {sp.kind === "predict" && <div class="exercise__reveal" data-reveal hidden set:html={renderInline(sp.reveal)} />}
+
+        {sp.kind === "order" && (
+          <ol class="order" aria-label="Шаги — расставьте по порядку">
+            {(answerData(sp, s) as { order: number[] }).order.map((step) => (
+              <li data-step={step}>
+                <span class="order__text" set:html={renderInline(sp.steps[step]!)} />
+                <span class="order__moves">
+                  <button type="button" class="btn btn--sm btn--quiet" data-move="up">Выше</button>
+                  <button type="button" class="btn btn--sm btn--quiet" data-move="down">Ниже</button>
+                </span>
+              </li>
+            ))}
+          </ol>
+        )}
+
+        {sp.hints && sp.hints.length > 0 && (
+          <ol class="exercise__hints" aria-label="Подсказки">
+            {sp.hints.map((h) => <li data-hint hidden set:html={renderInline(h)} />)}
+          </ol>
+        )}
+        {sp.right && <div data-right hidden set:html={renderInline(sp.right)} />}
+        {sp.wrong && <div data-wrong hidden set:html={renderInline(sp.wrong)} />}
+        <script type="application/json" data-answer set:html={JSON.stringify(answerData(sp, s))} />
+      </div>
+    );
+  })}
+
+  {confidence && kind !== "predict" && (
+    <fieldset class="confidence">
+      <legend>Насколько вы уверены?</legend>
+      <label><input type="radio" name={`${uid}-conf`} value="1" />угадываю</label>
+      <label><input type="radio" name={`${uid}-conf`} value="2" />скорее да</label>
+      <label><input type="radio" name={`${uid}-conf`} value="3" />уверен</label>
+    </fieldset>
+  )}
+
+  <div class="exercise__bar">
+    {kind !== "choice" && kind !== "predict" && <button type="button" class="btn btn--sm" data-check>Проверить</button>}
+    <button type="button" class="btn btn--sm btn--quiet" data-hint-next>Подсказка</button>
+    {items.length > 1 && <button type="button" class="btn btn--sm btn--quiet" data-another>Ещё задача</button>}
+  </div>
+  <p class="feedback" role="status" data-feedback></p>
+</div>

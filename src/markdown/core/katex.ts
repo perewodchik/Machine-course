@@ -68,12 +68,15 @@ export function renderTex(tex: string, opts: { display?: boolean; symbols?: read
   }
 }
 
+const INVISIBLE = new RegExp(`[${String.fromCharCode(0x2061)}-${String.fromCharCode(0x2064)}]`, "g");
+
 /** Текст формулы для доступного имени (aria-label): символы из MathML KaTeX — «θ», «X⊤». */
 export function texToText(tex: string): string {
   const mathml = katex.renderToString(tex, { ...katexOptions, output: "mathml" });
   return mathml
     .replace(/<annotation[\s\S]*?<\/annotation>/g, "")
     .replace(/<[^>]+>/g, "")
+    .replace(INVISIBLE, " ") // «применение функции» и другие невидимые операторы MathML: det⁡A → det A
     .replace(/\s+/g, " ")
     .trim();
 }

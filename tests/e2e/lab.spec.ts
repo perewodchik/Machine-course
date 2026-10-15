@@ -17,7 +17,8 @@ test("символы, блоки всех видов, формула с выво
   await page.goto(layoutPages.lab);
   await expect(page.locator(".sym-card")).toHaveCount(4);
   for (const kind of ["definition", "theorem", "intuition", "pitfall", "exercise", "derivation"]) {
-    await expect(page.locator(`.block--${kind}`)).toHaveCount(1);
+    // упражнения движка — тоже блоки «exercise», считаем только витрину блоков
+    await expect(page.locator(`.block--${kind}:not(.exercise)`)).toHaveCount(1);
   }
   await expect(page.locator('[data-formula="f.normal-equations"] [data-derivation]')).toBeVisible();
   await page.getByRole("button", { name: /θ — вектор весов/ }).first().focus();

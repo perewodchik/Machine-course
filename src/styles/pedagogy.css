@@ -140,3 +140,59 @@
     .step, .switch input, .switch input::after { transition: none; }
   }
 }
+
+/* ───────── Упражнения ───────── */
+@layer components {
+  .exercise__variant:focus { outline: none; }
+  .field { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); margin-top: var(--space-3); font-family: var(--font-ui); font-size: var(--text-sm); }
+  .input { width: 7.5rem; height: 36px; padding: 0 10px; border: 1px solid var(--control-border); border-radius: var(--radius-control); background: var(--surface); color: var(--ink); font: 500 var(--text-sm) var(--font-ui); font-variant-numeric: tabular-nums; }
+  .input:focus-visible { outline: 2px solid var(--pen); outline-offset: 1px; border-color: var(--pen); }
+  .input.is-right { border-color: var(--green-pen); box-shadow: inset 0 0 0 1px var(--green-pen); }
+  .input.is-wrong { border-color: var(--red-pen); box-shadow: inset 0 0 0 1px var(--red-pen); }
+  .input--cell { width: 4.2rem; text-align: center; }
+  .matrix-input { border-collapse: separate; border-spacing: 6px; border-left: 2px solid var(--ink-2); border-right: 2px solid var(--ink-2); border-radius: 8px; }
+  .matrix-input td { padding: 0; }
+
+  .exercise__bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-top: var(--space-3); }
+  .exercise__hints { margin: var(--space-3) 0 0; padding-left: 1.4em; font-size: var(--text-sm); color: var(--ink-2); }
+  .exercise__hints li + li { margin-top: 4px; }
+  .exercise__why, .exercise__reveal { margin-top: var(--space-2); }
+  .exercise__reveal { padding: var(--space-2) var(--space-3); border-left: 2px solid var(--rule); background: var(--paper-2); }
+  .exercise [data-why] { display: none; } /* разбор варианта показывается в строке ответа */
+
+  .feedback { display: flex; flex-wrap: wrap; gap: 4px 8px; margin: var(--space-3) 0 0; font-family: var(--font-ui); font-size: var(--text-sm); line-height: 1.5; color: var(--ink-2); }
+  .feedback:empty { display: none; }
+  .feedback b { font-weight: 600; color: var(--ink); }
+  .feedback--right b { color: var(--green-pen); }
+  .feedback--wrong b { color: var(--red-pen); }
+  .feedback span { color: var(--ink-2); }
+
+  .choices { display: grid; gap: 6px; margin-top: var(--space-2); }
+  .choices button { padding: 8px 12px; border: 1px solid var(--control-border); border-radius: var(--radius-control); background: var(--surface); color: var(--ink); font: var(--text-sm) / 1.45 var(--font-ui); text-align: left; cursor: pointer; transition: border-color var(--duration-ui) var(--ease-out), background var(--duration-ui) var(--ease-out); }
+  .choices button:hover { border-color: var(--pen); }
+  .choices button.is-right { border-color: var(--green-pen); box-shadow: inset 3px 0 0 var(--green-pen); }
+  .choices button.is-wrong { border-color: var(--red-pen); box-shadow: inset 3px 0 0 var(--red-pen); }
+
+  .order { display: grid; gap: 6px; margin: var(--space-2) 0 0; padding: 0; list-style: none; counter-reset: order; }
+  .order li { display: flex; flex-wrap: wrap; align-items: center; gap: 4px var(--space-3); padding: 6px 6px 6px 12px; border: 1px solid var(--rule); border-radius: var(--radius-control); background: var(--surface); counter-increment: order; }
+  .order li::before { content: counter(order) "."; min-width: 1.4em; font-family: var(--font-ui); font-size: var(--text-sm); color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .order__text { flex: 1; min-width: 12rem; }
+  .order__moves { display: flex; gap: 2px; }
+  .order li.is-right { border-color: var(--green-pen); }
+  .order li.is-wrong { border-color: var(--red-pen); }
+
+  .confidence { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-4); margin: var(--space-3) 0 0; padding: 0; border: 0; font-family: var(--font-ui); font-size: var(--text-sm); color: var(--ink-2); }
+  .confidence legend { float: left; margin-right: var(--space-2); padding: 0; color: var(--ink-3); }
+  .confidence label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+  .confidence input { accent-color: var(--pen); }
+
+  .exercise-set { margin: var(--space-6) 0; }
+  .exercise-set__intro { color: var(--ink-2); }
+  .exercise-set__summary { margin-top: var(--space-4); padding: var(--space-3) var(--space-4); border: 1px solid var(--rule); border-radius: var(--radius-panel); background: var(--surface); font-family: var(--font-ui); font-size: var(--text-sm); }
+  .exercise-set__summary p { margin: 0 0 var(--space-2); font-weight: 500; }
+  .exercise-set__summary ul { margin: 0; padding-left: 1.2em; color: var(--ink-2); }
+
+  @media (pointer: coarse) {
+    .input, .choices button { min-height: var(--target-touch); }
+  }
+}
