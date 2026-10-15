@@ -9,6 +9,9 @@
   последнего ``same`` по ``wrt``; ``stationary`` — равенство ``lhs = rhs`` в найденном решении;
   ``solution`` — выражение для точки минимума, в которой градиент обращается в ноль.
 
+Мутации правила (``mutations``) — типичные ошибки: их ``py`` обязан отличаться от верной части
+(``rhs`` или ``grad``), иначе «ошибка» на деле верна и вводила бы ученика в заблуждение.
+
 Несогласованные размерности NumPy ловит сам: выражение просто не вычислится.
 Вектор-столбец формы [d, 1] в проверках — одномерный массив длины d.
 """
@@ -94,6 +97,16 @@ def check_formula(data: dict, seed: int = 0) -> Report:
                     report.problems.append(f"проверка {i}: градиент не совпадает с численным")
         except Exception as exc:  # размерности, опечатки в выражении
             report.problems.append(f"проверка {i}: выражение не вычисляется ({exc})")
+
+    # мутации правила (S3.05): типичная ошибка должна давать другой ответ — иначе это не ошибка
+    reference = next((c.get("rhs") or c.get("grad") for c in data.get("checks", [])), None)
+    for i, m in enumerate(data.get("mutations", []), 1):
+        try:
+            same = reference is not None and _close(evaluate(m["py"], env), evaluate(reference, env))
+        except Exception:  # размерности не сходятся — ошибка видна и так
+            same = False
+        if same:
+            report.problems.append(f"мутация {i}: «{m['tex']}» совпадает с верным ответом — это не ошибка")
 
     steps = data.get("derivation", {}).get("steps", [])
     ref = f_expr = grad_expr = None

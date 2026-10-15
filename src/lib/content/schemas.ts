@@ -76,6 +76,7 @@ export const rule = z.strictObject({
   concept: conceptId,
   corollary: localized.optional(),
   checks: z.array(check).min(1, "у правила нужна хотя бы одна численная проверка"),
+  mutations: z.array(z.strictObject({ tex, py: z.string().min(1), why: localized })).optional(),
 });
 
 export const formula = z

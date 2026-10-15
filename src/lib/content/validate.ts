@@ -310,7 +310,13 @@ export function validateContent(root: string): ValidationResult {
   for (const { file, data } of [...rules.values(), ...formulas.values()]) {
     data.symbols.forEach((x, i) => checkProse(x.meaning, file, `symbols[${i}].meaning`, data.symbols));
     checkProse(data.pitfall, file, "pitfall", data.symbols);
-    if (data.kind === "rule") checkProse(data.corollary, file, "corollary", data.symbols);
+    if (data.kind === "rule") {
+      checkProse(data.corollary, file, "corollary", data.symbols);
+      data.mutations?.forEach((m, i) => {
+        checkTex(m.tex, file, `mutations[${i}].tex`, data.symbols);
+        checkProse(m.why, file, `mutations[${i}].why`, data.symbols);
+      });
+    }
     if (data.kind === "formula") {
       data.conditions?.forEach((c, i) => checkProse(c.why, file, `conditions[${i}].why`, data.symbols));
       data.derivation?.plan.forEach((g, i) => checkProse(g, file, `derivation.plan[${i}]`, data.symbols));

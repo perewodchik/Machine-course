@@ -1,5 +1,6 @@
 // Символьные ответы: разбор TeX (Compute Engine), значение на матрицах, эквивалентность на случайных формах.
 import { describe, expect, it } from "vitest";
+import { matchMutation } from "./check";
 import { equivalent, type SymbolShape } from "./equivalent";
 import { evaluate, scalar } from "./evaluate";
 import { parseTex } from "./parse";
@@ -65,3 +66,18 @@ describe("значение выражения", () => {
     expect(evaluate(parseTex(String.raw`\frac{1}{2}(a+1)`)!, new Map([["a", scalar(3)]])).v[0]).toBe(2);
   });
 });
+
+describe("типичные ошибки (S3.05)", () => {
+  const mutations = [String.raw`X^\top X\theta + X^\top y`, String.raw`2X^\top X\theta - 2X^\top y`, String.raw`X^\top \theta^\top`];
+  it("ответ, равный мутации по значению, узнаётся в любой равной записи", () => {
+    expect(matchMutation(String.raw`X^\top(X\theta + y)`, mutations, linreg)).toBe(0);
+    expect(matchMutation(String.raw`2X^\top(X\theta - y)`, mutations, linreg)).toBe(1);
+  });
+  it("мутация с ошибкой формы узнаётся по записи", () => {
+    expect(matchMutation(String.raw`X^{T}\theta^{T}`, mutations, linreg)).toBe(2);
+  });
+  it("другая ошибка — не мутация", () => {
+    expect(matchMutation(String.raw`X\theta - y`, mutations, linreg)).toBe(-1);
+  });
+});
+

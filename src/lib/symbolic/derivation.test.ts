@@ -72,3 +72,17 @@ describe("вывод нормальных уравнений", () => {
     expect(classify(String.raw`= X\theta`, wrt, task.symbols).kind).toBe("same");
   });
 });
+
+describe("типичные ошибки в строках вывода (S3.05)", () => {
+  it("неверная строка, равная мутации, получает её номер", () => {
+    const lines = [...right];
+    lines[0] = String.raw`= \tfrac12 (\theta^\top X^\top X\theta - y^\top X\theta + y^\top y)`;
+    const mutations = [String.raw`\tfrac12 \theta^\top X^\top X\theta - \tfrac12 y^\top X\theta + \tfrac12 y^\top y`];
+    const v = checkDerivation(task, lines, 1, mutations);
+    expect(v.first).toBe(0);
+    expect(v.lines[0]!.mutation).toBe(0);
+    lines[0] = String.raw`= \tfrac12 \theta^\top X^\top X\theta`;
+    expect(checkDerivation(task, lines, 1, mutations).lines[0]!.mutation).toBeUndefined();
+  });
+});
+

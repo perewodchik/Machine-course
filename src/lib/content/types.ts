@@ -67,6 +67,14 @@ interface FormulaBase {
   pitfall?: Localized;
 }
 
+/** Типичная ошибка в правиле (идея A2): неверная правая часть, её значение в NumPy и объяснение для ученика. */
+export interface Mutation {
+  tex: string;
+  /** Выражение NumPy в символах правила: харнесс code/mlf/formulas.py проверяет, что оно отличается от верного. */
+  py: string;
+  why: Localized;
+}
+
 export interface Rule extends FormulaBase {
   id: RuleId;
   kind: "rule";
@@ -74,6 +82,8 @@ export interface Rule extends FormulaBase {
   /** Частный случай, который чаще всего нужен: «для симметричной A: ∇ xᵀAx = 2Ax». */
   corollary?: Localized;
   checks: Check[];
+  /** Типичные ошибки: неверные варианты в задачах с выбором и диагноз ответа ученика (S3.05). */
+  mutations?: Mutation[];
 }
 
 export interface Formula extends FormulaBase {

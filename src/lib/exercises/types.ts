@@ -14,6 +14,12 @@ interface Base {
   wrong?: string;
 }
 
+/** Типичная ошибка в ответе: неверное выражение (TeX) и объяснение с $…$. */
+export interface MutationHint {
+  tex: string;
+  why: string;
+}
+
 export interface NumericSpec extends Base {
   kind: "numeric";
   /** Подпись поля: «$\theta_1 =$». */
@@ -66,6 +72,8 @@ export interface FormulaSpec extends Base {
   answer: string;
   /** Символы ответа: имя в MathJSON («theta», «X»), форма («n», «d», числа), положительность. */
   symbols: SymbolShape[];
+  /** Типичные ошибки (S3.05): ответ, равный одной из них, получает её объяснение. */
+  mutations?: MutationHint[];
 }
 
 export interface StepsSpec extends Base {
@@ -79,6 +87,8 @@ export interface StepsSpec extends Base {
   symbols: SymbolShape[];
   /** Сколько полей для строк (видны сначала три). */
   lines?: number;
+  /** Типичные ошибки в строках вывода: неверная строка, равная одной из них, получает её объяснение. */
+  mutations?: MutationHint[];
 }
 
 export type ExerciseSpec = NumericSpec | ChoiceSpec | MatrixSpec | OrderSpec | PredictSpec | FormulaSpec | StepsSpec;

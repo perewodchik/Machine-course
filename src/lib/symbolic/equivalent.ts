@@ -50,3 +50,26 @@ export function equivalent(student: Json, answer: Json, symbols: readonly Symbol
   }
   return { ok: true };
 }
+
+/** Запись без скобок и с одним видом умножения: для сравнения структуры. */
+function canonical(e: Json): Json {
+  if (!Array.isArray(e)) return e;
+  const [head, ...args] = e as [string, ...Json[]];
+  if (head === "Delimiter" && args.length === 1) return canonical(args[0]!);
+  return [head === "InvisibleOperator" ? "Multiply" : head, ...args.map(canonical)];
+}
+
+/**
+ * Совпадает ли ответ ученика с типичной ошибкой: по значению на случайных матрицах, а если ошибка сама
+ * не вычисляется (формы не сходятся, как у XᵀΘᵀ) — по записи.
+ */
+export function sameAsMutation(student: Json, wrong: Json, symbols: readonly SymbolShape[]): boolean {
+  try {
+    evaluate(wrong, sampleEnv(symbols, 1));
+  } catch (e) {
+    if (e instanceof EvalError) return JSON.stringify(canonical(student)) === JSON.stringify(canonical(wrong));
+    throw e;
+  }
+  return equivalent(student, wrong, symbols).ok;
+}
+

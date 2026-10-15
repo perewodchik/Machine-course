@@ -2,7 +2,9 @@
 // Упражнение: числовой ответ, выбор с разбором вариантов, матрица сеткой, порядок шагов, «предскажи, потом проверь».
 // Параметрическая задача (gen) отрисовывается при сборке в нескольких вариантах (seed): «Ещё задача» переключает их,
 // KaTeX в браузер не попадает. Поведение и журнал попыток — src/client/exercise.ts.
-import type { ExerciseSpec } from "../../lib/exercises/types";
+import type { ChoiceOption, ExerciseSpec, MutationHint } from "../../lib/exercises/types";
+import { loadRegistry } from "../../lib/content/registry";
+import { instantiate } from "../../lib/content/rule-instance";
 import { generator } from "../../lib/exercises/generators";
 import { scrambled } from "../../lib/exercises/check";
 import { rng } from "../../lib/math/rng";
@@ -30,14 +32,39 @@ interface Props {
   confidence?: boolean;
   /** Итоговая проверка урока: верный ответ ставит галочку «знаю» (S2.04). */
   final?: boolean;
+  /** Или задача с выбором из правила реестра (S3.05): верный вариант — правило, неверные — его типичные ошибки. */
+  rule?: string;
+  /** Подстановка символов правила: { A: "X", B: "\theta" }. */
+  bind?: Record<string, string>;
+  /** Дополнительные варианты к задаче из правила. */
+  extra?: ChoiceOption[];
 }
 
-const { spec, gen, variants = 8, seed = 1, n, title = "Упражнение", id, lesson, confidence = false, final = false } = Astro.props;
-if (!spec && !gen) throw new Error("<Exercise>: нужен spec или gen");
+const { gen, variants = 8, seed = 1, n, title = "Упражнение", id, lesson, confidence = false, final = false, rule, bind = {}, extra = [] } = Astro.props;
+let { spec } = Astro.props;
+if (rule) {
+  // задача с выбором из правила: «Чему равно (Xθ)ᵀ?» — верно θᵀXᵀ, неверные — мутации правила с объяснениями
+  const r = (await loadRegistry()).rules.get(rule);
+  if (!r) throw new Error(`<Exercise rule="${rule}">: нет такого правила`);
+  if (!r.mutations?.length) throw new Error(`<Exercise rule="${rule}">: у правила нет mutations — неверных вариантов не из чего собрать`);
+  const inst = instantiate(r, bind);
+  spec = {
+    kind: "choice",
+    prompt: `Чему равно $${inst.lhs}$?`,
+    options: rng(seed).shuffle([
+      { text: `$${inst.rhs}$`, correct: true, why: `Правило «${r.title.ru}»: $${r.statement}$.` },
+      ...inst.mutations.map((m) => ({ text: `$${m.tex}$`, why: m.why })),
+      ...extra,
+    ]),
+    hints: ["Проверьте размерности каждого варианта: какие произведения вообще определены?"],
+  };
+}
+if (!spec && !gen) throw new Error("<Exercise>: нужен spec, gen или rule");
 const g = gen ? generator(gen) : undefined;
 const seeds = g ? Array.from({ length: Math.max(1, variants) }, (_, i) => seed + i) : [seed];
 const items = seeds.map((s) => ({ seed: s, spec: g ? g.make(s) : spec! }));
-const item = id ?? g?.id ?? `exercise-${n ?? 1}`;
+const item = id ?? g?.id ?? rule ?? `exercise-${n ?? 1}`;
+const hints = (ms?: MutationHint[]) => ms?.map((m) => ({ tex: m.tex, html: renderInline(m.why) }));
 const lessonKey = lesson ?? Astro.url.pathname.split("/").filter(Boolean).slice(0, 3).join("/");
 const heading = `${title}${n ? `\u00a0${n}` : ""}.`;
 const kind = items[0]!.spec.kind;
@@ -59,11 +86,11 @@ function answerData(s: ExerciseSpec, seedValue: number) {
       // эталон должен разбираться и вычисляться на своих символах — иначе ошибка автора видна при сборке
       const self = checkFormula(s.answer, s.answer, s.symbols);
       if (!self?.ok) throw new Error(`<Exercise>: эталон формулы «${s.answer}» не проверяется: ${self ? self.message : "пусто"}`);
-      return { kind: s.kind, answer: s.answer, symbols: s.symbols };
+      return { kind: s.kind, answer: s.answer, symbols: s.symbols, mutations: hints(s.mutations) };
     }
     case "steps":
       validateTask(s);
-      return { kind: s.kind, start: s.start, goal: s.goal, symbols: s.symbols };
+      return { kind: s.kind, start: s.start, goal: s.goal, symbols: s.symbols, mutations: hints(s.mutations) };
   }
 }
 ---

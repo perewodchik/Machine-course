@@ -17,6 +17,13 @@
 
 ---
 
+### 2026-10-15 — S3.05 Диагноз ошибок по мутациям — готова
+- **Сделано:** Мутация с ошибкой формы (XᵀΘᵀ) не вычисляется — сравнивается запись без скобок; иначе — значение на случайных матрицах. Подстановка символов в TeX — токенизатором: AB — два символа, буквы \\top — нет. Неверный градиент из теста S3.04 теперь называется прямо («знак»).
+- **Файлы:** content/formulas/rules/*.yaml, code/mlf/formulas.py, code/tests/test_formulas.py, src/lib/content/rule-instance.ts, src/lib/symbolic/{check,derivation,equivalent}.ts, src/components/pedagogy/Exercise.astro, src/client/exercise.ts
+- **Проверка:** pytest 63; vitest 306; e2e formula и v1 — 20; lint, validate, check_consistency — чисто
+- **Следующий шаг:** S3.06 — размерности в реальном времени.
+- **Вопросы пользователю:** —
+
 ### 2026-10-15 — S3.04 Проверка вывода ученика по шагам — готова
 - **Сделано:** Парсер не знает \\nabla — вид строки определяется по тексту до разбора; «= 0» с матрицей слева — ноль-число как нулевая матрица; вырожденная обратная — ошибка формы (попытка засчитывается). Харнесс повторяет виды проверок code/mlf/formulas.py (same, gradient, stationary, solution) на тех же размерах.
 - **Файлы:** src/lib/symbolic/derivation.ts, derivation.test.ts, src/client/exercise.ts, src/components/pedagogy/Exercise.astro, linear-regression.mdx, tests/e2e/formula.spec.ts

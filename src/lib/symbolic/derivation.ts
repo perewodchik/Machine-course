@@ -6,7 +6,7 @@
 //   «\theta = выражение» — решение: подстановка обращает невязку строки выше в ноль (solution).
 // Первая неверная строка получает понятное сообщение; остальные не проверяются.
 import { evaluate, EvalError, shapeText, type Env, type Json, type Mat } from "./evaluate";
-import { sampleEnv, type SymbolShape } from "./equivalent";
+import { sameAsMutation, sampleEnv, type SymbolShape } from "./equivalent";
 import { parseTex } from "./parse";
 
 export type LineKind = "same" | "gradient" | "equation" | "solution";
@@ -23,6 +23,8 @@ export interface Line {
 export interface LineVerdict {
   ok: boolean;
   message?: string;
+  /** Неверная строка равна типичной ошибке с этим номером (S3.05). */
+  mutation?: number;
 }
 
 export interface DerivationVerdict {
@@ -164,7 +166,7 @@ export interface DerivationTask {
   wrt?: { tex: string; name: string };
 }
 
-export function checkDerivation(task: DerivationTask, lines: readonly string[], seed = 1): DerivationVerdict {
+export function checkDerivation(task: DerivationTask, lines: readonly string[], seed = 1, mutations: readonly string[] = []): DerivationVerdict {
   const wrt = task.wrt ?? { tex: String.raw`\theta`, name: "theta" };
   let state: State = { kind: "expr", expr: classify(task.start, wrt, task.symbols).expr! };
   const out: LineVerdict[] = [];
@@ -182,6 +184,14 @@ export function checkDerivation(task: DerivationTask, lines: readonly string[], 
       break;
     }
     const v = checkStep(state, line, task.symbols, wrt.name, seed + i);
+    if (!v.ok && line.expr !== undefined) {
+      // неверная строка — не типичная ли это ошибка?
+      const k = mutations.findIndex((m) => {
+        const wrong = parseTex(m);
+        return wrong !== null && sameAsMutation(line.expr!, wrong, task.symbols);
+      });
+      if (k >= 0) v.mutation = k;
+    }
     out.push(v);
     if (!v.ok) {
       first = i;
