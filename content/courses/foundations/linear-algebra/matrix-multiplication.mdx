@@ -104,10 +104,10 @@ $$
 
 <Block kind="pitfall">
 
-Считать, что $AB = BA$. Для чисел порядок не важен, для матриц — важен. Здесь $B$ справа меняет местами столбцы $A$, а слева — строки:
+Считать, что $AB = BA$. Для чисел порядок не важен, для матриц — важен. Возьмём $A = \left(\begin{smallmatrix} 1 & 2 \\ 3 & 4 \end{smallmatrix}\right)$ и $B = \left(\begin{smallmatrix} 0 & 1 \\ 1 & 0 \end{smallmatrix}\right)$: справа $B$ меняет местами столбцы $A$, а слева — строки.
 
 $$
-\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix} \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix} = \begin{pmatrix} 2 & 1 \\ 4 & 3 \end{pmatrix}, \qquad \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix} \begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix} = \begin{pmatrix} 3 & 4 \\ 1 & 2 \end{pmatrix} .
+AB = \begin{pmatrix} 2 & 1 \\ 4 & 3 \end{pmatrix} \ne \begin{pmatrix} 3 & 4 \\ 1 & 2 \end{pmatrix} = BA
 $$
 
 А если формы не квадратные, $BA$ может быть вообще не определено.

@@ -556,3 +556,89 @@ export const shapeProduct: Generator = {
     };
   },
 };
+
+/** Урок I.5: транспонирование цепочки из трёх множителей — порядок разворачивается; формы подсказывают ответ. */
+export const transposeChain: Generator = {
+  id: "la.transpose-chain",
+  version: 1,
+  title: "Транспонирование произведения",
+  make(seed) {
+    const r = rng(seed);
+    const [A, B, C] = r.pick([
+      ["X", String.raw`\theta`, "w"],
+      ["A", "B", "x"],
+      ["W", "V", "h"],
+    ] as const);
+    // формы: A — m × k, B — k × p, C — p × 1; все размеры разные, чтобы неверные варианты не сходились
+    const [m, k, p] = r.shuffle([2, 3, 4, 5]).slice(0, 3) as [number, number, number];
+    const T = (s: string) => `${s}^\\top`;
+    const options: ChoiceOption[] = r.shuffle([
+      { text: `$${T(C)} ${T(B)} ${T(A)}$`, correct: true, why: String.raw`Порядок разворачивается: $(${A} ${B} ${C})^\top = ${T(C)} ${T(B)} ${T(A)}$. Формы: $1 \times ${p}$, $${p} \times ${k}$, $${k} \times ${m}$ — стыкуются.` },
+      { text: `$${T(A)} ${T(B)} ${T(C)}$`, why: String.raw`Порядок не развёрнут. Формы $${k} \times ${m}$ и $${p} \times ${k}$ не стыкуются: $${m} \ne ${p}$.` },
+      { text: `$${C} ${B} ${A}$`, why: String.raw`Множители переставлены, но не транспонированы: $${C}$ — столбец $${p} \times 1$, на $${B}$ формы $${k} \times ${p}$ его не умножить.` },
+      { text: `$${T(C)} ${B}^{-1} ${A}^{-1}$`, why: String.raw`Транспонирование — не обращение. И обратная есть только у квадратной матрицы.` },
+    ]);
+    return {
+      kind: "choice",
+      prompt: String.raw`$${A}$ — матрица $${m} \times ${k}$, $${B}$ — $${k} \times ${p}$, $${C}$ — столбец $${p} \times 1$. Чему равно $(${A} ${B} ${C})^\top$?`,
+      options,
+      hints: [String.raw`$(AB)^\top = B^\top A^\top$; примените правило дважды, сначала к $(${A} ${B})\, ${C}$.`],
+    };
+  },
+};
+
+/** Урок I.5: симметричная часть матрицы 2 × 2 — полусумма A и Aᵀ. */
+export const symPart: Generator = {
+  id: "la.sym-part",
+  version: 1,
+  title: "Симметричная часть матрицы",
+  make(seed) {
+    const r = rng(seed);
+    const [a, d] = [r.int(-3, 4), r.int(-3, 4)];
+    let [b, c] = [r.int(-3, 4), r.int(-3, 4)];
+    if (b === c) c = b + r.pick([-3, -1, 1, 2]); // иначе A уже симметрична
+    const s = (b + c) / 2;
+    const S = [[a, s], [s, d]];
+    const half = (v: number) => (Number.isInteger(v) ? String(v) : v.toFixed(1));
+    return {
+      kind: "matrix",
+      prompt: String.raw`$$A = ${pm([[a, b], [c, d]])}.$$ Найдите симметричную часть $S = \tfrac12 (A + A^\top)$.`,
+      label: "$S =$",
+      answer: S,
+      tol: 1e-9,
+      hints: [
+        String.raw`$A^\top$ — те же элементы, отражённые относительно диагонали: $A^\top = ${pm([[a, c], [b, d]])}$.`,
+        "Диагональ не меняется, а внедиагональные элементы заменяются их средним.",
+      ],
+      right: String.raw`$S = ${sm([[a, Number(half(s))], [Number(half(s)), d]])}$: на диагонали — диагональ $A$, вне её — $\tfrac{${b} + ${par(c)}}{2} = ${half(s)}$. Остаток $A - S$ — кососимметричная часть.`,
+      wrong: "Проверьте внедиагональные элементы: у симметричной части они одинаковые и равны среднему двух элементов A.",
+    };
+  },
+};
+
+/** Урок I.5: tr(BA) для B 3 × 2 и A 2 × 3 — проще посчитать tr(AB), матрицу 2 × 2. */
+export const traceSwap: Generator = {
+  id: "la.trace-swap",
+  version: 1,
+  title: "След и перестановка множителей",
+  make(seed) {
+    const r = rng(seed);
+    const A = [[r.int(-2, 3), r.int(-2, 3), r.int(-2, 3)], [r.int(-2, 3), r.int(-2, 3), r.int(-2, 3)]];
+    const B = [[r.int(-2, 3), r.int(-2, 3)], [r.int(-2, 3), r.int(-2, 3)], [r.int(-2, 3), r.int(-2, 3)]];
+    const ab = (i: number) => A[i]!.reduce((s, x, k) => s + x * B[k]![i]!, 0);
+    const answer = ab(0) + ab(1);
+    return {
+      kind: "numeric",
+      prompt: String.raw`$$A = ${pm(A)}, \qquad B = ${pm(B)}.$$ Найдите $\operatorname{tr}(BA)$. Матрица $BA$ — $3 \times 3$; можно ли обойтись без неё?`,
+      label: String.raw`$\operatorname{tr}(BA) =$`,
+      answer,
+      tol: 0,
+      hints: [
+        String.raw`$\operatorname{tr}(BA) = \operatorname{tr}(AB)$, а $AB$ — всего $2 \times 2$. Нужна только её диагональ.`,
+        String.raw`$(AB)_{11}$ — строка 1 $A$ на столбец 1 $B$, $(AB)_{22}$ — строка 2 $A$ на столбец 2 $B$.`,
+      ],
+      right: String.raw`$\operatorname{tr}(BA) = \operatorname{tr}(AB) = (AB)_{11} + (AB)_{22} = ${ab(0)} + ${par(ab(1))} = ${answer}$.`,
+      wrong: String.raw`След — сумма диагональных элементов. Посчитайте только $(AB)_{11}$ и $(AB)_{22}$: $\operatorname{tr}(BA) = \operatorname{tr}(AB)$.`,
+    };
+  },
+};

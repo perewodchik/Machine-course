@@ -1,0 +1,69 @@
+id: f.quadratic-symmetric-part
+kind: formula
+title:
+  ru: 'Квадратичная форма видит только симметричную часть'
+  en: 'a quadratic form depends only on the symmetric part'
+statement: '\sym{x}{x}^\top \sym{A}{A}\, \sym{x}{x} = \sym{x}{x}^\top \tfrac{\sym{A}{A} + \sym{A}{A}^\top}{2}\, \sym{x}{x}'
+
+# Урок I.5: число равно своему транспонированию, поэтому xᵀAx = xᵀAᵀx; полусумма двух равных чисел — то же число.
+# Отсюда: в квадратичной форме матрицу можно считать симметричной (уроки I.10, II.4).
+symbols:
+  - name: x
+    tex: 'x'
+    meaning: 'вектор, на котором вычисляют форму'
+    shape: [d, 1]
+    role: data
+  - name: A
+    tex: 'A'
+    meaning: 'любая квадратная матрица, не обязательно симметричная'
+    shape: [d, d]
+    role: param
+
+dependsOn:
+  concepts: [la.transpose, la.symmetric]
+  rules: [rule.scalar-transpose, rule.transpose-product]
+
+derivation:
+  plan:
+    - 'Транспонировать число $x^\top A x$ — оно не изменится'
+    - 'Сложить два равных числа и поделить пополам'
+    - 'Вынести $x^\top$ и $x$ за скобки'
+  steps:
+    - goal: 0
+      tex: '\sym{x}{x}^\top \sym{A}{A}\, \sym{x}{x} = (\sym{x}{x}^\top \sym{A}{A}\, \sym{x}{x})^\top'
+      by: [rule.scalar-transpose]
+      note: '$x^\top A x$ — матрица $1 \times 1$, число, а число равно своему транспонированию.'
+      check:
+        kind: same
+        py: 'x @ A @ x'
+    - goal: 0
+      tex: '= \changed{\sym{x}{x}^\top \sym{A}{A}^\top \sym{x}{x}}'
+      by: [rule.transpose-product]
+      note: 'Транспонирование произведения меняет порядок множителей: $(x^\top A x)^\top = x^\top A^\top (x^\top)^\top = x^\top A^\top x$.'
+      check:
+        kind: same
+        py: 'x @ A.T @ x'
+    - goal: 1
+      tex: '\sym{x}{x}^\top \sym{A}{A}\, \sym{x}{x} = \changed{\tfrac12 \bigl(\sym{x}{x}^\top \sym{A}{A}\, \sym{x}{x} + \sym{x}{x}^\top \sym{A}{A}^\top \sym{x}{x}\bigr)}'
+      by: [la.transpose]
+      note: 'Полусумма двух равных чисел — то же число.'
+      check:
+        kind: same
+        py: '0.5 * (x @ A @ x + x @ A.T @ x)'
+    - goal: 2
+      tex: '= \sym{x}{x}^\top \changed{\tfrac{\sym{A}{A} + \sym{A}{A}^\top}{2}}\, \sym{x}{x}'
+      by: [la.symmetric]
+      note: 'Матрица $\tfrac{A + A^\top}{2}$ симметрична: при транспонировании слагаемые меняются местами.'
+      check:
+        kind: same
+        py: 'x @ ((A + A.T) / 2) @ x'
+
+pitfalls:
+  - 'Считать, что несимметричная часть что-то меняет: для $K^\top = -K$ всегда $x^\top K x = 0$.'
+  - 'Брать градиент $x^\top A x$ как $2Ax$ для несимметричной $A$: верно $(A + A^\top)x$, и $2Ax$ — только при $A = A^\top$ (урок II.3).'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Linear regression / The normal equations'
+
+usedIn: [la.quadratic-form]

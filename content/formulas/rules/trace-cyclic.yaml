@@ -1,0 +1,31 @@
+id: rule.trace-cyclic
+kind: rule
+title:
+  ru: 'Циклическая перестановка под следом'
+  en: 'cyclic property of the trace'
+statement: '\operatorname{tr}(ABC) = \operatorname{tr}(CAB)'
+symbols:
+  - name: A
+    tex: 'A'
+    shape: [d, d]
+  - name: B
+    tex: 'B'
+    shape: [d, d]
+  - name: C
+    tex: 'C'
+    shape: [d, d]
+concept: la.trace
+corollary: 'Последний множитель можно перенести в начало, и так по кругу: $\operatorname{tr}(ABC) = \operatorname{tr}(CAB) = \operatorname{tr}(BCA)$. Для двух множителей это $\operatorname{tr}(AB) = \operatorname{tr}(BA)$ — даже когда $AB$ и $BA$ разного размера.'
+pitfall: 'Переставлять множители как угодно: $\operatorname{tr}(ABC) \ne \operatorname{tr}(ACB)$ в общем случае.'
+checks:
+  - kind: identity
+    lhs: 'np.trace(A @ B @ C)'
+    rhs: 'np.trace(C @ A @ B)'
+# типичные ошибки (S3.05): неверные варианты в задачах с выбором и диагноз ответа ученика
+mutations:
+  - tex: '\operatorname{tr}(ACB)'
+    py: 'np.trace(A @ C @ B)'
+    why: 'Это не циклическая перестановка: $C$ и $B$ поменялись местами, а круг $A \to B \to C$ нарушен.'
+  - tex: '\operatorname{tr}(A)\operatorname{tr}(B)\operatorname{tr}(C)'
+    py: 'np.trace(A) * np.trace(B) * np.trace(C)'
+    why: 'След произведения — не произведение следов. След линеен, а не мультипликативен.'

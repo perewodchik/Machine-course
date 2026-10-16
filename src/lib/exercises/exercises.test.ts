@@ -230,6 +230,27 @@ describe("генераторы", () => {
     }
   });
 
+  it("задачи урока I.5: симметричная часть и след сходятся с условием", () => {
+    const mats = (prompt: string) => [...prompt.matchAll(/\\begin\{pmatrix\}(.*?)\\end\{pmatrix\}/g)].map((mm) => mm[1]!.split(" \\\\ ").map((row) => row.split(" & ").map(Number)));
+    for (let s = 1; s <= 40; s++) {
+      const sp = make("la.sym-part", s);
+      if (sp.kind !== "matrix") throw new Error("ожидалась матрица");
+      const [A] = mats(sp.prompt) as [number[][]];
+      expect(sp.answer).toEqual(A.map((row, i) => row.map((v, j) => (v + A[j]![i]!) / 2)));
+      expect(A[0]![1]).not.toBe(A[1]![0]);
+
+      const tr = num(make("la.trace-swap", s));
+      const [X, Y] = mats(tr.prompt) as [number[][], number[][]];
+      // tr(BA) напрямую, через матрицу 3 × 3
+      const BA = Y.map((row) => [0, 1, 2].map((j) => row.reduce((acc, b, k) => acc + b * X[k]![j]!, 0)));
+      expect(tr.answer).toBe(BA[0]![0]! + BA[1]![1]! + BA[2]![2]!);
+
+      const tc = make("la.transpose-chain", s);
+      if (tc.kind !== "choice") throw new Error("ожидался выбор");
+      expect(tc.options.filter((o) => o.correct)).toHaveLength(1);
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

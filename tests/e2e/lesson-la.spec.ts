@@ -1,7 +1,8 @@
 // Модуль I (S3.L1): урок I.1 — оболочка на рисунке переключается между плоскостью и прямой с клавиатуры,
 // задача «лежит ли вектор в оболочке» разбирает параллельные векторы, итоговая проверка ставит «знаю».
 // Урок I.2 — шары норм и проекция управляются с клавиатуры, задача на норму разбирает ошибку, итоговая проверка.
-// Урок I.3 — четыре взгляда на AB переключаются, расчёт пишется словами, задача про `*` разбирает `@`, итоговая. axe.
+// Урок I.3 — четыре взгляда на AB переключаются, расчёт пишется словами, задача про `*` разбирает `@`, итоговая.
+// Урок I.5 — формула (Xθ − y)ᵀ проверяется на случайных матрицах, «найди ошибку» разбирает верную строку, итоговая. axe.
 import { expect, test } from "@playwright/test";
 import { generator } from "../../src/lib/exercises/generators";
 import { expectNoAxeViolations } from "./support";
@@ -90,6 +91,40 @@ test("урок I.3: четыре взгляда на AB, разбор A @ B, и�
   await expect(page.getByRole("link", { name: "Открыть игру" })).toHaveAttribute("href", "/games/dim-tetris/");
   const final = page.locator("[data-exercise][data-final]");
   const spec = generator("la.matmul-column").make(31);
+  if (spec.kind !== "matrix") throw new Error("ожидалась матрица");
+  for (const [i, row] of spec.answer.entries()) for (const [j, v] of row.entries()) await final.locator(`[data-variant]:not([hidden]) [data-cell="${i},${j}"]`).fill(String(v));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await expectNoAxeViolations(page);
+});
+
+test("урок I.5: транспонирование формулой, «найди ошибку», итоговая проверка ставит «знаю»", async ({ page }) => {
+  await page.goto("/foundations/linear-algebra/transpose-trace/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Транспонирование, симметрия, след");
+
+  const formula = page.locator("[data-exercise][data-item='i5.transpose-formula']");
+  await formula.scrollIntoViewIfNeeded();
+  const enter = async (tex: string) => {
+    const field = formula.locator("math-field[data-formula-input]");
+    await expect(field).toBeAttached();
+    await field.evaluate((el, value) => {
+      (el as HTMLElement & { value: string }).value = value;
+    }, tex);
+    await formula.getByRole("button", { name: "Проверить" }).click();
+  };
+  await enter(String.raw`X^\top\theta^\top - y^\top`);
+  await expect(formula.locator("[data-feedback]")).toContainText("Пока нет.");
+  await enter(String.raw`\theta^\top X^\top - y^\top`);
+  await expect(formula.locator("[data-feedback]")).toContainText("Верно.");
+
+  const bug = page.locator("[data-exercise][data-item='i5.find-error']");
+  await bug.locator("[data-option]").nth(0).click();
+  await expect(bug.locator("[data-feedback]")).toContainText("след такой матрицы");
+  await bug.locator("[data-option]").nth(3).click();
+  await expect(bug.locator("[data-feedback]")).toContainText("не циклическая перестановка");
+
+  const final = page.locator("[data-exercise][data-final]");
+  const spec = generator("la.sym-part").make(31);
   if (spec.kind !== "matrix") throw new Error("ожидалась матрица");
   for (const [i, row] of spec.answer.entries()) for (const [j, v] of row.entries()) await final.locator(`[data-variant]:not([hidden]) [data-cell="${i},${j}"]`).fill(String(v));
   await final.getByRole("button", { name: "Проверить" }).click();

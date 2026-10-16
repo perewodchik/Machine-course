@@ -194,3 +194,16 @@
 - id: activation
   ru: 'функция активации'
   en: 'activation function'
+- id: transpose
+  ru: 'транспонирование, транспонированная матрица'
+  en: 'transpose'
+- id: symmetric-matrix
+  ru: 'симметричная, кососимметричная матрица'
+  en: 'symmetric, skew-symmetric matrix'
+- id: trace
+  ru: 'след матрицы'
+  en: 'trace'
+  note: 'В русских учебниках — также $\operatorname{Sp} A$ (от нем. Spur).'
+- id: cyclic-property
+  ru: 'циклическая перестановка под следом'
+  en: 'cyclic property of the trace'

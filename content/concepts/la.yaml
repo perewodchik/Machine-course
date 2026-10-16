@@ -93,6 +93,15 @@
   prerequisites: [la.transpose]
   core: true
 
+- id: la.trace
+  title:
+    ru: 'След матрицы'
+    en: 'trace'
+  summary: '$\operatorname{tr} A = \sum_i A_{ii}$; $\operatorname{tr}(AB) = \operatorname{tr}(BA)$, а под следом множители переставляют только циклически.'
+  lesson: transpose-trace
+  prerequisites: [la.matmul, la.transpose]
+  core: true
+
 - id: la.inverse
   title:
     ru: 'Обратная матрица'
