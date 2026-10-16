@@ -278,3 +278,12 @@
 - id: matrix-square-root
   ru: 'корень из матрицы; разложение Холецкого'
   en: 'matrix square root; Cholesky decomposition'
+- id: svd
+  ru: 'сингулярное разложение; сингулярные числа, левые и правые сингулярные векторы'
+  en: 'singular value decomposition (SVD); singular values, left and right singular vectors'
+- id: low-rank
+  ru: 'малоранговое приближение; теорема Эккарта — Янга'
+  en: 'low-rank approximation; Eckart–Young theorem'
+- id: pseudoinverse
+  ru: 'псевдообратная матрица (Мура — Пенроуза); решение наименьшей нормы'
+  en: 'Moore–Penrose pseudoinverse; minimum-norm solution'

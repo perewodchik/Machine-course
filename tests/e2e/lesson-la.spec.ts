@@ -7,7 +7,8 @@
 // Урок I.7 — сдвиг и отражение на сетке, det композиции не зависит от порядка, разбор det(AB), итоговая.
 // Урок I.8 — проекция на плоскость: остаток перпендикулярен столбцам при любом y, разбор, итоговая проверка.
 // Урок I.9 — разбор «собственный с точностью до множителя», правило спектральной теоремы, итоговая проверка.
-// Урок I.10 — линии уровня: эллипсы → гиперболы с клавиатуры, разбор формы и знакоопределённости, итоговая. axe.
+// Урок I.10 — линии уровня: эллипсы → гиперболы с клавиатуры, разбор формы и знакоопределённости, итоговая.
+// Урок I.11 — шаги SVD и отражение в U, сжатие картинки бегунком k, разбор полуосей, итоговая проверка. axe.
 import { expect, test } from "@playwright/test";
 import { generator } from "../../src/lib/exercises/generators";
 import { expectNoAxeViolations } from "./support";
@@ -284,6 +285,45 @@ test("урок I.10: линии уровня с клавиатуры, разбо
   const spec = generator("la.psd-check").make(31);
   if (spec.kind !== "choice") throw new Error("ожидался выбор");
   await final.locator("[data-variant]:not([hidden]) [data-option]").nth(spec.options.findIndex((o) => o.correct)).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});
+
+test("урок I.11: шаги SVD с клавиатуры, сжатие картинки, разбор полуосей, итоговая проверка", async ({ page }) => {
+  await page.goto("/foundations/linear-algebra/svd-pseudoinverse/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Сингулярное разложение и псевдообратная");
+
+  const fig = page.locator(".svd-steps").first();
+  await fig.scrollIntoViewIfNeeded();
+  await expect(fig.locator("xpath=ancestor::astro-island[1]")).not.toHaveAttribute("ssr", "");
+  // сдвиг: σ — золотое сечение, как в ячейке Python
+  await fig.getByRole("button", { name: "SVᵀx", exact: true }).press("Enter");
+  await expect(fig.locator(".svd-steps__fact")).toContainText("σ₁ = 1.62 раза, вторую в σ₂ = 0.62 раза");
+  await fig.getByRole("button", { name: "с отражением" }).press("Enter");
+  await fig.getByRole("button", { name: "USVᵀx = Ax" }).press("Enter");
+  await expect(fig.locator("[aria-live]")).toContainText("U отражает эллипс (det U = −1)");
+
+  const lr = page.locator(".low-rank").first();
+  await lr.scrollIntoViewIfNeeded();
+  await expect(lr.locator("xpath=ancestor::astro-island[1]")).not.toHaveAttribute("ssr", "");
+  await expect(lr.locator(".low-rank__fact")).toContainText("485 чисел из 2304");
+  await lr.getByRole("slider", { name: "k" }).press("Home");
+  await expect(lr.locator(".low-rank__fact")).toContainText("97 чисел из 2304");
+  await lr.getByRole("slider", { name: "k" }).press("End");
+  await expect(lr.locator(".low-rank__fact")).toContainText("= 0.0\u00a0%");
+
+  const el = page.locator("[data-exercise][data-item='i11.ellipse']");
+  await el.locator("[data-option]").filter({ hasText: "Собственные значения" }).click();
+  await expect(el.locator("[data-feedback]")).toContainText("Полуоси — сингулярные числа");
+
+  await expect(page.locator("[data-exercise][data-item='i11.pinv'] [data-option]")).toHaveCount(3);
+
+  const final = page.locator("[data-exercise][data-final]");
+  const spec = generator("la.singular-values").make(31);
+  if (spec.kind !== "numeric") throw new Error("ожидалось число");
+  await final.locator("[data-variant]:not([hidden]) input").first().fill(String(spec.answer));
+  await final.getByRole("button", { name: "Проверить" }).click();
   await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
   await page.evaluate(() => window.scrollTo(0, 0));
   await expectNoAxeViolations(page);

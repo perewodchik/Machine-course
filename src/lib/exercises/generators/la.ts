@@ -1146,3 +1146,94 @@ export const rayleigh: Generator = {
     }
   },
 };
+
+/** Урок I.11: сингулярные числа 2 × 2 — корни собственных значений AᵀA; матрица несимметричная, целые σ. */
+export const singularValues: Generator = {
+  id: "la.singular-values",
+  version: 1,
+  title: "Сингулярные числа 2 × 2",
+  make(seed) {
+    const r = rng(seed);
+    for (;;) {
+      const [a, b, c, d] = [r.int(-4, 4), r.nonzero(-4, 4), r.nonzero(-4, 4), r.int(-4, 4)];
+      if (b === c) continue; // у симметричной σ = |λ| — проверяем именно AᵀA
+      const F = a * a + b * b + c * c + d * d;
+      const D = a * d - b * c;
+      const root = Math.sqrt(F * F - 4 * D * D);
+      const [l1, l2] = [(F + root) / 2, (F - root) / 2];
+      const [s1, s2] = [Math.sqrt(l1), Math.sqrt(l2)];
+      if (!Number.isInteger(s1) || !Number.isInteger(s2) || s2 === 0) continue;
+      const G = [[a * a + c * c, a * b + c * d], [a * b + c * d, b * b + d * d]];
+      const max = seed % 2 === 1;
+      const ans = max ? s1 : s2;
+      return {
+        kind: "numeric",
+        prompt: String.raw`Найдите сингулярные числа матрицы $$A = ${pm([[a, b], [c, d]])}.$$ Введите ${max ? "наибольшее" : "наименьшее"} из них.`,
+        label: String.raw`$\sigma_{${max ? "\\max" : "\\min"}} =$`,
+        answer: ans,
+        tol: 0,
+        hints: [
+          String.raw`$\sigma_i^2$ — собственные значения $A^\top A = ${sm(G)}$.`,
+          String.raw`$\sigma_1^2 + \sigma_2^2 = \operatorname{tr}(A^\top A) = ${F}$, $\sigma_1^2 \sigma_2^2 = \det(A^\top A) = (\det A)^2 = ${D * D}$.`,
+        ],
+        right: String.raw`Собственные значения $A^\top A$ — $${l1}$ и $${l2}$, поэтому $\sigma_1 = ${s1}$, $\sigma_2 = ${s2}$. Проверка: $\sigma_1 \sigma_2 = ${s1 * s2} = \lvert \det A \rvert$.`,
+        wrong: String.raw`Сингулярные числа — не собственные значения $A$: это корни из собственных значений $A^\top A = ${sm(G)}$, то есть из $${l1}$ и $${l2}$.`,
+      };
+    }
+  },
+};
+
+/** Урок I.11: решение наименьшей нормы одного уравнения aᵀx = b — вдоль a, x⁺ = b a / ‖a‖². */
+export const minNorm: Generator = {
+  id: "la.min-norm",
+  version: 1,
+  title: "Решение наименьшей нормы",
+  make(seed) {
+    const r = rng(seed);
+    const a = r.pick([[1, 1], [1, -1], [2, 1], [1, 2], [1, 3], [3, 1], [2, -1], [1, -2], [2, 2]] as const);
+    const t = r.nonzero(-3, 3);
+    const n2 = a[0] * a[0] + a[1] * a[1];
+    const b = t * n2;
+    const x = [t * a[0], t * a[1]];
+    const term = (k: number, v: string, first: boolean) => (k === 0 ? "" : `${first ? (k < 0 ? "-" : "") : k < 0 ? " - " : " + "}${Math.abs(k) === 1 ? "" : Math.abs(k)}${v}`);
+    const eq = `${term(a[0], "x_1", true)}${term(a[1], "x_2", false)} = ${b}`;
+    const col = (w: readonly number[]) => sm(w.map((v) => [v]));
+    return {
+      kind: "matrix",
+      prompt: String.raw`У уравнения $${eq}$ бесконечно много решений. Найдите самое короткое — $x^+ = A^+ b$ для $A = ${sm([[a[0], a[1]]])}$.`,
+      label: String.raw`$x^+ =$`,
+      answer: x.map((v) => [v]),
+      tol: 0,
+      hints: [
+        String.raw`Решения образуют прямую. Ближайшая к нулю точка прямой — основание перпендикуляра, а перпендикуляр к прямой $a^\top x = b$ идёт вдоль $a = (${a[0]}, ${a[1]})$.`,
+        String.raw`Подставьте $x = t a$: $t \lVert a \rVert^2 = ${b}$, $\lVert a \rVert^2 = ${n2}$.`,
+      ],
+      right: String.raw`$x^+ = \frac{b}{\lVert a \rVert^2}\, a = ${t} \cdot (${a[0]}, ${a[1]}) = ${col(x)}$: оно лежит в пространстве строк $A$ и перпендикулярно ядру.`,
+      wrong: String.raw`Любое решение подходит в уравнение, но самое короткое лежит вдоль $a = (${a[0]}, ${a[1]})$: $x^+ = t a$ с $t = ${b} / ${n2} = ${t}$.`,
+    };
+  },
+};
+
+/** Урок I.11: ошибка приближения ранга k по сингулярным числам — сумма квадратов отброшенных. */
+export const lowrankError: Generator = {
+  id: "la.lowrank-error",
+  version: 1,
+  title: "Ошибка малорангового приближения",
+  make(seed) {
+    const r = rng(seed);
+    const s = r.pick([[9, 4, 2, 1], [8, 5, 3, 1], [10, 6, 2, 1], [7, 4, 3, 2], [12, 5, 4, 2], [6, 3, 2, 2], [9, 6, 3, 1]] as const);
+    const k = r.pick([1, 2, 3]);
+    const tail = s.slice(k);
+    const ans = tail.reduce((acc, x) => acc + x * x, 0);
+    return {
+      kind: "numeric",
+      prompt: String.raw`Сингулярные числа матрицы $A$ размера $4 \times 4$ — $${s.join(", ")}$. Чему равен квадрат ошибки наилучшего приближения ранга $k = ${k}$, то есть $\lVert A - A_${k} \rVert_F^2$?`,
+      label: String.raw`$\lVert A - A_${k} \rVert_F^2 =$`,
+      answer: ans,
+      tol: 0,
+      hints: [String.raw`Приближение ранга $${k}$ оставляет $${k}$ наибольших сингулярных чисел. Ошибка — отброшенные: $\sum_{i > ${k}} \sigma_i^2$.`],
+      right: String.raw`$${tail.map((x) => `${x}^2`).join(" + ")} = ${ans}$ — сумма квадратов отброшенных сингулярных чисел (теорема Эккарта — Янга).`,
+      wrong: String.raw`Складываются квадраты отброшенных: $${tail.map((x) => `${x}^2`).join(" + ")}$. Не одно $\sigma_{${k + 1}}^2 = ${tail[0]! ** 2}$ — это спектральная норма в квадрате — и не сами $\sigma_i$.`,
+    };
+  },
+};

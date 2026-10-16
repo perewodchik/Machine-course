@@ -1,0 +1,28 @@
+id: rule.eckart-young
+kind: rule
+title:
+  ru: 'Ошибка наилучшего приближения ранга k'
+  en: 'Eckart–Young: error of the best rank-k approximation'
+statement: '\lVert A - A_k \rVert_F^2 = \sum_{i > k} \sigma_i^2'
+symbols:
+  - name: A
+    tex: 'A'
+    shape: [n, d]
+concept: la.svd
+corollary: '$A_k = \sum_{i \le k} \sigma_i u_i v_i^\top$ — ближайшая к $A$ матрица ранга $k$ (теорема Эккарта — Янга): оставить $k$ наибольших сингулярных чисел. Ошибка — отброшенный хвост.'
+pitfall: 'Складывать сами $\sigma_i$, а не их квадраты: квадрат нормы Фробениуса — сумма квадратов.'
+# проверка при k = 1: A₁ = σ₁u₁v₁ᵀ
+checks:
+  - kind: identity
+    lhs: 'np.sum((A - np.linalg.svd(A, full_matrices=False)[1][0] * np.outer(np.linalg.svd(A, full_matrices=False)[0][:, 0], np.linalg.svd(A, full_matrices=False)[2][0])) ** 2)'
+    rhs: 'np.sum(np.linalg.svd(A, full_matrices=False)[1][1:] ** 2)'
+mutations:
+  - tex: '\sigma_{k+1}^2'
+    py: 'np.linalg.svd(A, full_matrices=False)[1][1] ** 2'
+    why: 'Это квадрат ошибки в спектральной норме, $\lVert A - A_k \rVert_2 = \sigma_{k+1}$. Во Фробениусе складываются все отброшенные $\sigma_i^2$.'
+  - tex: '\sum_{i \le k} \sigma_i^2'
+    py: 'np.linalg.svd(A, full_matrices=False)[1][0] ** 2'
+    why: 'Это квадрат нормы оставленной части $A_k$. Ошибка — то, что отброшено: $i > k$.'
+  - tex: '\sum_{i > k} \sigma_i'
+    py: 'np.sum(np.linalg.svd(A, full_matrices=False)[1][1:])'
+    why: 'Квадрат нормы Фробениуса — сумма квадратов элементов, а значит, и квадратов сингулярных чисел.'

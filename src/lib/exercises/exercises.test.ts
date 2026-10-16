@@ -389,6 +389,32 @@ describe("генераторы", () => {
     expect(trap).toBeGreaterThan(0);
   });
 
+  it("задачи урока I.11: сингулярные числа, решение наименьшей нормы и ошибка приближения сходятся с условием", () => {
+    for (let s = 1; s <= 40; s++) {
+      const sv = num(make("la.singular-values", s));
+      const A = /\\begin\{pmatrix\}(.*?)\\end\{pmatrix\}/.exec(sv.prompt)![1]!.split(" \\\\ ").map((row) => row.split(" & ").map(Number));
+      expect(A[0]![1]).not.toBe(A[1]![0]);
+      const F = A.flat().reduce((acc, x) => acc + x * x, 0);
+      const D = A[0]![0]! * A[1]![1]! - A[0]![1]! * A[1]![0]!;
+      const root = Math.sqrt(F * F - 4 * D * D);
+      expect(sv.answer).toBe(Math.sqrt(s % 2 === 1 ? (F + root) / 2 : (F - root) / 2));
+      expect(Number.isInteger(sv.answer) && sv.answer > 0).toBe(true);
+
+      const mn = make("la.min-norm", s);
+      if (mn.kind !== "matrix") throw new Error("ожидалась матрица");
+      const a = /smallmatrix\}(.*?)\\end/.exec(mn.prompt.slice(mn.prompt.indexOf("A = ")))![1]!.split(" & ").map(Number);
+      const b = Number(/= (-?\d+)\$ бесконечно/.exec(mn.prompt)![1]);
+      const x = mn.answer.map((row) => row[0]!);
+      expect(a[0]! * x[0]! + a[1]! * x[1]!).toBe(b);
+      expect(a[0]! * x[1]! - a[1]! * x[0]!).toBe(0); // x ∥ a — перпендикулярно ядру
+
+      const le = num(make("la.lowrank-error", s));
+      const sig = /— \$([\d, ]+)\$/.exec(le.prompt)![1]!.split(", ").map(Number);
+      const k = Number(/k = (\d)/.exec(le.prompt)![1]);
+      expect(le.answer).toBe(sig.slice(k).reduce((acc, v) => acc + v * v, 0));
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

@@ -42,6 +42,7 @@ export const layoutPages = {
   eigengame: "/games/eigen-hunt/",
   i9: "/foundations/linear-algebra/eigen/",
   i10: "/foundations/linear-algebra/quadratic-forms/",
+  i11: "/foundations/linear-algebra/svd-pseudoinverse/",
   dimgame: "/games/dim-tetris/",
   spangame: "/games/span-hit/",
   concept: "/concepts/la.dot-product/",

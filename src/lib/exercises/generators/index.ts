@@ -1,13 +1,13 @@
 // Реестр генераторов: <Exercise gen="la.det2" /> находит генератор по ID.
 import type { Generator } from "../types";
 import { argmin, bilinear, chainRule, cs229Reading, derivative, geometric, indicatorSum, integralLinear, notation, numpyShapes, readNotation, sigmoidSymmetry, sse, sumSquare } from "./basics";
-import { angle, composeOrder, det2, detArea, detRules, dot, eigenPower, eigvals2, eigvecCheck, fromImages, hyperplaneDistance, independence, inSpan, inverse2, lincomb, matmul2, matmulColumn, norms, orthogonalMatrix, outer, projectOrthogonal, projection, psdCheck, rayleigh, shapeProduct, shapes, slope3, solutionsCount, kernelVector, rankNullity, symPart, traceSwap, transposeChain } from "./la";
+import { angle, composeOrder, det2, detArea, detRules, dot, eigenPower, eigvals2, eigvecCheck, fromImages, hyperplaneDistance, independence, inSpan, inverse2, lincomb, matmul2, matmulColumn, norms, orthogonalMatrix, outer, projectOrthogonal, projection, psdCheck, rayleigh, lowrankError, minNorm, singularValues, shapeProduct, shapes, slope3, solutionsCount, kernelVector, rankNullity, symPart, traceSwap, transposeChain } from "./la";
 import { bayesTest, conditionalTable, totalProbability, union } from "./prob";
 
 export const generators: ReadonlyMap<string, Generator> = new Map(
   [
     ...[sse, readNotation, argmin, sumSquare, bilinear, indicatorSum, geometric, sigmoidSymmetry, derivative, chainRule, integralLinear, numpyShapes, notation, cs229Reading],
-    ...[det2, matmul2, slope3, shapes, fromImages, composeOrder, lincomb, inSpan, independence, dot, norms, projection, angle, matmulColumn, outer, shapeProduct, transposeChain, symPart, traceSwap, solutionsCount, kernelVector, rankNullity, inverse2, detArea, detRules, orthogonalMatrix, hyperplaneDistance, projectOrthogonal, eigvals2, eigvecCheck, eigenPower, psdCheck, rayleigh],
+    ...[det2, matmul2, slope3, shapes, fromImages, composeOrder, lincomb, inSpan, independence, dot, norms, projection, angle, matmulColumn, outer, shapeProduct, transposeChain, symPart, traceSwap, solutionsCount, kernelVector, rankNullity, inverse2, detArea, detRules, orthogonalMatrix, hyperplaneDistance, projectOrthogonal, eigvals2, eigvecCheck, eigenPower, psdCheck, rayleigh, singularValues, lowrankError, minNorm],
     ...[totalProbability, bayesTest, union, conditionalTable],
   ].map((g) => [g.id, g]),
 );

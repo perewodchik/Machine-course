@@ -182,6 +182,8 @@ test.describe("шапка", () => {
 });
 
 test.describe("доступность (axe)", () => {
+  // уроки модуля I длинные: axe по всей странице с формулами и рисунками идёт 20–30 секунд под нагрузкой
+  test.describe.configure({ timeout: 60_000 });
   for (const theme of ["light", "dark"] as const) {
     for (const [name, path] of Object.entries(layoutPages)) {
       test(`${name}, тема ${theme}`, async ({ page }) => {

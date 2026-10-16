@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-16 — L-I.11 Сингулярное разложение и псевдообратная — готов
+- **Сделано:** Урок I.11: четыре цикла (геометрия A = USVᵀ — окружность в эллипс, Avᵢ = σᵢuᵢ, отражения в U и V; σᵢ через AᵀA, формула f.svd-gram, ранг; малоранговое приближение, теорема Эккарта — Янга, главные компоненты; псевдообратная и решение наименьшей нормы, переобученная регрессия). Виджеты «Окружность → эллипс по шагам» (svd-steps) и «Сжать картинку SVD» (low-rank, Якоби в браузере). Понятия la.svd, la.pseudoinverse; правила rule.pinv-svd, rule.eckart-young; генераторы la.singular-values, la.min-norm, la.lowrank-error; ячейка la/svd.py закреплена тестом; термины глоссария.
+- **Файлы:** content/courses/foundations/linear-algebra/svd-pseudoinverse.mdx, src/widgets/la/{svd-steps,low-rank}/*, content/formulas/la/svd-gram.yaml, content/formulas/rules/{pinv-svd,eckart-young}.yaml, content/concepts/la.yaml, src/lib/exercises/generators/la.ts, code/snippets/la/svd.py
+- **Проверка:** vitest 432; pytest; e2e уроков модуля I и layout — 260 passed, после перевода картинок на canvas тесты I.11 — 8 passed; lint (код выхода), check, validate, check_consistency — чисто; формулы на 390 px — чисто
+- **Отклонения от плана и решения:** SVD 2 × 2 в виджете: σ₂ = |det A| / σ₁, а u₂ — поворот u₁ со знаком det A, без деления на малое σ₂ (fast-check нашёл почти вырожденную матрицу, у которой u₂ = Av₂/σ₂ выходил неединичным; добавлен регрессионный тест). Картинки — canvas в цветах токенов --ink и --paper: 4 600 прямоугольников SVG не давали axe уложиться в 30 с; таймаут axe-тестов раскладки поднят до 60 с — длинные уроки модуля I идут 20–30 с.
+- **Следующий шаг:** L-I.12 — капстоун: МНК как проекция.
+- **Вопросы пользователю:** —
+
 ### 2026-10-16 — L-I.10 Квадратичные формы и знакоопределённость — готов
 - **Сделано:** Урок I.10: пять циклов (квадратичная форма и запись через элементы; знакоопределённость, формула f.quadratic-eigen и критерий по собственным значениям, ловушка с несимметричной матрицей; линии уровня — эллипсы, полосы, гиперболы, гауссиана; отношение Рэлея и главные компоненты; матрица Грама, корень из матрицы, ★ Холецкий). Виджет «Линии уровня xᵀAx» (src/widgets/la/level-sets, кривые в собственных осях проверены fast-check) и элемент набора Polyline. Правила rule.gram-psd, rule.sqrt-psd; генераторы la.psd-check, la.rayleigh; ячейка la/quadratic.py закреплена тестом; термины глоссария.
 - **Файлы:** content/courses/foundations/linear-algebra/quadratic-forms.mdx, src/widgets/la/level-sets/*, src/widgets/_kit/Polyline.tsx, content/formulas/la/quadratic-eigen.yaml, content/formulas/rules/{gram-psd,sqrt-psd}.yaml, src/lib/exercises/generators/la.ts, code/snippets/la/quadratic.py
