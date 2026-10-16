@@ -873,3 +873,100 @@ export const detRules: Generator = {
     };
   },
 };
+
+/** Урок I.8: ортогональна ли матрица — QᵀQ = I; вид по кругу: ортогональная, столбцы ортогональны без единичной длины, не ортогональна. */
+export const orthogonalMatrix: Generator = {
+  id: "la.orthogonal-matrix",
+  version: 1,
+  title: "Ортогональная матрица",
+  make(seed) {
+    const r = rng(seed);
+    const kind = (["yes", "scaled", "no"] as const)[(seed - 1) % 3]!;
+    const [p, q] = r.pick([[3, 4], [4, 3], [5, 12], [12, 5], [8, 15]] as const);
+    const h = Math.hypot(p, q);
+    const s = r.pick([1, -1]);
+    const tex =
+      kind === "yes"
+        ? String.raw`\begin{pmatrix} \tfrac{${p}}{${h}} & ${s < 0 ? "" : "-"}\tfrac{${q}}{${h}} \\ \tfrac{${q}}{${h}} & ${s < 0 ? "-" : ""}\tfrac{${p}}{${h}} \end{pmatrix}`
+        : kind === "scaled"
+          ? pm([[p, -s * q], [q, s * p]])
+          : pm([[p, q], [r.pick([1, 2]), p]]);
+    const options: ChoiceOption[] = [
+      { text: String.raw`Да: $Q^\top Q = I$`, correct: kind === "yes", why: kind === "yes" ? String.raw`Столбцы ортогональны и единичной длины: $\bigl(\tfrac{${p}}{${h}}\bigr)^2 + \bigl(\tfrac{${q}}{${h}}\bigr)^2 = 1$.` : kind === "scaled" ? String.raw`Столбцы ортогональны, но их длина — $${h}$, а не $1$: $Q^\top Q = ${h * h} I$.` : "Столбцы даже не ортогональны: их скалярное произведение не ноль." },
+      { text: "Нет: столбцы ортогональны, но не единичной длины", correct: kind === "scaled", why: kind === "scaled" ? String.raw`Верно: скалярное произведение столбцов — ноль, а длина каждого — $${h}$. Ортогональная матрица получится после деления на $${h}$.` : kind === "yes" ? "Длина каждого столбца здесь ровно 1." : "Столбцы не ортогональны — дело не только в длине." },
+      { text: "Нет: столбцы не ортогональны", correct: kind === "no", why: kind === "no" ? String.raw`Скалярное произведение столбцов не равно нулю, так что $Q^\top Q$ не диагональна.` : String.raw`Посчитайте скалярное произведение столбцов: оно равно нулю.` },
+    ];
+    return {
+      kind: "choice",
+      prompt: String.raw`Ортогональна ли матрица $$Q = ${tex}?$$`,
+      options,
+      hints: [String.raw`$Q^\top Q = I$ значит две вещи: столбцы попарно ортогональны и каждый — единичной длины.`],
+    };
+  },
+};
+
+/** Урок I.8: расстояние от точки до гиперплоскости w^T x + b = 0; ‖w‖ = 5 или 10 — ответ конечная десятичная дробь. */
+export const hyperplaneDistance: Generator = {
+  id: "la.hyperplane-distance",
+  version: 1,
+  title: "Расстояние до гиперплоскости",
+  make(seed) {
+    const r = rng(seed);
+    const w = r.pick([[3, 4], [4, -3], [6, 8], [0, 3, 4], [3, 0, -4], [0, 6, 8]]);
+    const nw = Math.hypot(...w);
+    const x = w.map(() => r.int(-3, 3));
+    const b = r.int(-6, 6);
+    const val = w.reduce((s, wi, i) => s + wi * x[i]!, 0) + b;
+    const answer = Math.abs(val) / nw;
+    const vars = w.map((_, i) => `x_${i + 1}`);
+    const lhs = w.map((wi, i) => (wi === 0 ? "" : `${wi < 0 ? "-" : "+"} ${Math.abs(wi) === 1 ? "" : Math.abs(wi)}${vars[i]}`)).filter(Boolean).join(" ").replace(/^\+ /, "").replace(/^- /, "-");
+    const eq = `${lhs} ${b < 0 ? "-" : "+"} ${Math.abs(b)} = 0`;
+    return {
+      kind: "numeric",
+      prompt: String.raw`Найдите расстояние от точки $x = (${x.join(", ")})$ до гиперплоскости $${eq}$.`,
+      label: "расстояние =",
+      answer,
+      tol: 1e-9,
+      hints: [
+        String.raw`Расстояние — $\frac{\lvert w^\top x + b \rvert}{\lVert w \rVert}$, где $w$ — коэффициенты при $x_j$.`,
+        String.raw`$w = (${w.join(", ")})$, $\lVert w \rVert = ${nw}$, $w^\top x + b = ${val}$.`,
+      ],
+      right: String.raw`$\frac{\lvert ${val} \rvert}{${nw}} = ${answer}$.${val < 0 ? " Знак минус у $w^\\top x + b$ говорит, что точка по другую сторону от гиперплоскости, чем $w$." : ""}`,
+      wrong: String.raw`Не забудьте поделить на $\lVert w \rVert = ${nw}$ и взять модуль.`,
+    };
+  },
+};
+
+/** Урок I.8: проекция на плоскость с ортогональным базисом u, v — сумма проекций на u и на v; ответ целый. */
+export const projectOrthogonal: Generator = {
+  id: "la.project-orthogonal",
+  version: 1,
+  title: "Проекция на плоскость",
+  make(seed) {
+    const r = rng(seed);
+    // u ⟂ v, n = u × v ⟂ обоим: y = a u + b v + c n, проекция — a u + b v
+    const [u, v, n] = r.pick([
+      [[1, 1, 0], [1, -1, 1], [1, -1, -2]],
+      [[1, 0, 1], [1, 1, -1], [-1, 2, 1]],
+      [[0, 1, 1], [1, 1, -1], [-2, 1, -1]],
+    ]) as [number[], number[], number[]];
+    const [a, b, c] = [r.nonzero(-2, 2), r.nonzero(-2, 2), r.nonzero(-2, 2)];
+    const y = u.map((_, i) => a * u[i]! + b * v[i]! + c * n[i]!);
+    const p = u.map((_, i) => a * u[i]! + b * v[i]! + 0);
+    const dot = (s: number[], t: number[]) => s.reduce((acc, si, i) => acc + si * t[i]!, 0);
+    const t = (w: number[]) => `(${w.join(", ")})`;
+    return {
+      kind: "matrix",
+      prompt: String.raw`Векторы $u = ${t(u)}$ и $v = ${t(v)}$ ортогональны. Найдите проекцию $y = ${t(y)}$ на плоскость $\operatorname{span}(u, v)$.`,
+      label: String.raw`$\hat y =$`,
+      answer: p.map((x) => [x]),
+      tol: 0,
+      hints: [
+        String.raw`У ортогонального базиса проекция — сумма проекций на каждый вектор: $\hat y = \frac{u^\top y}{u^\top u}\, u + \frac{v^\top y}{v^\top v}\, v$.`,
+        String.raw`$u^\top y = ${dot(u, y)}$, $u^\top u = ${dot(u, u)}$, $v^\top y = ${dot(v, y)}$, $v^\top v = ${dot(v, v)}$.`,
+      ],
+      right: String.raw`$\hat y = ${a} u ${b < 0 ? "-" : "+"} ${Math.abs(b)} v = ${sm(p.map((x) => [x]))}$. Остаток $y - \hat y = ${t(y.map((yi, i) => yi - p[i]!))}$ перпендикулярен и $u$, и $v$.`,
+      wrong: String.raw`Проверьте остаток: $y - \hat y$ должен быть перпендикулярен и $u$, и $v$.`,
+    };
+  },
+};

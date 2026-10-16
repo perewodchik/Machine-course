@@ -1,0 +1,70 @@
+id: f.hyperplane-distance
+kind: formula
+title:
+  ru: 'Расстояние от точки до гиперплоскости'
+  en: 'distance from a point to a hyperplane'
+statement: '\operatorname{dist}\bigl(\sym{x}{x}, \{\, z : \sym{w}{w}^\top z + b = 0 \,\}\bigr) = \frac{\lvert \sym{w}{w}^\top \sym{x}{x} + b \rvert}{\lVert \sym{w}{w} \rVert}'
+
+# Урок I.8: ближайшая точка гиперплоскости — x минус проекция на нормаль w. Шаги — значения расстояния.
+# В CS229 («Support vector machines») это геометрический отступ объекта от разделяющей гиперплоскости.
+symbols:
+  - name: x
+    tex: 'x'
+    meaning: 'точка (объект)'
+    shape: [d, 1]
+    role: data
+  - name: w
+    tex: 'w'
+    meaning: 'нормаль гиперплоскости, $w \ne 0$'
+    shape: [d, 1]
+    role: param
+  - name: b
+    tex: 'b'
+    meaning: 'свободный член уравнения гиперплоскости'
+    shape: []
+
+dependsOn:
+  concepts: [la.projection, la.norm, la.dot-product]
+  rules: []
+
+conditions:
+  - tex: '\sym{w}{w} \ne 0'
+    why: 'У нулевой нормали нет гиперплоскости, и делить на $\lVert w \rVert$ нельзя.'
+
+derivation:
+  plan:
+    - 'Сдвинуть $x$ вдоль нормали $w$ до гиперплоскости: $x_0 = x - t w$'
+    - 'Найти $t$ из условия $w^\top x_0 + b = 0$'
+    - 'Расстояние — длина сдвига $\lVert t w \rVert$'
+  steps:
+    - goal: 0
+      tex: '\lVert \sym{x}{x} - \sym{x}{x}_0 \rVert = \lVert t\, \sym{w}{w} \rVert, \qquad t = \frac{\sym{w}{w}^\top \sym{x}{x} + b}{\sym{w}{w}^\top \sym{w}{w}}'
+      by: [la.projection]
+      note: 'Ближайшая точка гиперплоскости — основание перпендикуляра, а перпендикуляр к гиперплоскости идёт вдоль $w$. Из $w^\top (x - t w) + b = 0$ получаем $t$.'
+      check:
+        kind: same
+        py: 'np.sqrt(np.sum((((w @ x + b) / (w @ w)) * w) ** 2))'
+    - goal: 2
+      tex: '= \changed{\lvert t \rvert\, \lVert \sym{w}{w} \rVert}'
+      by: [la.norm]
+      note: 'Норма вектора, умноженного на число: $\lVert t w \rVert = \lvert t \rvert \lVert w \rVert$.'
+      check:
+        kind: same
+        py: 'abs((w @ x + b) / (w @ w)) * np.sqrt(w @ w)'
+    - goal: 2
+      tex: '= \changed{\frac{\lvert \sym{w}{w}^\top \sym{x}{x} + b \rvert}{\lVert \sym{w}{w} \rVert}}'
+      by: [la.norm]
+      note: '$w^\top w = \lVert w \rVert^2$, и одна норма сокращается.'
+      check:
+        kind: same
+        py: 'abs(w @ x + b) / np.sqrt(w @ w)'
+
+pitfalls:
+  - 'Забыть поделить на $\lVert w \rVert$: число $w^\top x + b$ меняется, если умножить уравнение на $2$, а расстояние — нет.'
+  - 'Терять модуль: знак $w^\top x + b$ говорит, с какой стороны гиперплоскости точка, а расстояние неотрицательно.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Support vector machines'
+
+usedIn: [la.projection]

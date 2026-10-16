@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-16 — L-I.8 Ортогональность и проекции — готов
+- **Сделано:** Урок I.8: четыре цикла (ортонормированный базис и ортогональные матрицы; проекция на пространство столбцов — формула f.residual-orthogonality из V.1, матрица P = X(XᵀX)⁻¹Xᵀ, МНК как проекция; расстояние до гиперплоскости и отступ SVM; ★ Грам — Шмидт и QR). Виджет «Проекция y на плоскость столбцов» (src/widgets/la/plane-projection): трёхмерная сцена ортографической камерой на Plane bare. Формула f.hyperplane-distance с выводом, правило rule.projection-idempotent; генераторы la.orthogonal-matrix, la.hyperplane-distance, la.project-orthogonal; ячейка la/projections.py закреплена тестом (ŷ совпадает с рисунком). Кит: опция Plane bare.
+- **Файлы:** content/courses/foundations/linear-algebra/orthogonality-projections.mdx, src/widgets/la/plane-projection/*, src/widgets/_kit/Plane.tsx, content/formulas/la/hyperplane-distance.yaml, content/formulas/rules/projection-idempotent.yaml, src/lib/exercises/generators/la.ts, code/snippets/la/projections.py
+- **Проверка:** vitest 402; pytest; e2e полный — 456 passed, 170 skipped; lint (код выхода), check, validate, check_consistency — чисто; формулы на 390 px — чисто
+- **Отклонения от плана и решения:** Трёхмерный виджет сделан без 3D-библиотеки: ортографическая проекция в китовом SVG, камера — бегунок φ. Между уроками исправлен баг игры «Переводчик сумм» (PR #16): числа уровня изредка уравнивали неверную цепочку с ответом — CI на main ловил это случайным seed fast-check.
+- **Следующий шаг:** L-I.9 — собственные значения и векторы.
+- **Вопросы пользователю:** —
+
 ### 2026-10-16 — L-I.7 Обратная матрица и определитель — готов
 - **Сделано:** Урок I.7: три цикла (обратная матрица — определение, связь с рангом и системами, формула 2 × 2, (AB)⁻¹ = B⁻¹A⁻¹; определитель как площадь со знаком — рисунок «деформация сетки» из I.4, ориентация, det = 0; свойства и ML — det(AB), det(A⁻¹), det(cA), плотность гауссианы и ICA, solve вместо inv). Понятие la.determinant; правила rule.inverse-product, rule.det-product, rule.inverse-2x2; генераторы la.inverse2 (det = ±1, целый ответ), la.det-area, la.det-rules; ячейка la/inverse.py закреплена тестом. Радиокнопки «деформации сетки» на сенсорных экранах — 24 px (axe target-size после гидратации); тесты уроков модуля I получили лимит 90 с.
 - **Файлы:** content/courses/foundations/linear-algebra/inverse-determinant.mdx, content/formulas/rules/{inverse-product,det-product,inverse-2x2}.yaml, content/concepts/la.yaml, src/lib/exercises/generators/la.ts, code/snippets/la/inverse.py, src/styles/kit.css

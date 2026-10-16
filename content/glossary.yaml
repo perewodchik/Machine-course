@@ -229,3 +229,22 @@
 - id: orientation
   ru: 'ориентация'
   en: 'orientation'
+- id: orthonormal-basis
+  ru: 'ортонормированный базис'
+  en: 'orthonormal basis'
+- id: orthogonal-matrix
+  ru: 'ортогональная матрица'
+  en: 'orthogonal matrix'
+  note: 'Ортогональна матрица с ортонормированными столбцами: $Q^\top Q = I$. Одной ортогональности столбцов мало.'
+- id: projection-matrix
+  ru: 'матрица проекции'
+  en: 'projection matrix, hat matrix'
+- id: hyperplane
+  ru: 'гиперплоскость'
+  en: 'hyperplane'
+- id: gram-schmidt
+  ru: 'процесс Грама — Шмидта, QR-разложение'
+  en: 'Gram–Schmidt process, QR decomposition'
+- id: margin
+  ru: 'отступ (зазор) до разделяющей гиперплоскости'
+  en: 'margin'
