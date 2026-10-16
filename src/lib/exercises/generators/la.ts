@@ -643,3 +643,127 @@ export const traceSwap: Generator = {
     };
   },
 };
+
+/** Система 2 × 2 в TeX: «x₁ + 2x₂ = 2» строками cases. */
+function cases(rows: readonly (readonly number[])[]): string {
+  const term = (c: number, name: string, first: boolean) => {
+    if (c === 0) return "";
+    const sign = c < 0 ? "-" : first ? "" : "+";
+    const k = Math.abs(c) === 1 ? "" : String(Math.abs(c));
+    return `${first ? sign : ` ${sign} `}${k}${name}`;
+  };
+  const line = ([a, b, c]: readonly number[]) => `${term(a!, "x_1", true) + term(b!, "x_2", a === 0) || "0"} = ${c}`;
+  return String.raw`\begin{cases} ${rows.map(line).join(String.raw` \\ `)} \end{cases}`;
+}
+
+/** Урок I.6: сколько решений у системы 2 × 2 — вид по кругу от номера варианта: одно, нет, бесконечно много. */
+export const solutionsCount: Generator = {
+  id: "la.solutions-count",
+  version: 1,
+  title: "Сколько решений у системы",
+  make(seed) {
+    const r = rng(seed);
+    const kind = (["one", "none", "many"] as const)[(seed - 1) % 3]!;
+    const a = [r.nonzero(-3, 3), r.nonzero(-3, 3)];
+    const b = r.int(-4, 4);
+    let second: number[];
+    if (kind === "one") {
+      let c: number[];
+      do c = [r.int(-3, 3), r.int(-3, 3)];
+      while (a[0]! * c[1]! - a[1]! * c[0]! === 0);
+      second = [c[0]!, c[1]!, r.int(-4, 4)];
+    } else {
+      const k = r.pick([2, -1, 3, -2]);
+      second = [k * a[0]!, k * a[1]!, kind === "many" ? k * b : k * b + r.nonzero(-2, 2)];
+    }
+    const rows = r.next() < 0.5 ? [[a[0]!, a[1]!, b], second] : [second, [a[0]!, a[1]!, b]];
+    const rankA = kind === "one" ? 2 : 1;
+    const rankAb = kind === "none" ? 2 : rankA;
+    const ranks = String.raw`$\operatorname{rank} A = ${rankA}$, $\operatorname{rank}\,[A \mid b] = ${rankAb}$`;
+    const options: ChoiceOption[] = [
+      { text: "Одно решение", correct: kind === "one", why: kind === "one" ? String.raw`${ranks}: строки $A$ не пропорциональны, прямые пересекаются в одной точке.` : String.raw`${ranks}: левые части пропорциональны, прямые параллельны или совпадают — одной точки пересечения нет.` },
+      { text: "Нет решений", correct: kind === "none", why: kind === "none" ? String.raw`${ranks}: левые части пропорциональны, а правые — нет. Прямые параллельны.` : kind === "one" ? String.raw`${ranks}: непараллельные прямые на плоскости всегда пересекаются.` : String.raw`${ranks}: второе уравнение — первое, умноженное на число, вместе с правой частью. Прямые совпадают.` },
+      { text: "Бесконечно много решений", correct: kind === "many", why: kind === "many" ? String.raw`${ranks}: второе уравнение — первое, умноженное на число. Прямые совпадают, решение — вся прямая.` : kind === "one" ? String.raw`${ranks}: ранг полный, решение единственно.` : String.raw`${ranks}: ранги разные — система несовместна, решений нет совсем.` },
+    ];
+    return {
+      kind: "choice",
+      prompt: String.raw`Сколько решений у системы $$${cases(rows)}$$`,
+      options,
+      hints: [String.raw`Сравните строки: пропорциональны ли левые части? А вместе с правыми?`, String.raw`Решения есть, только если $\operatorname{rank} A = \operatorname{rank}\,[A \mid b]$; единственно — если этот ранг равен числу неизвестных.`],
+    };
+  },
+};
+
+/** Урок I.6: какой вектор лежит в ядре матрицы 2 × 3. Ядро — прямая, её направление — векторное произведение строк. */
+export const kernelVector: Generator = {
+  id: "la.kernel-vector",
+  version: 2,
+  title: "Вектор из ядра",
+  make(seed) {
+    const r = rng(seed);
+    let r1: number[];
+    let r2: number[];
+    let k: number[];
+    const gcd = (x: number, y: number): number => (y === 0 ? Math.abs(x) : gcd(y, x % y));
+    for (;;) {
+      r1 = [r.int(-2, 3), r.int(-2, 3), r.int(-2, 3)];
+      r2 = [r.int(-2, 3), r.int(-2, 3), r.int(-2, 3)];
+      k = [r1[1]! * r2[2]! - r1[2]! * r2[1]!, r1[2]! * r2[0]! - r1[0]! * r2[2]!, r1[0]! * r2[1]! - r1[1]! * r2[0]!];
+      const g = gcd(gcd(k[0]!, k[1]!), k[2]!);
+      if (g === 0) continue; // строки пропорциональны — ядро больше прямой
+      k = k.map((x) => x / g + 0);
+      if (k.every((x) => Math.abs(x) <= 6) && k.filter((x) => x !== 0).length >= 2) break;
+    }
+    const A = [r1, r2];
+    const Av = (v: number[]) => A.map((row) => row.reduce((s, a, i) => s + a * v[i]!, 0));
+    const vec = (v: number[]) => `(${v.join(", ")})`;
+    const flip = k.map((x, i) => (i === k.findIndex((y) => y !== 0) ? -x : x) + 0);
+    const cands = [flip, r1, k.map((x) => x + 1)].filter((v) => Av(v).some((x) => x !== 0));
+    const options: ChoiceOption[] = r.shuffle([
+      { text: `$${vec(k)}$`, correct: true, why: String.raw`$A v = ${vec(Av(k))}$: обе строки $A$ перпендикулярны $v$.` },
+      ...cands.slice(0, 2).map((v) => ({ text: `$${vec(v)}$`, why: String.raw`$A v = ${vec(Av(v))} \ne 0$: этот вектор не в ядре.` })),
+    ]);
+    return {
+      kind: "choice",
+      prompt: String.raw`$$A = ${pm(A)}.$$ Какой вектор лежит в ядре $A$, то есть $Av = 0$?`,
+      options,
+      hints: [String.raw`Умножьте $A$ на каждый вариант: $Av = 0$ значит, что $v$ перпендикулярен обеим строкам $A$.`],
+    };
+  },
+};
+
+/** Урок I.6: теорема о ранге и дефекте — dim ker A = n − rank A для матрицы 3 × 4 с заметными зависимостями строк. */
+export const rankNullity: Generator = {
+  id: "la.rank-nullity",
+  version: 1,
+  title: "Ранг и размерность ядра",
+  make(seed) {
+    const r = rng(seed);
+    const rank = r.pick([1, 2, 2, 3]);
+    const base = [
+      [1, r.int(-2, 2), r.int(-2, 2), r.int(-2, 2)],
+      [0, 1, r.int(-2, 2), r.int(-2, 2)],
+      [0, 0, 1, r.int(-2, 2)],
+    ].slice(0, rank);
+    // недостающие строки — комбинации первых: зависимость видна, если сложить или умножить строки
+    const rows = [...base];
+    while (rows.length < 3) {
+      const [p, q] = [r.pick([1, 2, -1]), rank > 1 ? r.pick([1, -1, 0]) : 0];
+      rows.push(base[0]!.map((x, j) => p * x + q * (base[1]?.[j] ?? 0) + 0));
+    }
+    const A = r.shuffle(rows);
+    return {
+      kind: "numeric",
+      prompt: String.raw`$$A = ${pm(A)}.$$ Найдите $\dim \ker A$ — размерность ядра.`,
+      label: String.raw`$\dim \ker A =$`,
+      answer: 4 - rank,
+      tol: 0,
+      hints: [
+        String.raw`По теореме о ранге $\dim \ker A = n - \operatorname{rank} A$, здесь $n = 4$ — число столбцов.`,
+        "Ранг — число независимых строк. Проверьте, не выражается ли одна строка через другие.",
+      ],
+      right: String.raw`$\operatorname{rank} A = ${rank}$, поэтому $\dim \ker A = 4 - ${rank} = ${4 - rank}$.`,
+      wrong: String.raw`Вычитать нужно из числа столбцов ($n = 4$), а не строк. И проверьте ранг: зависимые строки его не увеличивают.`,
+    };
+  },
+};

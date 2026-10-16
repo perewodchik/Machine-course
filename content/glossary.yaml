@@ -207,3 +207,15 @@
 - id: cyclic-property
   ru: 'циклическая перестановка под следом'
   en: 'cyclic property of the trace'
+- id: null-space
+  ru: 'ядро матрицы'
+  en: 'null space, kernel'
+- id: rank-nullity
+  ru: 'теорема о ранге и дефекте'
+  en: 'rank–nullity theorem'
+- id: augmented-matrix
+  ru: 'расширенная матрица системы'
+  en: 'augmented matrix'
+- id: system-of-equations
+  ru: 'система линейных уравнений; совместная, несовместная'
+  en: 'system of linear equations; consistent, inconsistent'

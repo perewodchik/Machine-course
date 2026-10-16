@@ -14,7 +14,7 @@ export interface LabelPart {
   fn?: boolean;
 }
 
-const FN = /\b(cos|sin|tan|log|exp|det|tr)\b/;
+const FN = /\b(cos|sin|tan|log|exp|det|tr|rank)\b/;
 
 /** «θ_0 + θ_{12} x» → основа и индексы: индекс — один знак после «_» или группа в фигурных скобках. */
 export function labelParts(label: string): LabelPart[] {

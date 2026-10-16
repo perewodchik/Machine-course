@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-16 — L-I.6 Системы уравнений и ранг — готов
+- **Сделано:** Урок I.6: три цикла (сколько решений — прямые на плоскости и ранги A, [A | b]; пространство столбцов и ранг, игра «Попади в точку» на уровнях 4–5; ядро, все решения — частное плюс ядро, теорема о ранге и дефекте, зависимые признаки в регрессии). Виджет «Ax = b: нет решений, одно, бесконечно много» (src/widgets/la/system-lines). Понятие la.null-space, правило rule.solution-structure, генераторы la.solutions-count, la.kernel-vector, la.rank-nullity (тесты сверяют их с рангом по Гауссу); ячейка la/systems.py закреплена тестом. Кит: rank прямым шрифтом в подписях.
+- **Файлы:** content/courses/foundations/linear-algebra/systems-rank.mdx, src/widgets/la/system-lines/*, content/formulas/rules/solution-structure.yaml, src/lib/exercises/generators/la.ts, code/snippets/la/systems.py
+- **Проверка:** vitest 391; pytest; e2e уроков модуля I, layout и «Попади в точку» — 221 passed; lint (по коду выхода), check, validate, check_consistency — чисто; формулы на 390 px — чисто
+- **Отклонения от плана и решения:** В I.5 в main ушла ошибка линтера prefer-const (вывод линтера обрезался до последней строки) — исправлена отдельным PR #13; теперь линтер проверяется по коду выхода. Игра «Попади в точку» используется как есть: уровни 4–5 и есть «недостижимая цель».
+- **Следующий шаг:** L-I.7 — обратная матрица и определитель.
+- **Вопросы пользователю:** —
+
 ### 2026-10-16 — L-I.5 Транспонирование, симметрия, след — готов
 - **Сделано:** Урок I.5: три цикла (транспонирование и (AB)ᵀ = BᵀAᵀ, число равно своему транспонированию; симметричные матрицы, разложение на симметричную и кососимметричную части; след, tr(AB) = tr(BA), циклические перестановки, xᵀAx = tr(Axxᵀ)). Понятие la.trace; правила rule.trace-cyclic и rule.trace-quadratic; формула f.quadratic-symmetric-part с выводом; генераторы la.transpose-chain, la.sym-part, la.trace-swap; тренажёр — упражнение-формула (Xθ − y)ᵀ с формой под полем; «найди ошибку» — выбор строки вывода; ячейка la/trace.py закреплена тестом. Длинные выключные формулы в уроках модулей 0 и I разбиты на строки: на 390 px ни одна не выходит за колонку.
 - **Файлы:** content/courses/foundations/linear-algebra/transpose-trace.mdx, content/formulas/la/quadratic-symmetric-part.yaml, content/formulas/rules/{trace-cyclic,trace-quadratic}.yaml, content/concepts/la.yaml, src/lib/exercises/generators/la.ts, code/snippets/la/trace.py, уроки 0.1, 0.5, 0.6, 0.7, I.1–I.3 (формулы)
