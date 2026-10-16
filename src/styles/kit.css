@@ -68,6 +68,8 @@
   /* Показание и шкала до минимума */
   .kit-readout { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; font-family: var(--font-ui); font-size: var(--text-sm); color: var(--ink-2); }
   .kit-readout__name { font-family: var(--font-math); font-style: italic; font-size: 1.1em; color: var(--ink); }
+  /* имена функций в подписях — прямые, как \cos в KaTeX */
+  .kit-fn { font-family: var(--font-math-upright); font-style: normal; }
   .kit-readout__value { min-width: 3.2em; font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; }
   .kit-readout__hint { flex-basis: 100%; color: var(--ink-3); }
   .kit-meter { position: relative; flex: 1; min-width: 6rem; height: 6px; overflow: hidden; border: 1px solid var(--rule); border-radius: 3px; background: var(--paper-2); }
@@ -119,6 +121,13 @@
   .span-widget__fact i { font-family: var(--font-math); }
   .span-widget__fact b { color: var(--ink); font-variant-numeric: tabular-nums; }
   @media (max-width: 900px) { .span-widget__controls { grid-template-columns: minmax(0, 1fr); } }
+  /* «Единичные шары норм» и «Проекция»: два бегунка в строку, под ними три показания в строку */
+  .norm-balls__controls, .projection-widget__controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: var(--space-3) var(--space-5); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule); }
+  .norm-balls__readouts, .projection-widget__readouts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; gap: var(--space-3) var(--space-5); padding: 0 var(--space-4) var(--space-3); }
+  @media (max-width: 900px) {
+    .norm-balls__controls, .projection-widget__controls { grid-template-columns: minmax(0, 1fr); }
+    .norm-balls__readouts, .projection-widget__readouts { grid-template-columns: minmax(0, 1fr); }
+  }
 
   /* Деформация сетки (урок I.4): образ сетки — карандашом, оси образа — темнее */
   .grid-map__line { stroke: var(--ink-3); stroke-width: 1; opacity: 0.7; }

@@ -15,7 +15,7 @@ export function Readout({ name, value, digits = 2, meter, hint }: Props) {
   return (
     <div className="kit-readout">
       <span className="kit-readout__name">
-        {labelParts(name).map((p, i) => (p.sub ? <sub key={i}>{p.text}</sub> : <span key={i}>{p.text}</span>))}
+        {labelParts(name).map((p, i) => (p.sub ? <sub key={i}>{p.text}</sub> : <span key={i} className={p.fn ? "kit-fn" : undefined}>{p.text}</span>))}
       </span>
       <span className="kit-readout__eq"> = </span>
       <b className="kit-readout__value">{fmt(value, digits)}</b>

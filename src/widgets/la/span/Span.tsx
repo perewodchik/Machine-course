@@ -25,7 +25,7 @@ export default function Span({ initial = "independent", showSpan = false }: Span
   const dir = a[0] || a[1] ? a : b;
   return (
     <div className="span-widget">
-      <Plane x={[-R, R]} y={[-R, R]} xStep={1} yStep={1} height={{ ratio: 1, min: 240, max: 520 }} label={`Векторы a = (${a.join(", ")}) и b = (${b.join(", ")}); их оболочка — ${SPAN_TEXT[kind]}.`}>
+      <Plane x={[-R, R]} y={[-R, R]} xStep={1} yStep={1} height={{ ratio: 1, min: 240, max: 520 }} equal label={`Векторы a = (${a.join(", ")}) и b = (${b.join(", ")}); их оболочка — ${SPAN_TEXT[kind]}.`}>
         {show && kind === "line" && <Line from={[-10 * dir[0], -10 * dir[1]]} to={[10 * dir[0], 10 * dir[1]]} role="aux" />}
         {show && lattice(a, b, R).map(([x, y]) => <Point key={`${x},${y}`} x={x} y={y} role="aux" r={2.5} />)}
         <Line from={[0, 0]} to={a} role="aux" label="a" labelAbove />

@@ -1,0 +1,66 @@
+id: f.cauchy-schwarz
+kind: formula
+title:
+  ru: 'Неравенство Коши — Буняковского'
+  en: 'Cauchy–Schwarz inequality'
+statement: '\lvert \sym{a}{a}^\top \sym{b}{b} \rvert \le \lVert \sym{a}{a} \rVert\, \lVert \sym{b}{b} \rVert'
+
+# Урок I.2: доказательство через проекцию. Остаток b − t*a при t = aᵀb / aᵀa — квадрат нормы, он не меньше нуля;
+# цепочка равенств переписывает его через aᵀb, aᵀa и bᵀb. Проверки — на случайных a, b.
+symbols:
+  - name: a
+    tex: 'a'
+    meaning: 'первый вектор'
+    shape: [d, 1]
+    role: data
+  - name: b
+    tex: 'b'
+    meaning: 'второй вектор'
+    shape: [d, 1]
+    role: target
+
+dependsOn:
+  concepts: [la.dot-product, la.norm]
+  rules: []
+
+conditions:
+  - tex: '\sym{a}{a} \ne 0'
+    why: 'Нужна только в доказательстве, чтобы делить на $a^\top a$. При $a = 0$ обе части неравенства равны нулю.'
+
+derivation:
+  plan:
+    - 'Взять остаток проекции $b$ на $a$ — квадрат его нормы не меньше нуля'
+    - 'Раскрыть квадрат нормы через скалярные произведения'
+    - 'Прочитать неравенство и извлечь корень'
+  steps:
+    - goal: 0
+      tex: '0 \le \lVert \sym{a}{a} \rVert^2 \, \lVert \sym{b}{b} - t \sym{a}{a} \rVert^2, \qquad t = \frac{\sym{a}{a}^\top \sym{b}{b}}{\sym{a}{a}^\top \sym{a}{a}}'
+      by: [la.norm]
+      note: 'Норма неотрицательна, её квадрат и произведение квадратов — тоже. Множитель $\lVert a \rVert^2$ уберёт знаменатели.'
+      check:
+        kind: same
+        py: '(a @ a) * np.sum((b - (a @ b) / (a @ a) * a) ** 2)'
+    - goal: 1
+      tex: '= \lVert \sym{a}{a} \rVert^2 \changed{\bigl(\lVert \sym{b}{b} \rVert^2 - 2t\, \sym{a}{a}^\top \sym{b}{b} + t^2 \lVert \sym{a}{a} \rVert^2\bigr)}'
+      by: [la.dot-product]
+      note: '$\lVert b - t a \rVert^2 = (b - t a)^\top (b - t a)$, скобки раскрываются, как у чисел.'
+      check:
+        kind: same
+        py: '(a @ a) * (b @ b - 2 * (a @ b) / (a @ a) * (a @ b) + ((a @ b) / (a @ a)) ** 2 * (a @ a))'
+    - goal: 1
+      tex: '= \changed{\lVert \sym{a}{a} \rVert^2 \lVert \sym{b}{b} \rVert^2 - (\sym{a}{a}^\top \sym{b}{b})^2}'
+      by: [la.dot-product]
+      note: 'Подставили $t$: $-2 \frac{(a^\top b)^2}{\lVert a \rVert^2} + \frac{(a^\top b)^2}{\lVert a \rVert^2} = -\frac{(a^\top b)^2}{\lVert a \rVert^2}$, и множитель $\lVert a \rVert^2$ сократился. Выражение не меньше нуля: $(a^\top b)^2 \le \lVert a \rVert^2 \lVert b \rVert^2$, а корень из обеих частей даёт неравенство. Равенство — только когда остаток нулевой, то есть $b$ лежит на прямой $a$.'
+      check:
+        kind: same
+        py: '(a @ a) * (b @ b) - (a @ b) ** 2'
+
+pitfalls:
+  - 'Терять модуль: $a^\top b$ бывает отрицательным, неравенство ограничивает его с двух сторон, $-\lVert a \rVert \lVert b \rVert \le a^\top b \le \lVert a \rVert \lVert b \rVert$.'
+  - 'Определять угол в $\R^n$ через $\cos\varphi = \frac{a^\top b}{\lVert a \rVert \lVert b \rVert}$, не проверив, что дробь лежит в $[-1, 1]$: это и гарантирует неравенство.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Kernel methods'
+
+usedIn: [la.dot-product]

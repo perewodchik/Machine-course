@@ -180,6 +180,34 @@ describe("генераторы", () => {
     }
   });
 
+  it("задачи урока I.2: нормы, проекция и угол сходятся с условием", () => {
+    for (let s = 1; s <= 40; s++) {
+      const nm = num(make("la.norms", s));
+      const xs = /x = \(([^)]*)\)/.exec(nm.prompt)?.[1]?.split(", ").map(Number);
+      const mx = [...nm.prompt.matchAll(/(-?\d+)(?= &| \\|\\end)/g)].map((mm) => Number(mm[1]));
+      const vals = xs ?? mx;
+      const which = /rVert_\{(1|2|\\infty)\}/.exec(nm.prompt)?.[1];
+      const expected = which === "1" ? vals.reduce((a, v) => a + Math.abs(v), 0) : which === "\\infty" ? Math.max(...vals.map(Math.abs)) : Math.hypot(...vals);
+      expect(nm.answer, nm.prompt).toBeCloseTo(expected, 9);
+      expect(Number.isInteger(nm.answer)).toBe(true);
+      if (which === "\\infty") expect(vals.find((v) => Math.abs(v) === nm.answer)).toBeLessThan(0);
+
+      const pr = make("la.projection", s);
+      if (pr.kind !== "matrix") throw new Error("ожидалась матрица");
+      const [a, b] = [...pr.prompt.matchAll(/smallmatrix\}(-?\d+) \\\\ (-?\d+)\\end/g)].map((mm) => [Number(mm[1]), Number(mm[2])]) as [number[], number[]];
+      const p = pr.answer.map((row) => row[0]!);
+      // остаток b − p перпендикулярен a, а p параллелен a
+      expect(a[0]! * (b[0]! - p[0]!) + a[1]! * (b[1]! - p[1]!)).toBe(0);
+      expect(a[0]! * p[1]! - a[1]! * p[0]!).toBe(0);
+
+      const an = make("la.angle", s);
+      if (an.kind !== "choice") throw new Error("ожидался выбор");
+      const [u, v] = [...an.prompt.matchAll(/= \(([^)]*)\)/g)].map((mm) => mm[1]!.split(", ").map(Number)) as [number[], number[]];
+      const d = u.reduce((acc, x, k) => acc + x * v[k]!, 0);
+      expect(an.options.find((o) => o.correct)!.text).toBe(d > 0 ? "Острый" : d === 0 ? "Прямой" : "Тупой");
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

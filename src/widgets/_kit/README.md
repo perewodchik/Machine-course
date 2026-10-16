@@ -4,14 +4,14 @@
 
 | Элемент | Что | Главные пропсы |
 |---|---|---|
-| `Plane` | Плоскость: клетка совпадает с делениями осей, `viewBox` по ширине контейнера, `clipPath` области графика | `x`, `y`, `xStep`, `yStep`, `label` (для скринридера), `xLabel`, `yLabel` |
+| `Plane` | Плоскость: клетка совпадает с делениями осей, `viewBox` по ширине контейнера, `clipPath` области графика | `x`, `y`, `xStep`, `yStep`, `height`, `equal` (одинаковый масштаб осей — для геометрии: круг, прямой угол), `label` (для скринридера), `xLabel`, `yLabel` |
 | `Axis` | Оси с делениями (рисует `Plane`); через ноль или по краю | — |
 | `Point` | Точка данных | `x`, `y`, `role`, `sym`, `label` |
 | `Line` | Прямая `intercept` + `slope` или отрезок `from` → `to`; подпись у видимого конца, нет подписи — если линия вне графика | `role`, `sym`, `label`, `labelAbove`, `dashed` |
 | `Ellipse` | Эллипс: `radii` + `angle` (градусы) или `cov` (2×2) и `k` | `center`, `role`, `filled` |
 | `Vector` | Стрелка из `from` (по умолчанию 0) в `to` | `role`, `label` |
 | `Polygon` | Многоугольник: цель пунктиром карандашом (`tone="aux"`) или фигура ученика синей ручкой (`tone="pen"`) | `points`, `tone` |
-| `MathText` | Подпись шрифтом формул, индексы через `_`: `θ_0`, `x_{12}` | `label`, `role`, `anchor` |
+| `MathText` | Подпись шрифтом формул, индексы через `_`: `θ_0`, `x_{12}`; имена функций (`cos`, `log`, `det` …) — прямым шрифтом | `label`, `role`, `anchor` |
 | `ParamSlider` | Ползунок, бегунок цвета роли, `aria-valuetext` | `name`, `value`, `min`, `max`, `step`, `onChange` |
 | `Readout` | Показание `J = 5.23`, шкала до минимума | `name`, `value`, `meter` |
 | `Scrub` | «Живое число» в тексте: тянуть вбок, стрелки, Shift + стрелка — 10 шагов, Home/End | `label`, `value`, `min`, `max`, `step`, `onChange` |

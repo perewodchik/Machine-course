@@ -10,7 +10,11 @@ export function fmt(v: number, digits = 2): string {
 export interface LabelPart {
   text: string;
   sub?: boolean;
+  /** Имя функции (cos, log, det …): прямым шрифтом, как \cos в формулах. */
+  fn?: boolean;
 }
+
+const FN = /\b(cos|sin|tan|log|exp|det|tr)\b/;
 
 /** «θ_0 + θ_{12} x» → основа и индексы: индекс — один знак после «_» или группа в фигурных скобках. */
 export function labelParts(label: string): LabelPart[] {
@@ -33,7 +37,7 @@ export function labelParts(label: string): LabelPart[] {
     }
   }
   if (text) parts.push({ text });
-  return parts;
+  return parts.flatMap((p) => (p.sub ? [p] : p.text.split(FN).filter(Boolean).map((t) => (FN.test(t) ? { text: t, fn: true } : { text: t }))));
 }
 
 /** Текст для скринридера: «θ_0» → «θ0». */

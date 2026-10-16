@@ -1,0 +1,80 @@
+id: f.vector-projection
+kind: formula
+title:
+  ru: 'Проекция вектора на вектор'
+  en: 'projection onto a vector'
+statement: '\operatorname{proj}_{\sym{a}{a}} \sym{b}{b} = \frac{\sym{a}{a}^\top \sym{b}{b}}{\sym{a}{a}^\top \sym{a}{a}}\, \sym{a}{a}'
+
+# Урок I.2: ближайшая к b точка прямой {t a} — минимум квадрата расстояния по одному числу t.
+# Тот же ход в уроке V.1 даёт нормальные уравнения: там вместо числа t — вектор весов θ.
+symbols:
+  - name: a
+    tex: 'a'
+    meaning: 'вектор, на прямую которого проецируем'
+    shape: [d, 1]
+    role: data
+  - name: t
+    tex: 't'
+    meaning: 'коэффициент: точка прямой — $t a$'
+    shape: []
+    role: param
+  - name: b
+    tex: 'b'
+    meaning: 'вектор, который проецируем'
+    shape: [d, 1]
+    role: target
+
+dependsOn:
+  concepts: [la.dot-product, la.norm, calc.derivative]
+  rules: []
+
+conditions:
+  - tex: '\sym{a}{a} \ne 0'
+    why: 'У нулевого вектора нет прямой: знаменатель $a^\top a$ обращается в ноль.'
+
+derivation:
+  plan:
+    - 'Записать квадрат расстояния от $b$ до точки $t a$'
+    - 'Раскрыть его через скалярные произведения — получится парабола по $t$'
+    - 'Приравнять производную по $t$ к нулю'
+  steps:
+    - goal: 0
+      tex: 'f(\sym{t}{t}) = \tfrac12 \lVert \sym{b}{b} - \sym{t}{t} \sym{a}{a} \rVert^2'
+      by: [la.norm]
+      note: 'Ближайшая точка прямой — та, где расстояние, а значит и его квадрат, наименьшее. Множитель $\tfrac12$ сократит двойку при дифференцировании.'
+      check:
+        kind: same
+        py: '0.5 * np.sum((b - t * a) ** 2)'
+    - goal: 1
+      tex: '= \changed{\tfrac12 \sym{b}{b}^\top \sym{b}{b} - \sym{t}{t}\, \sym{a}{a}^\top \sym{b}{b} + \tfrac12 \sym{t}{t}^2\, \sym{a}{a}^\top \sym{a}{a}}'
+      by: [la.dot-product]
+      note: '$\lVert v \rVert^2 = v^\top v$; скобки раскрываются, как у чисел, и $a^\top b = b^\top a$.'
+      check:
+        kind: same
+        py: '0.5 * (b @ b) - t * (a @ b) + 0.5 * t ** 2 * (a @ a)'
+    - goal: 2
+      tex: 'f''(\sym{t}{t}) = \changed{-\sym{a}{a}^\top \sym{b}{b} + \sym{t}{t}\, \sym{a}{a}^\top \sym{a}{a}}'
+      by: [calc.derivative]
+      note: 'Парабола по $t$ с положительным коэффициентом $\tfrac12 a^\top a$ при $t^2$: точка, где производная равна нулю, — минимум.'
+      check:
+        kind: gradient
+        wrt: t
+        py: '-(a @ b) + t * (a @ a)'
+    - goal: 2
+      tex: '\sym{t}{t}^{\star} = \frac{\sym{a}{a}^\top \sym{b}{b}}{\sym{a}{a}^\top \sym{a}{a}}'
+      by: [la.dot-product]
+      note: 'Делить можно: $a^\top a = \lVert a \rVert^2 > 0$ при $a \ne 0$. Проекция — точка $t^{\star} a$.'
+      check:
+        kind: solution
+        py: '(a @ b) / (a @ a)'
+        wrt: t
+
+pitfalls:
+  - 'Делить на $\lVert a \rVert$, а не на $a^\top a = \lVert a \rVert^2$: тогда проекция зависит от длины $a$, хотя прямая та же.'
+  - 'Путать проекцию-вектор $\frac{a^\top b}{a^\top a} a$ с числом $\frac{a^\top b}{\lVert a \rVert}$ — длиной проекции со знаком.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Linear regression / The normal equations'
+
+usedIn: [la.projection]

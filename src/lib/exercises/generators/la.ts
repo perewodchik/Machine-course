@@ -300,3 +300,160 @@ export const independence: Generator = {
     };
   },
 };
+
+const abs = (x: number) => Math.abs(x);
+/** Тройки с целой нормой ℓ₂: 3² + 4² = 5², 1² + 2² + 2² = 3² … */
+const PYTH: readonly { v: number[]; n: number }[] = [
+  { v: [3, 4], n: 5 },
+  { v: [6, 8], n: 10 },
+  { v: [5, 12], n: 13 },
+  { v: [1, 2, 2], n: 3 },
+  { v: [2, 3, 6], n: 7 },
+  { v: [1, 4, 8], n: 9 },
+  { v: [4, 4, 7], n: 9 },
+];
+/** Матрицы 2 × 2 с целой нормой Фробениуса: элементы и корень из суммы квадратов. */
+const FROB: readonly { v: number[]; n: number }[] = [
+  { v: [1, 1, 1, 1], n: 2 },
+  { v: [1, 2, 2, 4], n: 5 },
+  { v: [1, 1, 3, 5], n: 6 },
+  { v: [2, 2, 4, 5], n: 7 },
+  { v: [2, 4, 5, 6], n: 9 },
+];
+
+/** Урок I.2: нормы ℓ₁, ℓ₂, ℓ∞ вектора и норма Фробениуса матрицы — по кругу от номера варианта. */
+export const norms: Generator = {
+  id: "la.norms",
+  version: 1,
+  title: "Нормы вектора и матрицы",
+  make(seed) {
+    const r = rng(seed);
+    const kind = (["l1", "l2", "linf", "fro"] as const)[(seed - 1) % 4]!;
+    const signed = (v: readonly number[]) => r.shuffle(v.map((x) => (r.int(0, 1) ? -x : x)));
+    if (kind === "fro") {
+      const { v, n } = r.pick(FROB);
+      const e = signed(v);
+      const A = [[e[0]!, e[1]!], [e[2]!, e[3]!]];
+      return {
+        kind: "numeric",
+        prompt: String.raw`Найдите норму Фробениуса матрицы $$A = ${pm(A)}.$$`,
+        label: String.raw`$\lVert A \rVert_F =$`,
+        answer: n,
+        tol: 0,
+        hints: [
+          String.raw`Норма Фробениуса — евклидова норма матрицы, вытянутой в вектор: $\lVert A \rVert_F = \sqrt{\sum_{i,j} A_{ij}^2}$.`,
+          String.raw`Сумма квадратов элементов равна $${n * n}$.`,
+        ],
+        right: String.raw`$\lVert A \rVert_F = \sqrt{${e.map((x) => `${par(x)}^2`).join(" + ")}} = \sqrt{${n * n}} = ${n}$.`,
+        wrong: String.raw`Квадраты всех четырёх элементов складываются, затем извлекается корень.`,
+      };
+    }
+    let x: number[];
+    let n2 = 0;
+    if (kind === "l2") {
+      const t = r.pick(PYTH);
+      [x, n2] = [signed(t.v), t.n];
+    }
+    else {
+      // три разных модуля, хотя бы один отрицательный; у ℓ∞ наибольший по модулю — отрицательный (ловит max со знаком)
+      const mags = r.shuffle([1, 2, 3, 4, 5]).slice(0, 3);
+      x = mags.map((m) => (r.int(0, 1) ? -m : m));
+      const top = x.findIndex((v) => abs(v) === Math.max(...mags));
+      if (kind === "linf") x[top] = -abs(x[top]!);
+      else if (x.every((v) => v > 0)) x[r.int(0, 2)]! *= -1;
+    }
+    const sub = kind === "l1" ? "1" : kind === "l2" ? "2" : String.raw`\infty`;
+    const answer = kind === "l1" ? x.reduce((s, v) => s + abs(v), 0) : kind === "l2" ? n2 : Math.max(...x.map(abs));
+    const sq = x.reduce((s, v) => s + v * v, 0);
+    const hint =
+      kind === "l1"
+        ? String.raw`$\lVert x \rVert_1 = \sum_j \lvert x_j \rvert$ — сумма модулей координат.`
+        : kind === "l2"
+          ? String.raw`$\lVert x \rVert_2 = \sqrt{x^\top x} = \sqrt{\sum_j x_j^2}$.`
+          : String.raw`$\lVert x \rVert_\infty = \max_j \lvert x_j \rvert$ — наибольший модуль координаты.`;
+    const right =
+      kind === "l1"
+        ? String.raw`$\lVert x \rVert_1 = ${x.map((v) => `${abs(v)}`).join(" + ")} = ${answer}$.`
+        : kind === "l2"
+          ? String.raw`$\lVert x \rVert_2 = \sqrt{${x.map((v) => `${par(v)}^2`).join(" + ")}} = \sqrt{${sq}} = ${answer}$.`
+          : String.raw`$\lVert x \rVert_\infty = \max(${x.map(abs).join(", ")}) = ${answer}$.`;
+    const wrong =
+      kind === "l1"
+        ? "Складываются модули: отрицательная координата добавляет к норме, а не вычитает."
+        : kind === "l2"
+          ? String.raw`Не забыт ли корень? $x^\top x = \lVert x \rVert_2^2 = ${sq}$, а норма — корень из этого числа.`
+          : "Нужен наибольший модуль координаты, а не наибольшая координата со знаком.";
+    return {
+      kind: "numeric",
+      prompt: String.raw`$x = (${x.join(", ")})$. Найдите $\lVert x \rVert_{${sub}}$.`,
+      label: String.raw`$\lVert x \rVert_{${sub}} =$`,
+      answer,
+      tol: 0,
+      hints: [hint],
+      right,
+      wrong,
+    };
+  },
+};
+
+/** Урок I.2: проекция b на a; b = t a + s a⊥ с целыми t, s — ответ целый. */
+export const projection: Generator = {
+  id: "la.projection",
+  version: 1,
+  title: "Проекция вектора на вектор",
+  make(seed) {
+    const r = rng(seed);
+    const a = r.pick([[1, 1], [1, 2], [2, 1], [1, -1], [3, 1], [1, -2]]);
+    const [t, s] = [r.nonzero(-2, 3), r.nonzero(-2, 2)];
+    const b = [t * a[0]! - s * a[1]!, t * a[1]! + s * a[0]!];
+    const ab = a[0]! * b[0]! + a[1]! * b[1]!;
+    const aa = a[0]! * a[0]! + a[1]! * a[1]!;
+    const p = [t * a[0]!, t * a[1]!];
+    const col = (v: number[]) => sm([[v[0]!], [v[1]!]]);
+    return {
+      kind: "matrix",
+      prompt: String.raw`$a = ${col(a)}$, $b = ${col(b)}$. Найдите проекцию $b$ на $a$.`,
+      label: String.raw`$\operatorname{proj}_a b =$`,
+      answer: [[p[0]!], [p[1]!]],
+      tol: 0,
+      hints: [
+        String.raw`Проекция — $\frac{a^\top b}{a^\top a}\, a$: сначала два скалярных произведения, потом их частное умножить на $a$.`,
+        String.raw`$a^\top b = ${ab}$, $a^\top a = ${aa}$.`,
+      ],
+      right: String.raw`$a^\top b = ${ab}$, $a^\top a = ${aa}$, коэффициент $\frac{${ab}}{${aa}} = ${t}$; проекция — $${t} \cdot ${col(a)} = ${col(p)}$.`,
+      wrong: String.raw`Делить нужно на $a^\top a = \lVert a \rVert^2$, а не на $\lVert a \rVert$; проекция — вектор вдоль $a$, а не вдоль $b$.`,
+    };
+  },
+};
+
+/** Урок I.2: острый, прямой или тупой угол — по знаку скалярного произведения; вид — по кругу от номера варианта. */
+export const angle: Generator = {
+  id: "la.angle",
+  version: 1,
+  title: "Угол по скалярному произведению",
+  make(seed) {
+    const r = rng(seed);
+    const want = (["acute", "right", "obtuse"] as const)[(seed - 1) % 3]!;
+    let u: number[];
+    let v: number[];
+    let d: number;
+    do {
+      u = [r.int(-3, 3), r.int(-3, 3), r.nonzero(-3, 3)];
+      v = [r.nonzero(-3, 3), r.int(-3, 3), r.int(-3, 3)];
+      d = u.reduce((s, x, i) => s + x * v[i]!, 0);
+    } while ((want === "acute" && d <= 0) || (want === "right" && d !== 0) || (want === "obtuse" && d >= 0));
+    const sum = u.map((x, i) => `${par(x)} \\cdot ${par(v[i]!)}`).join(" + ");
+    const calc = String.raw`u^\top v = ${sum} = ${d}`;
+    const options: ChoiceOption[] = [
+      { text: "Острый", correct: want === "acute", why: want === "acute" ? String.raw`$${calc} > 0$, значит, $\cos\varphi > 0$.` : String.raw`$${calc}$: косинус острого угла положителен, а здесь — нет.` },
+      { text: "Прямой", correct: want === "right", why: want === "right" ? String.raw`$${calc}$: векторы ортогональны.` : String.raw`$${calc} \ne 0$, а у перпендикулярных векторов скалярное произведение равно нулю.` },
+      { text: "Тупой", correct: want === "obtuse", why: want === "obtuse" ? String.raw`$${calc} < 0$, значит, $\cos\varphi < 0$.` : String.raw`$${calc}$: у тупого угла косинус отрицателен, а здесь — нет.` },
+    ];
+    return {
+      kind: "choice",
+      prompt: String.raw`$u = (${u.join(", ")})$, $v = (${v.join(", ")})$. Какой угол между $u$ и $v$?`,
+      options,
+      hints: [String.raw`Длины положительны, поэтому знак $\cos\varphi = \frac{u^\top v}{\lVert u \rVert \lVert v \rVert}$ — это знак $u^\top v$.`],
+    };
+  },
+};

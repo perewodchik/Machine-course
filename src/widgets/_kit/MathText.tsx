@@ -19,7 +19,7 @@ export function MathText({ x, y, label, role, anchor = "start", className }: Pro
         // индекс опускается, следующая за ним основа возвращается на строку
         const dy = p.sub ? "0.3em" : i > 0 && parts[i - 1]?.sub ? "-0.3em" : undefined;
         return (
-          <tspan key={i} className={p.sub ? "sub" : undefined} dy={dy}>
+          <tspan key={i} className={p.sub ? "sub" : p.fn ? "kit-fn" : undefined} dy={dy}>
             {p.text}
           </tspan>
         );
