@@ -11,7 +11,14 @@ describe("линии уровня", () => {
       fc.property(v, v, v, fc.constantFrom(1, 4, -1, -4), (a, b, c, k) => {
         for (const curve of levelCurves(a, b, c, k, 5, 24)) for (const p of curve) expect(form(a, b, c, p)).toBeCloseTo(k, 6);
       }),
+      { numRuns: 400 },
     );
+  });
+
+  it("почти нулевое собственное значение не уводит кривые с уровня (контрпример fast-check из CI)", () => {
+    const [a, b, c] = [1.0004188640757743e-9, 0, -0.1326803944400243];
+    expect(eig2(a, b, c).l1).toBe(a);
+    for (const k of [1, 4, -1, -4]) for (const curve of levelCurves(a, b, c, k, 5, 24)) for (const p of curve) expect(form(a, b, c, p)).toBeCloseTo(k, 9);
   });
 
   it("собственные значения: сумма — след, произведение — определитель", () => {

@@ -6,11 +6,19 @@ export type Kind = "pd" | "psd" | "nd" | "nsd" | "indefinite" | "zero";
 
 const EPS = 1e-9;
 
-/** Собственные пары симметричной 2 × 2: λ₁ ≥ λ₂ и угол оси λ₁ (радианы). */
+/**
+ * Собственные пары симметричной 2 × 2: λ₁ ≥ λ₂ и угол оси λ₁ (радианы). Меньшее по модулю λ — через
+ * определитель, λ₁λ₂ = ac − b²: в m ± r при |λ| ≪ r теряются знаки, и полуось √(k/λ) уходит с уровня.
+ */
 export function eig2(a: number, b: number, c: number): { l1: number; l2: number; theta: number } {
   const m = (a + c) / 2;
   const r = Math.hypot((a - c) / 2, b);
-  return { l1: m + r, l2: m - r, theta: 0.5 * Math.atan2(2 * b, a - c) };
+  const det = a * c - b * b;
+  const [big, small] = m >= 0 ? [m + r, m - r] : [m - r, m + r];
+  const precise = big !== 0 ? det / big : small;
+  // при λ₁ ≈ λ₂ деление может переставить их на последний знак — порядок λ₁ ≥ λ₂ держим явно
+  const [l1, l2] = m >= 0 ? [big, Math.min(precise, big)] : [Math.max(precise, big), big];
+  return { l1, l2, theta: 0.5 * Math.atan2(2 * b, a - c) };
 }
 
 export function classify(l1: number, l2: number): Kind {
