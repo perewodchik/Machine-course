@@ -1,0 +1,28 @@
+id: rule.matmul-outer
+kind: rule
+title:
+  ru: 'Произведение матриц — сумма внешних произведений'
+  en: 'matrix product as a sum of outer products'
+statement: 'A B = \sum_{k=1}^{d} A_{:,k}\, B_{k,:}'
+symbols:
+  - name: A
+    tex: 'A'
+    shape: [d, d]
+  - name: B
+    tex: 'B'
+    shape: [d, d]
+concept: la.matmul
+corollary: 'Каждое слагаемое — столбец на строку, матрица ранга 1. Например, $X^\top X = \sum_i x^{(i)} x^{(i)\top}$ — сумма по объектам выборки.'
+pitfall: 'Брать столбец $B$ вместо строки: $\sum_k A_{:,k} B_{:,k}^\top$ — это $A B^\top$.'
+checks:
+  - kind: identity
+    lhs: 'A @ B'
+    rhs: 'np.sum(A[:, :, None] * B[None, :, :], axis=1)'
+# типичные ошибки (S3.05): неверные варианты в задачах с выбором и диагноз ответа ученика
+mutations:
+  - tex: '\sum_{k=1}^{d} A_{:,k}\, B_{:,k}^\top'
+    py: 'A @ B.T'
+    why: 'Нужна строка $k$ матрицы $B$, а не столбец: эта сумма — $AB^\top$.'
+  - tex: '\sum_{k=1}^{d} B_{:,k}\, A_{k,:}'
+    py: 'B @ A'
+    why: 'Это $BA$: множители переставлены, а в общем случае $AB \ne BA$.'

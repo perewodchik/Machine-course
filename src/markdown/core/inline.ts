@@ -1,5 +1,6 @@
 // Текст с формулами для компонентов (условия задач, подсказки, разборы): $…$ — строчная формула,
-// $$…$$ — выключная, \$ — знак доллара. Текст проходит типограф и экранируется, формулы — KaTeX ядра.
+// $$…$$ — выключная, `…` — код в строке, \$ — знак доллара. Текст проходит типограф и экранируется,
+// формулы — KaTeX ядра, код — как есть (короткий не рвётся, как в тексте урока: rehypeShortCode).
 import type { SymbolSpec } from "../../lib/content/types";
 import { renderTex, texToText } from "./katex";
 import { glueClass, isShortMath, nbspBeforeMath, PUNCT_AFTER } from "./nobr";
@@ -11,7 +12,7 @@ const text = (s: string) => escapeHtml(typograf(s.replace(/\\\$/g, "$")));
 const MATH = "\uE001"; // место формулы: типограф видит фразу целиком, и кавычки вокруг формул не разворачиваются
 
 export function renderInline(source: string, symbols?: readonly SymbolSpec[]): string {
-  const re = /\$\$([\s\S]+?)\$\$|\$((?:\\.|[^$\\])+?)\$/g;
+  const re = /\$\$([\s\S]+?)\$\$|\$((?:\\.|[^$\\])+?)\$|`([^`]+)`/g;
   const maths: { html: string; short: boolean }[] = [];
   const texts: string[] = [];
   let last = 0;
@@ -20,7 +21,9 @@ export function renderInline(source: string, symbols?: readonly SymbolSpec[]): s
     maths.push(
       m[1] !== undefined
         ? { html: renderTex(m[1], { display: true, symbols }), short: false }
-        : { html: renderTex(m[2]!, { symbols }), short: isShortMath(texToText(m[2]!)) },
+        : m[3] !== undefined
+          ? { html: `<code${m[3].length <= 16 ? ' class="nowrap"' : ""}>${escapeHtml(m[3])}</code>`, short: false }
+          : { html: renderTex(m[2]!, { symbols }), short: isShortMath(texToText(m[2]!)) },
     );
     last = re.lastIndex;
   }
@@ -43,7 +46,9 @@ export function renderInline(source: string, symbols?: readonly SymbolSpec[]): s
 /** Тот же текст без разметки — для aria-label: формулы заменены их текстом из MathML («θ1 =»). */
 export function inlineText(source: string): string {
   return source
-    .replace(/\$\$([\s\S]+?)\$\$|\$((?:\\.|[^$\\])+?)\$/g, (_m, display: string | undefined, inline: string | undefined) => texToText(display ?? inline ?? ""))
+    .replace(/\$\$([\s\S]+?)\$\$|\$((?:\\.|[^$\\])+?)\$|`([^`]+)`/g, (_m, display: string | undefined, inline: string | undefined, code: string | undefined) =>
+      code !== undefined ? code : texToText(display ?? inline ?? ""),
+    )
     .replace(/\\\$/g, "$")
     .replace(/\s+/g, " ")
     .trim();

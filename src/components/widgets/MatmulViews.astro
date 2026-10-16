@@ -1,0 +1,14 @@
+---
+// Обёртка виджета «Четыре взгляда на AB» для урока: рисунок с номером и подписью, остров React (client:visible).
+import { MatmulViews, type MatmulViewsProps } from "../../widgets/la/matmul-views";
+
+interface Props extends MatmulViewsProps {
+  /** Номер рисунка в уроке. */
+  n?: number;
+}
+const { n, ...props } = Astro.props;
+---
+<figure class="figure wide">
+  <MatmulViews client:visible {...props} />
+  <figcaption class="figure__caption">{n && <b>Рисунок {n}.</b>} <slot /></figcaption>
+</figure>

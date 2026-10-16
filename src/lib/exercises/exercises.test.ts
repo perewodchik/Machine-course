@@ -208,6 +208,28 @@ describe("генераторы", () => {
     }
   });
 
+  it("задачи урока I.3: столбец или строка произведения и внешнее произведение сходятся с условием", () => {
+    for (let s = 1; s <= 40; s++) {
+      const mc = make("la.matmul-column", s);
+      if (mc.kind !== "matrix") throw new Error("ожидалась матрица");
+      const [A, B] = [...mc.prompt.matchAll(/\\begin\{pmatrix\}(.*?)\\end\{pmatrix\}/g)].map((mm) => mm[1]!.split(" \\\\ ").map((row) => row.split(" & ").map(Number))) as [number[][], number[][]];
+      const AB = A.map((row) => [0, 1].map((c) => row.reduce((acc, a, k) => acc + a * B[k]![c]!, 0)));
+      const [, j, what] = /Найдите (\d)-(й|ю) (столбец|строку)/.exec(mc.prompt)!.map((x, i) => (i === 1 ? Number(x) - 1 : x)) as [string, number, string];
+      expect(mc.answer).toEqual(what === "й" ? AB.map((row) => [row[j]!]) : [AB[j]!]);
+      expect(what).toBe(s % 2 === 0 ? "ю" : "й");
+
+      const ou = make("la.outer", s);
+      if (ou.kind !== "matrix") throw new Error("ожидалась матрица");
+      const [u, v] = [...ou.prompt.matchAll(/begin\{smallmatrix\}(.*?)\\end/g)].map((mm) => mm[1]!.split(" \\\\ ").map(Number)) as [number[], number[]];
+      expect(ou.answer).toEqual(u.map((a) => v.map((b) => a * b + 0)));
+
+      const sp = make("la.shape-product", s);
+      if (sp.kind !== "choice") throw new Error("ожидался выбор");
+      expect(sp.options.filter((o) => o.correct)).toHaveLength(1);
+      expect(new Set(sp.options.map((o) => o.text)).size).toBe(4);
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

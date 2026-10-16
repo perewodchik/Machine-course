@@ -20,8 +20,8 @@ export interface ShellView<State, Action, Params> {
   actions(state: State): number;
   hints(state: State): number;
   debrief?(params: Params): { question: string; answer: string };
-  /** Поле игры (рисунок). */
-  board(state: State): ReactNode;
+  /** Поле игры (рисунок); dispatch — для игр, где ходят прямо на поле (блоки «Тетриса размерностей»). */
+  board(state: State, dispatch: (action: Action) => void): ReactNode;
   /** Управление игрой: кнопки, поля. */
   controls(state: State, dispatch: (action: Action) => void): ReactNode;
   /** Справка по клавишам: [клавиши, действие]. */
@@ -131,7 +131,7 @@ export function GameShell<State, Action, Params>({ spec, view, levels, seed: ini
         </ol>
       </div>
       <div className="game__layout">
-        <div className="game__board">{view.board(state)}</div>
+        <div className="game__board">{view.board(state, dispatch)}</div>
         <section className="game__panel" aria-label="Управление игрой">
           {view.controls(state, dispatch)}
 

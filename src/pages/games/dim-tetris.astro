@@ -1,0 +1,27 @@
+---
+// Игра «Тетрис размерностей» (S3.L1, уроки I.3 и II.3): остров React с оболочкой GameShell. Блок «Чему учит игра» — статичный HTML.
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { DimTetris, meta } from "../../games/dim-tetris";
+import { loadCourse } from "../../lib/content/collections";
+
+const course = await loadCourse("foundations");
+const lesson = course.lessons.find((l) => l.key === meta.lesson);
+if (!lesson) throw new Error(`игра ${meta.id}: нет урока ${meta.lesson}`);
+const module = course.modules.find((m) => m.id === lesson.module);
+const calculus = course.lessons.find((l) => l.key === "foundations/calculus/matrix-calculus");
+---
+<BaseLayout title={meta.title} description="Соберите из матриц-блоков произведение нужной формы: стыкуются блоки, у которых совпали внутренние размеры." course={course}>
+  <main class="game shell" id="content">
+    <nav class="breadcrumb" aria-label="Путь">
+      <a href={`${course.href}#m-${lesson.module}`}>{module?.title}</a><span aria-hidden="true">/</span><span>Игра к уроку {lesson.number}</span>
+    </nav>
+    <h1>{meta.title}</h1>
+    <p class="lead game__lead">Соберите из блоков-матриц произведение нужной формы. Блоки стыкуются, когда число столбцов левого равно числу строк правого. Шесть уровней, партия&nbsp;— 3–5&nbsp;минут.</p>
+    <DimTetris client:load>
+      <div class="block block--intuition game__teaches">
+        <p><span class="block__title">Чему учит игра.</span> Произведение <i>AB</i> определено, только когда у <i>A</i> столько столбцов, сколько строк у <i>B</i>; у результата строки <i>A</i> и столбцы <i>B</i>. Проверка размеров&nbsp;— первый способ найти ошибку в формуле вроде <i>X</i><sup>⊤</sup><i>y</i>.</p>
+        <p><a href={lesson.href}>Урок {lesson.number}. {lesson.title}</a>{calculus && <> · <a href={calculus.href}>урок {calculus.number}: матричное дифференцирование</a></>}</p>
+      </div>
+    </DimTetris>
+  </main>
+</BaseLayout>

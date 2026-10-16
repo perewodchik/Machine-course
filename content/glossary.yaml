@@ -163,3 +163,34 @@
 - id: cosine-similarity
   ru: 'косинусная близость'
   en: 'cosine similarity'
+- id: matrix-product
+  ru: 'произведение матриц'
+  en: 'matrix product, matrix multiplication'
+- id: outer-product
+  ru: 'внешнее произведение'
+  en: 'outer product'
+  note: '$x y^\top$ — столбец на строку, матрица ранга 1. Не путать с векторным произведением (*cross product*).'
+- id: block-matrix
+  ru: 'блочная матрица'
+  en: 'block matrix'
+- id: hadamard-product
+  ru: 'адамарово (поэлементное) произведение'
+  en: 'Hadamard product, elementwise product'
+  note: 'В NumPy — `A * B`; матричное произведение — `A @ B`.'
+- id: gram-matrix
+  ru: 'матрица Грама'
+  en: 'Gram matrix'
+  note: '$X^\top X$ — попарные скалярные произведения столбцов $X$.'
+- id: vectorization
+  ru: 'векторизация'
+  en: 'vectorization'
+  note: 'Запись вычисления через операции с матрицами вместо циклов по объектам.'
+- id: identity-matrix
+  ru: 'единичная матрица'
+  en: 'identity matrix'
+- id: diagonal-matrix
+  ru: 'диагональная матрица'
+  en: 'diagonal matrix'
+- id: activation
+  ru: 'функция активации'
+  en: 'activation function'
