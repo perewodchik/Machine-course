@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-16 — L-I.7 Обратная матрица и определитель — готов
+- **Сделано:** Урок I.7: три цикла (обратная матрица — определение, связь с рангом и системами, формула 2 × 2, (AB)⁻¹ = B⁻¹A⁻¹; определитель как площадь со знаком — рисунок «деформация сетки» из I.4, ориентация, det = 0; свойства и ML — det(AB), det(A⁻¹), det(cA), плотность гауссианы и ICA, solve вместо inv). Понятие la.determinant; правила rule.inverse-product, rule.det-product, rule.inverse-2x2; генераторы la.inverse2 (det = ±1, целый ответ), la.det-area, la.det-rules; ячейка la/inverse.py закреплена тестом. Радиокнопки «деформации сетки» на сенсорных экранах — 24 px (axe target-size после гидратации); тесты уроков модуля I получили лимит 90 с.
+- **Файлы:** content/courses/foundations/linear-algebra/inverse-determinant.mdx, content/formulas/rules/{inverse-product,det-product,inverse-2x2}.yaml, content/concepts/la.yaml, src/lib/exercises/generators/la.ts, code/snippets/la/inverse.py, src/styles/kit.css
+- **Проверка:** vitest 395; pytest; e2e полный — 446 passed, 166 skipped; lint (код выхода), check, validate, check_consistency — чисто; формулы на 390 px — чисто
+- **Отклонения от плана и решения:** Новый виджет не нужен: «деформация сетки» уже показывает параллелограмм и det A со знаком, композиция — det(AB). Предсказание знака по картинке — предсказание с рисунком 1 и вопросы о площади образа.
+- **Следующий шаг:** L-I.8 — ортогональность и проекции.
+- **Вопросы пользователю:** —
+
 ### 2026-10-16 — L-I.6 Системы уравнений и ранг — готов
 - **Сделано:** Урок I.6: три цикла (сколько решений — прямые на плоскости и ранги A, [A | b]; пространство столбцов и ранг, игра «Попади в точку» на уровнях 4–5; ядро, все решения — частное плюс ядро, теорема о ранге и дефекте, зависимые признаки в регрессии). Виджет «Ax = b: нет решений, одно, бесконечно много» (src/widgets/la/system-lines). Понятие la.null-space, правило rule.solution-structure, генераторы la.solutions-count, la.kernel-vector, la.rank-nullity (тесты сверяют их с рангом по Гауссу); ячейка la/systems.py закреплена тестом. Кит: rank прямым шрифтом в подписях.
 - **Файлы:** content/courses/foundations/linear-algebra/systems-rank.mdx, src/widgets/la/system-lines/*, content/formulas/rules/solution-structure.yaml, src/lib/exercises/generators/la.ts, code/snippets/la/systems.py

@@ -120,6 +120,15 @@
   prerequisites: [la.matmul, la.rank]
   core: true
 
+- id: la.determinant
+  title:
+    ru: 'Определитель'
+    en: 'determinant'
+  summary: 'Множитель, на который $x \mapsto Ax$ умножает площади (объёмы), со знаком ориентации; $\det A = 0$ — матрица вырождена.'
+  lesson: inverse-determinant
+  prerequisites: [la.linear-map, la.rank]
+  core: true
+
 - id: la.eigen
   title:
     ru: 'Собственные значения и векторы'

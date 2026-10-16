@@ -767,3 +767,109 @@ export const rankNullity: Generator = {
     };
   },
 };
+
+/** Урок I.7: обратная к матрице 2 × 2 с определителем ±1 — ответ целый. */
+export const inverse2: Generator = {
+  id: "la.inverse2",
+  version: 1,
+  title: "Обратная матрица 2 × 2",
+  make(seed) {
+    const r = rng(seed);
+    // произведение двух сдвигов: [[1, p], [0, 1]] · [[1, 0], [q, 1]] — определитель 1; знак строки даёт −1
+    const [p, q] = [r.nonzero(-2, 2), r.nonzero(-2, 2)];
+    const s = r.pick([1, -1]);
+    const A = [[s * (1 + p * q), s * p], [q, 1]];
+    const d = A[0]![0]! * A[1]![1]! - A[0]![1]! * A[1]![0]!;
+    const inv = [[A[1]![1]! / d, -A[0]![1]! / d], [-A[1]![0]! / d, A[0]![0]! / d]].map((row) => row.map((v) => v + 0));
+    return {
+      kind: "matrix",
+      prompt: String.raw`Найдите обратную матрицу: $$A = ${pm(A)}.$$`,
+      label: String.raw`$A^{-1} =$`,
+      answer: inv,
+      tol: 0,
+      hints: [
+        String.raw`Для $\left(\begin{smallmatrix} a & b \\ c & d \end{smallmatrix}\right)$ обратная — $\frac{1}{ad - bc} \left(\begin{smallmatrix} d & -b \\ -c & a \end{smallmatrix}\right)$.`,
+        String.raw`Здесь $\det A = ${d}$.`,
+      ],
+      right: String.raw`$\det A = ${d}$, $A^{-1} = ${sm(inv)}$. Проверка: $A A^{-1} = I$.`,
+      wrong: "Диагональные элементы меняются местами, внедиагональные меняют знак, всё делится на определитель. Проверьте произведение с A.",
+    };
+  },
+};
+
+/** Урок I.7: площадь образа фигуры — площадь, умноженная на |det A|. */
+export const detArea: Generator = {
+  id: "la.det-area",
+  version: 1,
+  title: "Площадь образа",
+  make(seed) {
+    const r = rng(seed);
+    const A = [[r.int(-3, 3), r.int(-3, 3)], [r.int(-3, 3), r.int(-3, 3)]];
+    if (A[0]![0]! * A[1]![1]! === A[0]![1]! * A[1]![0]!) A[0]![0] = A[0]![0]! + 1;
+    const d = A[0]![0]! * A[1]![1]! - A[0]![1]! * A[1]![0]!;
+    const fig = r.pick([
+      { name: "квадрат со стороной 2", area: 4 },
+      { name: "треугольник площади 3", area: 3 },
+      { name: "круг площади 5", area: 5 },
+      { name: "прямоугольник 1 × 3", area: 3 },
+    ]);
+    return {
+      kind: "numeric",
+      prompt: String.raw`Отображение $x \mapsto Ax$, $A = ${sm(A)}$, переводит ${fig.name} в новую фигуру. Найдите её площадь.`,
+      label: "площадь =",
+      answer: fig.area * Math.abs(d),
+      tol: 0,
+      hints: [String.raw`Линейное отображение умножает любую площадь на $\lvert \det A \rvert$ — не только площадь квадрата.`, String.raw`$\det A = ${d}$.`],
+      right: String.raw`$\lvert \det A \rvert = ${Math.abs(d)}$, площадь — $${fig.area} \cdot ${Math.abs(d)} = ${fig.area * Math.abs(d)}$.${d < 0 ? " Знак минус у определителя значит, что фигура ещё и отразилась, но площадь положительна." : ""}`,
+      wrong: String.raw`Площадь образа — исходная площадь, умноженная на модуль определителя, $\lvert ad - bc \rvert$.`,
+    };
+  },
+};
+
+/** Урок I.7: свойства определителя — det(AB), det(A⁻¹), det(cA) для 2 × 2; вид по кругу от номера варианта. */
+export const detRules: Generator = {
+  id: "la.det-rules",
+  version: 1,
+  title: "Свойства определителя",
+  make(seed) {
+    const r = rng(seed);
+    const kind = (["product", "inverse", "scale"] as const)[(seed - 1) % 3]!;
+    if (kind === "product") {
+      const [a, b] = [r.nonzero(-4, 4), r.nonzero(-3, 3)];
+      return {
+        kind: "numeric",
+        prompt: String.raw`$A$ и $B$ — матрицы $3 \times 3$, $\det A = ${a}$, $\det B = ${b}$. Найдите $\det(AB)$.`,
+        label: String.raw`$\det(AB) =$`,
+        answer: a * b,
+        tol: 0,
+        hints: [String.raw`Площади (объёмы) растягиваются последовательно: $\det(AB) = \det A \det B$.`],
+        right: String.raw`$\det(AB) = ${a} \cdot ${par(b)} = ${a * b}$.`,
+        wrong: String.raw`Определители перемножаются, а не складываются: $\det(AB) = \det A \det B$.`,
+      };
+    }
+    if (kind === "inverse") {
+      const a = r.pick([2, 4, 5, -2, -4, -5]);
+      return {
+        kind: "numeric",
+        prompt: String.raw`$\det A = ${a}$. Найдите $\det(A^{-1})$.`,
+        label: String.raw`$\det(A^{-1}) =$`,
+        answer: 1 / a,
+        tol: 1e-9,
+        hints: [String.raw`$A A^{-1} = I$ и $\det I = 1$, поэтому $\det A \cdot \det(A^{-1}) = 1$.`],
+        right: String.raw`$\det(A^{-1}) = \frac{1}{\det A} = \frac{1}{${a}} = ${String(1 / a)}$.`,
+        wrong: String.raw`Обратная отменяет растяжение: если $A$ растягивает площади в $${a}$ раз, то $A^{-1}$ — в $\frac{1}{${a}}$ раз.`,
+      };
+    }
+    const [c, a] = [r.pick([2, 3, -2]), r.nonzero(-3, 3)];
+    return {
+      kind: "numeric",
+      prompt: String.raw`$A$ — матрица $2 \times 2$, $\det A = ${a}$. Найдите $\det(${c}A)$.`,
+      label: String.raw`$\det(${c}A) =$`,
+      answer: c * c * a,
+      tol: 0,
+      hints: [String.raw`$${c}A$ умножает на $${c}$ каждый из двух столбцов, а определитель линеен по каждому столбцу.`],
+      right: String.raw`$\det(${c}A) = ${par(c)}^2 \det A = ${c * c} \cdot ${par(a)} = ${c * c * a}$: в $\mathbb{R}^2$ растягиваются обе стороны квадрата.`,
+      wrong: String.raw`Не $${c} \det A$: множитель $${c}$ стоит в каждом из двух столбцов, поэтому $\det(${c}A) = ${par(c)}^2 \det A$.`,
+    };
+  },
+};

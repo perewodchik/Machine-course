@@ -1,0 +1,33 @@
+id: rule.inverse-2x2
+kind: rule
+title:
+  ru: 'Обратная матрица 2 × 2'
+  en: 'inverse of a 2 × 2 matrix'
+statement: '\begin{pmatrix} a & b \\ c & d \end{pmatrix}^{-1} = \frac{1}{ad - bc} \begin{pmatrix} d & -b \\ -c & a \end{pmatrix}'
+symbols:
+  - name: a
+    tex: 'a'
+    shape: []
+  - name: b
+    tex: 'b'
+    shape: []
+  - name: c
+    tex: 'c'
+    shape: []
+  - name: d
+    tex: 'd'
+    shape: []
+concept: la.inverse
+corollary: 'Диагональные элементы меняются местами, внедиагональные — меняют знак, всё делится на определитель. При $ad - bc = 0$ обратной нет.'
+pitfall: 'Забыть сменить знаки внедиагональных элементов или поменять местами $a$ и $d$.'
+checks:
+  - kind: identity
+    lhs: 'np.linalg.inv(np.array([[a, b], [c, d]]))'
+    rhs: 'np.array([[d, -b], [-c, a]]) / (a * d - b * c)'
+mutations:
+  - tex: '\frac{1}{ad - bc} \begin{pmatrix} d & b \\ c & a \end{pmatrix}'
+    py: 'np.array([[d, b], [c, a]]) / (a * d - b * c)'
+    why: 'Внедиагональные элементы должны сменить знак: проверьте произведение с исходной матрицей.'
+  - tex: '\begin{pmatrix} 1/a & 1/b \\ 1/c & 1/d \end{pmatrix}'
+    py: 'np.array([[1 / a, 1 / b], [1 / c, 1 / d]])'
+    why: 'Обратная матрица — не матрица обратных чисел: её произведение с $A$ должно дать $I$.'

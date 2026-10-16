@@ -1,0 +1,29 @@
+id: rule.inverse-product
+kind: rule
+title:
+  ru: 'Обратная к произведению'
+  en: 'inverse of a product'
+statement: '(AB)^{-1} = B^{-1} A^{-1}'
+symbols:
+  - name: A
+    tex: 'A'
+    shape: [d, d]
+    sample: invertible
+  - name: B
+    tex: 'B'
+    shape: [d, d]
+    sample: invertible
+concept: la.inverse
+corollary: 'Как у транспонирования, порядок разворачивается: чтобы отменить «сначала $B$, потом $A$», сначала отменяют $A$, потом $B$.'
+pitfall: 'Не менять порядок: $(AB)^{-1} \ne A^{-1} B^{-1}$, если $A$ и $B$ не перестановочны.'
+checks:
+  - kind: identity
+    lhs: 'np.linalg.inv(A @ B)'
+    rhs: 'np.linalg.inv(B) @ np.linalg.inv(A)'
+mutations:
+  - tex: 'A^{-1} B^{-1}'
+    py: 'np.linalg.inv(A) @ np.linalg.inv(B)'
+    why: 'Порядок не развёрнут. Проверка: $(AB)(A^{-1}B^{-1})$ не сокращается, а $(AB)(B^{-1}A^{-1}) = A I A^{-1} = I$.'
+  - tex: 'A^{-1} + B^{-1}'
+    py: 'np.linalg.inv(A) + np.linalg.inv(B)'
+    why: 'Обращение — не линейная операция: обратная к произведению не сумма обратных.'

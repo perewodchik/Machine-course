@@ -37,6 +37,7 @@ export const layoutPages = {
   i3: "/foundations/linear-algebra/matrix-multiplication/",
   i5: "/foundations/linear-algebra/transpose-trace/",
   i6: "/foundations/linear-algebra/systems-rank/",
+  i7: "/foundations/linear-algebra/inverse-determinant/",
   dimgame: "/games/dim-tetris/",
   spangame: "/games/span-hit/",
   concept: "/concepts/la.dot-product/",

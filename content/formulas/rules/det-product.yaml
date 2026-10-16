@@ -1,0 +1,27 @@
+id: rule.det-product
+kind: rule
+title:
+  ru: 'Определитель произведения'
+  en: 'determinant of a product'
+statement: '\det(AB) = \det A \, \det B'
+symbols:
+  - name: A
+    tex: 'A'
+    shape: [d, d]
+  - name: B
+    tex: 'B'
+    shape: [d, d]
+concept: la.determinant
+corollary: 'Площади умножаются: $B$ растягивает в $\det B$ раз, потом $A$ — ещё в $\det A$. Отсюда $\det(A^{-1}) = 1 / \det A$.'
+pitfall: 'Переносить правило на сумму: $\det(A + B) \ne \det A + \det B$.'
+checks:
+  - kind: identity
+    lhs: 'np.linalg.det(A @ B)'
+    rhs: 'np.linalg.det(A) * np.linalg.det(B)'
+mutations:
+  - tex: '\det A + \det B'
+    py: 'np.linalg.det(A) + np.linalg.det(B)'
+    why: 'Определитель — коэффициент изменения площади, а коэффициенты двух растяжений подряд перемножаются, а не складываются.'
+  - tex: '\det(A + B)'
+    py: 'np.linalg.det(A + B)'
+    why: 'Это определитель суммы — к произведению он отношения не имеет.'

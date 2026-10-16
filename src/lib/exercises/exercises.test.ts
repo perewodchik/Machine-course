@@ -294,6 +294,27 @@ describe("генераторы", () => {
     }
   });
 
+  it("задачи урока I.7: обратная, площадь образа и свойства определителя сходятся с условием", () => {
+    for (let s = 1; s <= 40; s++) {
+      const iv = make("la.inverse2", s);
+      if (iv.kind !== "matrix") throw new Error("ожидалась матрица");
+      const A = /\\begin\{pmatrix\}(.*?)\\end\{pmatrix\}/.exec(iv.prompt)![1]!.split(" \\\\ ").map((row) => row.split(" & ").map(Number));
+      const prod = A.map((row) => [0, 1].map((j) => row.reduce((acc, a, k) => acc + a * iv.answer[k]![j]!, 0)));
+      expect(prod).toEqual([[1, 0], [0, 1]]);
+      expect(iv.answer.flat().every(Number.isInteger)).toBe(true);
+
+      const da = num(make("la.det-area", s));
+      const M = /smallmatrix\}(.*?)\\end/.exec(da.prompt)![1]!.split(" \\\\ ").map((row) => row.split(" & ").map(Number));
+      const area = Number(/площади (\d)|стороной (\d)|1 × (\d)/.exec(da.prompt)!.slice(1).find(Boolean));
+      const base = da.prompt.includes("стороной") ? area * area : area;
+      expect(da.answer).toBe(base * Math.abs(M[0]![0]! * M[1]![1]! - M[0]![1]! * M[1]![0]!));
+      expect(da.answer).toBeGreaterThan(0);
+
+      const dr = num(make("la.det-rules", s));
+      expect(Number.isFinite(dr.answer)).toBe(true);
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,
