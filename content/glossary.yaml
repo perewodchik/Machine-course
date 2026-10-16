@@ -263,3 +263,18 @@
 - id: principal-components
   ru: 'главные компоненты'
   en: 'principal components'
+- id: quadratic-form
+  ru: 'квадратичная форма'
+  en: 'quadratic form'
+- id: positive-definite
+  ru: 'положительно определённая матрица; отрицательно определённая; знакопеременная'
+  en: 'positive definite (PD) matrix; negative definite; indefinite'
+- id: level-set
+  ru: 'линия (множество) уровня'
+  en: 'level set, contour'
+- id: rayleigh-quotient
+  ru: 'отношение Рэлея'
+  en: 'Rayleigh quotient'
+- id: matrix-square-root
+  ru: 'корень из матрицы; разложение Холецкого'
+  en: 'matrix square root; Cholesky decomposition'

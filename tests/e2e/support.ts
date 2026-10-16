@@ -41,6 +41,7 @@ export const layoutPages = {
   i8: "/foundations/linear-algebra/orthogonality-projections/",
   eigengame: "/games/eigen-hunt/",
   i9: "/foundations/linear-algebra/eigen/",
+  i10: "/foundations/linear-algebra/quadratic-forms/",
   dimgame: "/games/dim-tetris/",
   spangame: "/games/span-hit/",
   concept: "/concepts/la.dot-product/",

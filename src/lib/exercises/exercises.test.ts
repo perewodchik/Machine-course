@@ -357,6 +357,38 @@ describe("генераторы", () => {
     }
   });
 
+  it("задачи урока I.10: знакоопределённость и отношение Рэлея сходятся с собственными значениями", () => {
+    const parse = (tex: string) => /\\begin\{pmatrix\}(.*?)\\end\{pmatrix\}/.exec(tex)![1]!.split(" \\\\ ").map((row) => row.split(" & ").map(Number));
+    const eig = (A: number[][]) => {
+      const [tr, det] = [A[0]![0]! + A[1]![1]!, A[0]![0]! * A[1]![1]! - A[0]![1]! * A[1]![0]!];
+      const s = Math.sqrt(tr * tr - 4 * det);
+      return [(tr + s) / 2, (tr - s) / 2] as const;
+    };
+    const kinds = new Set<string>();
+    let trap = 0;
+    for (let s = 1; s <= 40; s++) {
+      const pc = make("la.psd-check", s);
+      if (pc.kind !== "choice") throw new Error("ожидался выбор");
+      const A = parse(pc.prompt);
+      expect(A[0]![1]).toBe(A[1]![0]);
+      const [l1, l2] = eig(A);
+      const kind = l2 > 0 ? "Положительно опр" : l2 === 0 && l1 > 0 ? "Положительно полу" : l1 < 0 ? "Отрицательно" : "Не знако";
+      const right = pc.options.filter((o) => o.correct);
+      expect(right).toHaveLength(1);
+      expect(right[0]!.text.startsWith(kind), pc.prompt).toBe(true);
+      kinds.add(kind);
+      if (kind === "Не знако" && A.flat().every((x) => x > 0)) trap++;
+
+      const ry = num(make("la.rayleigh", s));
+      const B = parse(ry.prompt);
+      expect(ry.answer).toBe(s % 2 === 1 ? eig(B)[0] : eig(B)[1]);
+      expect(Number.isInteger(ry.answer)).toBe(true);
+      expect(ry.answer).not.toBe(s % 2 === 1 ? Math.max(B[0]![0]!, B[1]![1]!) : Math.min(B[0]![0]!, B[1]![1]!));
+    }
+    expect(kinds.size).toBe(4);
+    expect(trap).toBeGreaterThan(0);
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,
@@ -371,7 +403,8 @@ describe("генераторы", () => {
     for (const g of generators.values()) {
       for (let s = 1; s <= 12; s++) for (const t of texts(g.make(s))) expect(() => renderInline(t), `${g.id}, seed ${s}: ${t}`).not.toThrow();
     }
-  });
+    // работа растёт с каждым генератором: тысячи вызовов KaTeX под нагрузкой (e2e рядом, CI) не укладываются в 5 секунд
+  }, 30_000);
 
   it("неизвестный генератор — понятная ошибка", () => {
     expect(() => generator("la.nope")).toThrow("нет генератора задач «la.nope»");

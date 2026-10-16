@@ -1058,3 +1058,91 @@ export const eigenPower: Generator = {
     };
   },
 };
+
+/** Симметричная 2 × 2 по знакам собственных значений: λ₁λ₂ = det, λ₁ + λ₂ = tr. */
+type Definiteness = "pd" | "psd" | "nd" | "indefinite";
+
+/** Урок I.10: знакоопределённость симметричной 2 × 2 — по следу и определителю, а не по знакам элементов. */
+export const psdCheck: Generator = {
+  id: "la.psd-check",
+  version: 1,
+  title: "Знакоопределённость",
+  make(seed) {
+    const r = rng(seed);
+    const kind = (["pd", "indefinite", "psd", "nd"] as const)[(seed - 1) % 4]!;
+    let A: number[][];
+    for (;;) {
+      if (kind === "psd") {
+        // ранг 1: k · (p, q)(p, q)ᵀ — det = 0, след > 0
+        const [p, q, k] = [r.pick([1, 2]), r.nonzero(-2, 2), r.pick([1, 2])];
+        A = [[k * p * p, k * p * q], [k * p * q, k * q * q]];
+      } else if (kind === "indefinite" && seed % 8 === 2) {
+        // все элементы положительны, а форма не знакоопределена — ловушка «по знакам элементов»
+        const [a, c] = [r.int(1, 3), r.int(1, 3)];
+        const b = r.int(2, 4);
+        A = [[a, b], [b, c]];
+      } else {
+        const [a, c, b] = [r.int(1, 5), r.int(1, 5), r.nonzero(-3, 3)];
+        A = kind === "indefinite" ? [[a, b], [b, -c]] : [[a, b], [b, c]];
+        if (kind === "nd") A = A.map((row) => row.map((x) => -x + 0));
+      }
+      const det = A[0]![0]! * A[1]![1]! - A[0]![1]! ** 2;
+      const want: Record<Definiteness, boolean> = { pd: det > 0, nd: det > 0, psd: det === 0, indefinite: det < 0 };
+      if (want[kind]) break;
+    }
+    const [tr, det] = [A[0]![0]! + A[1]![1]!, A[0]![0]! * A[1]![1]! - A[0]![1]! ** 2];
+    const facts = String.raw`$\operatorname{tr} A = ${tr}$, $\det A = ${det}$`;
+    const why: Record<Definiteness, string> = {
+      pd: String.raw`${facts}: собственные значения одного знака, и в сумме они положительны — оба больше нуля.`,
+      psd: String.raw`${facts}: одно собственное значение — ноль, другое равно следу: $${tr} > 0$. На собственном векторе с $\lambda = 0$ форма равна нулю.`,
+      nd: String.raw`${facts}: собственные значения одного знака, а в сумме отрицательны — оба меньше нуля.`,
+      indefinite: String.raw`${facts}: произведение собственных значений отрицательно, значит, они разных знаков.${A.flat().every((x) => x > 0) ? " Положительные элементы не спасают: знак формы решают собственные значения." : ""}`,
+    };
+    const options: ChoiceOption[] = (
+      [
+        ["pd", String.raw`Положительно определена: $x^\top A x > 0$ при $x \ne 0$`],
+        ["psd", "Положительно полуопределена, но не определена"],
+        ["nd", "Отрицательно определена"],
+        ["indefinite", "Не знакоопределена: форма принимает значения обоих знаков"],
+      ] as const
+    ).map(([k, text]) => ({ text, correct: k === kind, why: why[kind] }));
+    return {
+      kind: "choice",
+      prompt: String.raw`Какая это матрица? $$A = ${pm(A)}$$`,
+      options,
+      hints: [String.raw`Для симметричной $2 \times 2$: $\lambda_1 \lambda_2 = \det A$ и $\lambda_1 + \lambda_2 = \operatorname{tr} A$. Знак определителя говорит, одного ли знака собственные значения.`],
+    };
+  },
+};
+
+/** Урок I.10: границы отношения Рэлея — максимум и минимум xᵀAx на единичных векторах равны λ_max и λ_min. */
+export const rayleigh: Generator = {
+  id: "la.rayleigh",
+  version: 1,
+  title: "Отношение Рэлея",
+  make(seed) {
+    const r = rng(seed);
+    for (;;) {
+      const [a, c, b] = [r.int(-2, 5), r.int(-2, 5), r.nonzero(-3, 3)];
+      const s = Math.sqrt((a - c) ** 2 + 4 * b * b);
+      if (!Number.isInteger(s) || (a + c + s) % 2 !== 0) continue;
+      const [big, small] = [(a + c + s) / 2, (a + c - s) / 2];
+      const max = seed % 2 === 1;
+      const ans = max ? big : small;
+      const word = max ? "наибольшее" : "наименьшее";
+      return {
+        kind: "numeric",
+        prompt: String.raw`$$A = ${pm([[a, b], [b, c]])}.$$ Найдите ${word} значение $x^\top A x$ по всем векторам единичной длины $\lVert x \rVert = 1$.`,
+        label: String.raw`$${max ? "\\max" : "\\min"}_{\lVert x \rVert = 1} x^\top A x =$`,
+        answer: ans + 0,
+        tol: 0,
+        hints: [
+          String.raw`На единичных векторах $x^\top A x$ — отношение Рэлея, и оно лежит между $\lambda_{\min}$ и $\lambda_{\max}$.`,
+          String.raw`$\lambda^2 - ${par(a + c)}\lambda + ${par(a * c - b * b)} = 0$.`,
+        ],
+        right: String.raw`Собственные значения — $${big}$ и $${small}$. ${max ? "Максимум" : "Минимум"} — $${ans}$, на собственном векторе этого значения.`,
+        wrong: String.raw`Ответ — собственное значение, а не диагональный элемент: $x = e_1$ даёт $${a}$, но наклонный вектор даёт ${max ? "больше" : "меньше"}. Корни характеристического уравнения — $${big}$ и $${small}$.`,
+      };
+    }
+  },
+};

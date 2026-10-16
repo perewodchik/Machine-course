@@ -1,0 +1,28 @@
+id: rule.sqrt-psd
+kind: rule
+title:
+  ru: 'Корень из положительно полуопределённой матрицы'
+  en: 'square root of a positive semidefinite matrix'
+statement: 'A^{1/2} = Q \Lambda^{1/2} Q^\top'
+symbols:
+  - name: A
+    tex: 'A'
+    shape: [d, d]
+    sample: spd
+concept: la.psd
+corollary: 'Это симметричная матрица с $(A^{1/2})^2 = A$. Корень извлекают из каждого собственного значения, а оси оставляют те же; при $A \succeq 0$ все $\lambda_i \ge 0$, и корни вещественны. $A^{1/2}$ симметрична и тоже $\succeq 0$.'
+pitfall: 'Извлекать корень из каждого элемента: $\bigl(\sqrt{a_{ij}}\bigr)$, умноженная на себя, не даёт $A$.'
+checks:
+  - kind: identity
+    lhs: '((np.linalg.eigh(A)[1] * np.sqrt(np.linalg.eigh(A)[0])) @ np.linalg.eigh(A)[1].T) @ ((np.linalg.eigh(A)[1] * np.sqrt(np.linalg.eigh(A)[0])) @ np.linalg.eigh(A)[1].T)'
+    rhs: 'A'
+mutations:
+  - tex: 'Q \Lambda^{2} Q^\top'
+    py: '((np.linalg.eigh(A)[1] * np.linalg.eigh(A)[0] ** 2) @ np.linalg.eigh(A)[1].T) @ ((np.linalg.eigh(A)[1] * np.linalg.eigh(A)[0] ** 2) @ np.linalg.eigh(A)[1].T)'
+    why: 'Это $A^2$: собственные значения возведены в квадрат, а нужен корень — $\lambda_i^{1/2}$.'
+  - tex: 'Q^\top \Lambda^{1/2} Q'
+    py: '((np.linalg.eigh(A)[1].T * np.sqrt(np.linalg.eigh(A)[0])) @ np.linalg.eigh(A)[1]) @ ((np.linalg.eigh(A)[1].T * np.sqrt(np.linalg.eigh(A)[0])) @ np.linalg.eigh(A)[1])'
+    why: 'Порядок: собственные векторы — столбцы $Q$, поэтому $Q$ стоит слева, а $Q^\top$ справа, как в $A = Q \Lambda Q^\top$.'
+  - tex: '\bigl(\sqrt{a_{ij}}\bigr)'
+    py: 'np.emath.sqrt(A) @ np.emath.sqrt(A)'
+    why: 'Корень из каждого элемента — не корень из матрицы: произведение такой матрицы на себя не равно $A$. Корень берут из собственных значений.'

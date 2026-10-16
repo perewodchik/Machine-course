@@ -1,0 +1,67 @@
+id: f.quadratic-eigen
+kind: formula
+title:
+  ru: 'Квадратичная форма в собственном базисе'
+  en: 'a quadratic form in the eigenbasis'
+statement: '\sym{x}{x}^\top \sym{A}{A}\, \sym{x}{x} = \sum_{i=1}^{d} \lambda_i\, (q_i^\top \sym{x}{x})^2'
+
+# Урок I.10: спектральная теорема (I.9) превращает форму в сумму квадратов с весами λᵢ.
+# Отсюда знакоопределённость по собственным значениям, полуоси 1/√λᵢ и границы отношения Рэлея.
+symbols:
+  - name: x
+    tex: 'x'
+    meaning: 'вектор, на котором вычисляют форму'
+    shape: [d, 1]
+    role: data
+  - name: A
+    tex: 'A'
+    meaning: 'симметричная матрица формы'
+    shape: [d, d]
+    role: param
+    sample: spd
+
+dependsOn:
+  concepts: [la.quadratic-form, la.eigen, la.symmetric]
+  rules: [rule.spectral, rule.transpose-product]
+
+conditions:
+  - tex: '\sym{A}{A} = \sym{A}{A}^\top'
+    why: 'Ортонормированный базис из собственных векторов есть только у симметричной матрицы. Несимметричную сначала заменяют на $\tfrac{A + A^\top}{2}$ — форма от этого не меняется.'
+
+derivation:
+  plan:
+    - 'Разложить $A$ по спектральной теореме'
+    - 'Перейти к координатам $z = Q^\top x$ в базисе собственных векторов'
+    - 'Расписать $z^\top \Lambda z$ как сумму: $\Lambda$ диагональна'
+  steps:
+    - goal: 0
+      tex: '\sym{x}{x}^\top \sym{A}{A}\, \sym{x}{x} = \sym{x}{x}^\top \changed{Q \Lambda Q^\top} \sym{x}{x}'
+      by: [rule.spectral]
+      note: '$A$ симметрична, поэтому $A = Q \Lambda Q^\top$: столбцы $Q$ — ортонормированные собственные векторы $q_1, \ldots, q_d$, на диагонали $\Lambda$ — собственные значения.'
+      check:
+        kind: same
+        py: 'x @ A @ x'
+    - goal: 1
+      tex: '= \changed{(Q^\top \sym{x}{x})^\top}\, \Lambda\, (Q^\top \sym{x}{x}) = z^\top \Lambda z, \qquad z = Q^\top \sym{x}{x}'
+      by: [rule.transpose-product]
+      note: '$x^\top Q = (Q^\top x)^\top$. Координаты $z_i = q_i^\top x$ — это координаты $x$ в ортонормированном базисе $q_1, \ldots, q_d$ (урок I.8).'
+      check:
+        kind: same
+        py: '(np.linalg.eigh(A)[1].T @ x) @ np.diag(np.linalg.eigh(A)[0]) @ (np.linalg.eigh(A)[1].T @ x)'
+    - goal: 2
+      tex: '= \changed{\sum_{i=1}^{d} \lambda_i z_i^2} = \sum_{i=1}^{d} \lambda_i\, (q_i^\top \sym{x}{x})^2'
+      by: [la.eigen]
+      note: '$\Lambda$ диагональна, поэтому перекрёстных слагаемых $z_i z_j$ нет: остаются квадраты координат с весами $\lambda_i$.'
+      check:
+        kind: same
+        py: 'np.sum(np.linalg.eigh(A)[0] * (np.linalg.eigh(A)[1].T @ x) ** 2)'
+
+pitfalls:
+  - 'Судить о знаке формы по знакам элементов $A$: у $\left(\begin{smallmatrix} 1 & 2 \\ 2 & 1 \end{smallmatrix}\right)$ все элементы положительны, а собственное значение $-1$ даёт $x^\top A x < 0$ при $x = (1, -1)$.'
+  - 'Путать полуоси: на уровне $x^\top A x = 1$ полуось вдоль $q_i$ равна $1 / \sqrt{\lambda_i}$, а не $\sqrt{\lambda_i}$ — чем больше $\lambda_i$, тем короче ось.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Generative learning algorithms / The multivariate normal distribution'
+
+usedIn: [la.quadratic-form, la.psd]

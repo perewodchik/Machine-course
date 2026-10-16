@@ -6,7 +6,8 @@
 // Урок I.6 — прямые на рисунке переключаются заготовками и бегунком, ранги и число решений, итоговая проверка.
 // Урок I.7 — сдвиг и отражение на сетке, det композиции не зависит от порядка, разбор det(AB), итоговая.
 // Урок I.8 — проекция на плоскость: остаток перпендикулярен столбцам при любом y, разбор, итоговая проверка.
-// Урок I.9 — разбор «собственный с точностью до множителя», правило спектральной теоремы, итоговая проверка. axe.
+// Урок I.9 — разбор «собственный с точностью до множителя», правило спектральной теоремы, итоговая проверка.
+// Урок I.10 — линии уровня: эллипсы → гиперболы с клавиатуры, разбор формы и знакоопределённости, итоговая. axe.
 import { expect, test } from "@playwright/test";
 import { generator } from "../../src/lib/exercises/generators";
 import { expectNoAxeViolations } from "./support";
@@ -246,6 +247,43 @@ test("урок I.9: собственный вектор с точностью д
   if (spec.kind !== "numeric") throw new Error("ожидалось число");
   await final.locator("[data-variant]:not([hidden]) input").first().fill(String(spec.answer));
   await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});
+
+test("урок I.10: линии уровня с клавиатуры, разбор знакоопределённости, корень из матрицы, итоговая проверка", async ({ page }) => {
+  await page.goto("/foundations/linear-algebra/quadratic-forms/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Квадратичные формы и знакоопределённость");
+
+  const fig = page.locator(".level-sets").first();
+  await fig.scrollIntoViewIfNeeded();
+  await expect(fig.locator("xpath=ancestor::astro-island[1]")).not.toHaveAttribute("ssr", "");
+  // заготовка «эллипсы» — та же матрица, что в ячейке Python: λ = 2.21 и 0.79
+  await expect(fig.locator("[aria-live]")).toContainText("λ₁ = 2.21, λ₂ = 0.79: положительно определена");
+  await fig.getByRole("slider", { name: "c" }).press("Home");
+  await expect(fig.locator(".level-sets__fact")).toHaveText("Не знакоопределена: линии уровня — гиперболы.");
+  await fig.getByRole("button", { name: "полосы" }).press("Enter");
+  await expect(fig.getByRole("button", { name: "полосы" })).toHaveAttribute("aria-pressed", "true");
+  await expect(fig.locator(".level-sets__fact")).toContainText("Положительно полуопределена");
+
+  const fv = page.locator("[data-exercise][data-item='i10.form-value']");
+  await fv.locator("input").first().fill("12");
+  await fv.getByRole("button", { name: "Проверить" }).click();
+  await expect(fv.locator("[data-feedback]")).toContainText("взято без двойки");
+
+  const pc = page.locator("[data-exercise][data-item='la.psd-check']");
+  const task = generator("la.psd-check").make(1);
+  if (task.kind !== "choice") throw new Error("ожидался выбор");
+  await pc.locator("[data-variant]:not([hidden]) [data-option]").nth(task.options.findIndex((o) => o.text.startsWith("Отрицательно"))).click();
+  await expect(pc.locator("[data-feedback]")).toContainText("оба больше нуля");
+
+  await expect(page.locator("[data-exercise][data-item='i10.sqrt'] [data-option]")).toHaveCount(4);
+
+  const final = page.locator("[data-exercise][data-final]");
+  const spec = generator("la.psd-check").make(31);
+  if (spec.kind !== "choice") throw new Error("ожидался выбор");
+  await final.locator("[data-variant]:not([hidden]) [data-option]").nth(spec.options.findIndex((o) => o.correct)).click();
   await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
   await page.evaluate(() => window.scrollTo(0, 0));
   await expectNoAxeViolations(page);
