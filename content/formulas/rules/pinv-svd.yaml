@@ -1,0 +1,24 @@
+id: rule.pinv-svd
+kind: rule
+title:
+  ru: 'Псевдообратная через сингулярное разложение'
+  en: 'pseudoinverse from the SVD'
+statement: 'A^+ = V S^+ U^\top'
+symbols:
+  - name: A
+    tex: 'A'
+    shape: [n, d]
+concept: la.pseudoinverse
+corollary: '$S^+$ обращает ненулевые $\sigma_i$, нули оставляет нулями и транспонирует форму. Если $A$ обратима, $A^+ = A^{-1}$; если её столбцы независимы, $A^+ = (A^\top A)^{-1} A^\top$ — матрица из нормальных уравнений.'
+pitfall: 'Обращать нулевые сингулярные числа: на их месте в $S^+$ стоят нули.'
+checks:
+  - kind: identity
+    lhs: 'np.linalg.pinv(A)'
+    rhs: 'np.linalg.svd(A, full_matrices=False)[2].T @ np.diag(1 / np.linalg.svd(A, full_matrices=False)[1]) @ np.linalg.svd(A, full_matrices=False)[0].T'
+mutations:
+  - tex: 'U S^+ V^\top'
+    py: 'np.linalg.svd(A, full_matrices=False)[0] @ np.diag(1 / np.linalg.svd(A, full_matrices=False)[1]) @ np.linalg.svd(A, full_matrices=False)[2]'
+    why: 'Порядок разворачивается, как у обратной к произведению: слева $V$, справа $U^\top$. И размеры не сходятся: $A^+$ — матрица $d \times n$.'
+  - tex: 'V S U^\top'
+    py: 'np.linalg.svd(A, full_matrices=False)[2].T @ np.diag(np.linalg.svd(A, full_matrices=False)[1]) @ np.linalg.svd(A, full_matrices=False)[0].T'
+    why: 'Это $A^\top$: ортогональные множители обращаются транспонированием, но сингулярные числа нужно обратить, $\sigma_i \to 1 / \sigma_i$.'

@@ -14,16 +14,18 @@ import GridMap from "../widgets/GridMap.astro";
 import BayesGrid from "../widgets/BayesGrid.astro";
 import Riemann from "../widgets/Riemann.astro";
 import LevelSets from "../widgets/LevelSets.astro";
+import LowRank from "../widgets/LowRank.astro";
 import MatmulViews from "../widgets/MatmulViews.astro";
 import NormBalls from "../widgets/NormBalls.astro";
 import PlaneProjection from "../widgets/PlaneProjection.astro";
 import Projection from "../widgets/Projection.astro";
 import Span from "../widgets/Span.astro";
+import SvdSteps from "../widgets/SvdSteps.astro";
 import SystemLines from "../widgets/SystemLines.astro";
 import OpenIn from "../python/OpenIn.astro";
 import PyCell from "../python/PyCell.astro";
 import PyCode from "../python/PyCode.astro";
 
 // виджеты — обёртки .astro с островами React
-export const lessonComponents = { Block, Derivation, Diagnostic, Exercise, ExerciseSet, Formula, Note, Pilot, Prereqs, SymbolLegend, FitLine, GridMap, BayesGrid, Riemann, Span, NormBalls, Projection, MatmulViews, SystemLines, PlaneProjection, LevelSets, PyCode, PyCell, OpenIn };
-export { BayesGrid, Block, Derivation, Diagnostic, Exercise, ExerciseSet, FitLine, Formula, GridMap, LevelSets, MatmulViews, Note, NormBalls, Pilot, PlaneProjection, OpenIn, Prereqs, Projection, PyCell, PyCode, Riemann, Span, SymbolLegend, SystemLines };
+export const lessonComponents = { Block, Derivation, Diagnostic, Exercise, ExerciseSet, Formula, Note, Pilot, Prereqs, SymbolLegend, FitLine, GridMap, BayesGrid, Riemann, Span, NormBalls, Projection, MatmulViews, SystemLines, PlaneProjection, LevelSets, SvdSteps, LowRank, PyCode, PyCell, OpenIn };
+export { BayesGrid, Block, Derivation, Diagnostic, Exercise, ExerciseSet, FitLine, Formula, GridMap, LevelSets, LowRank, MatmulViews, Note, NormBalls, Pilot, PlaneProjection, OpenIn, Prereqs, Projection, PyCell, PyCode, Riemann, Span, SvdSteps, SymbolLegend, SystemLines };
