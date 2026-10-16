@@ -595,7 +595,8 @@ export const symPart: Generator = {
   make(seed) {
     const r = rng(seed);
     const [a, d] = [r.int(-3, 4), r.int(-3, 4)];
-    let [b, c] = [r.int(-3, 4), r.int(-3, 4)];
+    const b = r.int(-3, 4);
+    let c = r.int(-3, 4);
     if (b === c) c = b + r.pick([-3, -1, 1, 2]); // иначе A уже симметрична
     const s = (b + c) / 2;
     const S = [[a, s], [s, d]];
