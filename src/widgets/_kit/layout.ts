@@ -13,6 +13,9 @@ export interface PlaneOptions {
   margin?: Partial<Margin>;
   /** Высота области графика: доля ширины, ограниченная снизу и сверху (px). */
   height?: { ratio: number; min: number; max: number };
+  /** Одинаковый масштаб по осям (круг — круг, прямой угол — прямой): высота следует из ширины, ratio и min
+   *  не действуют; если высота упирается в max, область графика сужается и встаёт посередине. */
+  equal?: boolean;
 }
 
 interface Margin {
@@ -69,9 +72,15 @@ export function cellSize(stepPx: number): number {
 export function planeLayout(width: number, o: PlaneOptions): PlaneLayout {
   const m = { ...DEFAULT_MARGIN, ...o.margin };
   const total = Math.max(MIN_WIDTH, Math.round(width));
-  const w = total - m.l - m.r;
+  let w = total - m.l - m.r;
   const hs = o.height ?? { ratio: 0.47, min: 200, max: 280 };
-  const h = Math.round(Math.min(hs.max, Math.max(hs.min, w * hs.ratio)));
+  let h = Math.round(Math.min(hs.max, Math.max(hs.min, w * hs.ratio)));
+  if (o.equal) {
+    const ratio = (o.y[1] - o.y[0]) / (o.x[1] - o.x[0]);
+    h = Math.min(hs.max, w * ratio);
+    const side = (w - h / ratio) / 2;
+    [m.l, m.r, w] = [m.l + side, m.r + side, h / ratio];
+  }
   const sx = scaleLinear().domain(o.x).range([m.l, m.l + w]);
   const sy = scaleLinear().domain(o.y).range([m.t + h, m.t]);
   const xStep = o.xStep ?? niceStep(o.x[1] - o.x[0]);

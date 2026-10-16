@@ -137,3 +137,29 @@
 - id: basis
   ru: 'базис, размерность, подпространство'
   en: 'basis, dimension, subspace'
+- id: dot-product
+  ru: 'скалярное произведение'
+  en: 'dot product, inner product'
+  note: 'В CS229 — $x^\top y$ или $\langle x, y \rangle$; в русских учебниках — $(x, y)$.'
+- id: norm
+  ru: 'норма; евклидова норма, норма $\ell_1$, норма $\ell_\infty$'
+  en: 'norm; Euclidean norm, $\ell_1$ norm, max norm'
+- id: frobenius-norm
+  ru: 'норма Фробениуса'
+  en: 'Frobenius norm'
+- id: unit-ball
+  ru: 'единичный шар'
+  en: 'unit ball'
+- id: cauchy-schwarz
+  ru: 'неравенство Коши — Буняковского'
+  en: 'Cauchy–Schwarz inequality'
+  note: 'В англоязычной литературе — по Коши и Шварцу; Буняковский доказал интегральный вариант раньше Шварца.'
+- id: orthogonal
+  ru: 'ортогональные, перпендикулярные векторы'
+  en: 'orthogonal vectors'
+- id: vector-projection
+  ru: 'проекция на вектор'
+  en: 'projection onto a vector'
+- id: cosine-similarity
+  ru: 'косинусная близость'
+  en: 'cosine similarity'

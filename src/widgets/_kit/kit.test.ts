@@ -42,6 +42,16 @@ describe("шкалы и клетка", () => {
     for (const t of l.xTicks) expect(lines.some((p) => Math.abs(p - l.sx(t)) < 0.01)).toBe(true);
   });
 
+  it("equal: одинаковый масштаб по осям, при упоре в max область сужается и встаёт посередине", () => {
+    const free = planeLayout(660, { x: [-3, 3], y: [-1, 2], equal: true, height: { ratio: 1, min: 100, max: 1000 } });
+    expect(free.kx).toBeCloseTo(-free.ky, 9);
+    expect(free.inner.w).toBe(600);
+    const capped = planeLayout(660, { x: [-2, 2], y: [-2, 2], equal: true, height: { ratio: 1, min: 100, max: 400 } });
+    expect(capped.kx).toBeCloseTo(-capped.ky, 9);
+    expect(capped.inner.h).toBe(400);
+    expect(capped.inner.x - 40).toBeCloseTo(660 - 20 - (capped.inner.x + capped.inner.w), 9);
+  });
+
   it("оси идут через ноль, если он в области, иначе по краю", () => {
     const l = planeLayout(660, { x: [-3, 3], y: [-2, 2] });
     expect(l.axisY).toBeCloseTo(l.sx(0));
@@ -109,6 +119,8 @@ describe("числа и подписи", () => {
     ]);
     expect(labelParts("x_{12}")).toEqual([{ text: "x" }, { text: "12", sub: true }]);
     expect(plainLabel("ŷ = θ_0")).toBe("ŷ = θ0");
+    expect(labelParts("cos φ")).toEqual([{ text: "cos", fn: true }, { text: " φ" }]);
+    expect(labelParts("x_cos")).toEqual([{ text: "x" }, { text: "c", sub: true }, { text: "os" }]);
   });
 });
 

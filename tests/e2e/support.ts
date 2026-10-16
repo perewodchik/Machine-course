@@ -33,6 +33,7 @@ export const layoutPages = {
   start8: "/foundations/start/numpy-minimum/",
   start9: "/foundations/start/notation/",
   i1: "/foundations/linear-algebra/vectors-span/",
+  i2: "/foundations/linear-algebra/dot-product-norms/",
   spangame: "/games/span-hit/",
   concept: "/concepts/la.dot-product/",
 } as const;

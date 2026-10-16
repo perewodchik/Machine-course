@@ -25,7 +25,7 @@ export function ParamSlider({ name, value, min, max, step, onChange, role = "par
   return (
     <div className={["kit-slider", roleClass(role), lit && "is-lit"].filter(Boolean).join(" ")} data-sym={sym}>
       <label htmlFor={id} className="kit-slider__name">
-        {labelParts(name).map((p, i) => (p.sub ? <sub key={i}>{p.text}</sub> : <span key={i}>{p.text}</span>))}
+        {labelParts(name).map((p, i) => (p.sub ? <sub key={i}>{p.text}</sub> : <span key={i} className={p.fn ? "kit-fn" : undefined}>{p.text}</span>))}
       </label>
       <input
         id={id}

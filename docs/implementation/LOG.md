@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-16 — L-I.2 Скалярное произведение и нормы — готов
+- **Сделано:** Урок I.2: четыре цикла (скалярное произведение и длина; нормы ℓ1, ℓ2, ℓ∞ и Фробениуса; проекция на вектор; неравенство Коши — Буняковского и угол в ℝ^d). Виджеты «Единичные шары норм» (src/widgets/la/norm-balls) и «Проекция с подвижным углом» (src/widgets/la/projection). Формулы f.vector-projection (минимум квадрата расстояния по t) и f.cauchy-schwarz (через остаток проекции). Генераторы la.norms, la.projection, la.angle; две ячейки la/norms.py (нормы в NumPy, средний |cos| случайных векторов падает с размерностью), вывод закреплён тестом. Кит: опция Plane equal (одинаковый масштаб осей), имена функций в подписях прямым шрифтом.
+- **Файлы:** content/courses/foundations/linear-algebra/dot-product-norms.mdx, content/formulas/la/{vector-projection,cauchy-schwarz}.yaml, src/widgets/la/{norm-balls,projection}/*, src/widgets/_kit/{layout,format}.ts, src/lib/exercises/generators/la.ts, code/snippets/la/norms.py
+- **Проверка:** vitest 365; pytest; e2e полный — 394 passed, 146 skipped; lint, check, validate, check_consistency — чисто; скриншоты 1440 светлая и 390 тёмная
+- **Отклонения от плана и решения:** Плоскости кита растягивали оси по-разному: круг выходил эллипсом. Добавлена опция equal, её получили шары норм, проекция, и «Оболочка» из I.1. Итоговая проверка — la.projection. Угол вводится после неравенства Коши — Буняковского, как требует карточка.
+- **Следующий шаг:** L-I.3 — умножение матриц: четыре взгляда.
+- **Вопросы пользователю:** —
+
 ### 2026-10-15 — L-I.1 Векторы, линейные комбинации, оболочка — готов
 - **Сделано:** Урок I.1: четыре цикла (векторы; комбинации и оболочка; линейная независимость; базис, размерность, подпространство). Виджет «Оболочка двух векторов» (src/widgets/la/span: бегунки c₁, c₂, заготовки — не параллельны, параллельны, b = 0; оболочка — решётка целых комбинаций или прямая). Игра «Попади в точку» (/games/span-hit, шесть уровней, граничные — параллельные векторы и цель вне прямой, кнопка «Невозможно»). Генераторы la.in-span и la.independence, понятие la.basis, ячейка la/span.py (ранг зависимого и независимого наборов, вывод закреплён тестом).
 - **Файлы:** content/courses/foundations/linear-algebra/vectors-span.mdx, src/widgets/la/span/*, src/games/span-hit/*, src/pages/games/span-hit.astro, src/lib/exercises/generators/la.ts, code/snippets/la/span.py
