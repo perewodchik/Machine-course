@@ -105,6 +105,12 @@ describe("уровни", () => {
     expect(game.generate(rng(42), 3)).toEqual(game.generate(rng(42), 3));
   });
 
+  it("числа уровня не уравнивают ответ с другой цепочкой: seed 63044, уровень 2 — Σ yᵢ = n в обоих наборах", () => {
+    const l = game.generate(rng(63044 * 1000 + 1), 2);
+    const bad = l.tiles.findIndex((t) => t.ones);
+    expect(verdict(l, [{ tile: bad, t: true }, { tile: bad, t: false }])).not.toBe("ok");
+  });
+
   it("ответ принимается, а принятая цепочка равна ответу и на свежих числах (нет ложных «верно»)", () => {
     fc.assert(
       fc.property(fc.integer({ min: 1, max: 100_000 }), fc.integer({ min: 0, max: LEVELS - 1 }), (seed, k) => {

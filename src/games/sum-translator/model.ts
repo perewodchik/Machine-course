@@ -3,6 +3,7 @@
 // размер произведения и его индексную запись — ту же сумму, что в задании, или другую.
 // Проверка — на двух наборах случайных целых чисел: равные записи (xᵀy и yᵀx) принимаются обе.
 import type { GameSpec, Rng } from "../_engine/types";
+import { rng } from "../../lib/math/rng";
 
 export type Kind = "dot" | "ones" | "matvec" | "bilinear" | "outer" | "xty" | "gram";
 
@@ -248,16 +249,37 @@ function layout(kind: Kind, r: Rng): { tiles: Tile[]; answer: { name: string; t:
   }
 }
 
+/** Все цепочки до MAX_CHAIN множителей из плиток уровня (каждая плитка — как есть или транспонированная). */
+function allChains(tiles: number): Factor[][] {
+  const one = Array.from({ length: tiles }, (_, i) => [{ tile: i, t: false }, { tile: i, t: true }]).flat();
+  const out: Factor[][] = [];
+  let layer: Factor[][] = one.map((f) => [f]);
+  for (let len = 1; len <= MAX_CHAIN; len++) {
+    out.push(...layer);
+    layer = layer.flatMap((c) => one.map((f) => [...c, f]));
+  }
+  return out;
+}
+
+/**
+ * Числа уровня случайно уравнивают ответ с другой цепочкой: например, если в обоих наборах Σ yᵢ = n, то 1ᵀ1
+ * «равно» 1ᵀy. Такая цепочка совпадает с ответом на числах уровня, но не на независимых проверочных наборах.
+ * Проверочный ГПСЧ свой, от чисел уровня: обычный уровень от проверки не меняется.
+ */
+function ambiguous(level: Level): boolean {
+  const probe = rng(7919 + level.values.flat(3).reduce((s, v, i) => s + v * (i + 1), 0));
+  const fresh: Level = { ...level, values: Array.from({ length: 3 }, () => level.tiles.map((t) => Array.from({ length: t.rows }, () => Array.from({ length: t.cols }, () => (t.ones ? 1 : probe.nonzero(-9, 9)))))) };
+  return allChains(level.tiles.length).some((chain) => verdict(level, chain) === "ok" && verdict(fresh, chain) !== "ok");
+}
+
 export function makeLevel(kind: Kind, r: Rng): Level {
   const { tiles: raw, answer } = layout(kind, r);
   const tiles = r.shuffle(raw);
   const draw = () => tiles.map((t) => Array.from({ length: t.rows }, () => Array.from({ length: t.cols }, () => (t.ones ? 1 : r.nonzero(-5, 5)))));
-  return {
-    kind,
-    tiles,
-    answer: answer.map((a) => ({ tile: tiles.findIndex((t) => t.name === a.name), t: a.t })),
-    values: [draw(), draw()],
-  };
+  const base = { kind, tiles, answer: answer.map((a) => ({ tile: tiles.findIndex((t) => t.name === a.name), t: a.t })) };
+  let level: Level = { ...base, values: [draw(), draw()] };
+  while (ambiguous(level)) level = { ...base, values: [draw(), draw()] };
+  return level;
 }
 
 
