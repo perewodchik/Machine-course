@@ -4,7 +4,8 @@
 // Урок I.3 — четыре взгляда на AB переключаются, расчёт пишется словами, задача про `*` разбирает `@`, итоговая.
 // Урок I.5 — формула (Xθ − y)ᵀ проверяется на случайных матрицах, «найди ошибку» разбирает верную строку, итоговая.
 // Урок I.6 — прямые на рисунке переключаются заготовками и бегунком, ранги и число решений, итоговая проверка.
-// Урок I.7 — сдвиг и отражение на сетке, det композиции не зависит от порядка, разбор det(AB), итоговая. axe.
+// Урок I.7 — сдвиг и отражение на сетке, det композиции не зависит от порядка, разбор det(AB), итоговая.
+// Урок I.8 — проекция на плоскость: остаток перпендикулярен столбцам при любом y, разбор, итоговая проверка. axe.
 import { expect, test } from "@playwright/test";
 import { generator } from "../../src/lib/exercises/generators";
 import { expectNoAxeViolations } from "./support";
@@ -192,6 +193,34 @@ test("урок I.7: площадь со знаком на сетке, det ком
   await final.getByRole("button", { name: "Проверить" }).click();
   await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
   // закреплённая шапка поверх радиокнопок рисунка 2 axe считает нехваткой места для касания — проверяем сверху
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});
+
+test("урок I.8: проекция на плоскость столбцов с клавиатуры, разбор ортогональной матрицы, итоговая проверка", async ({ page }) => {
+  await page.goto("/foundations/linear-algebra/orthogonality-projections/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ортогональность и проекции");
+
+  const fig = page.locator(".plane-proj").first();
+  await fig.scrollIntoViewIfNeeded();
+  await expect(fig.locator("xpath=ancestor::astro-island[1]")).not.toHaveAttribute("ssr", "");
+  // y = (1, 0.5, 2): ŷ = (1.42, 0.92, 1.17) — то же, что печатает ячейка Python
+  await expect(fig.locator("[aria-live]")).toContainText("проекция ŷ = (1.42, 0.92, 1.17)");
+  await fig.getByRole("slider", { name: "y3" }).press("Home");
+  await expect(fig.locator(".plane-proj__facts")).toContainText("(y − ŷ) = (0.00, 0.00)");
+  await fig.getByRole("slider", { name: "φ" }).press("End");
+  await expect(fig.locator(".plane-proj__facts")).toContainText("(0.00, 0.00)");
+
+  const om = page.locator("[data-exercise][data-item='la.orthogonal-matrix']");
+  await om.locator("[data-variant]:not([hidden]) [data-option]").nth(1).click();
+  await expect(om.locator("[data-feedback]")).toContainText("Длина каждого столбца здесь ровно 1");
+
+  const final = page.locator("[data-exercise][data-final]");
+  const spec = generator("la.project-orthogonal").make(31);
+  if (spec.kind !== "matrix") throw new Error("ожидалась матрица");
+  for (const [i, row] of spec.answer.entries()) for (const [j, v] of row.entries()) await final.locator(`[data-variant]:not([hidden]) [data-cell="${i},${j}"]`).fill(String(v));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
   await page.evaluate(() => window.scrollTo(0, 0));
   await expectNoAxeViolations(page);
 });

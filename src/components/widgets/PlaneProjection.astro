@@ -1,0 +1,14 @@
+---
+// Обёртка виджета «Проекция y на плоскость столбцов» для урока: рисунок с номером и подписью, остров React.
+import { PlaneProjection, type PlaneProjectionProps } from "../../widgets/la/plane-projection";
+
+interface Props extends PlaneProjectionProps {
+  /** Номер рисунка в уроке. */
+  n?: number;
+}
+const { n, ...props } = Astro.props;
+---
+<figure class="figure wide">
+  <PlaneProjection client:visible {...props} />
+  <figcaption class="figure__caption">{n && <b>Рисунок {n}.</b>} <slot /></figcaption>
+</figure>

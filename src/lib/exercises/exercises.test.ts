@@ -315,6 +315,29 @@ describe("генераторы", () => {
     }
   });
 
+  it("задачи урока I.8: проекция на плоскость и расстояние до гиперплоскости сходятся с условием", () => {
+    const tuple = (s: string) => s.split(", ").map(Number);
+    for (let s = 1; s <= 40; s++) {
+      const po = make("la.project-orthogonal", s);
+      if (po.kind !== "matrix") throw new Error("ожидалась матрица");
+      const [u, v, y] = [...po.prompt.matchAll(/= \(([^)]*)\)/g)].map((m) => tuple(m[1]!)) as [number[], number[], number[]];
+      const res = y.map((yi, i) => yi - po.answer[i]![0]!);
+      const d = (a: number[], b: number[]) => a.reduce((acc, ai, i) => acc + ai * b[i]!, 0);
+      expect([d(u, v), d(res, u), d(res, v)]).toEqual([0, 0, 0]);
+
+      const hd = num(make("la.hyperplane-distance", s));
+      const x = tuple(/x = \(([^)]*)\)/.exec(hd.prompt)![1]!);
+      const w = tuple(/w = \(([^)]*)\)/.exec(hd.hints![1]!)![1]!);
+      const b = Number(/w\^\\top x \+ b = (-?\d+)/.exec(hd.hints![1]!)![1]) - d(w, x);
+      expect(hd.answer).toBeCloseTo(Math.abs(d(w, x) + b) / Math.hypot(...w), 12);
+      expect(Number((hd.answer * 10).toFixed(6)) % 1).toBe(0);
+
+      const om = make("la.orthogonal-matrix", s);
+      if (om.kind !== "choice") throw new Error("ожидался выбор");
+      expect(om.options.filter((o) => o.correct)).toHaveLength(1);
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

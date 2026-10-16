@@ -13,10 +13,12 @@ interface Props extends PlaneOptions {
   yLabel?: string;
   /** Ширина до первого измерения (при сборке). */
   initialWidth?: number;
+  /** Без клетки и осей: чистый лист для своих построений (проекция трёхмерной сцены). */
+  bare?: boolean;
   children?: ReactNode;
 }
 
-export function Plane({ label, xLabel = "x", yLabel = "y", initialWidth = 660, children, ...opts }: Props) {
+export function Plane({ label, xLabel = "x", yLabel = "y", initialWidth = 660, bare = false, children, ...opts }: Props) {
   const [ref, width] = useWidth<HTMLDivElement>(initialWidth);
   const layout = planeLayout(width, opts);
   const clipId = `plot-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
@@ -32,18 +34,20 @@ export function Plane({ label, xLabel = "x", yLabel = "y", initialWidth = 660, c
             <rect x={inner.x} y={inner.y} width={inner.w} height={inner.h} />
           </clipPath>
         </defs>
-        <g className="kit-grid" aria-hidden="true">
-          {vx.map((p) => (
-            <line key={`v${p}`} x1={p} y1={inner.y} x2={p} y2={inner.y + inner.h} />
-          ))}
-          {hy.map((p) => (
-            <line key={`h${p}`} x1={inner.x} y1={p} x2={inner.x + inner.w} y2={p} />
-          ))}
-        </g>
+        {!bare && (
+          <g className="kit-grid" aria-hidden="true">
+            {vx.map((p) => (
+              <line key={`v${p}`} x1={p} y1={inner.y} x2={p} y2={inner.y + inner.h} />
+            ))}
+            {hy.map((p) => (
+              <line key={`h${p}`} x1={inner.x} y1={p} x2={inner.x + inner.w} y2={p} />
+            ))}
+          </g>
+        )}
         <PlaneContext.Provider value={{ layout, box, clipId }}>
-          <Axis part="lines" />
+          {!bare && <Axis part="lines" />}
           <g clipPath={`url(#${clipId})`}>{children}</g>
-          <Axis part="labels" xLabel={xLabel} yLabel={yLabel} />
+          {!bare && <Axis part="labels" xLabel={xLabel} yLabel={yLabel} />}
         </PlaneContext.Provider>
       </svg>
     </div>

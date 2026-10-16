@@ -1,0 +1,21 @@
+id: rule.projection-idempotent
+kind: rule
+title:
+  ru: 'Проекция, применённая дважды, — та же проекция'
+  en: 'a projection matrix is idempotent'
+statement: 'P^2 = P, \qquad P = X (X^\top X)^{-1} X^\top'
+symbols:
+  - name: X
+    tex: 'X'
+    shape: [n, d]
+concept: la.projection
+corollary: 'Точка, уже лежащая в пространстве столбцов, при проекции не двигается. Ещё $P^\top = P$: матрица ортогональной проекции симметрична.'
+pitfall: 'Считать проекцией $X X^\top$: без множителя $(X^\top X)^{-1}$ это проекция только при ортонормированных столбцах.'
+checks:
+  - kind: identity
+    lhs: '(X @ np.linalg.inv(X.T @ X) @ X.T) @ (X @ np.linalg.inv(X.T @ X) @ X.T)'
+    rhs: 'X @ np.linalg.inv(X.T @ X) @ X.T'
+mutations:
+  - tex: 'X X^\top'
+    py: 'X @ X.T'
+    why: '$XX^\top$ — проекция только при ортонормированных столбцах $X$; иначе $(XX^\top)^2 \ne XX^\top$.'
