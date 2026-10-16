@@ -3,10 +3,14 @@
 // Урок I.2 — шары норм и проекция управляются с клавиатуры, задача на норму разбирает ошибку, итоговая проверка.
 // Урок I.3 — четыре взгляда на AB переключаются, расчёт пишется словами, задача про `*` разбирает `@`, итоговая.
 // Урок I.5 — формула (Xθ − y)ᵀ проверяется на случайных матрицах, «найди ошибку» разбирает верную строку, итоговая.
-// Урок I.6 — прямые на рисунке переключаются заготовками и бегунком, ранги и число решений, итоговая проверка. axe.
+// Урок I.6 — прямые на рисунке переключаются заготовками и бегунком, ранги и число решений, итоговая проверка.
+// Урок I.7 — сдвиг и отражение на сетке, det композиции не зависит от порядка, разбор det(AB), итоговая. axe.
 import { expect, test } from "@playwright/test";
 import { generator } from "../../src/lib/exercises/generators";
 import { expectNoAxeViolations } from "./support";
+
+// уроки длинные: гидратация рисунков, MathLive и axe по всей странице идут дольше 30 секунд под нагрузкой
+test.describe.configure({ timeout: 90_000 });
 
 test("урок I.1: оболочка — плоскость или прямая, разбор задачи, итоговая проверка ставит «знаю»", async ({ page }) => {
   await page.goto("/foundations/linear-algebra/vectors-span/");
@@ -154,5 +158,40 @@ test("урок I.6: параллельные и совпадающие прям�
   if (spec.kind !== "choice") throw new Error("ожидался выбор");
   await final.locator("[data-variant]:not([hidden]) [data-option]").nth(spec.options.findIndex((o) => o.correct)).click();
   await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await expectNoAxeViolations(page);
+});
+
+test("урок I.7: площадь со знаком на сетке, det композиции, разбор, итоговая проверка ставит «знаю»", async ({ page }) => {
+  await page.goto("/foundations/linear-algebra/inverse-determinant/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Обратная матрица и определитель");
+
+  const grid = page.locator(".grid-map").first();
+  await grid.scrollIntoViewIfNeeded();
+  await expect(grid.locator("xpath=ancestor::astro-island[1]")).not.toHaveAttribute("ssr", "");
+  await grid.getByRole("button", { name: "Сдвиг", exact: true }).click();
+  await expect(grid.locator(".kit-readout")).toContainText("1.00");
+  await grid.getByRole("button", { name: "Отражение", exact: true }).click();
+  await expect(grid.locator(".kit-readout")).toContainText("−1.00");
+
+  const comp = page.locator(".grid-map").nth(1);
+  await comp.scrollIntoViewIfNeeded();
+  await expect(comp.locator("xpath=ancestor::astro-island[1]")).not.toHaveAttribute("ssr", "");
+  await expect(comp.locator(".kit-readout")).toContainText("2.00");
+  await comp.getByRole("radio", { name: /сначала S, потом H/ }).check();
+  await expect(comp.locator(".kit-readout")).toContainText("2.00");
+
+  const rules = page.locator("[data-exercise][data-item='la.det-rules']");
+  await rules.locator("[data-variant]:not([hidden]) input").first().fill("0");
+  await rules.getByRole("button", { name: "Проверить" }).click();
+  await expect(rules.locator("[data-feedback]")).toContainText("перемножаются");
+
+  const final = page.locator("[data-exercise][data-final]");
+  const spec = generator("la.inverse2").make(31);
+  if (spec.kind !== "matrix") throw new Error("ожидалась матрица");
+  for (const [i, row] of spec.answer.entries()) for (const [j, v] of row.entries()) await final.locator(`[data-variant]:not([hidden]) [data-cell="${i},${j}"]`).fill(String(v));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  // закреплённая шапка поверх радиокнопок рисунка 2 axe считает нехваткой места для касания — проверяем сверху
+  await page.evaluate(() => window.scrollTo(0, 0));
   await expectNoAxeViolations(page);
 });

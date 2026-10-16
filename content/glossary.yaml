@@ -219,3 +219,13 @@
 - id: system-of-equations
   ru: 'система линейных уравнений; совместная, несовместная'
   en: 'system of linear equations; consistent, inconsistent'
+- id: inverse-matrix
+  ru: 'обратная матрица; обратимая, вырожденная матрица'
+  en: 'inverse matrix; invertible, singular matrix'
+- id: determinant
+  ru: 'определитель'
+  en: 'determinant'
+  note: 'В CS229 — $\lvert A \rvert$ или $\det A$; в плотности гауссианы стоит $\lvert \Sigma \rvert$.'
+- id: orientation
+  ru: 'ориентация'
+  en: 'orientation'
