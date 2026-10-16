@@ -135,6 +135,19 @@
   .mv__op { font: 20px var(--font-math-upright); color: var(--ink-2); }
   .mv__op--aside { font: var(--text-sm) var(--font-ui); color: var(--ink-3); }
   .mv__explain { margin: 0; font: var(--text-sm) / 1.5 var(--font-ui); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  /* «Ax = b»: уравнения цветами прямых, заготовки — кнопки с aria-pressed, ранги и вывод под бегунками */
+  .system-lines__controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: var(--space-3) var(--space-5); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule); }
+  .system-lines__eqs { display: grid; gap: var(--space-1); margin: 0; font: 18px var(--font-math-upright); }
+  .system-lines__eq { padding-left: var(--space-2); }
+  .system-lines__eq i { font-family: var(--font-math); }
+  .system-lines__eq sub { font-size: 0.7em; }
+  .system-lines__eq--1 { box-shadow: inset 3px 0 0 var(--sym-1); }
+  .system-lines__eq--2 { box-shadow: inset 3px 0 0 var(--sym-2); }
+  .system-lines__group { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .system-lines .btn[aria-pressed="true"] { border-color: var(--pen); color: var(--pen); box-shadow: inset 0 0 0 1px var(--pen); }
+  .system-lines__readouts { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-6); }
+  .system-lines__fact { grid-column: 1 / -1; margin: 0; font: var(--text-sm) var(--font-ui); color: var(--ink-2); }
+  @media (max-width: 900px) { .system-lines__controls { grid-template-columns: minmax(0, 1fr); } }
   /* «Единичные шары норм» и «Проекция»: два бегунка в строку, под ними три показания в строку */
   .norm-balls__controls, .projection-widget__controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: var(--space-3) var(--space-5); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule); }
   .norm-balls__readouts, .projection-widget__readouts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; gap: var(--space-3) var(--space-5); padding: 0 var(--space-4) var(--space-3); }

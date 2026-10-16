@@ -30,6 +30,15 @@
     - edition: main-notes-2026-spring
       section: 'Linear regression / The normal equations'
 
+- id: la.null-space
+  title:
+    ru: 'Ядро и пространство столбцов'
+    en: 'null space and column space'
+  summary: 'Ядро — все $x$ с $Ax = 0$, пространство столбцов — все $Ax$; $\operatorname{rank} A + \dim \ker A = n$.'
+  lesson: systems-rank
+  prerequisites: [la.rank, la.span]
+  core: true
+
 - id: la.projection
   title:
     ru: 'Проекция на подпространство'

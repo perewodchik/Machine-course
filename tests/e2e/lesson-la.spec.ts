@@ -2,7 +2,8 @@
 // задача «лежит ли вектор в оболочке» разбирает параллельные векторы, итоговая проверка ставит «знаю».
 // Урок I.2 — шары норм и проекция управляются с клавиатуры, задача на норму разбирает ошибку, итоговая проверка.
 // Урок I.3 — четыре взгляда на AB переключаются, расчёт пишется словами, задача про `*` разбирает `@`, итоговая.
-// Урок I.5 — формула (Xθ − y)ᵀ проверяется на случайных матрицах, «найди ошибку» разбирает верную строку, итоговая. axe.
+// Урок I.5 — формула (Xθ − y)ᵀ проверяется на случайных матрицах, «найди ошибку» разбирает верную строку, итоговая.
+// Урок I.6 — прямые на рисунке переключаются заготовками и бегунком, ранги и число решений, итоговая проверка. axe.
 import { expect, test } from "@playwright/test";
 import { generator } from "../../src/lib/exercises/generators";
 import { expectNoAxeViolations } from "./support";
@@ -128,6 +129,30 @@ test("урок I.5: транспонирование формулой, «най�
   if (spec.kind !== "matrix") throw new Error("ожидалась матрица");
   for (const [i, row] of spec.answer.entries()) for (const [j, v] of row.entries()) await final.locator(`[data-variant]:not([hidden]) [data-cell="${i},${j}"]`).fill(String(v));
   await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await expectNoAxeViolations(page);
+});
+
+test("урок I.6: параллельные и совпадающие прямые, ранги, итоговая проверка ставит «знаю»", async ({ page }) => {
+  await page.goto("/foundations/linear-algebra/systems-rank/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Системы уравнений и ранг");
+
+  const fig = page.locator(".system-lines").first();
+  await fig.scrollIntoViewIfNeeded();
+  await expect(fig.locator("xpath=ancestor::astro-island[1]")).not.toHaveAttribute("ssr", "");
+  await expect(fig.locator(".system-lines__fact")).toContainText("одно решение: прямые пересекаются. Решение: x = (0, 1).");
+  await fig.getByRole("button", { name: "параллельны" }).press("Enter");
+  await expect(fig.locator(".system-lines__fact")).toHaveText("нет решений: прямые параллельны");
+  await expect(fig.locator(".kit-readout").nth(1)).toContainText("2");
+  // b₂ с 1 до 4 (End) — второе уравнение становится удвоенным первым
+  await fig.getByRole("slider", { name: "b2" }).press("End");
+  await expect(fig.locator(".system-lines__fact")).toHaveText("бесконечно много решений: прямые совпадают");
+  await expect(fig.getByRole("button", { name: "совпадают" })).toHaveAttribute("aria-pressed", "true");
+
+  const final = page.locator("[data-exercise][data-final]");
+  const spec = generator("la.solutions-count").make(31);
+  if (spec.kind !== "choice") throw new Error("ожидался выбор");
+  await final.locator("[data-variant]:not([hidden]) [data-option]").nth(spec.options.findIndex((o) => o.correct)).click();
   await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
   await expectNoAxeViolations(page);
 });

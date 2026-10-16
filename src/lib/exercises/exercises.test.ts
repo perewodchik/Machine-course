@@ -251,6 +251,49 @@ describe("генераторы", () => {
     }
   });
 
+  it("задачи урока I.6: число решений, вектор ядра и размерность ядра сходятся с условием", () => {
+    const mats = (prompt: string) => [...prompt.matchAll(/\\begin\{pmatrix\}(.*?)\\end\{pmatrix\}/g)].map((mm) => mm[1]!.split(" \\\\ ").map((row) => row.split(" & ").map(Number)));
+    // ранг методом Гаусса — независимая от генератора проверка
+    const rankOf = (M: number[][]) => {
+      const A = M.map((row) => row.slice());
+      let rk = 0;
+      for (let c = 0; c < A[0]!.length && rk < A.length; c++) {
+        const p = A.findIndex((row, i) => i >= rk && Math.abs(row[c]!) > 1e-9);
+        if (p < 0) continue;
+        [A[rk], A[p]] = [A[p]!, A[rk]!];
+        for (let i = 0; i < A.length; i++) if (i !== rk) { const f = A[i]![c]! / A[rk]![c]!; A[i] = A[i]!.map((v, j) => v - f * A[rk]![j]!); }
+        rk++;
+      }
+      return rk;
+    };
+    for (let s = 1; s <= 40; s++) {
+      const sc = make("la.solutions-count", s);
+      if (sc.kind !== "choice") throw new Error("ожидался выбор");
+      const rows = [...sc.prompt.matchAll(/(-?\d*)x_1(?: ([+-]) (\d*)x_2)? = (-?\d+)|(-?\d*)x_2 = (-?\d+)/g)].map((m) => {
+        const k = (t: string | undefined) => (t === "" || t === undefined ? 1 : t === "-" ? -1 : Number(t));
+        return m[6] !== undefined ? [0, k(m[5]), Number(m[6])] : [k(m[1]), m[2] ? (m[2] === "-" ? -1 : 1) * k(m[3]) : 0, Number(m[4])];
+      });
+      const rA = rankOf(rows.map((r) => r.slice(0, 2)));
+      const rAb = rankOf(rows);
+      const expected = rA !== rAb ? "Нет решений" : rA === 2 ? "Одно решение" : "Бесконечно много решений";
+      expect(sc.options.find((o) => o.correct)!.text, sc.prompt).toBe(expected);
+
+      const kv = make("la.kernel-vector", s);
+      if (kv.kind !== "choice") throw new Error("ожидался выбор");
+      const [A] = mats(kv.prompt) as [number[][]];
+      expect(kv.options.length).toBeGreaterThanOrEqual(3);
+      for (const o of kv.options) {
+        const v = /\(([^)]*)\)/.exec(o.text)![1]!.split(", ").map(Number);
+        const inKer = A.every((row) => row.reduce((acc, a, i) => acc + a * v[i]!, 0) === 0);
+        expect(inKer).toBe(Boolean(o.correct));
+      }
+
+      const rn = num(make("la.rank-nullity", s));
+      const [M] = mats(rn.prompt) as [number[][]];
+      expect(rn.answer).toBe(4 - rankOf(M));
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

@@ -1,0 +1,33 @@
+id: rule.solution-structure
+kind: rule
+title:
+  ru: 'Решения системы — частное плюс ядро'
+  en: 'general solution: particular plus null space'
+statement: 'A (x_0 + t v) = A x_0 + t\, A v'
+symbols:
+  - name: A
+    tex: 'A'
+    shape: [m, n]
+  - name: x0
+    tex: 'x_0'
+    shape: [n, 1]
+  - name: v
+    tex: 'v'
+    shape: [n, 1]
+  - name: t
+    tex: 't'
+    shape: []
+concept: la.null-space
+corollary: 'Если $A x_0 = b$ и $A v = 0$, то $A(x_0 + t v) = b$ при любом $t$. Все решения $Ax = b$ — одно частное решение плюс любой вектор ядра.'
+pitfall: 'Прибавлять к решению вектор не из ядра: тогда $A(x_0 + v) = b + Av \ne b$.'
+checks:
+  - kind: identity
+    lhs: 'A @ (x0 + t * v)'
+    rhs: 'A @ x0 + t * (A @ v)'
+mutations:
+  - tex: 't\, A x_0 + A v'
+    py: 't * (A @ x0) + A @ v'
+    why: 'Число $t$ умножает только $v$: $A(x_0 + tv) = Ax_0 + tAv$ по линейности.'
+  - tex: 'A x_0 + t v'
+    py: 'A @ x0 + t * v'
+    why: '$A$ действует и на $tv$. К тому же $tv$ — вектор длины $n$, а $Ax_0$ — длины $m$: их нельзя сложить.'

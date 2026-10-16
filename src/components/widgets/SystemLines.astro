@@ -1,0 +1,14 @@
+---
+// Обёртка виджета «Ax = b: нет решений, одно, бесконечно много» для урока: рисунок с номером и подписью, остров React.
+import { SystemLines, type SystemLinesProps } from "../../widgets/la/system-lines";
+
+interface Props extends SystemLinesProps {
+  /** Номер рисунка в уроке. */
+  n?: number;
+}
+const { n, ...props } = Astro.props;
+---
+<figure class="figure wide">
+  <SystemLines client:visible {...props} />
+  <figcaption class="figure__caption">{n && <b>Рисунок {n}.</b>} <slot /></figcaption>
+</figure>
