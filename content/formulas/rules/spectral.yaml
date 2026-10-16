@@ -1,0 +1,25 @@
+id: rule.spectral
+kind: rule
+title:
+  ru: 'Спектральная теорема'
+  en: 'spectral theorem'
+statement: 'A = Q \Lambda Q^\top, \qquad Q^\top Q = I'
+symbols:
+  - name: A
+    tex: 'A'
+    shape: [d, d]
+    sample: spd
+concept: la.eigen
+corollary: 'У симметричной матрицы собственные значения вещественны, а собственные векторы можно выбрать ортонормированными: в базисе из них $A$ — растяжение вдоль перпендикулярных осей.'
+pitfall: 'Писать $Q^{-1}$ и считать обратную: для ортогональной $Q$ обратная — просто $Q^\top$.'
+checks:
+  - kind: identity
+    lhs: 'A'
+    rhs: 'np.linalg.eigh(A)[1] @ np.diag(np.linalg.eigh(A)[0]) @ np.linalg.eigh(A)[1].T'
+mutations:
+  - tex: 'Q \Lambda Q'
+    py: 'np.linalg.eigh(A)[1] @ np.diag(np.linalg.eigh(A)[0]) @ np.linalg.eigh(A)[1]'
+    why: 'Справа нужна $Q^\top = Q^{-1}$: без транспонирования собственные векторы не «возвращаются» обратно.'
+  - tex: 'Q^\top \Lambda Q'
+    py: 'np.linalg.eigh(A)[1].T @ np.diag(np.linalg.eigh(A)[0]) @ np.linalg.eigh(A)[1]'
+    why: 'Порядок: собственные векторы — столбцы $Q$, поэтому $Q$ стоит слева, а $Q^\top$ справа.'

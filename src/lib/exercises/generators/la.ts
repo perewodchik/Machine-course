@@ -970,3 +970,91 @@ export const projectOrthogonal: Generator = {
     };
   },
 };
+
+/** Урок I.9: собственные значения матрицы 2 × 2 с целыми корнями характеристического уравнения. */
+export const eigvals2: Generator = {
+  id: "la.eigvals2",
+  version: 1,
+  title: "Собственные значения 2 × 2",
+  make(seed) {
+    const r = rng(seed);
+    for (;;) {
+      const [l1, l2] = r.shuffle([-2, -1, 1, 2, 3, 4, 5]).slice(0, 2) as [number, number];
+      const a = r.int(-2, 4);
+      const d = l1 + l2 - a;
+      const p = a * d - l1 * l2; // = bc
+      const divisors = [1, -1, 2, -2, 3, -3].filter((b) => p % b === 0 && Math.abs(p / b) <= 6);
+      if (p === 0 || !divisors.length) continue;
+      const b = r.pick(divisors);
+      const c = p / b + 0;
+      const [big, small] = [Math.max(l1, l2), Math.min(l1, l2)];
+      return {
+        kind: "numeric",
+        prompt: String.raw`Найдите собственные значения матрицы $$A = ${pm([[a, b], [c, d]])}.$$ Введите большее из них.`,
+        label: String.raw`$\lambda_{\max} =$`,
+        answer: big,
+        tol: 0,
+        hints: [
+          String.raw`Характеристическое уравнение: $\lambda^2 - (\operatorname{tr} A)\lambda + \det A = 0$.`,
+          String.raw`$\operatorname{tr} A = ${a + d}$, $\det A = ${l1 * l2}$.`,
+        ],
+        right: String.raw`$\lambda^2 - ${par(a + d)}\lambda + ${par(l1 * l2)} = (\lambda - ${par(big)})(\lambda - ${par(small)}) = 0$: собственные значения $${big}$ и $${small}$.`,
+        wrong: String.raw`Корни характеристического уравнения в сумме дают $\operatorname{tr} A = ${a + d}$, а в произведении — $\det A = ${l1 * l2}$.`,
+      };
+    }
+  },
+};
+
+/** Урок I.9: какой вектор собственный — kv, а не «похожие»; собственный вектор определён с точностью до множителя. */
+export const eigvecCheck: Generator = {
+  id: "la.eigvec-check",
+  version: 1,
+  title: "Собственный вектор",
+  make(seed) {
+    const r = rng(seed);
+    // A = [[s, t], [t, s]]: собственные (1, 1) с λ = s + t и (1, −1) с λ = s − t
+    const [s, t] = r.pick([[2, 1], [3, 1], [1, 2], [3, 2], [4, 1], [1, 3], [2, 3], [4, 3]] as const);
+    const A = [[s, t], [t, s]];
+    const k = r.pick([2, -3, 3, -2]);
+    const v = r.next() < 0.5 ? [k, k] : [k, -k];
+    const lam = v[0] === v[1] ? s + t : s - t;
+    const Av = (w: number[]) => [A[0]![0]! * w[0]! + A[0]![1]! * w[1]!, A[1]![0]! * w[0]! + A[1]![1]! * w[1]!];
+    const t2 = (w: number[]) => `(${w.join(", ")})`;
+    const wrongs = [[1, 0], [k, 0], [1, 2], [2, -1]].filter((w) => w[0]! * Av(w)[1]! - w[1]! * Av(w)[0]! !== 0).slice(0, 2);
+    const options: ChoiceOption[] = r.shuffle([
+      { text: `$${t2(v)}$`, correct: true, why: String.raw`$A${t2(v)} = ${t2(Av(v))} = ${lam} \cdot ${t2(v)}$. Собственный вектор определён с точностью до множителя: подходит любой ненулевой вектор на этой прямой.` },
+      ...wrongs.map((w) => ({ text: `$${t2(w)}$`, why: String.raw`$A${t2(w)} = ${t2(Av(w))}$ — не кратно $${t2(w)}$: вектор сошёл со своей прямой.` })),
+    ]);
+    return {
+      kind: "choice",
+      prompt: String.raw`$$A = ${pm(A)}.$$ Какой из векторов — собственный вектор $A$?`,
+      options,
+      hints: [String.raw`Умножьте $A$ на каждый вариант и проверьте, получилось ли то же направление: $Av = \lambda v$.`],
+    };
+  },
+};
+
+/** Урок I.9: Aᵏv для собственного вектора v — это λᵏv, без возведения матрицы в степень. */
+export const eigenPower: Generator = {
+  id: "la.eigen-power",
+  version: 1,
+  title: "Степень матрицы на собственном векторе",
+  make(seed) {
+    const r = rng(seed);
+    const lam = r.pick([2, -1, -2, 3]);
+    const k = r.pick([3, 4, 5]);
+    const v = [r.nonzero(-2, 2), r.nonzero(-2, 2)];
+    const out = v.map((x) => x * lam ** k + 0);
+    const col = (w: number[]) => sm(w.map((x) => [x]));
+    return {
+      kind: "matrix",
+      prompt: String.raw`$v = ${col(v)}$ — собственный вектор матрицы $A$ с собственным значением $\lambda = ${lam}$. Найдите $A^{${k}} v$.`,
+      label: String.raw`$A^{${k}} v =$`,
+      answer: out.map((x) => [x]),
+      tol: 0,
+      hints: [String.raw`$A v = \lambda v$, значит $A^2 v = A(\lambda v) = \lambda^2 v$, и так далее: $A^k v = \lambda^k v$.`],
+      right: String.raw`$A^{${k}} v = ${par(lam)}^{${k}} v = ${lam ** k} \cdot ${col(v)} = ${col(out)}$.`,
+      wrong: String.raw`Матрицу знать не нужно: $A^{${k}} v = \lambda^{${k}} v$. Проверьте знак, если $\lambda < 0$.`,
+    };
+  },
+};

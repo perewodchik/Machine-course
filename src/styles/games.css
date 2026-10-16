@@ -168,6 +168,12 @@
   .game-span__row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); font: 20px var(--font-math-upright); color: var(--ink); }
   .game-span__op i { font-family: var(--font-math); font-style: italic; }
 
+  /* «Охота на собственные векторы»: матрица строкой, бегунок угла цветом v, действия и выбор λ — кнопки */
+  .game-eigen { display: grid; gap: var(--space-3); }
+  .game-eigen__matrix { margin: 0; font: 18px var(--font-math-upright); color: var(--ink); font-variant-numeric: tabular-nums; }
+  .game-eigen__matrix i { font-family: var(--font-math); }
+  .game-eigen__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
   /* «Тетрис размерностей»: блок — клетки строк × столбцов цветом роли; стык — «3 = 3» зелёной ручкой или «3 ≠ 5» красной */
   .game-dim { display: grid; gap: var(--space-4); padding: var(--space-4); border: 1px solid var(--rule); border-radius: var(--radius-panel); background: var(--surface); }
   .game-dim__story { margin: 0; font: var(--text-sm) / 1.5 var(--font-ui); color: var(--ink-2); }

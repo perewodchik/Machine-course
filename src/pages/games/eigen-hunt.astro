@@ -1,0 +1,26 @@
+---
+// Игра «Охота на собственные векторы» (S3.L1, урок I.9): остров React с оболочкой GameShell. Блок «Чему учит игра» — статичный HTML.
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { EigenHunt, meta } from "../../games/eigen-hunt";
+import { loadCourse } from "../../lib/content/collections";
+
+const course = await loadCourse("foundations");
+const lesson = course.lessons.find((l) => l.key === meta.lesson);
+if (!lesson) throw new Error(`игра ${meta.id}: нет урока ${meta.lesson}`);
+const module = course.modules.find((m) => m.id === lesson.module);
+---
+<BaseLayout title={meta.title} description="Поворачивайте вектор v и поймайте направления, где Av лежит на той же прямой, — собственные векторы матрицы." course={course}>
+  <main class="game shell" id="content">
+    <nav class="breadcrumb" aria-label="Путь">
+      <a href={`${course.href}#m-${lesson.module}`}>{module?.title}</a><span aria-hidden="true">/</span><span>Игра к уроку {lesson.number}</span>
+    </nav>
+    <h1>{meta.title}</h1>
+    <p class="lead game__lead">Поворачивайте вектор <i>v</i> и поймайте направления, где <i>Av</i> лежит на той же прямой, что <i>v</i>. Потом назовите собственное значение&nbsp;<i>λ</i>. Шесть уровней, партия&nbsp;— 3–5&nbsp;минут.</p>
+    <EigenHunt client:load>
+      <div class="block block--intuition game__teaches">
+        <p><span class="block__title">Чему учит игра.</span> Собственный вектор матрица только растягивает: <i>Av</i>&nbsp;=&nbsp;<i>λv</i>. Если <i>λ</i>&nbsp;&lt;&nbsp;0, вектор ещё и переворачивается. У симметричной матрицы такие направления перпендикулярны, а у поворота их нет совсем.</p>
+        <p><a href={lesson.href}>Урок {lesson.number}. {lesson.title}</a></p>
+      </div>
+    </EigenHunt>
+  </main>
+</BaseLayout>
