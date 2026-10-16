@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-16 — L-I.12 Капстоун: МНК как проекция; итоговая проверка модуля I — готов
+- **Сделано:** Капстоун I.12 на «Квартирах» из урока 0.1: четыре цикла (пространство столбцов и нормальные уравнения, θ̂ = (0.852, 0.129) и цена 75 м²; геометрия остатка — центр масс, P² = P, tr P = d, Пифагор; зависимые признаки — площадь в футах, ранг 2, решение наименьшей нормы; чего не хватает — градиент, гребневая регрессия, обусловленность). Лабораторная «МНК как проекция» (notebooks/src/la/least_squares_projection.py, шесть заданий). Генератор la.normal-eq; ячейки la/least_squares.py закреплены тестом, копия генератора «Квартир» сверена с mlf.datasets. Итоговая проверка модуля I — ExerciseSet из двенадцати задач по урокам I.1–I.12. Модуль I и этап 3 закончены.
+- **Файлы:** content/courses/foundations/linear-algebra/capstone-least-squares.mdx, notebooks/src/la/least_squares_projection.py, notebooks/la/least_squares_projection.ipynb, code/snippets/la/least_squares.py, code/tests/test_least_squares.py, src/lib/exercises/generators/la.ts
+- **Проверка:** vitest 434; pytest; лабораторные nbmake — 3 passed; e2e капстоуна и layout i12 — 8 passed (все 12 задач модуля решаются, axe чисто); lint, check, validate, check_consistency — чисто; формулы на 390 px — чисто
+- **Отклонения от плана и решения:** Капстоун без нового виджета: картинка урока — ячейки Python и лабораторная, как в карточке. Проверка Cloudflare «Workers Builds» красная на PR с #17 и падает мгновенно, не начав сборку; репозиторий не менялся, логи — только в панели Cloudflare (S1.13 [u]); комментарий в PR #20.
+- **Следующий шаг:** S4.01 — отчёт о калибровке уверенности.
+- **Вопросы пользователю:** Проверка «Workers Builds: machine-course» в Cloudflare падает на каждом коммите, не начав сборку. Посмотрите, пожалуйста, причину в панели Cloudflare: Workers → machine-course → Builds.
+
 ### 2026-10-16 — L-I.11 Сингулярное разложение и псевдообратная — готов
 - **Сделано:** Урок I.11: четыре цикла (геометрия A = USVᵀ — окружность в эллипс, Avᵢ = σᵢuᵢ, отражения в U и V; σᵢ через AᵀA, формула f.svd-gram, ранг; малоранговое приближение, теорема Эккарта — Янга, главные компоненты; псевдообратная и решение наименьшей нормы, переобученная регрессия). Виджеты «Окружность → эллипс по шагам» (svd-steps) и «Сжать картинку SVD» (low-rank, Якоби в браузере). Понятия la.svd, la.pseudoinverse; правила rule.pinv-svd, rule.eckart-young; генераторы la.singular-values, la.min-norm, la.lowrank-error; ячейка la/svd.py закреплена тестом; термины глоссария.
 - **Файлы:** content/courses/foundations/linear-algebra/svd-pseudoinverse.mdx, src/widgets/la/{svd-steps,low-rank}/*, content/formulas/la/svd-gram.yaml, content/formulas/rules/{pinv-svd,eckart-young}.yaml, content/concepts/la.yaml, src/lib/exercises/generators/la.ts, code/snippets/la/svd.py

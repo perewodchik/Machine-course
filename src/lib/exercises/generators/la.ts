@@ -1237,3 +1237,35 @@ export const lowrankError: Generator = {
     };
   },
 };
+
+/** Капстоун I.12: нормальные уравнения XᵀXθ = Xᵀy с готовыми XᵀX и Xᵀy — система 2 × 2 с целым ответом. */
+export const normalEq: Generator = {
+  id: "la.normal-eq",
+  version: 1,
+  title: "Нормальные уравнения",
+  make(seed) {
+    const r = rng(seed);
+    for (;;) {
+      const [a, c, b] = [r.int(2, 6), r.int(2, 6), r.int(-3, 3)];
+      const det = a * c - b * b;
+      if (det <= 0) continue;
+      const theta = [r.nonzero(-3, 3), r.nonzero(-3, 3)];
+      const G = [[a, b], [b, c]];
+      const rhs = G.map((row) => row[0]! * theta[0]! + row[1]! * theta[1]!);
+      const col = (w: readonly number[]) => sm(w.map((v) => [v]));
+      return {
+        kind: "matrix",
+        prompt: String.raw`Для матрицы признаков $X$ посчитали $$X^\top X = ${pm(G)}, \qquad X^\top y = ${pm(rhs.map((v) => [v]))}.$$ Найдите веса МНК $\hat\theta$.`,
+        label: String.raw`$\hat\theta =$`,
+        answer: theta.map((v) => [v]),
+        tol: 0,
+        hints: [
+          String.raw`$\hat\theta$ — решение нормальных уравнений $X^\top X \theta = X^\top y$, системы двух уравнений.`,
+          String.raw`$\det(X^\top X) = ${a} \cdot ${c} - ${par(b)}^2 = ${det}$; для $2 \times 2$ обратная — поменять диагональ, сменить знаки вне неё и поделить на определитель (урок I.7).`,
+        ],
+        right: String.raw`$\hat\theta = (X^\top X)^{-1} X^\top y = ${col(theta)}$. Проверка: $X^\top X \hat\theta = ${col(rhs)}$.`,
+        wrong: String.raw`Подставьте ответ в $X^\top X \theta$ — должно получиться $X^\top y = ${col(rhs)}$. Делить $X^\top y$ поэлементно на диагональ $X^\top X$ нельзя: внедиагональный элемент $${b}$ связывает уравнения.`,
+      };
+    }
+  },
+};

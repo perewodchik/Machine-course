@@ -415,6 +415,17 @@ describe("генераторы", () => {
     }
   });
 
+  it("задача капстоуна I.12: веса удовлетворяют нормальным уравнениям", () => {
+    for (let s = 1; s <= 40; s++) {
+      const ne = make("la.normal-eq", s);
+      if (ne.kind !== "matrix") throw new Error("ожидалась матрица");
+      const [G, b] = [...ne.prompt.matchAll(/\\begin\{pmatrix\}(.*?)\\end\{pmatrix\}/g)].map((m) => m[1]!.split(" \\\\ ").map((row) => row.split(" & ").map(Number)));
+      const th = ne.answer.map((row) => row[0]!);
+      expect(G![0]![0]! * G![1]![1]! - G![0]![1]! ** 2).toBeGreaterThan(0);
+      expect(G!.map((row) => row[0]! * th[0]! + row[1]! * th[1]!)).toEqual(b!.map((row) => row[0]));
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

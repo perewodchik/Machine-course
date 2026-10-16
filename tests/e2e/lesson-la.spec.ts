@@ -8,7 +8,8 @@
 // Урок I.8 — проекция на плоскость: остаток перпендикулярен столбцам при любом y, разбор, итоговая проверка.
 // Урок I.9 — разбор «собственный с точностью до множителя», правило спектральной теоремы, итоговая проверка.
 // Урок I.10 — линии уровня: эллипсы → гиперболы с клавиатуры, разбор формы и знакоопределённости, итоговая.
-// Урок I.11 — шаги SVD и отражение в U, сжатие картинки бегунком k, разбор полуосей, итоговая проверка. axe.
+// Урок I.11 — шаги SVD и отражение в U, сжатие картинки бегунком k, разбор полуосей, итоговая проверка.
+// Капстоун I.12 — ссылка на лабораторную, разбор следа проекции, итоговая проверка и набор задач модуля I. axe.
 import { expect, test } from "@playwright/test";
 import { generator } from "../../src/lib/exercises/generators";
 import { expectNoAxeViolations } from "./support";
@@ -325,6 +326,45 @@ test("урок I.11: шаги SVD с клавиатуры, сжатие карт
   await final.locator("[data-variant]:not([hidden]) input").first().fill(String(spec.answer));
   await final.getByRole("button", { name: "Проверить" }).click();
   await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});
+
+test("капстоун I.12: лабораторная, след проекции, итоговая проверка и все задачи модуля I", async ({ page }) => {
+  await page.goto("/foundations/linear-algebra/capstone-least-squares/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Капстоун: МНК как проекция");
+  await expect(page.getByRole("link", { name: "Открыть в Colab" }).first()).toHaveAttribute("href", /notebooks\/la\/least_squares_projection\.ipynb$/);
+
+  const tr = page.locator("[data-exercise][data-item='i12.trace']");
+  await tr.locator("[data-option]").filter({ hasText: "размер матрицы" }).click();
+  await expect(tr.locator("[data-feedback]")).toContainText("Это след единичной матрицы");
+
+  const final = page.locator("[data-exercise][data-final]");
+  const spec = generator("la.normal-eq").make(31);
+  if (spec.kind !== "matrix") throw new Error("ожидалась матрица");
+  for (const [i, row] of spec.answer.entries()) for (const [j, v] of row.entries()) await final.locator(`[data-variant]:not([hidden]) [data-cell="${i},${j}"]`).fill(String(v));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+
+  // итоговая проверка модуля: двенадцать задач по урокам I.1–I.12, все решаются верными ответами генераторов
+  const set = page.locator("[data-exercise-set]");
+  const summary = set.locator("[data-summary]");
+  await expect(summary).toHaveText(/Решено верно: 0 из\s12\./);
+  for (const ex of await set.locator("[data-exercise]").all()) {
+    const gen = (await ex.getAttribute("data-item"))!;
+    const seed = Number(await ex.locator("[data-variant]").getAttribute("data-seed"));
+    const task = generator(gen).make(seed);
+    if (task.kind === "numeric") {
+      await ex.locator("input[data-input]").fill(String(task.answer));
+      await ex.getByRole("button", { name: "Проверить" }).click();
+    } else if (task.kind === "choice") {
+      await ex.locator("[data-option]").nth(task.options.findIndex((o) => o.correct)).click();
+    } else if (task.kind === "matrix") {
+      for (const [i, row] of task.answer.entries()) for (const [j, v] of row.entries()) await ex.locator(`[data-cell="${i},${j}"]`).fill(String(v));
+      await ex.getByRole("button", { name: "Проверить" }).click();
+    } else throw new Error(`задача ${gen}: вид ${task.kind}`);
+  }
+  await expect(summary).toHaveText(/Решено верно: 12 из\s12\./);
   await page.evaluate(() => window.scrollTo(0, 0));
   await expectNoAxeViolations(page);
 });
