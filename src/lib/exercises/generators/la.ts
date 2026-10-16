@@ -457,3 +457,102 @@ export const angle: Generator = {
     };
   },
 };
+
+/** Урок I.3: один столбец AB (нечётные варианты) или одна строка (чётные) без вычисления всей матрицы. */
+export const matmulColumn: Generator = {
+  id: "la.matmul-column",
+  version: 2,
+  title: "Столбец или строка произведения",
+  make(seed) {
+    const r = rng(seed);
+    const A = [[r.int(-2, 3), r.int(-2, 3), r.int(-2, 3)], [r.int(-2, 3), r.int(-2, 3), r.int(-2, 3)]];
+    const B = [[r.int(-2, 3), r.int(-2, 3)], [r.int(-2, 3), r.int(-2, 3)], [r.int(-2, 3), r.int(-2, 3)]];
+    const j = r.int(0, 1);
+    const given = String.raw`$$A = ${pm(A)}, \qquad B = ${pm(B)}.$$`;
+    if (seed % 2 === 0) {
+      // строка j произведения — комбинация строк B с коэффициентами из строки j матрицы A
+      const a = A[j]!;
+      const row = [0, 1].map((c) => a.reduce((s, x, k) => s + x * B[k]![c]!, 0));
+      const terms = a.map((x, k) => `${par(x)} ${sm([B[k]!])}`).join(" + ");
+      return {
+        kind: "matrix",
+        prompt: String.raw`${given} Найдите ${j + 1}-ю строку $AB$, не вычисляя остальное.`,
+        label: String.raw`$(AB)_{${j + 1},:} =$`,
+        answer: [row],
+        tol: 0,
+        hints: [
+          String.raw`Строка $i$ произведения — строка $i$ матрицы $A$, умноженная на $B$: $(AB)_{i,:} = A_{i,:} B$.`,
+          String.raw`А $A_{i,:} B$ — комбинация строк $B$ с коэффициентами из $A_{${j + 1},:} = (${a.join(", ")})$.`,
+        ],
+        right: String.raw`$(AB)_{${j + 1},:} = ${terms} = ${sm([row])}$.`,
+        wrong: String.raw`Коэффициенты берутся из ${j + 1}-й строки $A$, а складываются строки $B$.`,
+      };
+    }
+    const b = B.map((row) => row[j]!);
+    const col = A.map((row) => row.reduce((s, a, k) => s + a * b[k]!, 0));
+    const terms = b.map((c, k) => `${par(c)} ${sm(A.map((row) => [row[k]!]))}`).join(" + ");
+    return {
+      kind: "matrix",
+      prompt: String.raw`${given} Найдите ${j + 1}-й столбец $AB$, не вычисляя остальное.`,
+      label: String.raw`$(AB)_{:,${j + 1}} =$`,
+      answer: col.map((v) => [v]),
+      tol: 0,
+      hints: [
+        String.raw`Столбец $j$ произведения — $A$, умноженная на столбец $j$ матрицы $B$: $(AB)_{:,j} = A\, B_{:,j}$.`,
+        String.raw`А $A B_{:,j}$ — комбинация столбцов $A$ с коэффициентами из $B_{:,${j + 1}} = (${b.join(", ")})$.`,
+      ],
+      right: String.raw`$(AB)_{:,${j + 1}} = ${terms} = ${sm(col.map((v) => [v]))}$.`,
+      wrong: String.raw`Коэффициенты берутся из ${j + 1}-го столбца $B$, а складываются столбцы $A$.`,
+    };
+  },
+};
+
+/** Урок I.3: внешнее произведение u vᵀ — таблица попарных произведений координат. */
+export const outer: Generator = {
+  id: "la.outer",
+  version: 1,
+  title: "Внешнее произведение",
+  make(seed) {
+    const r = rng(seed);
+    const u = [r.nonzero(-3, 3), r.int(-2, 3)];
+    const v = [r.nonzero(-2, 3), r.int(-2, 2), r.nonzero(-2, 3)];
+    const M = u.map((a) => v.map((b) => a * b + 0));
+    return {
+      kind: "matrix",
+      prompt: String.raw`$u = ${sm(u.map((x) => [x]))}$, $v = ${sm(v.map((x) => [x]))}$. Вычислите $u v^\top$.`,
+      label: String.raw`$u v^\top =$`,
+      answer: M,
+      tol: 0,
+      hints: [
+        String.raw`$u v^\top$ — столбец на строку: форма $2 \times 1$ на $1 \times 3$ даёт $2 \times 3$.`,
+        String.raw`Элемент $(u v^\top)_{ij} = u_i v_j$: строка $i$ — это $v^\top$, умноженная на $u_i$.`,
+      ],
+      right: String.raw`$u v^\top = ${sm(M)}$: каждая строка — $v^\top$, умноженная на свою координату $u$, поэтому ранг равен $1$.`,
+      wrong: String.raw`Не путайте с $u^\top v$: здесь не число, а таблица $2 \times 3$ всех произведений $u_i v_j$.`,
+    };
+  },
+};
+
+/** Урок I.3: какое из произведений определено и какой оно формы. */
+export const shapeProduct: Generator = {
+  id: "la.shape-product",
+  version: 1,
+  title: "Когда произведение определено",
+  make(seed) {
+    const r = rng(seed);
+    // A: m × k, B: k × p, все размеры разные — неверные варианты не совпадают с верным случайно
+    const [m, k, p] = r.shuffle([2, 3, 4, 5]).slice(0, 3) as [number, number, number];
+    const options: ChoiceOption[] = r.shuffle([
+      { text: String.raw`$AB$, форма $${m} \times ${p}$`, correct: true, why: String.raw`Столбцов у $A$ — $${k}$, строк у $B$ — $${k}$: стыкуется. Строки берутся от $A$, столбцы — от $B$.` },
+      { text: String.raw`$BA$, форма $${k} \times ${k}$`, why: String.raw`У $B$ $${p}$ столбцов, а у $A$ $${m}$ строк: $${p} \ne ${m}$, произведение $BA$ не определено.` },
+      { text: String.raw`$AB$, форма $${k} \times ${k}$`, why: String.raw`Совпадающий размер $${k}$ — внутренний, он «сокращается». Форма $AB$ — строки $A$ на столбцы $B$.` },
+      { text: String.raw`$A B^\top$, форма $${m} \times ${k}$`, why: String.raw`$B^\top$ — $${p} \times ${k}$: у $A$ $${k}$ столбцов, а у $B^\top$ $${p}$ строк, не стыкуется.` },
+    ]);
+    return {
+      kind: "choice",
+      prompt: String.raw`$A$ — матрица $${m} \times ${k}$, $B$ — $${k} \times ${p}$. Какое произведение определено и какой оно формы?`,
+      options,
+      hints: [String.raw`$(m \times k)$ на $(k \times p)$ — внутренние размеры совпадают, ответ $m \times p$.`],
+    };
+  },
+};

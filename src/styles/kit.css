@@ -121,6 +121,20 @@
   .span-widget__fact i { font-family: var(--font-math); }
   .span-widget__fact b { color: var(--ink); font-variant-numeric: tabular-nums; }
   @media (max-width: 900px) { .span-widget__controls { grid-template-columns: minmax(0, 1fr); } }
+  /* «Четыре взгляда на AB»: матрицы в круглых скобках, подсветка выбранного — фоном и рамкой синей ручки */
+  .mv { display: grid; gap: var(--space-3); padding: var(--space-4); }
+  .mv__views, .mv__picks { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .mv .btn[aria-pressed="true"] { border-color: var(--pen); color: var(--pen); box-shadow: inset 0 0 0 1px var(--pen); }
+  .mv__eq { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); padding: var(--space-3) 0; }
+  .mv__mat { display: inline-grid; justify-items: center; gap: var(--space-1); }
+  .mv__grid { display: grid; gap: 2px 0; padding: var(--space-1) var(--space-2); border-inline: 2px solid var(--ink-2); border-radius: var(--radius-panel); }
+  .mv__grid > span { min-width: 2.2em; padding: 2px var(--space-1); border-radius: var(--radius-inline); text-align: right; font: 17px var(--font-math-upright); font-variant-numeric: tabular-nums; color: var(--ink); }
+  .mv__grid > .is-lit { background: var(--pen-wash); color: var(--pen-strong); }
+  .mv__name { font: italic 16px var(--font-math); color: var(--ink-2); }
+  .mv__name--text { font: var(--text-sm) var(--font-ui); color: var(--ink-3); }
+  .mv__op { font: 20px var(--font-math-upright); color: var(--ink-2); }
+  .mv__op--aside { font: var(--text-sm) var(--font-ui); color: var(--ink-3); }
+  .mv__explain { margin: 0; font: var(--text-sm) / 1.5 var(--font-ui); color: var(--ink-2); font-variant-numeric: tabular-nums; }
   /* «Единичные шары норм» и «Проекция»: два бегунка в строку, под ними три показания в строку */
   .norm-balls__controls, .projection-widget__controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: var(--space-3) var(--space-5); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule); }
   .norm-balls__readouts, .projection-widget__readouts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; gap: var(--space-3) var(--space-5); padding: 0 var(--space-4) var(--space-3); }

@@ -17,6 +17,22 @@
 
 ---
 
+### 2026-10-16 — L-I.4 Матрица как линейное отображение — проверка по определению готовности — готов
+- **Сделано:** Урок I.4 (сделан в S2.08) сверен с определением готовности. Добавлены единичная и диагональная матрицы из карточки (с английскими терминами и глоссарием), раздел CS229 «Deep learning» — два линейных слоя без нелинейности дают один; время урока 90 минут вместо 40.
+- **Файлы:** content/courses/foundations/linear-algebra/matrix-as-map.mdx, content/glossary.yaml
+- **Проверка:** validate, build; e2e lesson-i4 — 8 passed
+- **Отклонения от плана и решения:** Остальные пункты определения готовности выполнены ещё в S2.08: три цикла с проверками, la.from-images и la.compose-order, правила rule.matvec-columns и rule.matmul-composition, итоговая проверка.
+- **Следующий шаг:** L-I.5 — транспонирование, симметрия, след.
+- **Вопросы пользователю:** —
+
+### 2026-10-16 — L-I.3 Умножение матриц: четыре взгляда — готов
+- **Сделано:** Урок I.3: четыре цикла (строка на столбец и правило форм; столбцы и строки, AB ≠ BA; сумма внешних произведений, XᵀX — сумма по объектам; блоки, адамарово произведение, * и @ в NumPy, векторизация). Виджет «Четыре взгляда на AB» (src/widgets/la/matmul-views, три рисунка с разными взглядами). Игра «Тетрис размерностей» (/games/dim-tetris, шесть уровней от Av до XᵀXθ, блоки клетками цвета роли, транспонирование). Правила rule.matmul-outer и rule.gram-sum, генераторы la.matmul-column (столбец или строка), la.outer, la.shape-product; ячейки la/matmul.py закреплены тестом. Код в обратных кавычках в текстах упражнений (renderInline); GameShell передаёт dispatch полю игры.
+- **Файлы:** content/courses/foundations/linear-algebra/matrix-multiplication.mdx, src/widgets/la/matmul-views/*, src/games/dim-tetris/*, src/pages/games/dim-tetris.astro, content/formulas/rules/{matmul-outer,gram-sum}.yaml, src/lib/exercises/generators/la.ts, src/markdown/core/inline.ts, code/snippets/la/matmul.py
+- **Проверка:** vitest 381; pytest; e2e полный — 416 passed, 154 skipped; после правок — уроки модуля I, I.4, карта и layout — чисто; lint, check, validate, check_consistency — чисто; скриншоты 1440 светлая и 390 тёмная
+- **Отклонения от плана и решения:** Цель «четыре способа» проверяется всеми: la.matmul2 (элемент), la.matmul-column (столбец на нечётных вариантах, строка на чётных), la.outer и rule.matmul-outer. Итоговая проверка — la.matmul-column, вариант 31 (столбец).
+- **Следующий шаг:** L-I.4 — проверить урок «Матрица как отображение» по определению готовности.
+- **Вопросы пользователю:** —
+
 ### 2026-10-16 — L-I.2 Скалярное произведение и нормы — готов
 - **Сделано:** Урок I.2: четыре цикла (скалярное произведение и длина; нормы ℓ1, ℓ2, ℓ∞ и Фробениуса; проекция на вектор; неравенство Коши — Буняковского и угол в ℝ^d). Виджеты «Единичные шары норм» (src/widgets/la/norm-balls) и «Проекция с подвижным углом» (src/widgets/la/projection). Формулы f.vector-projection (минимум квадрата расстояния по t) и f.cauchy-schwarz (через остаток проекции). Генераторы la.norms, la.projection, la.angle; две ячейки la/norms.py (нормы в NumPy, средний |cos| случайных векторов падает с размерностью), вывод закреплён тестом. Кит: опция Plane equal (одинаковый масштаб осей), имена функций в подписях прямым шрифтом.
 - **Файлы:** content/courses/foundations/linear-algebra/dot-product-norms.mdx, content/formulas/la/{vector-projection,cauchy-schwarz}.yaml, src/widgets/la/{norm-balls,projection}/*, src/widgets/_kit/{layout,format}.ts, src/lib/exercises/generators/la.ts, code/snippets/la/norms.py

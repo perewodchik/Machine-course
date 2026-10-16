@@ -1,0 +1,25 @@
+id: rule.gram-sum
+kind: rule
+title:
+  ru: 'Матрица Грама — сумма по объектам'
+  en: 'Gram matrix as a sum over examples'
+statement: '\sym{X}{X}^\top \sym{X}{X} = \sum_{i=1}^{n} x^{(i)} x^{(i)\top}'
+symbols:
+  - name: X
+    tex: 'X'
+    shape: [n, d]
+    role: data
+concept: la.matmul
+corollary: 'Каждый объект добавляет матрицу $d \times d$ ранга 1. Поэтому $X^\top X$ можно накапливать по одному объекту, не держа всю выборку в памяти.'
+pitfall: 'Путать $X^\top X$ ($d \times d$, признаки на признаки) и $X X^\top$ ($n \times n$, объекты на объекты).'
+checks:
+  - kind: identity
+    lhs: 'X.T @ X'
+    rhs: 'np.sum(X[:, :, None] * X[:, None, :], axis=0)'
+mutations:
+  - tex: '\sym{X}{X} \sym{X}{X}^\top'
+    py: 'X @ X.T'
+    why: '$XX^\top$ — матрица $n \times n$ попарных скалярных произведений объектов, а сумма даёт $d \times d$.'
+  - tex: '\sum_{i=1}^{n} x^{(i)\top} x^{(i)}'
+    py: 'np.sum(X * X)'
+    why: 'Строка на столбец — число: это сумма квадратов всех элементов $X$, а не матрица.'

@@ -34,6 +34,8 @@ export const layoutPages = {
   start9: "/foundations/start/notation/",
   i1: "/foundations/linear-algebra/vectors-span/",
   i2: "/foundations/linear-algebra/dot-product-norms/",
+  i3: "/foundations/linear-algebra/matrix-multiplication/",
+  dimgame: "/games/dim-tetris/",
   spangame: "/games/span-hit/",
   concept: "/concepts/la.dot-product/",
 } as const;
