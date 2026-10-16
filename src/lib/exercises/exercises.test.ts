@@ -338,6 +338,25 @@ describe("генераторы", () => {
     }
   });
 
+  it("задачи урока I.9: собственные значения и векторы сходятся с условием", () => {
+    for (let s = 1; s <= 40; s++) {
+      const ev = num(make("la.eigvals2", s));
+      const A = /\\begin\{pmatrix\}(.*?)\\end\{pmatrix\}/.exec(ev.prompt)![1]!.split(" \\\\ ").map((row) => row.split(" & ").map(Number)) as [number[], number[]];
+      const [tr, det] = [A[0]![0]! + A[1]![1]!, A[0]![0]! * A[1]![1]! - A[0]![1]! * A[1]![0]!];
+      expect(ev.answer, ev.prompt).toBe((tr + Math.sqrt(tr * tr - 4 * det)) / 2);
+
+      const vc = make("la.eigvec-check", s);
+      if (vc.kind !== "choice") throw new Error("ожидался выбор");
+      const M = /\\begin\{pmatrix\}(.*?)\\end\{pmatrix\}/.exec(vc.prompt)![1]!.split(" \\\\ ").map((row) => row.split(" & ").map(Number));
+      expect(vc.options.length).toBe(3);
+      for (const o of vc.options) {
+        const w = /\(([^)]*)\)/.exec(o.text)![1]!.split(", ").map(Number);
+        const Aw = M.map((row) => row[0]! * w[0]! + row[1]! * w[1]!);
+        expect(w[0]! * Aw[1]! - w[1]! * Aw[0]! === 0).toBe(Boolean(o.correct));
+      }
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

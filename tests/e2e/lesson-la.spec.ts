@@ -5,7 +5,8 @@
 // Урок I.5 — формула (Xθ − y)ᵀ проверяется на случайных матрицах, «найди ошибку» разбирает верную строку, итоговая.
 // Урок I.6 — прямые на рисунке переключаются заготовками и бегунком, ранги и число решений, итоговая проверка.
 // Урок I.7 — сдвиг и отражение на сетке, det композиции не зависит от порядка, разбор det(AB), итоговая.
-// Урок I.8 — проекция на плоскость: остаток перпендикулярен столбцам при любом y, разбор, итоговая проверка. axe.
+// Урок I.8 — проекция на плоскость: остаток перпендикулярен столбцам при любом y, разбор, итоговая проверка.
+// Урок I.9 — разбор «собственный с точностью до множителя», правило спектральной теоремы, итоговая проверка. axe.
 import { expect, test } from "@playwright/test";
 import { generator } from "../../src/lib/exercises/generators";
 import { expectNoAxeViolations } from "./support";
@@ -219,6 +220,31 @@ test("урок I.8: проекция на плоскость столбцов с
   const spec = generator("la.project-orthogonal").make(31);
   if (spec.kind !== "matrix") throw new Error("ожидалась матрица");
   for (const [i, row] of spec.answer.entries()) for (const [j, v] of row.entries()) await final.locator(`[data-variant]:not([hidden]) [data-cell="${i},${j}"]`).fill(String(v));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});
+
+test("урок I.9: собственный вектор с точностью до множителя, спектральная теорема, итоговая проверка", async ({ page }) => {
+  await page.goto("/foundations/linear-algebra/eigen/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Собственные значения и векторы");
+  await expect(page.getByRole("link", { name: "Открыть игру" })).toHaveAttribute("href", "/games/eigen-hunt/");
+
+  const vc = page.locator("[data-exercise][data-item='la.eigvec-check']");
+  const task = generator("la.eigvec-check").make(1);
+  if (task.kind !== "choice") throw new Error("ожидался выбор");
+  await vc.locator("[data-variant]:not([hidden]) [data-option]").nth(task.options.findIndex((o) => o.correct)).click();
+  await expect(vc.locator("[data-feedback]")).toContainText("с точностью до множителя");
+
+  const sp = page.locator("[data-exercise][data-item='i9.spectral']");
+  await sp.locator("[data-option]").filter({ hasText: "QΛQ" }).first().scrollIntoViewIfNeeded();
+  await expect(sp.locator("[data-option]")).toHaveCount(3);
+
+  const final = page.locator("[data-exercise][data-final]");
+  const spec = generator("la.eigvals2").make(31);
+  if (spec.kind !== "numeric") throw new Error("ожидалось число");
+  await final.locator("[data-variant]:not([hidden]) input").first().fill(String(spec.answer));
   await final.getByRole("button", { name: "Проверить" }).click();
   await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
   await page.evaluate(() => window.scrollTo(0, 0));

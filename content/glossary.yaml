@@ -248,3 +248,18 @@
 - id: margin
   ru: 'отступ (зазор) до разделяющей гиперплоскости'
   en: 'margin'
+- id: eigen
+  ru: 'собственный вектор, собственное значение'
+  en: 'eigenvector, eigenvalue'
+- id: characteristic-polynomial
+  ru: 'характеристический многочлен'
+  en: 'characteristic polynomial'
+- id: diagonalization
+  ru: 'диагонализация'
+  en: 'diagonalization, eigendecomposition'
+- id: spectral-theorem
+  ru: 'спектральная теорема'
+  en: 'spectral theorem'
+- id: principal-components
+  ru: 'главные компоненты'
+  en: 'principal components'

@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-16 — L-I.9 Собственные значения и векторы — готов
+- **Сделано:** Урок I.9: четыре цикла (собственные векторы — Av = λv, λ < 0 и λ = 0, с точностью до множителя; характеристическое уравнение, след и определитель, поворот без вещественных λ; диагонализация A = VΛV⁻¹ и степени, недиагонализуемый сдвиг; спектральная теорема A = QΛQᵀ и главные компоненты). Игра «Охота на собственные векторы» (/games/eigen-hunt, шесть уровней от диагональной матрицы до поворота: поймать Av ∥ v и выбрать λ). Правила rule.char-poly-2x2, rule.diagonal-power, rule.spectral; генераторы la.eigvals2, la.eigvec-check, la.eigen-power; ячейка la/eigen.py закреплена тестом.
+- **Файлы:** content/courses/foundations/linear-algebra/eigen.mdx, src/games/eigen-hunt/*, src/pages/games/eigen-hunt.astro, content/formulas/rules/{char-poly-2x2,diagonal-power,spectral}.yaml, src/lib/exercises/generators/la.ts, code/snippets/la/eigen.py
+- **Проверка:** vitest 411; pytest; e2e уроков модуля I, layout и игры — 251 passed; lint (код выхода), check, validate, check_consistency — чисто; формулы на 390 px — чисто
+- **Отклонения от плана и решения:** Поимка засчитывается по направлению (v в пределах 1.5° от собственного), а не по углу между v и Av: при целых градусах угол между прямыми у вытянутых матриц не падает ниже 2°. Поле игры подстраивается под норму A, чтобы образ единичной окружности помещался.
+- **Следующий шаг:** L-I.10 — квадратичные формы и знакоопределённость.
+- **Вопросы пользователю:** —
+
 ### 2026-10-16 — L-I.8 Ортогональность и проекции — готов
 - **Сделано:** Урок I.8: четыре цикла (ортонормированный базис и ортогональные матрицы; проекция на пространство столбцов — формула f.residual-orthogonality из V.1, матрица P = X(XᵀX)⁻¹Xᵀ, МНК как проекция; расстояние до гиперплоскости и отступ SVM; ★ Грам — Шмидт и QR). Виджет «Проекция y на плоскость столбцов» (src/widgets/la/plane-projection): трёхмерная сцена ортографической камерой на Plane bare. Формула f.hyperplane-distance с выводом, правило rule.projection-idempotent; генераторы la.orthogonal-matrix, la.hyperplane-distance, la.project-orthogonal; ячейка la/projections.py закреплена тестом (ŷ совпадает с рисунком). Кит: опция Plane bare.
 - **Файлы:** content/courses/foundations/linear-algebra/orthogonality-projections.mdx, src/widgets/la/plane-projection/*, src/widgets/_kit/Plane.tsx, content/formulas/la/hyperplane-distance.yaml, content/formulas/rules/projection-idempotent.yaml, src/lib/exercises/generators/la.ts, code/snippets/la/projections.py

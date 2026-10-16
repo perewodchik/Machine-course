@@ -1,0 +1,36 @@
+id: rule.char-poly-2x2
+kind: rule
+title:
+  ru: 'Характеристический многочлен матрицы 2 × 2'
+  en: 'characteristic polynomial of a 2 × 2 matrix'
+statement: '\det(A - \lambda I) = \lambda^2 - (\operatorname{tr} A)\, \lambda + \det A'
+symbols:
+  - name: a
+    tex: 'a'
+    shape: []
+  - name: b
+    tex: 'b'
+    shape: []
+  - name: c
+    tex: 'c'
+    shape: []
+  - name: d
+    tex: 'd'
+    shape: []
+  - name: lam
+    tex: '\lambda'
+    shape: []
+concept: la.eigen
+corollary: 'Корни — собственные значения: их сумма равна $\operatorname{tr} A = a + d$, произведение — $\det A = ad - bc$.'
+pitfall: 'Перепутать знак у следа: $\lambda^2 + (\operatorname{tr} A)\lambda + \det A$ даёт собственные значения с обратным знаком.'
+checks:
+  - kind: identity
+    lhs: 'np.linalg.det(np.array([[a - lam, b], [c, d - lam]]))'
+    rhs: 'lam ** 2 - (a + d) * lam + (a * d - b * c)'
+mutations:
+  - tex: '\lambda^2 + (\operatorname{tr} A)\, \lambda + \det A'
+    py: 'lam ** 2 + (a + d) * lam + (a * d - b * c)'
+    why: 'Знак у следа: $(a - \lambda)(d - \lambda) = \lambda^2 - (a + d)\lambda + ad$.'
+  - tex: '\lambda^2 - (\det A)\, \lambda + \operatorname{tr} A'
+    py: 'lam ** 2 - (a * d - b * c) * lam + (a + d)'
+    why: 'След и определитель поменялись местами: при $\lambda$ стоит сумма диагонали, свободный член — определитель.'
