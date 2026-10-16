@@ -1,0 +1,28 @@
+id: rule.gram-psd
+kind: rule
+title:
+  ru: 'Матрица Грама положительно полуопределена'
+  en: 'a Gram matrix is positive semidefinite'
+statement: 'z^\top \sym{X}{X} \sym{X}{X}^\top z = \lVert \sym{X}{X}^\top z \rVert^2'
+symbols:
+  - name: X
+    tex: 'X'
+    shape: [n, d]
+    role: data
+  - name: z
+    tex: 'z'
+    shape: [n, 1]
+concept: la.psd
+corollary: 'Квадрат длины не бывает отрицательным, поэтому $K = X X^\top$ с элементами $K_{ij} = x^{(i)\top} x^{(j)}$ — положительно полуопределённая матрица. Так же $X^\top X \succeq 0$.'
+pitfall: 'Терять перекрёстные слагаемые: $z^\top K z = \sum_{i, j} z_i z_j K_{ij}$, а не только $\sum_i z_i^2 K_{ii}$.'
+checks:
+  - kind: identity
+    lhs: 'z @ (X @ X.T) @ z'
+    rhs: 'np.sum((X.T @ z) ** 2)'
+mutations:
+  - tex: '\lVert \sym{X}{X} z \rVert^2'
+    py: 'np.sum((X @ z) ** 2)'
+    why: '$X$ — матрица $n \times d$, а $z \in \mathbb{R}^n$: произведение $Xz$ не определено. Группировать нужно так: $(X^\top z)^\top (X^\top z)$.'
+  - tex: '\sum_{i=1}^{n} z_i^2\, \lVert x^{(i)} \rVert^2'
+    py: 'np.sum(z ** 2 * np.sum(X ** 2, axis=1))'
+    why: 'Это только диагональные слагаемые $z_i^2 K_{ii}$. Перекрёстные $z_i z_j\, x^{(i)\top} x^{(j)}$ при $i \ne j$ потеряны.'

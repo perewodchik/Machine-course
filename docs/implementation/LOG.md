@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-16 — L-I.10 Квадратичные формы и знакоопределённость — готов
+- **Сделано:** Урок I.10: пять циклов (квадратичная форма и запись через элементы; знакоопределённость, формула f.quadratic-eigen и критерий по собственным значениям, ловушка с несимметричной матрицей; линии уровня — эллипсы, полосы, гиперболы, гауссиана; отношение Рэлея и главные компоненты; матрица Грама, корень из матрицы, ★ Холецкий). Виджет «Линии уровня xᵀAx» (src/widgets/la/level-sets, кривые в собственных осях проверены fast-check) и элемент набора Polyline. Правила rule.gram-psd, rule.sqrt-psd; генераторы la.psd-check, la.rayleigh; ячейка la/quadratic.py закреплена тестом; термины глоссария.
+- **Файлы:** content/courses/foundations/linear-algebra/quadratic-forms.mdx, src/widgets/la/level-sets/*, src/widgets/_kit/Polyline.tsx, content/formulas/la/quadratic-eigen.yaml, content/formulas/rules/{gram-psd,sqrt-psd}.yaml, src/lib/exercises/generators/la.ts, code/snippets/la/quadratic.py
+- **Проверка:** vitest 419; pytest; e2e уроков модуля I и layout — 255 passed; lint (код выхода), check, validate, check_consistency — чисто; формулы на 390 px — чисто
+- **Отклонения от плана и решения:** Цвета виджета: линии уровня — цвет данных (это множества точек x), отрицательные уровни отличаются пунктиром, собственные оси — карандашом. Тесту «все тексты задач разбираются KaTeX» поднят таймаут до 30 с: под нагрузкой e2e он перестал укладываться в 5 с.
+- **Следующий шаг:** L-I.11 — сингулярное разложение и псевдообратная.
+- **Вопросы пользователю:** —
+
 ### 2026-10-16 — L-I.9 Собственные значения и векторы — готов
 - **Сделано:** Урок I.9: четыре цикла (собственные векторы — Av = λv, λ < 0 и λ = 0, с точностью до множителя; характеристическое уравнение, след и определитель, поворот без вещественных λ; диагонализация A = VΛV⁻¹ и степени, недиагонализуемый сдвиг; спектральная теорема A = QΛQᵀ и главные компоненты). Игра «Охота на собственные векторы» (/games/eigen-hunt, шесть уровней от диагональной матрицы до поворота: поймать Av ∥ v и выбрать λ). Правила rule.char-poly-2x2, rule.diagonal-power, rule.spectral; генераторы la.eigvals2, la.eigvec-check, la.eigen-power; ячейка la/eigen.py закреплена тестом.
 - **Файлы:** content/courses/foundations/linear-algebra/eigen.mdx, src/games/eigen-hunt/*, src/pages/games/eigen-hunt.astro, content/formulas/rules/{char-poly-2x2,diagonal-power,spectral}.yaml, src/lib/exercises/generators/la.ts, code/snippets/la/eigen.py

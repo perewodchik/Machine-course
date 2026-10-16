@@ -7,6 +7,7 @@ export { ParamSlider } from "./ParamSlider";
 export { Plane } from "./Plane";
 export { Point } from "./Point";
 export { Polygon } from "./Polygon";
+export { Polyline } from "./Polyline";
 export { Readout } from "./Readout";
 export { Scrub } from "./Scrub";
 export { Vector } from "./Vector";
