@@ -35,6 +35,7 @@ export const layoutPages = {
   i1: "/foundations/linear-algebra/vectors-span/",
   i2: "/foundations/linear-algebra/dot-product-norms/",
   i3: "/foundations/linear-algebra/matrix-multiplication/",
+  i5: "/foundations/linear-algebra/transpose-trace/",
   dimgame: "/games/dim-tetris/",
   spangame: "/games/span-hit/",
   concept: "/concepts/la.dot-product/",

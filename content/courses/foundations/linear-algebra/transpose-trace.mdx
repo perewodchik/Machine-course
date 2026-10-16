@@ -1,0 +1,210 @@
+---
+id: transpose-trace
+title: 'Транспонирование, симметрия, след'
+number: 'I.5'
+concepts: [la.transpose, la.symmetric, la.trace]
+minutes: 120
+lead: 'Три операции, без которых не прочитать ни одного вывода в CS229. Транспонирование разворачивает порядок множителей, симметричные матрицы появляются везде, где есть квадраты, а след превращает число в удобную для преобразований матрицу.'
+---
+
+{/*
+  План урока (docs/program/01-linear-algebra.md, карточка I.5) — три цикла:
+  1. Транспонирование: предсказание ((AB)ᵀ по формам), определение и свойства, доказательство (AB)ᵀ = BᵀAᵀ,
+     число равно своему транспонированию; ошибка — (AB)ᵀ = AᵀBᵀ; упражнения 1–3 (3 — формула с формой под полем).
+  2. Симметричные матрицы: предсказание (XᵀX), определение, разложение на симметричную и кососимметричную части,
+     формула 1 (f.quadratic-symmetric-part); упражнение 4.
+  3. След: предсказание (tr(AB) и tr(BA) разного размера), определение, tr(AB) = tr(BA), циклическая перестановка,
+     xᵀAx = tr(Axxᵀ), ячейка Python; ошибка — нециклическая перестановка; упражнения 5–7 (7 — «найди ошибку»).
+  Итог, итоговая проверка (la.sym-part, ставит «знаю»).
+*/}
+
+<Prereqs lessons={["foundations/linear-algebra/matrix-multiplication"]} />
+
+## Транспонирование
+
+В функции потерь линейной регрессии стоит $(X\theta - y)^\top (X\theta - y)$. Чтобы раскрыть скобки, нужно уметь транспонировать произведение. Начнём с форм.
+
+<Exercise
+  title="Предскажите"
+  id="i5.predict-transpose"
+  spec={{
+    kind: "predict",
+    prompt: "$A$ — матрица $2 \\times 3$, $B$ — $3 \\times 4$. Чему равно $(AB)^\\top$?",
+    options: [
+      { text: "$B^\\top A^\\top$", correct: true, why: "$AB$ — $2 \\times 4$, значит, $(AB)^\\top$ — $4 \\times 2$. Это даёт только $B^\\top A^\\top$: $4 \\times 3$ на $3 \\times 2$." },
+      { text: "$A^\\top B^\\top$", why: "$A^\\top$ — $3 \\times 2$, $B^\\top$ — $4 \\times 3$: внутренние размеры $2$ и $4$ не совпадают, произведение не определено." },
+      { text: "$(BA)^\\top$", why: "$BA$ не определено: у $B$ четыре столбца, а у $A$ две строки." },
+    ],
+    reveal: "$(AB)^\\top = B^\\top A^\\top$: транспонирование разворачивает порядок множителей. Формы подсказывают ответ, даже если правило забылось.",
+  }}
+/>
+
+**Транспонированная** матрица $A^\top$ получается из $A$ заменой строк на столбцы: $(A^\top)_{ij} = A_{ji}$. Матрица $m \times n$ становится $n \times m$, столбец $x$ — строкой $x^\top$. Свойства:
+
+$$
+\begin{gathered} (A^\top)^\top = A, \qquad (A + B)^\top = A^\top + B^\top, \\ (cA)^\top = c A^\top, \qquad (AB)^\top = B^\top A^\top . \end{gathered}
+$$
+
+Последнее проверяется поэлементно:
+
+$$
+\begin{aligned} \bigl((AB)^\top\bigr)_{ij} &= (AB)_{ji} = \sum_k A_{jk} B_{ki} \\ &= \sum_k (B^\top)_{ik} (A^\top)_{kj} = (B^\top A^\top)_{ij} . \end{aligned}
+$$
+
+Число — матрица $1 \times 1$, и при транспонировании оно не меняется. Поэтому $u^\top v = v^\top u$ и $\theta^\top X^\top y = y^\top X \theta$: в выводе нормальных уравнений (урок V.1) два таких слагаемых складываются в одно, с двойкой.
+
+<Note label="По-английски">Транспонирование — *transpose*; «$A$ транспонированное» читают *A transpose*.</Note>
+
+<Exercise
+  n={1}
+  id="i5.scalar-transpose"
+  rule="rule.scalar-transpose"
+  extra={[{ text: String.raw`$u^\top M^\top v$`, why: String.raw`Транспонирована одна $M$, а порядок не развёрнут. Формы: $u^\top$ — $1 \times m$, $M^\top$ — $k \times m$, произведение не определено.` }]}
+/>
+
+<Exercise gen="la.transpose-chain" n={2} variants={6} />
+
+<Block kind="pitfall">
+
+Транспонировать, не меняя порядка множителей. Размерности ловят ошибку: у $A$ формы $2 \times 3$ и $B$ формы $3 \times 4$ произведение $A^\top B^\top$ — это $3 \times 2$ на $4 \times 3$, оно не определено.
+
+$$
+(AB)^\top = \struck{\;A^\top B^\top\;}\;\; \fix{B^\top A^\top}
+$$
+
+</Block>
+
+Под полем ответа видна форма того, что вы набрали: так размерности проверяются по ходу записи.
+
+<Exercise
+  n={3}
+  id="i5.transpose-formula"
+  spec={{
+    kind: "formula",
+    prompt: "$X$ — матрица $n \\times d$, $\\theta$ — столбец длины $d$, $y$ — столбец длины $n$. Запишите $(X\\theta - y)^\\top$ без скобок.",
+    label: "$(X\\theta - y)^\\top =$",
+    answer: "\\theta^\\top X^\\top - y^\\top",
+    symbols: [{ name: "X", shape: ["n", "d"] }, { name: "theta", shape: ["d", 1] }, { name: "y", shape: ["n", 1] }],
+    hints: ["Транспонирование суммы — сумма транспонированных, а у произведения порядок разворачивается."],
+    right: "$(X\\theta - y)^\\top = \\theta^\\top X^\\top - y^\\top$ — строка $1 \\times n$.",
+    wrong: "Проверьте форму: ответ должен быть строкой $1 \\times n$.",
+    mutations: [
+      { tex: "X^\\top \\theta^\\top - y^\\top", why: "Порядок не развёрнут: $X^\\top \\theta^\\top$ — это $d \\times n$ на $1 \\times d$, произведение не определено." },
+      { tex: "X\\theta - y", why: "Это сам столбец $n \\times 1$, а транспонированный — строка $1 \\times n$." },
+    ],
+  }}
+/>
+
+## Симметричные матрицы
+
+В формулах машинного обучения постоянно встречаются матрицы вида $X^\top X$. У них есть общее свойство.
+
+<Exercise
+  title="Предскажите"
+  id="i5.predict-symmetric"
+  spec={{
+    kind: "predict",
+    prompt: "$X$ — матрица $100 \\times 3$. Верно ли, что $(X^\\top X)^\\top = X^\\top X$?",
+    options: [
+      { text: "Да, для любой $X$", correct: true, why: "$(X^\\top X)^\\top = X^\\top (X^\\top)^\\top = X^\\top X$: транспонирование разворачивает порядок, и получается то же произведение." },
+      { text: "Только если $X$ симметрична", why: "$X$ здесь даже не квадратная, а $X^\\top X$ — квадратная $3 \\times 3$ и симметрична всегда." },
+      { text: "Нет: транспонирование меняет порядок, $X X^\\top \\ne X^\\top X$", why: "Порядок меняется, но $(X^\\top)^\\top = X$, и произведение возвращается к $X^\\top X$. А $XX^\\top$ — это другая матрица, $100 \\times 100$." },
+    ],
+    reveal: "Да: $X^\\top X$ симметрична всегда. Её элемент $(i, j)$ — скалярное произведение столбцов $i$ и $j$, а оно не зависит от порядка.",
+  }}
+/>
+
+Квадратная матрица **симметрична**, если $A^\top = A$, то есть $A_{ij} = A_{ji}$: она зеркальна относительно главной диагонали. Симметричны $X^\top X$, ковариационная матрица (модуль III) и матрица вторых производных (урок II.4). Если $A^\top = -A$, матрицу называют **кососимметричной**; у неё на диагонали нули.
+
+Любая квадратная матрица раскладывается на симметричную и кососимметричную части:
+
+$$
+\begin{aligned} A &= S + K, \\ S &= \tfrac12 (A + A^\top), \quad S^\top = S, \\ K &= \tfrac12 (A - A^\top), \quad K^\top = -K . \end{aligned}
+$$
+
+В квадратичной форме $x^\top A x$ (урок I.10) участвует только $S$: кососимметричная часть всегда даёт ноль, $x^\top K x = 0$. Поэтому матрицу квадратичной формы можно считать симметричной.
+
+<Formula formula="f.quadratic-symmetric-part" n={1} />
+
+<Note label="По-английски">Симметричная матрица — *symmetric matrix*, кососимметричная — *skew-symmetric matrix*.</Note>
+
+<Exercise gen="la.sym-part" n={4} variants={6} />
+
+## След
+
+Последняя операция превращает квадратную матрицу в число. Сравним её на двух произведениях разного размера.
+
+<Exercise
+  title="Предскажите"
+  id="i5.predict-trace"
+  spec={{
+    kind: "predict",
+    prompt: "$A$ — $2 \\times 3$, $B$ — $3 \\times 2$. $AB$ — матрица $2 \\times 2$, $BA$ — $3 \\times 3$. Как связаны суммы их диагональных элементов?",
+    options: [
+      { text: "Они равны", correct: true, why: "Обе суммы равны $\\sum_i \\sum_k A_{ik} B_{ki}$ — одной и той же двойной сумме, только слагаемые сгруппированы по-разному." },
+      { text: "Их нельзя сравнить: матрицы разного размера", why: "Сравниваются числа, а не матрицы. Числа оказываются равными." },
+      { text: "У $BA$ больше: в диагонали три элемента, а не два", why: "Слагаемых в диагонали больше, но каждое из них меньше: в сумме выходит то же самое." },
+    ],
+    reveal: "Равны: $\\operatorname{tr}(AB) = \\operatorname{tr}(BA)$. Проверим ниже и в ячейке Python.",
+  }}
+/>
+
+**След** квадратной матрицы — сумма диагональных элементов: $\operatorname{tr} A = \sum_i A_{ii}$. Он линеен, $\operatorname{tr}(A + B) = \operatorname{tr} A + \operatorname{tr} B$ и $\operatorname{tr}(cA) = c \operatorname{tr} A$, и не меняется при транспонировании: $\operatorname{tr} A^\top = \operatorname{tr} A$. Главное свойство — множители под следом можно переставить:
+
+$$
+\begin{aligned} \operatorname{tr}(AB) &= \sum_i \sum_k A_{ik} B_{ki} \\ &= \sum_k \sum_i B_{ki} A_{ik} = \operatorname{tr}(BA) . \end{aligned}
+$$
+
+Для трёх и больше множителей разрешены только **циклические** перестановки: последний множитель переходит в начало, и так по кругу.
+
+$$
+\operatorname{tr}(ABC) = \operatorname{tr}(CAB) = \operatorname{tr}(BCA) .
+$$
+
+Отсюда полезный приём. Число равно своему следу, поэтому $x^\top A x = \operatorname{tr}(x^\top A x) = \operatorname{tr}(A x x^\top)$: квадратичная форма записывается через матрицу $x x^\top$. Так же $\lVert A \rVert_F^2 = \operatorname{tr}(A^\top A)$ — норма Фробениуса из урока I.2. Конспект CS229 (раздел «Linear regression») пользуется следом, когда берёт производные по матрицам; к этому вернёмся в уроке II.3.
+
+<Note label="Обозначение">В русских учебниках след пишут и как $\operatorname{Sp} A$ — от немецкого *Spur*.</Note>
+
+<Note label="По-английски">След — *trace*, циклическая перестановка — *cyclic permutation*, или *cyclic property*.</Note>
+
+Проверим оба свойства в NumPy. Перед запуском предскажите: какой формы $AB$ и $BA$ и совпадут ли три последних числа?
+
+<PyCode src="la/trace.py#demo" run />
+
+<Block kind="pitfall">
+
+Переставлять множители под следом как угодно. Для $A = \left(\begin{smallmatrix} 1 & 0 \\ 0 & 0 \end{smallmatrix}\right)$ и $x = (0, 1)$ форма $x^\top A x = 0$, а нециклическая перестановка $\operatorname{tr}(x^\top x A) = \lVert x \rVert^2 \operatorname{tr} A$ даёт другое:
+
+$$
+\operatorname{tr}(x x^\top A) = \struck{\;\lVert x \rVert^2 \operatorname{tr} A = 1\;}\;\; \fix{\operatorname{tr}(A x x^\top) = 0}
+$$
+
+</Block>
+
+<Exercise gen="la.trace-swap" n={5} variants={6} />
+
+<Exercise n={6} id="i5.cyclic" rule="rule.trace-cyclic" />
+
+<Exercise
+  n={7}
+  id="i5.find-error"
+  spec={{
+    kind: "choice",
+    prompt: "Ученик переписывает квадратичную форму через след. В какой строке ошибка? $$\\begin{aligned} &(1) \\quad x^\\top A x = \\operatorname{tr}(x^\\top A x) \\\\ &(2) \\quad \\phantom{x^\\top A x} = \\operatorname{tr}(A x x^\\top) \\\\ &(3) \\quad \\phantom{x^\\top A x} = \\operatorname{tr}(x x^\\top A) \\\\ &(4) \\quad \\phantom{x^\\top A x} = \\operatorname{tr}(x^\\top x A) = \\lVert x \\rVert^2 \\operatorname{tr} A \\end{aligned}$$",
+    options: [
+      { text: "В строке 1", why: "Эта строка верна: $x^\\top A x$ — матрица $1 \\times 1$, а след такой матрицы — её единственный элемент." },
+      { text: "В строке 2", why: "Эта строка верна: из $\\operatorname{tr}(x^\\top \\cdot A x)$ множитель $x^\\top$ уходит в конец — циклическая перестановка." },
+      { text: "В строке 3", why: "Эта строка верна: из $\\operatorname{tr}(A \\cdot x x^\\top)$ множитель $A$ уходит в конец — снова цикл." },
+      { text: "В строке 4", correct: true, why: "Из $\\operatorname{tr}(x x^\\top A)$ можно перенести $A$ в начало или $x$ в конец, но не поменять местами $x$ и $x^\\top$: это не циклическая перестановка." },
+    ],
+    hints: ["Выпишите множители каждой строки по кругу и проверьте, получается ли следующая строка поворотом круга."],
+  }}
+/>
+
+## Итог
+
+- $(A^\top)_{ij} = A_{ji}$; $(AB)^\top = B^\top A^\top$ — порядок разворачивается, и размерности это подтверждают. Число равно своему транспонированию.
+- $A$ симметрична, если $A^\top = A$; $X^\top X$ симметрична всегда. $A = \tfrac12(A + A^\top) + \tfrac12(A - A^\top)$, и в $x^\top A x$ работает только симметричная часть.
+- $\operatorname{tr} A = \sum_i A_{ii}$; $\operatorname{tr}(AB) = \operatorname{tr}(BA)$, под следом — только циклические перестановки; $x^\top A x = \operatorname{tr}(A x x^\top)$.
+
+<Exercise gen="la.sym-part" seed={31} id="post.i5" title="Итоговая проверка" final />

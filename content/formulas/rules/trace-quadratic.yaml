@@ -1,0 +1,27 @@
+id: rule.trace-quadratic
+kind: rule
+title:
+  ru: 'Квадратичная форма через след'
+  en: 'quadratic form as a trace'
+statement: 'x^\top A x = \operatorname{tr}(A x x^\top)'
+symbols:
+  - name: x
+    tex: 'x'
+    shape: [d, 1]
+  - name: A
+    tex: 'A'
+    shape: [d, d]
+concept: la.trace
+corollary: 'Число равно своему следу: $x^\top A x = \operatorname{tr}(x^\top A x)$, а циклическая перестановка переносит $x^\top$ в конец. Так в CS229 берут градиенты по матрицам.'
+pitfall: 'Забыть след: $A x x^\top$ — матрица $d \times d$, а $x^\top A x$ — число.'
+checks:
+  - kind: identity
+    lhs: 'x @ A @ x'
+    rhs: 'np.trace(A @ np.outer(x, x))'
+mutations:
+  - tex: 'A x x^\top'
+    py: 'A @ np.outer(x, x)'
+    why: 'Без следа это матрица $d \times d$, а $x^\top A x$ — число. След и делает из неё число.'
+  - tex: '\operatorname{tr}(A)\, x^\top x'
+    py: 'np.trace(A) * (x @ x)'
+    why: 'След не выносится из произведения: $\operatorname{tr}(A x x^\top) \ne \operatorname{tr}(A) \operatorname{tr}(x x^\top)$ в общем случае.'
