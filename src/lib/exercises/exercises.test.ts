@@ -655,6 +655,46 @@ describe("генераторы", () => {
     }
   });
 
+  it("calc.lagrange-line: ответ на прямой и ∇f ∥ ∇h; calc.lagrange-eig — собственное значение; calc.categorical-mle — доли", () => {
+    const mats = (tex: string) => [...tex.matchAll(/\\begin\{pmatrix\}(.*?)\\end\{pmatrix\}/g)].map((m) => m[1]!.split(" \\\\ ").map((row) => row.split(" & ").map(Number)));
+    const coefs = (tex: string, names: string[]) => {
+      const k: Record<string, number> = {};
+      for (const u of tex.replace(/ - /g, " + -").split(" + ")) {
+        const m = /^(-?)(\d*)(x_[12](?:\^2)?)$/.exec(u.trim())!;
+        k[m[3]!] = (m[1] ? -1 : 1) * (m[2] ? Number(m[2]) : 1);
+      }
+      return names.map((n) => k[n] ?? 0);
+    };
+    for (let s = 1; s <= 30; s++) {
+      const t = make("calc.lagrange-line", s);
+      if (t.kind !== "matrix") throw new Error("ожидалась матрица");
+      const [, ftex, htex, rhs] = /f\(x\) = (.*?)\$ при ограничении \$(.*?) = (-?\d+)\$/.exec(t.prompt)!;
+      const [a, c] = coefs(ftex!, ["x_1^2", "x_2^2"]) as [number, number];
+      const [p, q] = coefs(htex!, ["x_1", "x_2"]) as [number, number];
+      const [x1, x2] = [t.answer[0]![0]!, t.answer[1]![0]!];
+      expect(p * x1 + q * x2).toBeCloseTo(Number(rhs), 2);
+      // ∇f = (2a x₁, 2c x₂) параллелен ∇h = (p, q)
+      expect(2 * a * x1 * q - 2 * c * x2 * p).toBeCloseTo(0, 1);
+
+      const e = make("calc.lagrange-eig", s);
+      if (e.kind !== "numeric") throw new Error("ожидалось число");
+      const S = mats(e.prompt)[0]!;
+      const m = (S[0]![0]! + S[1]![1]!) / 2;
+      const rr = Math.hypot((S[0]![0]! - S[1]![1]!) / 2, S[0]![1]!);
+      const best = Array.from({ length: 3600 }, (_, i) => {
+        const u = [Math.cos((i * Math.PI) / 1800), Math.sin((i * Math.PI) / 1800)] as const;
+        return S[0]![0]! * u[0] ** 2 + 2 * S[0]![1]! * u[0] * u[1] + S[1]![1]! * u[1] ** 2;
+      });
+      expect(e.answer).toBeCloseTo(s % 2 === 1 ? m + rr : m - rr, 9);
+      expect(e.answer).toBeCloseTo(s % 2 === 1 ? Math.max(...best) : Math.min(...best), 4);
+
+      const c3 = make("calc.categorical-mle", s);
+      if (c3.kind !== "matrix") throw new Error("ожидалась матрица");
+      const sum = c3.answer.reduce((acc, [v]) => acc + v!, 0);
+      expect(sum).toBeCloseTo(1, 2);
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

@@ -65,6 +65,15 @@
   prerequisites: [calc.hessian, calc.gradient-descent]
   core: true
 
+- id: calc.lagrange
+  title:
+    ru: 'Множители Лагранжа'
+    en: 'Lagrange multipliers'
+  summary: 'Экстремум $f$ при $h(x) = 0$: $\nabla f = \lambda \nabla h$ и само ограничение; в PCA $\lambda$ — собственное значение.'
+  lesson: lagrange
+  prerequisites: [calc.gradient, calc.convexity, la.eigen]
+  core: true
+
 - id: calc.log-exp
   title:
     ru: 'Логарифм и экспонента'

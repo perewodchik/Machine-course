@@ -54,6 +54,7 @@ export const layoutPages = {
   ii5: "/foundations/calculus/convexity/",
   ii6: "/foundations/calculus/gradient-descent/",
   ii7: "/foundations/calculus/newton/",
+  ii8: "/foundations/calculus/lagrange/",
   divgame: "/games/divergence/",
   foggame: "/games/foggy-descent/",
   saddlegame: "/games/min-max-saddle/",

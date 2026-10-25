@@ -528,3 +528,84 @@ export const newtonLogistic: Generator = {
     };
   },
 };
+
+/** Урок II.8: минимум a x₁² + c x₂² на прямой p x₁ + q x₂ = r через лагранжиан. */
+export const lagrangeLine: Generator = {
+  id: "calc.lagrange-line",
+  version: 1,
+  title: "Минимум на прямой",
+  make(seed) {
+    const r = rng(seed);
+    const [a, c] = [r.int(1, 3), r.int(1, 3)];
+    const [p, q] = [r.nonzero(-2, 2), r.nonzero(-2, 2)];
+    const rhs = r.nonzero(-4, 4);
+    // 2a x₁ = λp, 2c x₂ = λq ⇒ x₁ = λp/(2a), x₂ = λq/(2c); ограничение: λ (p²/(2a) + q²/(2c)) = r
+    const lam = rhs / (p * p / (2 * a) + (q * q) / (2 * c));
+    const x = [(lam * p) / (2 * a), (lam * q) / (2 * c)].map((v) => Math.round(v * 1000) / 1000);
+    const f = poly([[a, "x_1^2"], [c, "x_2^2"]]);
+    const h = `${poly([[p, "x_1"], [q, "x_2"]])} = ${rhs}`;
+    return {
+      kind: "matrix",
+      prompt: String.raw`Найдите минимум $f(x) = ${f}$ при ограничении $${h}$.`,
+      label: String.raw`$x^\star =$`,
+      answer: x.map((v) => [v]),
+      tol: 0.005,
+      hints: [
+        String.raw`$\mathcal{L} = ${f} - \lambda (${poly([[p, "x_1"], [q, "x_2"]])} - ${par(rhs)})$. Условия: $\partial \mathcal{L}/\partial x_1 = 0$, $\partial \mathcal{L}/\partial x_2 = 0$ и само ограничение.`,
+        String.raw`$x_1 = \lambda \cdot ${p}/${2 * a}$, $x_2 = \lambda \cdot ${q}/${2 * c}$; подставьте в ограничение и найдите $\lambda$.`,
+      ],
+      right: String.raw`$\lambda = ${Math.round(lam * 1000) / 1000}$, $x^\star = ${pm(x.map((v) => [v]))}$: здесь $\nabla f = \lambda \nabla h$, и ограничение выполнено.`,
+      wrong: String.raw`Проверьте, что ответ лежит на прямой $${h}$: без уравнения ограничения $\lambda$ не найти.`,
+    };
+  },
+};
+
+/** Урок II.8: экстремум uᵀΣu при ‖u‖ = 1 — собственное значение Σ. Нечётный seed — максимум, чётный — минимум. */
+export const lagrangeEig: Generator = {
+  id: "calc.lagrange-eig",
+  version: 1,
+  title: "Экстремум uᵀΣu на сфере",
+  make(seed) {
+    const r = rng(seed);
+    const [a, b0, c, l1] = r.pick(SPD);
+    const b = b0 * r.pick([1, -1]);
+    const l2 = a + c - l1;
+    const max = seed % 2 === 1;
+    return {
+      kind: "numeric",
+      prompt: String.raw`$$\Sigma = ${pm([[a, b], [b, c]])}.$$ Найдите ${max ? "наибольшее" : "наименьшее"} значение $u^\top \Sigma u$ при $\lVert u \rVert = 1$.`,
+      label: String.raw`$${max ? "\\max" : "\\min"}\, u^\top \Sigma u =$`,
+      answer: max ? l1 : l2,
+      tol: 0.005,
+      hints: [
+        String.raw`$\mathcal{L} = u^\top \Sigma u - \lambda (u^\top u - 1)$, $\nabla_u \mathcal{L} = 2\Sigma u - 2\lambda u = 0$: $u$ — собственный вектор, а $u^\top \Sigma u = \lambda u^\top u = \lambda$.`,
+        String.raw`$\lambda_1 + \lambda_2 = ${a + c}$, $\lambda_1 \lambda_2 = ${a * c - b * b}$.`,
+      ],
+      right: String.raw`Собственные значения $${l1}$ и $${l2}$; ${max ? "наибольшее" : "наименьшее"} $u^\top \Sigma u$ равно $${max ? l1 : l2}$ — на соответствующем собственном векторе. Множитель Лагранжа здесь и есть собственное значение.`,
+      wrong: String.raw`В экстремуме $\Sigma u = \lambda u$, и значение $u^\top \Sigma u$ равно самому $\lambda$ — ответ — собственное значение, а не элемент матрицы.`,
+    };
+  },
+};
+
+/** Урок II.8: MLE категориального распределения — доли nₖ/n. */
+export const categoricalMle: Generator = {
+  id: "calc.categorical-mle",
+  version: 1,
+  title: "MLE категориального распределения",
+  make(seed) {
+    const r = rng(seed);
+    const counts = [r.int(1, 9), r.int(1, 9), r.int(1, 9)];
+    const n = counts.reduce((a, b) => a + b, 0);
+    const phi = counts.map((k) => Math.round((k / n) * 1000) / 1000);
+    return {
+      kind: "matrix",
+      prompt: String.raw`Бросаем кубик с тремя гранями. Грани выпали $${counts[0]}$, $${counts[1]}$ и $${counts[2]}$ раз. Найдите оценку максимального правдоподобия вероятностей $\phi$ при ограничении $\phi_1 + \phi_2 + \phi_3 = 1$.`,
+      label: String.raw`$\hat\phi =$`,
+      answer: phi.map((v) => [v]),
+      tol: 0.005,
+      hints: [String.raw`$\mathcal{L} = \sum_k n_k \log \phi_k - \lambda (\sum_k \phi_k - 1)$, $\partial \mathcal{L}/\partial \phi_k = n_k/\phi_k - \lambda = 0$.`, String.raw`Из ограничения $\lambda = \sum_k n_k = ${n}$.`],
+      right: String.raw`$\lambda = n = ${n}$, $\hat\phi_k = n_k/n$: $${pm(phi.map((v) => [v]))}$.`,
+      wrong: String.raw`$\phi_k = n_k/\lambda$, а $\lambda$ находят из ограничения: $\lambda = ${n}$. Сумма ответа должна быть равна $1$.`,
+    };
+  },
+};

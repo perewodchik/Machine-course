@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-25 — L-II.8 L-II.8: множители Лагранжа; починка «Подгони прямую» — готов
+- **Сделано:** урок lagrange (три цикла: касание и лагранжиан, PCA — собственный вектор и λ, MLE категориального распределения), виджет «Касание линии уровня и ограничения», формула f.categorical-mle, генераторы calc.lagrange-line, calc.lagrange-eig, calc.categorical-mle, сниппет lagrange.py с тестом; в «Подгони прямую» уровень «выброс» иногда имел оптимум за бегунком — генератор перетягивает выборку
+- **Файлы:** content/courses/foundations/calculus/lagrange.mdx, src/widgets/calc/lagrange/, content/formulas/calc/categorical-mle.yaml, src/lib/exercises/generators/calc.ts, code/snippets/calculus/lagrange.py, src/games/fit-line/model.ts
+- **Проверка:** validate, lint, build, check, vitest 497, pytest, check_consistency, e2e урока и layout ii8 (axe), e2e «Подгони прямую»
+- **Отклонения от плана и решения:** найдена и исправлена ошибка в игре S2.07: property-тест падал на 8 seed из 10 000
+- **Следующий шаг:** L-II.9 — двойственность и KKT (★).
+- **Вопросы пользователю:** —
+
 ### 2026-10-25 — L-II.7 L-II.7: метод Ньютона — готов
 - **Сделано:** урок newton (три цикла: касательная к f′, многомерный шаг и XᵀDX, сравнение с GD и контроль шага), виджет «Касательные Ньютона», формула f.newton-step, генераторы calc.newton-1d и calc.newton-logistic, сниппет newton.py с тестом (6 шагов Ньютона против 403 шагов спуска)
 - **Файлы:** content/courses/foundations/calculus/newton.mdx, src/widgets/calc/newton/, content/formulas/calc/newton-step.yaml, src/lib/exercises/generators/calc.ts, code/snippets/calculus/newton.py

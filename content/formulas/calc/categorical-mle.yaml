@@ -1,0 +1,86 @@
+id: f.categorical-mle
+kind: formula
+title:
+  ru: 'MLE категориального распределения через лагранжиан'
+  en: 'MLE of a categorical distribution via the Lagrangian'
+statement: '\hat\phi_k = \frac{n_k}{n}, \qquad \max_{\phi} \sum_{k} n_k \log \phi_k \ \ \text{при} \ \ \sum_k \phi_k = 1'
+
+# Урок II.8: логарифм правдоподобия категориального распределения Σ nₖ log φₖ максимизируем при Σ φₖ = 1.
+# Лагранжиан, условие ∂L/∂φₖ = 0, сумма по k вместе с ограничением даёт λ = n, отсюда φₖ = nₖ/n.
+symbols:
+  - name: phi
+    tex: '\phi'
+    meaning: 'вероятности категорий'
+    shape: [k, 1]
+    sample: simplex
+    role: param
+  - name: nk
+    tex: 'n_k'
+    meaning: 'сколько раз встретилась категория $k$; $n = \sum_k n_k$'
+    shape: [k, 1]
+    sample: positive
+    role: data
+  - name: lam
+    tex: '\lambda'
+    meaning: 'множитель Лагранжа'
+    shape: []
+    sample: positive
+
+dependsOn:
+  concepts: [calc.gradient, calc.log-exp]
+  rules: []
+
+derivation:
+  plan:
+    - 'Записать лагранжиан: логарифм правдоподобия плюс множитель при ограничении'
+    - 'Приравнять нулю частные производные по $\phi_k$'
+    - 'Найти $\lambda$ из ограничения и подставить'
+  steps:
+    - goal: 0
+      tex: '\mathcal{L}(\phi, \lambda) = \sum_k n_k \log \phi_k - \lambda \Bigl(\sum_k \phi_k - 1\Bigr)'
+      by: [calc.log-exp]
+      note: 'Знак при $\lambda$ можно взять любой: изменится только знак найденного множителя.'
+      check:
+        kind: same
+        py: 'np.sum(nk * np.log(phi)) - lam * (np.sum(phi) - 1)'
+    - goal: 1
+      tex: '\frac{\partial \mathcal{L}}{\partial \phi_k} = \changed{\frac{n_k}{\phi_k} - \lambda}'
+      by: [calc.gradient]
+      note: 'Производная $\log \phi_k$ — $1/\phi_k$; остальные слагаемые от $\phi_k$ не зависят.'
+      check:
+        kind: gradient
+        wrt: phi
+        py: 'nk / phi - lam'
+    - goal: 1
+      tex: '\frac{n_k}{\phi_k} - \lambda = 0 \ \Rightarrow\ \changed{n_k = \lambda \phi_k}'
+      by: [calc.gradient]
+      note: 'Условие на каждую категорию: вероятность пропорциональна числу появлений.'
+      check:
+        kind: stationary
+        lhs: 'nk'
+        rhs: 'lam * phi'
+    - goal: 2
+      tex: '\sum_k n_k = \lambda \sum_k \phi_k = \lambda \ \Rightarrow\ \changed{\lambda = n}'
+      by: []
+      note: 'Сложили равенства по $k$ и подставили ограничение $\sum_k \phi_k = 1$ — то самое уравнение, которое легко забыть.'
+      check:
+        kind: stationary
+        lhs: 'np.sum(nk)'
+        rhs: 'lam * np.sum(phi)'
+    - goal: 2
+      tex: '\hat\phi_k = \frac{n_k}{\lambda} = \changed{\frac{n_k}{n}}'
+      by: []
+      note: 'Доля категории в выборке. Это максимум: логарифм вогнут, а ограничение линейно (урок II.5).'
+      check:
+        kind: solution
+        wrt: phi
+        py: 'nk / lam'
+
+pitfalls:
+  - 'Забыть уравнение ограничения: из $\partial \mathcal{L}/\partial \phi_k = 0$ получается только $\phi_k = n_k/\lambda$, и без $\sum_k \phi_k = 1$ множитель $\lambda$ не найти.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Generative learning algorithms / Naive Bayes'
+
+usedIn: [calc.lagrange]

@@ -128,6 +128,12 @@
   .newton__table th { font-weight: 500; color: var(--ink-2); }
   .newton__fact { grid-column: 1 / -1; margin: 0; }
   @media (max-width: 900px) { .newton__controls { grid-template-columns: minmax(0, 1fr); } }
+  .lagrange__controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: center; gap: var(--space-3) var(--space-5); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule); }
+  .lagrange__controls .kit-slider, .lagrange__group, .lagrange__fact { grid-column: 1 / -1; }
+  .lagrange__group { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .lagrange__group .btn[aria-pressed="true"] { border-color: var(--pen); color: var(--pen); box-shadow: inset 0 0 0 1px var(--pen); }
+  .lagrange__fact { margin: 0; }
+  @media (max-width: 900px) { .lagrange__controls { grid-template-columns: minmax(0, 1fr); } }
   .riemann__fn { font-family: var(--font-math); font-size: 1.05em; }
   .riemann__fn sup { font-size: 0.7em; }
   @media (max-width: 900px) { .riemann__controls { grid-template-columns: minmax(0, 1fr); } }

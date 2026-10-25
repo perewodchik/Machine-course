@@ -206,3 +206,28 @@ test("урок II.7: касательные Ньютона на логистич
   await page.evaluate(() => window.scrollTo(0, 0));
   await expectNoAxeViolations(page);
 });
+
+test("урок II.8: касание на окружности — собственный вектор, итоговая проверка", async ({ page }) => {
+  await page.goto("/foundations/calculus/lagrange/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Множители Лагранжа");
+
+  const fig = page.locator(".lagrange").first();
+  await fig.scrollIntoViewIfNeeded();
+  await expect(fig.locator("xpath=ancestor::astro-island[1]")).not.toHaveAttribute("ssr", "");
+  await expect(fig.locator(".lagrange__fact")).toContainText("пересекает ограничение");
+  // Σ = (2 0.8; 0.8 1): главный собственный вектор под углом ≈ 29.0°, λ₁ = 1.5 + √0.89 ≈ 2.44
+  await fig.getByRole("slider", { name: "φ" }).fill("29");
+  await expect(fig.locator(".lagrange__fact")).toContainText("u — собственный вектор Σ, λ = uᵀΣu = 2.44");
+  await fig.getByRole("button", { name: "½(x₁² + 2x₂²) на прямой" }).press("Enter");
+  await fig.getByRole("slider", { name: "t" }).fill("0.67");
+  await expect(fig.locator(".lagrange__fact")).toContainText("минимум f на прямой");
+
+  const final = page.locator("#final-check");
+  const spec = generator("calc.lagrange-line").make(31);
+  if (spec.kind !== "matrix") throw new Error("ожидалась матрица");
+  for (const [i, row] of spec.answer.entries()) for (const [j, v] of row.entries()) await final.locator(`[data-variant]:not([hidden]) [data-cell="${i},${j}"]`).fill(String(v));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});

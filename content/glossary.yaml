@@ -342,3 +342,6 @@
 - id: quadratic-convergence
   ru: 'квадратичная сходимость'
   en: 'quadratic convergence'
+- id: lagrange-multiplier
+  ru: 'множитель Лагранжа; лагранжиан; ограничение-равенство'
+  en: 'Lagrange multiplier; Lagrangian; equality constraint'
