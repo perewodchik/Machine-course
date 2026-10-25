@@ -324,3 +324,15 @@
 - id: strict-convexity
   ru: 'строгая выпуклость'
   en: 'strict convexity'
+- id: gradient-descent
+  ru: 'градиентный спуск и подъём; шаг обучения'
+  en: 'gradient descent and ascent; learning rate'
+- id: sgd
+  ru: 'стохастический градиентный спуск; эпоха; мини-батч'
+  en: 'stochastic gradient descent (SGD); epoch; mini-batch'
+- id: condition-number
+  ru: 'число обусловленности'
+  en: 'condition number'
+- id: coordinate-descent
+  ru: 'покоординатный спуск'
+  en: 'coordinate descent'

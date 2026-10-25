@@ -47,6 +47,15 @@
   prerequisites: [calc.stationary-point, la.psd]
   core: true
 
+- id: calc.gradient-descent
+  title:
+    ru: 'Градиентный спуск'
+    en: 'gradient descent'
+  summary: '$\theta := \theta - \eta \nabla J(\theta)$; на квадратичной функции сходится при $0 < \eta < 2/\lambda_{\max}$, скорость решает число обусловленности.'
+  lesson: gradient-descent
+  prerequisites: [calc.gradient, calc.convexity, la.eigen]
+  core: true
+
 - id: calc.log-exp
   title:
     ru: 'Логарифм и экспонента'

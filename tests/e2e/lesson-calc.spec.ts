@@ -149,3 +149,32 @@ test("урок II.5: хорда x³ под графиком, выпуклост�
   await page.evaluate(() => window.scrollTo(0, 0));
   await expectNoAxeViolations(page);
 });
+
+test("урок II.6: ссылки на игры и лабораторную, знак шага подъёма, итоговая проверка", async ({ page }) => {
+  await page.goto("/foundations/calculus/gradient-descent/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Градиентный спуск и SGD");
+  const games = page.getByRole("link", { name: "Открыть игру" });
+  await expect(games.nth(0)).toHaveAttribute("href", "/games/divergence/");
+  await expect(games.nth(1)).toHaveAttribute("href", "/games/foggy-descent/");
+
+  // ответ с перепутанным знаком шага (спуск вместо подъёма и наоборот) получает разбор про знак
+  const gd = page.locator("[data-exercise][data-item='calc.gd-step']");
+  const v = gd.locator("[data-variant]:not([hidden])");
+  const seed = Number(await v.getAttribute("data-seed"));
+  const task = generator("calc.gd-step").make(seed);
+  if (task.kind !== "matrix") throw new Error("ожидалась матрица");
+  const [x, y] = /\\theta = \((-?\d+), (-?\d+)\)/.exec(task.prompt)!.slice(1).map(Number) as [number, number];
+  const flipped = [2 * x - task.answer[0]![0]!, 2 * y - task.answer[1]![0]!];
+  for (const [i, val] of flipped.entries()) await v.locator(`[data-cell="${i},0"]`).fill(String(val));
+  await gd.getByRole("button", { name: "Проверить" }).click();
+  await expect(gd.locator("[data-feedback]")).toContainText(seed % 2 === 0 ? "по градиенту" : "против градиента");
+
+  const final = page.locator("#final-check");
+  const spec = generator("calc.lr-threshold").make(31);
+  if (spec.kind !== "numeric") throw new Error("ожидалось число");
+  await final.locator("[data-variant]:not([hidden]) input").first().fill(String(spec.answer));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});

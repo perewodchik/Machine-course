@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-25 — L-II.6 L-II.6: градиентный спуск и SGD, игры и лабораторная — готов
+- **Сделано:** урок gradient-descent (четыре цикла: спуск и подъём, порог 2/λ_max и обусловленность, SGD и мини-батч, покоординатный спуск), игры «Порог расходимости» и «Спуск в тумане», лабораторная calc/apartments_gd (капстоун модуля II), формула f.gd-quadratic, генераторы calc.gd-step и calc.lr-threshold, сниппет gd.py с тестами
+- **Файлы:** content/courses/foundations/calculus/gradient-descent.mdx, src/games/divergence/, src/games/foggy-descent/, notebooks/src/calc/apartments_gd.py, content/formulas/calc/gd-quadratic.yaml, code/snippets/calculus/gd.py
+- **Проверка:** validate, lint, build, check, vitest 481, pytest, nbmake 4 ноутбука, check_consistency, e2e урока, обеих игр и layout (axe)
+- **Отклонения от плана и решения:** в «Спуске в тумане» добавлен короткий шаг 0.2: с одним шагом 0.5 спуск по стрелке на вытянутой чаше зацикливался
+- **Следующий шаг:** L-II.7 — метод Ньютона.
+- **Вопросы пользователю:** —
+
 ### 2026-10-25 — L-II.5 L-II.5: выпуклость — готов
 - **Сделано:** урок convexity (четыре цикла: хорда, критерии, локальный минимум глобален с планом доказательства, операции и логистическая потеря), виджет «Хорда над графиком», формула f.logistic-loss-hessian, вид проверки hessian в харнессе (с тестом на сломанный гессиан), генераторы calc.convex-form и calc.convex-ops, сниппет convexity.py с тестом
 - **Файлы:** content/courses/foundations/calculus/convexity.mdx, src/widgets/calc/chord/, content/formulas/calc/logistic-loss-hessian.yaml, code/mlf/formulas.py, src/lib/exercises/generators/calc.ts, code/snippets/calculus/convexity.py

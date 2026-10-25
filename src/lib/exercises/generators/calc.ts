@@ -393,3 +393,75 @@ export const convexOps: Generator = {
     };
   },
 };
+
+/** Урок II.6: один шаг градиентного спуска или подъёма. Нечётный seed — спуск к минимуму, чётный — подъём. */
+export const gdStep: Generator = {
+  id: "calc.gd-step",
+  version: 1,
+  title: "Шаг градиентного спуска",
+  make(seed) {
+    const r = rng(seed);
+    const ascent = seed % 2 === 0;
+    const s = ascent ? -1 : 1;
+    // спуск — на выпуклой чаше, подъём — на перевёрнутой: знак коэффициентов при квадратах
+    const [a, c] = [s * r.int(1, 3), s * r.int(1, 3)];
+    const [d, e] = [r.int(-4, 4), r.int(-4, 4)];
+    const [x, y] = [r.nonzero(-2, 2), r.nonzero(-2, 2)];
+    // шаг без перескока: множитель 1 − 2|a|η вдоль каждой оси не меньше нуля
+    const eta = r.pick([0.1, 0.25, 0.5].filter((h) => 2 * h * Math.max(Math.abs(a), Math.abs(c)) <= 1));
+    const g = [2 * a * x + d, 2 * c * y + e];
+    const next = [x - s * eta * g[0]!, y - s * eta * g[1]!].map((v) => Math.round(v * 1000) / 1000);
+    const tex = poly([[a, "\\theta_1^2"], [c, "\\theta_2^2"], [d, "\\theta_1"], [e, "\\theta_2"]]);
+    const goal = ascent ? "максимизируем" : "минимизируем";
+    const rule = ascent ? String.raw`\theta + \eta \nabla f` : String.raw`\theta - \eta \nabla f`;
+    return {
+      kind: "matrix",
+      prompt: String.raw`${ascent ? "Градиентный подъём" : "Градиентный спуск"}: ${goal} $f(\theta) = ${tex}$. Шаг $\eta = ${eta}$, сейчас $\theta = (${x}, ${y})$. Найдите $\theta$ после одного шага.`,
+      label: String.raw`$\theta :=$`,
+      answer: next.map((v) => [v]),
+      tol: 0.005,
+      hints: [String.raw`$\nabla f = \begin{pmatrix} ${poly([[2 * a, "\\theta_1"], [d, ""]])} \\ ${poly([[2 * c, "\\theta_2"], [e, ""]])} \end{pmatrix}$; в точке $\theta$ это $${pm(g.map((v) => [v]))}$.`, String.raw`${ascent ? "Подъём" : "Спуск"}: $\theta := ${rule}$.`],
+      right: String.raw`$\nabla f = ${pm(g.map((v) => [v]))}$, $\theta := ${rule} = ${pm(next.map((v) => [v]))}$.`,
+      wrong: ascent
+        ? String.raw`При подъёме шаг идёт по градиенту: $\theta + \eta \nabla f$. Со знаком минус $f$ уменьшилась бы.`
+        : String.raw`При спуске шаг идёт против градиента: $\theta - \eta \nabla f$. Со знаком плюс $f$ выросла бы.`,
+    };
+  },
+};
+
+// симметричные 2 × 2 с целыми собственными значениями λ_max > λ_min > 0: порог 2/λ_max считается в уме
+const SPD: readonly (readonly [number, number, number, number])[] = [
+  [2, 1, 2, 3],
+  [3, 1, 3, 4],
+  [5, 2, 2, 6],
+  [2, 2, 5, 6],
+  [3, 2, 3, 5],
+  [6, 2, 3, 7],
+  [7, 2, 4, 8],
+  [4, 0, 1, 4],
+  [1, 0, 5, 5],
+];
+
+/** Урок II.6: наибольший сходящийся шаг 2/λ_max для f = ½ θᵀAθ. */
+export const lrThreshold: Generator = {
+  id: "calc.lr-threshold",
+  version: 1,
+  title: "Порог шага",
+  make(seed) {
+    const r = rng(seed);
+    const [a, b0, c, l1] = r.pick(SPD);
+    const b = b0 * r.pick([1, -1]);
+    const l2 = a + c - l1;
+    const answer = Math.round((2 / l1) * 10000) / 10000;
+    return {
+      kind: "numeric",
+      prompt: String.raw`Градиентный спуск на $f(\theta) = \tfrac12 \theta^\top A \theta$ с $$A = ${pm([[a, b], [b, c]])}.$$ При каких $\eta$ он сходится из любой точки? Введите границу.`,
+      label: String.raw`$\eta <$`,
+      answer,
+      tol: 0.005,
+      hints: [String.raw`Шаг $\theta := (I - \eta A)\theta$ умножает координату вдоль собственного вектора на $1 - \eta\lambda$. Нужно $\lvert 1 - \eta \lambda \rvert < 1$ для обоих $\lambda$.`, String.raw`$\lambda_1 + \lambda_2 = \operatorname{tr} A = ${a + c}$, $\lambda_1 \lambda_2 = \det A = ${a * c - b * b}$.`],
+      right: String.raw`Собственные значения $${l1}$ и $${l2}$; порог задаёт большее: $\eta < 2/\lambda_{\max} = 2/${l1} \approx ${answer}$.`,
+      wrong: String.raw`Порог задаёт наибольшее собственное значение, а не элементы матрицы: $\lambda_{\max} = ${l1}$, $\eta < 2/${l1}$.`,
+    };
+  },
+};

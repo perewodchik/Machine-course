@@ -582,6 +582,46 @@ describe("генераторы", () => {
     }
   });
 
+  it("calc.gd-step: спуск уменьшает f, подъём увеличивает; ответ — θ ∓ η∇f", () => {
+    for (let s = 1; s <= 30; s++) {
+      const t = make("calc.gd-step", s);
+      if (t.kind !== "matrix") throw new Error("ожидалась матрица");
+      const ascent = s % 2 === 0;
+      expect(t.prompt).toContain(ascent ? "подъём" : "спуск");
+      const tex = /\$f\(\\theta\) = (.*?)\$/.exec(t.prompt)![1]!;
+      const k: Record<string, number> = {};
+      for (const u of tex.replace(/ - /g, " + -").split(" + ")) {
+        const m = /^(-?)(\d*)\\theta_(\d)(\^2)?$/.exec(u.trim())!;
+        k[m[3]! + (m[4] ? "²" : "")] = (m[1] ? -1 : 1) * (m[2] ? Number(m[2]) : 1);
+      }
+      const [a, c, d, e] = ["1²", "2²", "1", "2"].map((key) => k[key] ?? 0) as [number, number, number, number];
+      const f = (x: number, y: number) => a * x * x + c * y * y + d * x + e * y;
+      const [x, y] = /\\theta = \((-?\d+), (-?\d+)\)/.exec(t.prompt)!.slice(1).map(Number) as [number, number];
+      const [nx, ny] = [t.answer[0]![0]!, t.answer[1]![0]!];
+      const eta = Number(/\\eta = ([\d.]+)/.exec(t.prompt)![1]);
+      const h = 1e-6;
+      const grad = [(f(x + h, y) - f(x - h, y)) / (2 * h), (f(x, y + h) - f(x, y - h)) / (2 * h)];
+      const sg = ascent ? -1 : 1;
+      expect(nx).toBeCloseTo(x - sg * eta * grad[0]!, 3);
+      expect(ny).toBeCloseTo(y - sg * eta * grad[1]!, 3);
+      if (ascent) expect(f(nx, ny)).toBeGreaterThanOrEqual(f(x, y));
+      else expect(f(nx, ny)).toBeLessThanOrEqual(f(x, y));
+    }
+  });
+
+  it("calc.lr-threshold: ответ 2/λ_max по собственным значениям матрицы из условия", () => {
+    const mats = (tex: string) => [...tex.matchAll(/\\begin\{pmatrix\}(.*?)\\end\{pmatrix\}/g)].map((m) => m[1]!.split(" \\\\ ").map((row) => row.split(" & ").map(Number)));
+    for (let s = 1; s <= 30; s++) {
+      const t = make("calc.lr-threshold", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const A = mats(t.prompt)[0]!;
+      const m = (A[0]![0]! + A[1]![1]!) / 2;
+      const rr = Math.hypot((A[0]![0]! - A[1]![1]!) / 2, A[0]![1]!);
+      expect(m - rr).toBeGreaterThan(0);
+      expect(t.answer).toBeCloseTo(2 / (m + rr), 4);
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,
