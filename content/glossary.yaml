@@ -300,3 +300,9 @@
 - id: critical-point
   ru: 'критическая (стационарная) точка'
   en: 'critical (stationary) point'
+- id: jacobian
+  ru: 'якобиан (матрица Якоби); дифференциал'
+  en: 'Jacobian; differential'
+- id: computational-graph
+  ru: 'вычислительный граф; прямой и обратный проход'
+  en: 'computational graph; forward and backward pass (backpropagation)'
