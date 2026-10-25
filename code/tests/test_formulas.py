@@ -41,3 +41,12 @@ def test_mutation_equal_to_answer_is_caught():
     assert not report.ok
     assert "совпадает с верным ответом" in report.problems[0]
 
+
+
+def test_broken_hessian_is_caught():
+    """Гессиан без множителя 1 − g(z) — типичная ошибка: харнесс сверяет его с численным якобианом градиента."""
+    data = yaml.safe_load((ROOT / "content/formulas/calc/logistic-loss-hessian.yaml").read_text(encoding="utf-8"))
+    data["derivation"]["steps"][3]["check"]["py"] = "(1 / (1 + np.exp(-theta @ x))) * np.outer(x, x)"
+    report = check_formula(data)
+    assert not report.ok
+    assert "гессиан" in report.problems[0]

@@ -315,3 +315,12 @@
 - id: saddle-point
   ru: 'седловая точка'
   en: 'saddle point'
+- id: convex-set
+  ru: 'выпуклое множество'
+  en: 'convex set'
+- id: convex-function
+  ru: 'выпуклая функция; критерии первого и второго порядка'
+  en: 'convex function; first- and second-order conditions'
+- id: strict-convexity
+  ru: 'строгая выпуклость'
+  en: 'strict convexity'

@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-25 — L-II.5 L-II.5: выпуклость — готов
+- **Сделано:** урок convexity (четыре цикла: хорда, критерии, локальный минимум глобален с планом доказательства, операции и логистическая потеря), виджет «Хорда над графиком», формула f.logistic-loss-hessian, вид проверки hessian в харнессе (с тестом на сломанный гессиан), генераторы calc.convex-form и calc.convex-ops, сниппет convexity.py с тестом
+- **Файлы:** content/courses/foundations/calculus/convexity.mdx, src/widgets/calc/chord/, content/formulas/calc/logistic-loss-hessian.yaml, code/mlf/formulas.py, src/lib/exercises/generators/calc.ts, code/snippets/calculus/convexity.py
+- **Проверка:** validate, lint, build, check, vitest 471, pytest, check_consistency, e2e урока и layout ii5 (axe)
+- **Отклонения от плана и решения:** в харнесс добавлен вид шага hessian (якобиан градиента), схема и типы обновлены
+- **Следующий шаг:** L-II.6 — градиентный спуск.
+- **Вопросы пользователю:** —
+
 ### 2026-10-25 — L-II.4 L-II.4: гессиан, ряд Тейлора, критические точки — готов
 - **Сделано:** урок hessian-taylor (три цикла, предсказание, ошибка «∇f = 0 — минимум»), формула f.taylor-second-order, игра «Минимум, максимум или седло» (5 уровней), генераторы calc.hessian и calc.classify, сниппет hessian.py с тестом, понятие calc.hessian
 - **Файлы:** content/courses/foundations/calculus/hessian-taylor.mdx, content/formulas/calc/taylor-second-order.yaml, src/games/min-max-saddle/, src/lib/exercises/generators/calc.ts, code/snippets/calculus/hessian.py

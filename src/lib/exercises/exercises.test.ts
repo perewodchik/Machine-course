@@ -555,6 +555,33 @@ describe("генераторы", () => {
     }
   });
 
+  it("calc.convex-form: ответ совпадает с A ⪰ 0 по собственным значениям; виды чередуются", () => {
+    const mats = (tex: string) => [...tex.matchAll(/\\begin\{pmatrix\}(.*?)\\end\{pmatrix\}/g)].map((m) => m[1]!.split(" \\\\ ").map((row) => row.split(" & ").map(Number)));
+    const seen = new Set<string>();
+    for (let s = 1; s <= 40; s++) {
+      const cf = make("calc.convex-form", s);
+      if (cf.kind !== "choice") throw new Error("ожидался выбор");
+      const A = mats(cf.prompt)[0]!;
+      const m = (A[0]![0]! + A[1]![1]!) / 2;
+      const rr = Math.hypot((A[0]![0]! - A[1]![1]!) / 2, A[0]![1]!);
+      const convex = m - rr > -1e-9;
+      expect(cf.options.filter((o) => o.correct).map((o) => o.text)).toEqual([convex ? "Выпукла" : "Не выпукла"]);
+      seen.add(`${convex}:${Math.abs((m - rr) * (m + rr)) < 1e-9}`);
+    }
+    // строго выпуклые, вырожденные выпуклые и невыпуклые — все встречаются
+    expect(seen).toContain("true:false");
+    expect(seen).toContain("true:true");
+    expect(seen).toContain("false:false");
+  });
+
+  it("calc.convex-ops: выпуклые и невыпуклые чередуются по seed", () => {
+    for (let s = 1; s <= 12; s++) {
+      const co = make("calc.convex-ops", s);
+      if (co.kind !== "choice") throw new Error("ожидался выбор");
+      expect(co.options.find((o) => o.correct)!.text).toBe(s % 2 === 1 ? "Выпукла" : "Не выпукла");
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

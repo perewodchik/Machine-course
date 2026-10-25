@@ -2,7 +2,8 @@
 // производной, итоговая проверка ставит «знаю». Урок II.2 — вычислительный граф по шагам до ∇θL, разбор порядка
 // якобианов, итоговая проверка. Урок II.3 — ссылка на «Тетрис размерностей», «найди ошибку» в выводе нормальных
 // уравнений, итоговая проверка. Урок II.4 — предсказание, ссылка на игру «Минимум, максимум или седло», разбор
-// типа критической точки, итоговая проверка. axe.
+// типа критической точки, итоговая проверка. Урок II.5 — хорда x³ под графиком, разбор «зависит от точки», итоговая
+// проверка. axe.
 import { expect, test } from "@playwright/test";
 import { generator } from "../../src/lib/exercises/generators";
 import { expectNoAxeViolations } from "./support";
@@ -114,6 +115,34 @@ test("урок II.4: предсказание, игра, тип критичес
 
   const final = page.locator("#final-check");
   const spec = generator("calc.classify").make(31);
+  if (spec.kind !== "choice") throw new Error("ожидался выбор");
+  await final.locator("[data-variant]:not([hidden]) [data-option]").nth(spec.options.findIndex((o) => o.correct)).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});
+
+test("урок II.5: хорда x³ под графиком, выпуклость квадратичной функции, итоговая проверка", async ({ page }) => {
+  await page.goto("/foundations/calculus/convexity/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Выпуклость");
+
+  const fig = page.locator(".chord").first();
+  await fig.scrollIntoViewIfNeeded();
+  await expect(fig.locator("xpath=ancestor::astro-island[1]")).not.toHaveAttribute("ssr", "");
+  await expect(fig.locator(".chord__fact")).toHaveText("Хорда целиком не ниже графика.");
+  // x³, хорда от −1.5 до 0.5, t = 0.5: хорда −1.625, график −0.125, зазор −1.5
+  await fig.getByRole("button", { name: "x³" }).press("Enter");
+  await expect(fig.locator(".chord__fact")).toContainText("функция не выпукла");
+  await expect(fig.locator("[aria-live]")).toContainText("хорда −1.63, график −0.13");
+
+  const cf = page.locator("[data-exercise][data-item='calc.convex-form']");
+  const task = generator("calc.convex-form").make(1);
+  if (task.kind !== "choice") throw new Error("ожидался выбор");
+  await cf.locator("[data-variant]:not([hidden]) [data-option]").nth(2).click();
+  await expect(cf.locator("[data-feedback]")).toContainText("гессиан один и тот же");
+
+  const final = page.locator("#final-check");
+  const spec = generator("calc.convex-ops").make(31);
   if (spec.kind !== "choice") throw new Error("ожидался выбор");
   await final.locator("[data-variant]:not([hidden]) [data-option]").nth(spec.options.findIndex((o) => o.correct)).click();
   await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");

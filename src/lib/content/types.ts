@@ -47,6 +47,7 @@ export type Check =
 export type StepCheck =
   | { kind: "same"; py: string }
   | { kind: "gradient"; py: string; wrt: string }
+  | { kind: "hessian"; py: string; wrt: string }
   | { kind: "stationary"; lhs: string; rhs: string }
   | { kind: "solution"; py: string; wrt: string };
 

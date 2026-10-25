@@ -6,7 +6,7 @@
 - ``identity``: ``lhs`` и ``rhs`` совпадают;
 - ``gradient``: ``grad`` совпадает с численным градиентом ``f`` по ``wrt`` (центральные разности);
 - шаги вывода: ``same`` — значение совпадает с предыдущим шагом ``same``; ``gradient`` — градиент
-  последнего ``same`` по ``wrt``; ``stationary`` — равенство ``lhs = rhs`` в найденном решении;
+  последнего ``same`` по ``wrt``; ``hessian`` — якобиан последнего ``gradient`` по ``wrt``; ``stationary`` — равенство ``lhs = rhs`` в найденном решении;
   ``solution`` — выражение для точки минимума, в которой градиент обращается в ноль.
 
 Мутации правила (``mutations``) — типичные ошибки: их ``py`` обязан отличаться от верной части
@@ -129,6 +129,18 @@ def check_formula(data: dict, seed: int = 0) -> Report:
                 if not _close(evaluate(c["py"], env), expected):
                     report.problems.append(f"шаг {i}: градиент не совпадает с численным градиентом шага выше")
                 grad_expr = c["py"]
+            elif kind == "hessian":
+                # гессиан — якобиан градиента шага выше: столбец j — производная градиента по координате j
+                x = np.asarray(env[c["wrt"]], dtype=float)
+                cols = []
+                for j in range(x.size):
+                    step = np.zeros_like(x)
+                    step.flat[j] = 1e-6
+                    plus = evaluate(grad_expr, {**env, c["wrt"]: x + step})
+                    minus = evaluate(grad_expr, {**env, c["wrt"]: x - step})
+                    cols.append((plus - minus) / 2e-6)
+                if not _close(evaluate(c["py"], env), np.stack(cols, axis=-1)):
+                    report.problems.append(f"шаг {i}: гессиан не совпадает с численным якобианом градиента")
             elif kind == "stationary":
                 stationary.append((i, c))
             elif kind == "solution":

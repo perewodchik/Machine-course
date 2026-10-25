@@ -313,3 +313,83 @@ export const classifyPoint: Generator = {
     };
   },
 };
+
+type ConvexKind = "pd" | "psd" | "indefinite" | "nd";
+
+/** Урок II.5: выпукла ли f(x) = ½ xᵀAx + bᵀx — критерий второго порядка, H = A во всех точках. */
+export const convexForm: Generator = {
+  id: "calc.convex-form",
+  version: 1,
+  title: "Выпукла ли квадратичная функция",
+  make(seed) {
+    const r = rng(seed);
+    const kind = (["pd", "indefinite", "psd", "nd"] as const)[(seed - 1) % 4]!;
+    let A: [number, number, number];
+    for (;;) {
+      if (kind === "psd") {
+        const [p, q] = [r.nonzero(-2, 2), r.int(-2, 2)];
+        A = [p * p, p * q, q * q];
+      } else A = [r.nonzero(-4, 4), r.int(-3, 3), r.nonzero(-4, 4)];
+      const d = A[0] * A[2] - A[1] ** 2;
+      const t = A[0] + A[2];
+      const k: ConvexKind = d < 0 ? "indefinite" : d === 0 ? (t > 0 ? "psd" : "nd") : t > 0 ? "pd" : "nd";
+      if (k === kind) break;
+    }
+    const [a, b, c] = A;
+    const [b1, b2] = [r.int(-3, 3), r.int(-3, 3)];
+    const d = a * c - b * b;
+    const t = a + c;
+    const facts = String.raw`$H = A$ во всех точках, $\det A = ${d}$, $\operatorname{tr} A = ${t}$`;
+    const convex = kind === "pd" || kind === "psd";
+    const why: Record<ConvexKind, string> = {
+      pd: String.raw`${facts}: оба собственных значения положительны, $A \succ 0$ — функция выпукла, и даже строго.`,
+      psd: String.raw`${facts}: собственные значения $${t}$ и $0$, $A \succeq 0$ — функция выпукла. Строгой выпуклости нет: вдоль собственного вектора с $\lambda = 0$ функция линейна.`,
+      indefinite: String.raw`${facts}: собственные значения разных знаков. Вдоль собственного вектора с $\lambda < 0$ функция — перевёрнутая парабола, хорда там ниже графика.`,
+      nd: String.raw`${facts}: собственные значения не положительны, и хотя бы одно отрицательно — вдоль его вектора функция вогнута, не выпукла.`,
+    };
+    return {
+      kind: "choice",
+      prompt: String.raw`$f(x) = \tfrac12 x^\top A x + b^\top x$, где $$A = ${pm([[a, b], [b, c]])}, \quad b = ${pm([[b1], [b2]])}.$$ Выпукла ли $f$ на $\mathbb{R}^2$?`,
+      options: [
+        { text: "Выпукла", correct: convex, why: why[kind] },
+        { text: "Не выпукла", correct: !convex, why: why[kind] },
+        { text: "Зависит от точки: надо проверить гессиан в каждой", correct: false, why: String.raw`У квадратичной функции гессиан один и тот же во всех точках — $A$. ${why[kind]}` },
+      ],
+      hints: [String.raw`Гессиан $\tfrac12 x^\top A x + b^\top x$ равен $A$ (урок II.4); выпуклость — $A \succeq 0$. Для $2 \times 2$: $\det A \ge 0$ и $\operatorname{tr} A \ge 0$.`],
+    };
+  },
+};
+
+const OPS: readonly { tex: string; convex: boolean; why: string }[] = [
+  { tex: String.raw`\log\bigl(1 + e^{\theta^\top x}\bigr) - y\, \theta^\top x`, convex: true, why: String.raw`$\log(1 + e^{z})$ выпукла ($g(z)(1 - g(z)) > 0$), $z = \theta^\top x$ — аффинная функция $\theta$, а $-y\,\theta^\top x$ линейна. Это логистическая потеря.` },
+  { tex: String.raw`\lVert X\theta - y \rVert^2 + \lambda \lVert \theta \rVert^2, \ \lambda > 0`, convex: true, why: String.raw`Квадрат нормы выпукл, $X\theta - y$ — аффинная функция $\theta$; сумма выпуклых с неотрицательными весами выпукла. Это гребневая регрессия.` },
+  { tex: String.raw`\max\bigl(0,\ 1 - y\, \theta^\top x\bigr)`, convex: true, why: String.raw`Максимум двух аффинных функций $\theta$ выпукл. Это шарнирная потеря SVM.` },
+  { tex: String.raw`e^{\theta^\top x}`, convex: true, why: String.raw`$e^{z}$ выпукла, $z = \theta^\top x$ — аффинная функция $\theta$: композиция с аффинной функцией сохраняет выпуклость.` },
+  { tex: String.raw`\lVert \theta \rVert_1 + \lVert \theta \rVert^2`, convex: true, why: String.raw`Любая норма выпукла (неравенство треугольника), сумма выпуклых выпукла.` },
+  { tex: String.raw`\sin(\theta^\top x)`, convex: false, why: String.raw`$\sin z$ не выпукл: при $z \in (0, \pi)$ вторая производная $-\sin z < 0$. Аффинная подстановка выпуклости не добавляет.` },
+  { tex: String.raw`-\lVert \theta \rVert^2`, convex: false, why: String.raw`Гессиан $-2I \prec 0$: функция вогнута. Умножение на отрицательное число выпуклость не сохраняет.` },
+  { tex: String.raw`(\theta^\top x)^3`, convex: false, why: String.raw`$z^3$ не выпукла на всей прямой: $6z < 0$ при $z < 0$.` },
+  { tex: String.raw`\log(\theta^\top x), \ \theta^\top x > 0`, convex: false, why: String.raw`$\log z$ вогнута: $-1/z^2 < 0$. Выпукла $-\log z$.` },
+];
+
+/** Урок II.5: выпукла ли функция потерь — по операциям, сохраняющим выпуклость. */
+export const convexOps: Generator = {
+  id: "calc.convex-ops",
+  version: 1,
+  title: "Выпукла ли функция по θ",
+  make(seed) {
+    const r = rng(seed);
+    // чередуем выпуклые и невыпуклые, внутри — случайная заготовка
+    const pool = OPS.filter((o) => o.convex === (seed % 2 === 1));
+    const op = r.pick(pool);
+    return {
+      kind: "choice",
+      prompt: String.raw`Выпукла ли по $\theta$ функция $$${op.tex}?$$`,
+      options: [
+        { text: "Выпукла", correct: op.convex, why: op.why },
+        { text: "Не выпукла", correct: !op.convex, why: op.why },
+      ],
+      hints: [String.raw`Выпуклость сохраняют неотрицательные суммы, композиция с аффинной функцией и максимум. Начните с одномерной функции от $z = \theta^\top x$.`],
+    };
+  },
+};

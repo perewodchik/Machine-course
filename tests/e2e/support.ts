@@ -51,6 +51,7 @@ export const layoutPages = {
   ii2: "/foundations/calculus/chain-rule-jacobian/",
   ii3: "/foundations/calculus/matrix-calculus/",
   ii4: "/foundations/calculus/hessian-taylor/",
+  ii5: "/foundations/calculus/convexity/",
   saddlegame: "/games/min-max-saddle/",
   dimgame: "/games/dim-tetris/",
   spangame: "/games/span-hit/",
