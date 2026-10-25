@@ -695,6 +695,19 @@ describe("генераторы", () => {
     }
   });
 
+  it("calc.kkt-alpha: α* = max(0, g(c)/2), x* = c − α*(1, 1) — ближайшая допустимая точка", () => {
+    for (let s = 1; s <= 30; s++) {
+      const t = make("calc.kkt-alpha", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const b = Number(/x_1 \+ x_2 \\le (-?\d+)/.exec(t.prompt)![1]);
+      const [c1, c2] = /c = \((-?\d+), (-?\d+)\)/.exec(t.prompt)!.slice(1).map(Number) as [number, number];
+      const x = [c1 - t.answer, c2 - t.answer];
+      expect(x[0]! + x[1]!).toBeLessThanOrEqual(b + 1e-12);
+      expect(t.answer * (x[0]! + x[1]! - b)).toBeCloseTo(0, 12);
+      expect(t.answer > 0).toBe(s % 2 === 1);
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

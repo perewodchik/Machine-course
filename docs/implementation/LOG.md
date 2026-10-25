@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-25 — L-II.9 L-II.9 ★: двойственность и условия KKT — готов
+- **Сделано:** урок duality-kkt (два цикла: KKT и дополняющая нежёсткость, двойственная задача и SVM), виджет «Активное и неактивное ограничение», формула f.dual-projection, генератор calc.kkt-alpha, понятие calc.kkt (core: false)
+- **Файлы:** content/courses/foundations/calculus/duality-kkt.mdx, src/widgets/calc/kkt/, content/formulas/calc/dual-projection.yaml, src/lib/exercises/generators/calc.ts
+- **Проверка:** validate, lint, build, check, vitest 502, pytest, check_consistency, e2e урока и layout ii9 (axe)
+- **Отклонения от плана и решения:** урок-углубление без ячейки Python: численная проверка двойственности — в model.test.ts виджета (fast-check)
+- **Следующий шаг:** L-II.10 — кратные интегралы.
+- **Вопросы пользователю:** —
+
 ### 2026-10-25 — L-II.8 L-II.8: множители Лагранжа; починка «Подгони прямую» — готов
 - **Сделано:** урок lagrange (три цикла: касание и лагранжиан, PCA — собственный вектор и λ, MLE категориального распределения), виджет «Касание линии уровня и ограничения», формула f.categorical-mle, генераторы calc.lagrange-line, calc.lagrange-eig, calc.categorical-mle, сниппет lagrange.py с тестом; в «Подгони прямую» уровень «выброс» иногда имел оптимум за бегунком — генератор перетягивает выборку
 - **Файлы:** content/courses/foundations/calculus/lagrange.mdx, src/widgets/calc/lagrange/, content/formulas/calc/categorical-mle.yaml, src/lib/exercises/generators/calc.ts, code/snippets/calculus/lagrange.py, src/games/fit-line/model.ts

@@ -1,0 +1,77 @@
+id: f.dual-projection
+kind: formula
+title:
+  ru: 'Двойственная функция проекции на полуплоскость'
+  en: 'dual function of projection onto a half-space'
+statement: 'd(\sym{alpha}{\alpha}) = \min_x \mathcal{L}(x, \sym{alpha}{\alpha}) = \sym{alpha}{\alpha}\, (a^\top \sym{c}{c} - b) - \tfrac12\, \sym{alpha}{\alpha}^2 \lVert a \rVert^2 \ \le\ p^\star'
+
+# Урок II.9: минимум ½‖x − c‖² при aᵀx ≤ b. Лагранжиан, его минимум по x (градиент и решение), подстановка —
+# двойственная функция. Проверяем: значение лагранжиана, градиент по x, точку минимума и значение d(α) в ней.
+symbols:
+  - name: x
+    tex: 'x'
+    meaning: 'переменная прямой задачи'
+    shape: [d, 1]
+  - name: c
+    tex: 'c'
+    meaning: 'точка, которую проецируем'
+    shape: [d, 1]
+    role: data
+  - name: a
+    tex: 'a'
+    meaning: 'нормаль полуплоскости $a^\top x \le b$'
+    shape: [d, 1]
+  - name: b
+    tex: 'b'
+    meaning: 'сдвиг полуплоскости'
+    shape: []
+  - name: alpha
+    tex: '\alpha'
+    meaning: 'множитель при ограничении, $\alpha \ge 0$'
+    shape: []
+    sample: positive
+    role: param
+
+dependsOn:
+  concepts: [calc.lagrange, calc.convexity]
+  rules: [rule.grad-quadratic]
+
+derivation:
+  plan:
+    - 'Записать лагранжиан с множителем $\alpha \ge 0$ при $g(x) = a^\top x - b$'
+    - 'Найти минимум лагранжиана по $x$ при фиксированном $\alpha$'
+    - 'Подставить его и получить $d(\alpha)$'
+  steps:
+    - goal: 0
+      tex: '\mathcal{L}(x, \sym{alpha}{\alpha}) = \tfrac12 \lVert x - \sym{c}{c} \rVert^2 + \sym{alpha}{\alpha}\, (a^\top x - b)'
+      by: [calc.lagrange]
+      note: 'Для неравенства $g(x) \le 0$ множитель неотрицателен: при допустимом $x$ добавка $\alpha g(x) \le 0$, поэтому $\mathcal{L} \le f$.'
+      check:
+        kind: same
+        py: '0.5 * (x - c) @ (x - c) + alpha * (a @ x - b)'
+    - goal: 1
+      tex: '\nabla_x \mathcal{L} = \changed{x - \sym{c}{c} + \sym{alpha}{\alpha} a}'
+      by: [rule.grad-quadratic]
+      note: 'Градиент $\tfrac12 \lVert x - c \rVert^2$ — $x - c$, линейной части — $\alpha a$.'
+      check:
+        kind: gradient
+        wrt: x
+        py: 'x - c + alpha * a'
+    - goal: 1
+      tex: 'x(\sym{alpha}{\alpha}) = \changed{\sym{c}{c} - \sym{alpha}{\alpha} a}'
+      by: [calc.convexity]
+      note: '$\mathcal{L}$ выпукл по $x$, поэтому точка с нулевым градиентом — его минимум.'
+      check:
+        kind: solution
+        wrt: x
+        py: 'c - alpha * a'
+
+pitfalls:
+  - 'Брать множитель любого знака: для неравенств $\alpha \ge 0$, иначе $d(\alpha)$ перестаёт быть нижней оценкой.'
+  - 'Считать, что $\alpha > 0$ всегда: если $c$ допустима, ограничение неактивно, и $\alpha^\star = 0$ — это и есть дополняющая нежёсткость.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Support vector machines / Lagrange duality'
+
+usedIn: [calc.kkt]

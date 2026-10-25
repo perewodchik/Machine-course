@@ -74,6 +74,15 @@
   prerequisites: [calc.gradient, calc.convexity, la.eigen]
   core: true
 
+- id: calc.kkt
+  title:
+    ru: 'Двойственность и условия KKT'
+    en: 'duality and KKT conditions'
+  summary: 'Для неравенств $g_i(x) \le 0$: стационарность, допустимость, $\alpha_i \ge 0$ и $\alpha_i g_i = 0$; двойственная задача даёт нижнюю оценку $d^\star \le p^\star$.'
+  lesson: duality-kkt
+  prerequisites: [calc.lagrange, calc.convexity]
+  core: false
+
 - id: calc.log-exp
   title:
     ru: 'Логарифм и экспонента'

@@ -231,3 +231,26 @@ test("урок II.8: касание на окружности — собстве
   await page.evaluate(() => window.scrollTo(0, 0));
   await expectNoAxeViolations(page);
 });
+
+test("урок II.9: активное и неактивное ограничение, итоговая проверка", async ({ page }) => {
+  await page.goto("/foundations/calculus/duality-kkt/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Двойственность и условия KKT");
+
+  const fig = page.locator(".kkt").first();
+  await fig.scrollIntoViewIfNeeded();
+  await expect(fig.locator("xpath=ancestor::astro-island[1]")).not.toHaveAttribute("ssr", "");
+  // c = (2, 1): g(c) = 2, α* = g(c)/‖a‖² = 1, x* = (1, 0) — как в model.test.ts
+  await expect(fig.locator(".kkt__fact")).toContainText("Ограничение активно: x* на границе, α* = 1.00 > 0");
+  await fig.getByRole("slider", { name: "c1" }).fill("0");
+  await fig.getByRole("slider", { name: "c2" }).fill("0");
+  await expect(fig.locator(".kkt__fact")).toContainText("Ограничение неактивно");
+
+  const final = page.locator("#final-check");
+  const spec = generator("calc.kkt-alpha").make(31);
+  if (spec.kind !== "numeric") throw new Error("ожидалось число");
+  await final.locator("[data-variant]:not([hidden]) input").first().fill(String(spec.answer));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});

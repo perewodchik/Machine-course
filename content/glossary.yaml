@@ -345,3 +345,6 @@
 - id: lagrange-multiplier
   ru: 'множитель Лагранжа; лагранжиан; ограничение-равенство'
   en: 'Lagrange multiplier; Lagrangian; equality constraint'
+- id: kkt
+  ru: 'двойственная задача; условия Каруша — Куна — Таккера; дополняющая нежёсткость'
+  en: 'dual problem; Karush–Kuhn–Tucker (KKT) conditions; complementary slackness'

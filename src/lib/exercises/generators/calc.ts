@@ -609,3 +609,33 @@ export const categoricalMle: Generator = {
     };
   },
 };
+
+/** Урок II.9: проекция c на полуплоскость x₁ + x₂ ≤ b — множитель α* = max(0, g(c)/‖a‖²). */
+export const kktAlpha: Generator = {
+  id: "calc.kkt-alpha",
+  version: 1,
+  title: "Множитель KKT",
+  make(seed) {
+    const r = rng(seed);
+    const b = r.int(-1, 2);
+    // нечётный seed — c вне полуплоскости (ограничение активно), чётный — внутри
+    let c: [number, number];
+    for (;;) {
+      c = [r.int(-3, 4), r.int(-3, 4)];
+      const g = c[0] + c[1] - b;
+      if (seed % 2 === 1 ? g > 0 : g < 0) break;
+    }
+    const g = c[0] + c[1] - b;
+    const alpha = Math.max(0, g / 2);
+    return {
+      kind: "numeric",
+      prompt: String.raw`Минимизируем $\tfrac12 \lVert x - c \rVert^2$ при $x_1 + x_2 \le ${b}$, где $c = (${c[0]}, ${c[1]})$. Найдите множитель $\alpha^\star$ из условий KKT.`,
+      label: String.raw`$\alpha^\star =$`,
+      answer: alpha,
+      tol: 0.005,
+      hints: [String.raw`Стационарность: $x - c + \alpha a = 0$, $a = (1, 1)$. Дополняющая нежёсткость: $\alpha\, g(x) = 0$, $\alpha \ge 0$.`, String.raw`Сначала проверьте, допустима ли сама $c$: $g(c) = c_1 + c_2 - ${par(b)} = ${g}$.`],
+      right: g > 0 ? String.raw`$g(c) = ${g} > 0$: $c$ недопустима, ограничение активно. $x = c - \alpha a$ на границе: $g(c) - 2\alpha = 0$, $\alpha^\star = ${alpha}$.` : String.raw`$g(c) = ${g} < 0$: $c$ допустима, $x^\star = c$, ограничение неактивно и $\alpha^\star = 0$.`,
+      wrong: g > 0 ? String.raw`Ограничение активно: $x^\star$ лежит на прямой $x_1 + x_2 = ${b}$, и из $x^\star = c - \alpha (1, 1)$ получается $\alpha = g(c)/2$.` : String.raw`$c$ уже удовлетворяет ограничению — минимум без ограничения допустим, и по дополняющей нежёсткости $\alpha^\star = 0$.`,
+    };
+  },
+};
