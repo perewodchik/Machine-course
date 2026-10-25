@@ -61,6 +61,14 @@ describe("уровни", () => {
     );
   });
 
+  it("лучшая прямая всегда в пределах бегунков: seed 949, «выброс» раньше давал θ₀ = 8.73 > 8", () => {
+    for (const seed of [949, 1508, 2941, 8998]) {
+      const { t0, t1 } = game.generate(rng(seed * 1000 + 2), 3).best;
+      expect(t0).toBeLessThanOrEqual(RANGE.t0[1]);
+      expect(t1).toBeLessThanOrEqual(RANGE.t1[1]);
+    }
+  });
+
   it("уровень детерминирован seed'ом", () => {
     expect(game.generate(rng(5), 2)).toEqual(game.generate(rng(5), 2));
   });
