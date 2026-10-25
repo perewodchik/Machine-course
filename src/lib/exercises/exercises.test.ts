@@ -426,6 +426,52 @@ describe("генераторы", () => {
     }
   });
 
+  it("задачи урока II.1: производные многочленов сверяются с численными", () => {
+    // разбор записи poly(): «3x^2 y - 2x y^2 + x - 4y» → функция двух переменных
+    const parsePoly = (tex: string) => {
+      const terms = tex.replace(/ - /g, " + -").split(" + ").map((t) => t.trim());
+      return (x: number, y: number) =>
+        terms.reduce((acc, t) => {
+          const m = /^(-?)(\d*)(.*)$/.exec(t)!;
+          let v = (m[1] ? -1 : 1) * (m[2] ? Number(m[2]) : 1);
+          for (const [, name, pow] of m[3]!.replace(/\s/g, "").matchAll(/(x_1|x_2|x|y)(?:\^(\d))?/g)) v *= (name === "x" || name === "x_1" ? x : y) ** Number(pow ?? 1);
+          return acc + v;
+        }, 0);
+    };
+    const d = (fn: (x: number, y: number) => number, x: number, y: number, by: 0 | 1) => {
+      const h = 1e-4;
+      return by === 0 ? (fn(x + h, y) - fn(x - h, y)) / (2 * h) : (fn(x, y + h) - fn(x, y - h)) / (2 * h);
+    };
+    for (let s = 1; s <= 40; s++) {
+      const pa = num(make("calc.partial", s));
+      const fn = parsePoly(/f\(x, y\) = (.*?)\$/.exec(pa.prompt)![1]!);
+      const [x, y] = /точке \$\((-?\d+), (-?\d+)\)/.exec(pa.prompt)!.slice(1).map(Number) as [number, number];
+      expect(pa.answer).toBeCloseTo(d(fn, x, y, s % 2 === 1 ? 0 : 1), 6);
+
+      const gp = make("calc.gradient-point", s);
+      if (gp.kind !== "matrix") throw new Error("ожидалась матрица");
+      const fg = parsePoly(/f\(x\) = (.*?)\$/.exec(gp.prompt)![1]!);
+      const [gx, gy] = /x = \((-?\d+), (-?\d+)\)/.exec(gp.prompt)!.slice(1).map(Number) as [number, number];
+      expect(gp.answer[0]![0]).toBeCloseTo(d(fg, gx, gy, 0), 6);
+      expect(gp.answer[1]![0]).toBeCloseTo(d(fg, gx, gy, 1), 6);
+
+      const cp = make("calc.critical-point", s);
+      if (cp.kind !== "matrix") throw new Error("ожидалась матрица");
+      const fc2 = parsePoly(/f\(x\) = (.*?)\$/.exec(cp.prompt)![1]!);
+      const [px, py] = [cp.answer[0]![0]!, cp.answer[1]![0]!];
+      expect(Math.abs(d(fc2, px, py, 0)) + Math.abs(d(fc2, px, py, 1))).toBeLessThan(1e-6);
+
+      const dd = num(make("calc.directional", s));
+      const g = /\((-?\d+), (-?\d+)\)/.exec(dd.prompt)!.slice(1).map(Number);
+      if (s % 3 === 0) expect(dd.answer).toBe(Math.hypot(g[0]!, g[1]!));
+      else {
+        const u = /u = \((-?[\d.]+), (-?[\d.]+)\)/.exec(dd.prompt)!.slice(1).map(Number);
+        expect(Math.hypot(u[0]!, u[1]!)).toBeCloseTo(1, 12);
+        expect(dd.answer).toBeCloseTo(g[0]! * u[0]! + g[1]! * u[1]!, 12);
+      }
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

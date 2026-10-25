@@ -44,6 +44,10 @@ export const layoutPages = {
   i10: "/foundations/linear-algebra/quadratic-forms/",
   i11: "/foundations/linear-algebra/svd-pseudoinverse/",
   i12: "/foundations/linear-algebra/capstone-least-squares/",
+  // этап 4: страница прогресса с калибровкой уверенности
+  progress: "/progress/",
+  // модуль II
+  ii1: "/foundations/calculus/gradient/",
   dimgame: "/games/dim-tetris/",
   spangame: "/games/span-hit/",
   concept: "/concepts/la.dot-product/",

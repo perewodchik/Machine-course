@@ -287,3 +287,16 @@
 - id: pseudoinverse
   ru: 'псевдообратная матрица (Мура — Пенроуза); решение наименьшей нормы'
   en: 'Moore–Penrose pseudoinverse; minimum-norm solution'
+- id: partial-derivative
+  ru: 'частная производная'
+  en: 'partial derivative'
+- id: gradient
+  ru: 'градиент'
+  en: 'gradient'
+  note: 'В курсе, как в CS229, — столбец той же формы, что аргумент; в MML и части учебников — строка.'
+- id: directional-derivative
+  ru: 'производная по направлению'
+  en: 'directional derivative'
+- id: critical-point
+  ru: 'критическая (стационарная) точка'
+  en: 'critical (stationary) point'
