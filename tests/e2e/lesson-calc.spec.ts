@@ -13,13 +13,14 @@ test("урок II.1: поле градиентов, частная произв�
   const fig = page.locator(".gradient-field").first();
   await fig.scrollIntoViewIfNeeded();
   await expect(fig.locator("xpath=ancestor::astro-island[1]")).not.toHaveAttribute("ssr", "");
-  // вытянутая чаша A = [[2, 0.6], [0.6, 0.5]], x₀ = (1, 1): ∇f = (2.6, 1.1)
-  await expect(fig.locator("[aria-live]")).toContainText("∇f = (2.60, 1.10)");
+  // вытянутая чаша A = [[2, 0.6], [0.6, 0.5]], x₀ = (1, 0.5): ∇f = Ax₀ = (2.3, 0.85)
+  await expect(fig.locator("[aria-live]")).toContainText("∇f = (2.30, 0.85)");
   await fig.getByRole("button", { name: "седло" }).press("Enter");
-  for (const name of ["x_1", "x_2"]) {
+  // x₀ = (1, 0.5) → (0, 0) шагами 0.1
+  for (const [name, steps] of [["x1", 10], ["x2", 5]] as const) {
     const s = fig.getByRole("slider", { name });
     await s.focus();
-    for (let k = 0; k < 10; k++) await s.press("ArrowLeft");
+    for (let k = 0; k < steps; k++) await s.press("ArrowLeft");
   }
   await expect(fig.locator(".gradient-field__fact")).toContainText("Критическая точка");
 

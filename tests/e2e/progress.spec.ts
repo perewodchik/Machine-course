@@ -22,7 +22,7 @@ test("калибровка: пусто → ответ с отметкой «ув
   await expect(page.locator("[data-calibration-empty]")).toBeHidden();
   const sure = page.locator('tr[data-level="3"]');
   await expect(sure.locator("[data-n]")).toHaveText("1");
-  await expect(sure.locator("[data-rate]")).toHaveText("1 — 100 %");
+  await expect(sure.locator("[data-rate]")).toHaveText("1 (100\u00a0%)");
   await expect(page.locator("[data-calibration-verdict]")).toContainText("хотя бы три ответа");
 });
 

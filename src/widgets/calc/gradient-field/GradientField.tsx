@@ -1,6 +1,6 @@
 // Виджет «Поле градиентов над линиями уровня» (урок II.1): f(x) = ½ xᵀAx, стрелки ∇f на сетке поверх линий
 // уровня, точка x₀ с градиентом и выбранным направлением u. Показания — f(x₀), ‖∇f‖ и D_u f = ∇fᵀu.
-// Цвета: точка и линия уровня через неё — данные, ∇f — ответ, u — параметр, поле и прочие уровни — карандаш.
+// Цвета: точка и линия уровня через неё — данные, ∇f — ответ, u — параметр; поле — карандаш, прочие уровни — пунктир.
 import { useState } from "react";
 import { ParamSlider, Plane, Point, Polyline, Readout, Vector, fmt, useLiveText } from "../../_kit";
 import { arrows, backgroundLevels, contourThrough, directional, f, grad, norm, PRESETS, unit, type Abc, type Vec2 } from "./model";
@@ -13,7 +13,7 @@ const R = 2.5;
 
 export default function GradientField({ initial = "long" }: GradientFieldProps) {
   const [abc, setAbc] = useState<Abc>(PRESETS.find((p) => p.id === initial)?.abc ?? PRESETS[1]!.abc);
-  const [x0, setX0] = useState<Vec2>([1, 1]);
+  const [x0, setX0] = useState<Vec2>([1, 0.5]);
   const [deg, setDeg] = useState(0);
   const g = grad(abc, x0);
   const gn = norm(g);
@@ -24,13 +24,13 @@ export default function GradientField({ initial = "long" }: GradientFieldProps) 
   const critical = gn < 1e-9;
   const fact = critical
     ? "Критическая точка: ∇f = 0, и производная по любому направлению равна нулю."
-    : `∇f перпендикулярен линии уровня через x₀. D_u f = ∇fᵀu = ‖∇f‖ cos α: наибольшая, когда u смотрит вдоль ∇f, ноль — вдоль линии уровня.`;
+    : `∇f перпендикулярен линии уровня через x₀. Dᵤf = ∇fᵀu = ‖∇f‖ cos α: наибольшая, когда u смотрит вдоль ∇f, ноль — вдоль линии уровня.`;
   const live = useLiveText(`x₀ = (${fmt(x0[0], 1)}, ${fmt(x0[1], 1)}), ∇f = (${fmt(g[0], 2)}, ${fmt(g[1], 2)}), D_u f = ${fmt(du, 2)}.`);
   return (
     <div className="gradient-field">
       <Plane x={[-R, R]} y={[-R, R]} xStep={1} yStep={1} equal height={{ ratio: 1, min: 240, max: 460 }} xLabel="x_1" yLabel="x_2" label={`Линии уровня f(x) = ½ xᵀAx и поле градиентов; в точке x₀ градиент ∇f = (${fmt(g[0], 2)}, ${fmt(g[1], 2)}) и направление u под углом ${fmt(deg, 0)}°.`}>
-        {backgroundLevels(abc).map(({ k, pts }, i) => (
-          <Polyline key={`l${i}`} points={pts} role="aux" dashed={k < 0} />
+        {backgroundLevels(abc).map(({ pts }, i) => (
+          <Polyline key={`l${i}`} points={pts} role="aux" dashed />
         ))}
         {arrows(abc, 2, 0.5).map(({ from, to }, i) => (
           <Polyline key={`a${i}`} points={[from, to]} role="aux" />
@@ -50,7 +50,7 @@ export default function GradientField({ initial = "long" }: GradientFieldProps) 
         </div>
         <ParamSlider name="x_1" value={x0[0]} min={-2} max={2} step={0.1} digits={1} role="data" onChange={(v) => setX0([v, x0[1]])} />
         <ParamSlider name="x_2" value={x0[1]} min={-2} max={2} step={0.1} digits={1} role="data" onChange={(v) => setX0([x0[0], v])} />
-        <ParamSlider name="угол u" value={deg} min={0} max={355} step={5} digits={0} role="param" onChange={setDeg} />
+        <ParamSlider name="φ" value={deg} min={0} max={355} step={5} digits={0} role="param" onChange={setDeg} />
         <div className="gradient-field__readouts">
           <Readout name="f(x₀)" value={f(abc, x0)} />
           <Readout name="‖∇f‖" value={gn} />

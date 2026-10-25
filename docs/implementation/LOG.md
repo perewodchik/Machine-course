@@ -17,10 +17,17 @@
 
 ---
 
+### 2026-10-25 — L-II.1 Частные производные и градиент — готов
+- **Сделано:** Урок II.1: четыре цикла (частные производные; градиент-столбец, линейное приближение, градиент потерь МНК и правило LMS, ячейка на «Квартирах»; производная по направлению — формула f.directional-derivative, Коши — Буняковский, перпендикулярность линиям уровня; критические точки, седло, нормальные уравнения). Виджет «Поле градиентов над линиями уровня» (calc/gradient-field); математика коник вынесена в lib/math/conics.ts. Генераторы calc.partial, calc.gradient-point, calc.directional, calc.critical-point с численной сверкой; ячейка calculus/gradient.py закреплена тестом; термины глоссария.
+- **Файлы:** content/courses/foundations/calculus/gradient.mdx, src/widgets/calc/gradient-field/*, src/lib/math/conics.ts, src/lib/exercises/generators/calc.ts, content/formulas/calc/directional-derivative.yaml, code/snippets/calculus/gradient.py, tests/e2e/lesson-calc.spec.ts
+- **Проверка:** vitest, pytest, validate, lint, check, check_consistency — чисто; e2e урока и layout ii1 — 8 passed; формулы на 390 px — чисто
+- **Следующий шаг:** L-II.2 — многомерное правило цепочки и якобиан.
+- **Вопросы пользователю:** —
+
 ### 2026-10-25 — S4.01 Отчёт о калибровке уверенности — готова
 - **Сделано:** Логика src/lib/progress/calibration.ts (первые попытки с отметкой, повтор задачи один раз; уровни «угадываю / скорее да / уверен» с ожидаемыми 40 / 70 / 95 %; уроки, где «уверен» верен реже 70 % при двух и более ответах) с тестами; страница /progress/ (src/pages/progress.astro, src/client/calibration.ts): таблица, SVG-график, вывод, список уроков; отметка уверенности по умолчанию у final-упражнений и в ExerciseSet; id final-check у итоговой проверки; ссылка из ProgressFile.
 - **Файлы:** src/lib/progress/calibration.ts, src/client/calibration.ts, src/pages/progress.astro, src/components/pedagogy/Exercise.astro, src/components/pedagogy/ExerciseSet.astro, src/components/layout/ProgressFile.astro, src/styles/layout.css, tests/e2e/progress.spec.ts
-- **Проверка:** vitest 438; e2e progress и layout progress — 10 passed; полный e2e — PENDING; lint, check — чисто
+- **Проверка:** vitest 438; e2e progress и layout progress — 10 passed; полный e2e — 518 passed (2 падения — устаревшее ожидание текста в новом тесте, исправлено); lint, check — чисто
 - **Отклонения от плана и решения:** Отдельной страницы прогресса не было — создана /progress/. Уровни уверенности качественные, поэтому ожидаемые доли (40 / 70 / 95 %) заданы в LEVELS и показаны в таблице.
 - **Следующий шаг:** S4.L2.
 - **Вопросы пользователю:** —
