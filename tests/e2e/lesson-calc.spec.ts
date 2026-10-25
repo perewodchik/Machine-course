@@ -285,3 +285,26 @@ test("урок II.10: площадь клетки в полярных коорд
   await page.evaluate(() => window.scrollTo(0, 0));
   await expectNoAxeViolations(page);
 });
+
+test("итоговая проверка модуля II: девять задач по урокам II.1–II.10 без ★ II.9", async ({ page }) => {
+  await page.goto("/foundations/calculus/multiple-integrals/");
+  const set = page.locator("[data-exercise-set]");
+  await set.scrollIntoViewIfNeeded();
+  const summary = set.locator("[data-summary]");
+  await expect(summary).toHaveText(/Решено верно: 0 из\s9\./);
+  for (const ex of await set.locator("[data-exercise]").all()) {
+    const gen = (await ex.getAttribute("data-item"))!;
+    const seed = Number(await ex.locator("[data-variant]").getAttribute("data-seed"));
+    const task = generator(gen).make(seed);
+    if (task.kind === "numeric") {
+      await ex.locator("input[data-input]").fill(String(task.answer));
+      await ex.getByRole("button", { name: "Проверить" }).click();
+    } else if (task.kind === "choice") {
+      await ex.locator("[data-option]").nth(task.options.findIndex((o) => o.correct)).click();
+    } else if (task.kind === "matrix") {
+      for (const [i, row] of task.answer.entries()) for (const [j, v] of row.entries()) await ex.locator(`[data-cell="${i},${j}"]`).fill(String(v));
+      await ex.getByRole("button", { name: "Проверить" }).click();
+    } else throw new Error(`задача ${gen}: вид ${task.kind}`);
+  }
+  await expect(summary).toHaveText(/Решено верно: 9 из\s9\./);
+});

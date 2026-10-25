@@ -17,6 +17,13 @@
 
 ---
 
+### 2026-10-25 — S4.L2 уроки модуля II и итоговая проверка — готова
+- **Сделано:** итоговая проверка модуля II: ExerciseSet из девяти задач (II.1–II.8, II.10) в конце урока II.10, e2e проверяет 9 из 9
+- **Файлы:** content/courses/foundations/calculus/multiple-integrals.mdx, tests/e2e/lesson-calc.spec.ts
+- **Проверка:** validate, build, e2e модуля II
+- **Следующий шаг:** S4.L3.
+- **Вопросы пользователю:** —
+
 ### 2026-10-25 — L-II.10 L-II.10: кратные интегралы и замена переменных — готов
 - **Сделано:** урок multiple-integrals (три цикла: Фубини, замена переменных и полярные координаты, гауссов интеграл), виджет «Как растягивается площадь», формула f.gaussian-integral (шаги проверены квадратурой), генераторы calc.double-integral, calc.area-scale, calc.polar-integral, сниппет integrals.py с тестом
 - **Файлы:** content/courses/foundations/calculus/multiple-integrals.mdx, src/widgets/calc/area-stretch/, content/formulas/calc/gaussian-integral.yaml, src/lib/exercises/generators/calc.ts, code/snippets/calculus/integrals.py

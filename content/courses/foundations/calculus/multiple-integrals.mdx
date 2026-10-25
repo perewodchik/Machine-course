@@ -13,7 +13,7 @@ lead: 'Вероятность для пары случайных величин 
   2. Замена переменных: предсказание (площадь образа квадрата), dx = |det J| du, рисунок 1 (AreaStretch), полярные
      dx dy = r dr dφ; ошибки — забыть модуль, забыть r; упражнения 2 (calc.area-scale) и 3 (calc.polar-integral).
   3. Гауссов интеграл: формула 1 (f.gaussian-integral), ячейка Python, нормальная плотность.
-  Итог, итоговая проверка (calc.polar-integral, ставит «знаю»).
+  Итог, итоговая проверка (calc.polar-integral, ставит «знаю»), итоговая проверка модуля II (ExerciseSet, без ★ II.9).
 */}
 
 <Prereqs lessons={["foundations/start/integral", "foundations/calculus/chain-rule-jacobian", "foundations/linear-algebra/inverse-determinant"]} />
@@ -94,3 +94,21 @@ $$
 - $\int e^{-x^2/2} dx = \sqrt{2\pi}$: квадрат интеграла в полярных координатах равен $2\pi$.
 
 <Exercise gen="calc.polar-integral" seed={31} id="post.ii10" title="Итоговая проверка" final />
+
+## Итоговая проверка модуля «Анализ и оптимизация»
+
+<ExerciseSet
+  seed={12}
+  title="Модуль «Анализ и оптимизация»"
+  items={[
+    { lesson: "foundations/calculus/gradient", gen: "calc.gradient-point", seed: 41 },
+    { lesson: "foundations/calculus/chain-rule-jacobian", gen: "calc.backprop", seed: 41 },
+    { lesson: "foundations/calculus/matrix-calculus", gen: "calc.matrix-grad", seed: 41 },
+    { lesson: "foundations/calculus/hessian-taylor", gen: "calc.classify", seed: 41 },
+    { lesson: "foundations/calculus/convexity", gen: "calc.convex-ops", seed: 41 },
+    { lesson: "foundations/calculus/gradient-descent", gen: "calc.lr-threshold", seed: 41 },
+    { lesson: "foundations/calculus/newton", gen: "calc.newton-1d", seed: 41 },
+    { lesson: "foundations/calculus/lagrange", gen: "calc.lagrange-eig", seed: 41 },
+    { lesson: "foundations/calculus/multiple-integrals", gen: "calc.area-scale", seed: 41 },
+  ]}
+/>
