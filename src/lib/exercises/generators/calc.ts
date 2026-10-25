@@ -144,3 +144,75 @@ export const criticalPoint: Generator = {
     };
   },
 };
+
+/** Урок II.2: якобиан отображения ℝ² → ℝ² в точке: строка i — градиент i-й координаты, транспонированный. */
+export const jacobian: Generator = {
+  id: "calc.jacobian",
+  version: 1,
+  title: "Якобиан в точке",
+  make(seed) {
+    const r = rng(seed);
+    const [a, b, c, d] = [r.nonzero(-2, 3), r.nonzero(-3, 3), r.nonzero(-2, 2), r.int(-3, 3)];
+    const [x, y] = [r.nonzero(-2, 2), r.nonzero(-2, 2)];
+    // f₁ = a x² + b y, f₂ = c x y + d x
+    const J = [[2 * a * x, b], [c * y + d, c * x]];
+    return {
+      kind: "matrix",
+      prompt: String.raw`$f(x, y) = \begin{pmatrix} ${poly([[a, "x^2"], [b, "y"]])} \\ ${poly([[c, "xy"], [d, "x"]])} \end{pmatrix}$. Найдите якобиан $J_f$ в точке $(${x}, ${y})$.`,
+      label: String.raw`$J_f =$`,
+      answer: J,
+      tol: 0,
+      hints: [String.raw`Строка $i$ — частные производные $i$-й координаты: $J_f = \begin{pmatrix} \partial f_1 / \partial x & \partial f_1 / \partial y \\ \partial f_2 / \partial x & \partial f_2 / \partial y \end{pmatrix}$.`],
+      right: String.raw`$J_f = \begin{pmatrix} ${poly([[2 * a, "x"]])} & ${b} \\ ${poly([[c, "y"], [d, ""]])} & ${poly([[c, "x"]])} \end{pmatrix} = ${pm(J)}$.`,
+      wrong: String.raw`Строки — координаты $f$, столбцы — переменные. Если ответ получился транспонированным, переставьте: $J_{12} = \partial f_1 / \partial y = ${b}$.`,
+    };
+  },
+};
+
+/** Урок II.2: порядок и размерности якобианов композиции g ∘ f: J = J_g J_f, внешняя функция слева. */
+export const jacobianOrder: Generator = {
+  id: "calc.jacobian-order",
+  version: 1,
+  title: "Якобиан композиции",
+  make(seed) {
+    const r = rng(seed);
+    const [n, m, k] = r.shuffle([2, 3, 4, 5]).slice(0, 3) as [number, number, number];
+    return {
+      kind: "choice",
+      prompt: String.raw`$f: \mathbb{R}^{${n}} \to \mathbb{R}^{${m}}$, $g: \mathbb{R}^{${m}} \to \mathbb{R}^{${k}}$. Чему равен якобиан композиции $h(x) = g(f(x))$?`,
+      options: r.shuffle([
+        { text: String.raw`$J_h = J_g J_f$, матрица $${k} \times ${n}$`, correct: true, why: String.raw`Малый сдвиг $dx$ даёт $df = J_f dx$, а он — $dh = J_g\, df = J_g J_f\, dx$. Размеры: $(${k} \times ${m})(${m} \times ${n}) = ${k} \times ${n}$.` },
+        { text: String.raw`$J_h = J_f J_g$`, why: String.raw`Порядок как у композиции: сначала действует $f$, поэтому $J_f$ стоит справа. Здесь $(${m} \times ${n})(${k} \times ${m})$ ещё и не перемножается.` },
+        { text: String.raw`$J_h = J_g^\top J_f$, матрица $${m} \times ${n}$`, why: String.raw`Транспонирование нужно для градиента скалярной функции, $\nabla h = J_f^\top \nabla g$, а не для якобиана. У $J_h$ строк столько, сколько выходов у $h$: $${k}$.` },
+      ]),
+      hints: [String.raw`Якобиан $h: \mathbb{R}^{${n}} \to \mathbb{R}^{${k}}$ — матрица $${k} \times ${n}$. Какое произведение даёт такой размер?`],
+    };
+  },
+};
+
+/** Урок II.2: обратный проход для L = (θᵀx − y)²: ∂L/∂θⱼ = 2(θᵀx − y) xⱼ. */
+export const backprop: Generator = {
+  id: "calc.backprop",
+  version: 1,
+  title: "Обратный проход",
+  make(seed) {
+    const r = rng(seed);
+    const theta = [r.nonzero(-2, 2), r.nonzero(-2, 2)];
+    const x = [r.nonzero(-3, 3), r.nonzero(-3, 3)];
+    const y = r.int(-4, 4);
+    const s = theta[0]! * x[0]! + theta[1]! * x[1]!;
+    const res = s - y;
+    const j = seed % 2 === 1 ? 0 : 1;
+    const ans = 2 * res * x[j]! + 0;
+    return {
+      kind: "numeric",
+      prompt: String.raw`$L = (\theta^\top x - y)^2$, $\theta = (${theta.join(", ")})$, $x = (${x.join(", ")})$, $y = ${y}$. Найдите $\partial L / \partial \theta_${j + 1}$ обратным проходом.`,
+      label: String.raw`$\dfrac{\partial L}{\partial \theta_${j + 1}} =$`,
+      answer: ans,
+      tol: 0,
+      hints: [String.raw`Прямой проход: $s = \theta^\top x$, $r = s - y$, $L = r^2$.`, String.raw`Обратный: $\partial L / \partial r = 2r$, $\partial L / \partial s = 2r$, $\partial L / \partial \theta_${j + 1} = 2r \cdot x_${j + 1}$.`],
+      right: String.raw`$s = ${s}$, $r = ${res}$; $\dfrac{\partial L}{\partial \theta_${j + 1}} = 2r\, x_${j + 1} = 2 \cdot ${par(res)} \cdot ${par(x[j]!)} = ${ans}$.`,
+      wrong: String.raw`Не забудьте множитель от внешней функции: $\partial L / \partial r = 2r = ${2 * res}$, и только потом умножайте на $\partial s / \partial \theta_${j + 1} = x_${j + 1} = ${x[j]}$.`,
+    };
+  },
+};

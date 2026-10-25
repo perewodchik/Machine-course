@@ -17,6 +17,13 @@
 
 ---
 
+### 2026-10-25 — L-II.2 Многомерное правило цепочки и якобиан — готов
+- **Сделано:** Урок II.2: три цикла (якобиан и дифференциал; правило цепочки J_{g∘f} = J_g J_f и формула f.chain-rule-jacobian ∇(g∘f) = J_fᵀ∇g; вычислительный граф, прямой и обратный проход, обратное распространение ошибки). Виджет «Вычислительный граф» (calc/comp-graph) для L = (θᵀx − y)²; генераторы calc.jacobian, calc.jacobian-order, calc.backprop с численной сверкой; ячейка calculus/chain.py закреплена тестом; термины глоссария.
+- **Файлы:** content/courses/foundations/calculus/chain-rule-jacobian.mdx, src/widgets/calc/comp-graph/*, content/formulas/calc/chain-rule-jacobian.yaml, src/lib/exercises/generators/calc.ts, code/snippets/calculus/chain.py
+- **Проверка:** vitest, pytest, validate, lint, check, check_consistency — чисто; e2e уроков II.1–II.2 и layout — 16 passed; формулы на 390 px — чисто
+- **Следующий шаг:** L-II.3 — матричное дифференцирование.
+- **Вопросы пользователю:** —
+
 ### 2026-10-25 — L-II.1 Частные производные и градиент — готов
 - **Сделано:** Урок II.1: четыре цикла (частные производные; градиент-столбец, линейное приближение, градиент потерь МНК и правило LMS, ячейка на «Квартирах»; производная по направлению — формула f.directional-derivative, Коши — Буняковский, перпендикулярность линиям уровня; критические точки, седло, нормальные уравнения). Виджет «Поле градиентов над линиями уровня» (calc/gradient-field); математика коник вынесена в lib/math/conics.ts. Генераторы calc.partial, calc.gradient-point, calc.directional, calc.critical-point с численной сверкой; ячейка calculus/gradient.py закреплена тестом; термины глоссария.
 - **Файлы:** content/courses/foundations/calculus/gradient.mdx, src/widgets/calc/gradient-field/*, src/lib/math/conics.ts, src/lib/exercises/generators/calc.ts, content/formulas/calc/directional-derivative.yaml, code/snippets/calculus/gradient.py, tests/e2e/lesson-calc.spec.ts

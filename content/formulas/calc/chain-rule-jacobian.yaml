@@ -1,0 +1,55 @@
+id: f.chain-rule-jacobian
+kind: formula
+title:
+  ru: 'Правило цепочки для градиента композиции'
+  en: 'chain rule for the gradient of a composition'
+statement: '\nabla_{\sym{x}{x}} \, g\bigl(f(\sym{x}{x})\bigr) = J_f(\sym{x}{x})^\top \, \nabla g\bigl(f(\sym{x}{x})\bigr)'
+
+# Урок II.2: дифференциалы складываются по цепочке, dh = ∇gᵀ df = ∇gᵀ J_f dx; градиент — транспонированная строка.
+# Проверка — на f(x) = tanh(Bx) (покоординатно) и g(z) = ½‖z‖²: J_f = diag(1 − tanh²(Bx)) B, ∇g(z) = z.
+symbols:
+  - name: x
+    tex: 'x'
+    meaning: 'вход композиции, вектор $d \times 1$'
+    shape: [d, 1]
+    role: data
+  - name: B
+    tex: 'B'
+    meaning: 'матрица пробного отображения $f(x) = \tanh(Bx)$ размера $m \times d$'
+    shape: [m, d]
+
+dependsOn:
+  concepts: [calc.chain-rule, calc.gradient, la.matmul]
+  rules: [rule.transpose-product]
+
+derivation:
+  plan:
+    - 'Записать композицию $h(x) = g(f(x))$ и её линейное приближение'
+    - 'Перемножить линейные части: $dh = \nabla g^\top df$, $df = J_f\, dx$'
+    - 'Прочитать градиент из $dh = \nabla_x h^\top dx$ и транспонировать'
+  steps:
+    - goal: 0
+      tex: 'h(\sym{x}{x}) = g\bigl(f(\sym{x}{x})\bigr), \qquad dh = \nabla g^\top df, \quad df = J_f\, d\sym{x}{x}'
+      by: [calc.chain-rule]
+      note: 'Внешняя функция $g$ отвечает на малый сдвиг своего входа $df$ числом $\nabla g^\top df$ (урок II.1), а $f$ отвечает на сдвиг $dx$ вектором $J_f\, dx$.'
+      check:
+        kind: same
+        py: '0.5 * np.sum(np.tanh(B @ x) ** 2)'
+    - goal: 2
+      tex: 'dh = \nabla g^\top J_f \, d\sym{x}{x} = \bigl(J_f^\top \nabla g\bigr)^\top d\sym{x}{x} \;\Rightarrow\; \nabla_{\sym{x}{x}} h = \changed{J_f^\top \nabla g}'
+      by: [rule.transpose-product]
+      note: 'Строка $\nabla g^\top J_f$ — это транспонированный столбец $J_f^\top \nabla g$. Градиент — столбец формы $x$: $d \times 1$, как и должно быть у $J_f^\top$ ($d \times m$), умноженного на $\nabla g$ ($m \times 1$).'
+      check:
+        kind: gradient
+        wrt: x
+        py: '(np.diag(1 - np.tanh(B @ x) ** 2) @ B).T @ np.tanh(B @ x)'
+
+pitfalls:
+  - 'Перемножать якобианы не в том порядке: у $g \circ f$ якобиан $J_g J_f$ — внешняя функция слева, как в $AB$ «сначала $B$, потом $A$» (урок I.4).'
+  - 'Терять транспонирование: $J_f$ — матрица $m \times d$, и $J_f \nabla g$ даже не определено при $m \ne d$.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Deep learning / Backpropagation'
+
+usedIn: [calc.chain-rule]

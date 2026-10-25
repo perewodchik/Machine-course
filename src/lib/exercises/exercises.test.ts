@@ -472,6 +472,39 @@ describe("генераторы", () => {
     }
   });
 
+  it("задачи урока II.2: якобиан, порядок композиции и обратный проход сходятся с численными", () => {
+    for (let s = 1; s <= 40; s++) {
+      const ja = make("calc.jacobian", s);
+      if (ja.kind !== "matrix") throw new Error("ожидалась матрица");
+      const [c1, c2] = [...ja.prompt.matchAll(/\\begin\{pmatrix\} (.*?) \\\\ (.*?) \\end\{pmatrix\}/g)][0]!.slice(1);
+      const term = (t: string, x: number, y: number) =>
+        t.replace(/ - /g, " + -").split(" + ").reduce((acc, u) => {
+          const m = /^(-?)(\d*)(x\^2|xy|x|y)$/.exec(u.trim())!;
+          const k = (m[1] ? -1 : 1) * (m[2] ? Number(m[2]) : 1);
+          return acc + k * ({ "x^2": x * x, xy: x * y, x, y } as Record<string, number>)[m[3]!]!;
+        }, 0);
+      const [px, py] = /точке \$\((-?\d+), (-?\d+)\)/.exec(ja.prompt)!.slice(1).map(Number) as [number, number];
+      const h = 1e-5;
+      for (const [i, t] of [c1!, c2!].entries()) {
+        expect(ja.answer[i]![0]).toBeCloseTo((term(t, px + h, py) - term(t, px - h, py)) / (2 * h), 5);
+        expect(ja.answer[i]![1]).toBeCloseTo((term(t, px, py + h) - term(t, px, py - h)) / (2 * h), 5);
+      }
+
+      const jo = make("calc.jacobian-order", s);
+      if (jo.kind !== "choice") throw new Error("ожидался выбор");
+      expect(jo.options.filter((o) => o.correct)).toHaveLength(1);
+      expect(jo.options.find((o) => o.correct)!.text).toContain("J_g J_f");
+
+      const bp = num(make("calc.backprop", s));
+      const [t1, t2] = /\\theta = \((-?\d+), (-?\d+)\)/.exec(bp.prompt)!.slice(1).map(Number) as [number, number];
+      const [x1, x2] = /x = \((-?\d+), (-?\d+)\)/.exec(bp.prompt)!.slice(1).map(Number) as [number, number];
+      const y = Number(/y = (-?\d+)\$/.exec(bp.prompt)![1]);
+      const L = (a: number, b: number) => (a * x1 + b * x2 - y) ** 2;
+      const numeric = s % 2 === 1 ? (L(t1 + h, t2) - L(t1 - h, t2)) / (2 * h) : (L(t1, t2 + h) - L(t1, t2 - h)) / (2 * h);
+      expect(bp.answer).toBeCloseTo(numeric, 4);
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,
