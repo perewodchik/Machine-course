@@ -18,6 +18,7 @@ import Chord from "../widgets/Chord.astro";
 import Newton from "../widgets/Newton.astro";
 import Lagrange from "../widgets/Lagrange.astro";
 import Kkt from "../widgets/Kkt.astro";
+import AreaStretch from "../widgets/AreaStretch.astro";
 import GradientField from "../widgets/GradientField.astro";
 import LevelSets from "../widgets/LevelSets.astro";
 import LowRank from "../widgets/LowRank.astro";
@@ -33,5 +34,5 @@ import PyCell from "../python/PyCell.astro";
 import PyCode from "../python/PyCode.astro";
 
 // виджеты — обёртки .astro с островами React
-export const lessonComponents = { Block, Derivation, Diagnostic, Exercise, ExerciseSet, Formula, Note, Pilot, Prereqs, SymbolLegend, FitLine, GridMap, BayesGrid, Riemann, Span, NormBalls, Projection, MatmulViews, SystemLines, PlaneProjection, LevelSets, SvdSteps, LowRank, GradientField, CompGraph, Chord, Newton, Lagrange, Kkt, PyCode, PyCell, OpenIn };
-export { BayesGrid, Block, Chord, CompGraph, Derivation, Diagnostic, Exercise, ExerciseSet, FitLine, Formula, GradientField, GridMap, Kkt, Lagrange, LevelSets, LowRank, MatmulViews, Newton, Note, NormBalls, Pilot, PlaneProjection, OpenIn, Prereqs, Projection, PyCell, PyCode, Riemann, Span, SvdSteps, SymbolLegend, SystemLines };
+export const lessonComponents = { Block, Derivation, Diagnostic, Exercise, ExerciseSet, Formula, Note, Pilot, Prereqs, SymbolLegend, FitLine, GridMap, BayesGrid, Riemann, Span, NormBalls, Projection, MatmulViews, SystemLines, PlaneProjection, LevelSets, SvdSteps, LowRank, GradientField, CompGraph, Chord, Newton, Lagrange, Kkt, AreaStretch, PyCode, PyCell, OpenIn };
+export { AreaStretch, BayesGrid, Block, Chord, CompGraph, Derivation, Diagnostic, Exercise, ExerciseSet, FitLine, Formula, GradientField, GridMap, Kkt, Lagrange, LevelSets, LowRank, MatmulViews, Newton, Note, NormBalls, Pilot, PlaneProjection, OpenIn, Prereqs, Projection, PyCell, PyCode, Riemann, Span, SvdSteps, SymbolLegend, SystemLines };

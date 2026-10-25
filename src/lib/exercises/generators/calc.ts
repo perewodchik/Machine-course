@@ -639,3 +639,87 @@ export const kktAlpha: Generator = {
     };
   },
 };
+
+/** Урок II.10: двойной интеграл по прямоугольнику как повторный (Фубини). */
+export const doubleIntegral: Generator = {
+  id: "calc.double-integral",
+  version: 1,
+  title: "Двойной интеграл",
+  make(seed) {
+    const r = rng(seed);
+    const [a, b] = [r.int(1, 3), r.int(1, 3)];
+    const [p, q] = [r.int(0, 2), r.int(1, 2)];
+    const k = r.int(1, 4);
+    // ∫₀ᵃ∫₀ᵇ k xᵖ y^q dy dx = k · aᵖ⁺¹/(p + 1) · b^(q+1)/(q + 1)
+    const ix = a ** (p + 1) / (p + 1);
+    const iy = b ** (q + 1) / (q + 1);
+    const answer = Math.round(k * ix * iy * 1000) / 1000;
+    const mono = `${k === 1 ? "" : k}${p === 0 ? "" : p === 1 ? "x" : `x^${p}`}${q === 1 ? "y" : `y^${q}`}`;
+    return {
+      kind: "numeric",
+      prompt: String.raw`Найдите $\displaystyle\iint_D ${mono}\, dx\, dy$, где $D = [0, ${a}] \times [0, ${b}]$.`,
+      label: String.raw`$\iint_D =$`,
+      answer,
+      tol: 0.005,
+      hints: [String.raw`По Фубини интеграл по прямоугольнику — повторный: $\int_0^{${a}} \Bigl( \int_0^{${b}} ${mono}\, dy \Bigr) dx$.`, String.raw`Множители по $x$ и по $y$ разделяются: $${k} \int_0^{${a}} x^{${p}}\, dx \cdot \int_0^{${b}} y^{${q}}\, dy$.`],
+      right: String.raw`$${k} \cdot \frac{${a}^{${p + 1}}}{${p + 1}} \cdot \frac{${b}^{${q + 1}}}{${q + 1}} \approx ${answer}$.`,
+      wrong: String.raw`Посчитайте внутренний интеграл по $y$ при постоянном $x$, затем внешний по $x$: $\int_0^{${b}} y^{${q}} dy = ${b}^{${q + 1}}/${q + 1}$.`,
+    };
+  },
+};
+
+/** Урок II.10: площадь образа при линейной замене x = Au — умножение на |det A| (с модулем). */
+export const areaScale: Generator = {
+  id: "calc.area-scale",
+  version: 1,
+  title: "Площадь при линейной замене",
+  make(seed) {
+    const r = rng(seed);
+    let A: number[];
+    for (;;) {
+      A = [r.int(-3, 3), r.int(-3, 3), r.int(-3, 3), r.int(-3, 3)];
+      const d = A[0]! * A[3]! - A[1]! * A[2]!;
+      // чётный seed — отрицательный определитель: проверяем модуль
+      if (d !== 0 && (seed % 2 === 0 ? d < 0 : d > 0)) break;
+    }
+    const [a, b, c, d] = A as [number, number, number, number];
+    const det = a * d - b * c;
+    const S = r.pick([2, 3, 5, 0.5]);
+    const answer = Math.abs(det) * S;
+    return {
+      kind: "numeric",
+      prompt: String.raw`Область $U$ на плоскости $(u_1, u_2)$ имеет площадь $${S}$. Какую площадь имеет её образ при замене $x = Au$, $$A = ${pm([[a, b], [c, d]])}?$$`,
+      label: String.raw`$\operatorname{area}(AU) =$`,
+      answer,
+      tol: 0.005,
+      hints: [String.raw`$dx = \lvert \det J \rvert\, du$, а якобиан линейной замены — сама $A$ (урок II.2).`],
+      right: String.raw`$\det A = ${det}$, площадь умножается на $\lvert \det A \rvert = ${Math.abs(det)}$: $${Math.abs(det)} \cdot ${S} = ${answer}$.`,
+      wrong: det < 0 ? String.raw`$\det A = ${det} < 0$: замена переворачивает ориентацию, но площадь не бывает отрицательной — нужен модуль, $\lvert \det A \rvert = ${-det}$.` : String.raw`Площадь умножается на $\lvert \det A \rvert = ${det}$, а не на след или элемент матрицы.`,
+    };
+  },
+};
+
+/** Урок II.10: интеграл по кругу в полярных координатах: ∬_{r ≤ R} (x² + y²)ᵏ dx dy = 2π R^{2k+2}/(2k + 2). */
+export const polarIntegral: Generator = {
+  id: "calc.polar-integral",
+  version: 1,
+  title: "Интеграл по кругу",
+  make(seed) {
+    const r = rng(seed);
+    const R = r.int(1, 3);
+    const k = r.int(0, 2);
+    // в долях π: 2 R^{2k+2}/(2k + 2) = R^{2k+2}/(k + 1)
+    const coef = Math.round((R ** (2 * k + 2) / (k + 1)) * 1000) / 1000;
+    const f = k === 0 ? "1" : k === 1 ? "(x^2 + y^2)" : "(x^2 + y^2)^2";
+    return {
+      kind: "numeric",
+      prompt: String.raw`Найдите $\displaystyle\iint_{x^2 + y^2 \le ${R * R}} ${f}\, dx\, dy$. Ответ — $c\pi$; введите $c$.`,
+      label: String.raw`$c =$`,
+      answer: coef,
+      tol: 0.005,
+      hints: [String.raw`В полярных координатах $x^2 + y^2 = r^2$, $dx\, dy = r\, dr\, d\varphi$, круг — $0 \le r \le ${R}$, $0 \le \varphi \le 2\pi$.`, String.raw`$\int_0^{2\pi} \int_0^{${R}} r^{${2 * k}} \cdot r\, dr\, d\varphi = 2\pi \cdot \frac{${R}^{${2 * k + 2}}}{${2 * k + 2}}$.`],
+      right: String.raw`$2\pi \cdot ${R}^{${2 * k + 2}}/${2 * k + 2} = ${coef}\pi$.`,
+      wrong: String.raw`Не забудьте якобиан $r$: подынтегральное выражение в полярных координатах — $r^{${2 * k}} \cdot r$, а не $r^{${2 * k}}$.`,
+    };
+  },
+};

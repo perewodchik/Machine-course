@@ -708,6 +708,52 @@ describe("генераторы", () => {
     }
   });
 
+  it("calc.double-integral, calc.area-scale, calc.polar-integral: ответы сверены численной квадратурой", () => {
+    const mats = (tex: string) => [...tex.matchAll(/\\begin\{pmatrix\}(.*?)\\end\{pmatrix\}/g)].map((m) => m[1]!.split(" \\\\ ").map((row) => row.split(" & ").map(Number)));
+    const N = 400;
+    for (let s = 1; s <= 24; s++) {
+      const t = make("calc.double-integral", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const [, mono, a, b] = /iint_D (.*?)\\, dx\\, dy\$, где \$D = \[0, (\d)\] \\times \[0, (\d)\]/.exec(t.prompt)!;
+      const m = /^(\d*)(x(?:\^(\d))?)?y(?:\^(\d))?$/.exec(mono!)!;
+      const k = m[1] ? Number(m[1]) : 1;
+      const p = m[2] ? (m[3] ? Number(m[3]) : 1) : 0;
+      const q = m[4] ? Number(m[4]) : 1;
+      let sum = 0;
+      // правило средних точек на сетке N × N
+      for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+        const x = ((i + 0.5) * Number(a)) / N;
+        const y = ((j + 0.5) * Number(b)) / N;
+        sum += k * x ** p * y ** q;
+      }
+      expect(t.answer).toBeCloseTo((sum * Number(a) * Number(b)) / (N * N), 2);
+
+      const as = make("calc.area-scale", s);
+      if (as.kind !== "numeric") throw new Error("ожидалось число");
+      const A = mats(as.prompt)[0]!;
+      const S = Number(/площадь \$([\d.]+)\$/.exec(as.prompt)![1]);
+      // образ единичного квадрата — параллелограмм: площадь по формуле шнурка
+      const v = [[0, 0], [A[0]![0]!, A[1]![0]!], [A[0]![0]! + A[0]![1]!, A[1]![0]! + A[1]![1]!], [A[0]![1]!, A[1]![1]!]];
+      let sh = 0;
+      for (let i = 0; i < 4; i++) sh += v[i]![0]! * v[(i + 1) % 4]![1]! - v[(i + 1) % 4]![0]! * v[i]![1]!;
+      expect(as.answer).toBeCloseTo((Math.abs(sh) / 2) * S, 9);
+
+      const pi = make("calc.polar-integral", s);
+      if (pi.kind !== "numeric") throw new Error("ожидалось число");
+      const R2 = Number(/x\^2 \+ y\^2 \\le (\d+)\}/.exec(pi.prompt)![1]);
+      const kk = pi.prompt.includes("(x^2 + y^2)^2") ? 2 : pi.prompt.includes("(x^2 + y^2)") ? 1 : 0;
+      const R = Math.sqrt(R2);
+      let ps = 0;
+      const M = 600;
+      for (let i = 0; i < M; i++) for (let j = 0; j < M; j++) {
+        const x = -R + ((i + 0.5) * 2 * R) / M;
+        const y = -R + ((j + 0.5) * 2 * R) / M;
+        if (x * x + y * y <= R2) ps += (x * x + y * y) ** kk;
+      }
+      expect(pi.answer * Math.PI).toBeCloseTo((ps * 4 * R2) / (M * M), 0);
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

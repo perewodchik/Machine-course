@@ -83,6 +83,15 @@
   prerequisites: [calc.lagrange, calc.convexity]
   core: false
 
+- id: calc.change-of-variables
+  title:
+    ru: 'Кратные интегралы и замена переменных'
+    en: 'multiple integrals and change of variables'
+  summary: 'Кратный интеграл считают как повторный (Фубини); при замене $x = \varphi(u)$ площадь умножается на $\lvert \det J \rvert$; в полярных координатах $dx\,dy = r\,dr\,d\varphi$.'
+  lesson: multiple-integrals
+  prerequisites: [calc.integral, calc.chain-rule, la.determinant]
+  core: true
+
 - id: calc.log-exp
   title:
     ru: 'Логарифм и экспонента'

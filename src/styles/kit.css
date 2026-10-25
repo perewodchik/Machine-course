@@ -137,6 +137,9 @@
   .kkt__controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: var(--space-3) var(--space-5); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule); }
   .kkt__fact { grid-column: 1 / -1; margin: 0; }
   @media (max-width: 900px) { .kkt__controls { grid-template-columns: minmax(0, 1fr); } }
+  .area-stretch__panes { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: var(--space-4); padding: var(--space-3); }
+  .area-stretch__controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: center; gap: var(--space-3) var(--space-5); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule); }
+  @media (max-width: 900px) { .area-stretch__panes, .area-stretch__controls { grid-template-columns: minmax(0, 1fr); } }
   .riemann__fn { font-family: var(--font-math); font-size: 1.05em; }
   .riemann__fn sup { font-size: 0.7em; }
   @media (max-width: 900px) { .riemann__controls { grid-template-columns: minmax(0, 1fr); } }

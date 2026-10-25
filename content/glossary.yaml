@@ -348,3 +348,6 @@
 - id: kkt
   ru: 'двойственная задача; условия Каруша — Куна — Таккера; дополняющая нежёсткость'
   en: 'dual problem; Karush–Kuhn–Tucker (KKT) conditions; complementary slackness'
+- id: multiple-integral
+  ru: 'кратный интеграл; теорема Фубини; замена переменных'
+  en: 'multiple integral; Fubini''s theorem; change of variables'

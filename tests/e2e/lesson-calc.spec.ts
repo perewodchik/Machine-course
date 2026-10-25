@@ -254,3 +254,34 @@ test("урок II.9: активное и неактивное ограничен
   await page.evaluate(() => window.scrollTo(0, 0));
   await expectNoAxeViolations(page);
 });
+
+test("урок II.10: площадь клетки в полярных координатах, разбор без якобиана, итоговая проверка", async ({ page }) => {
+  await page.goto("/foundations/calculus/multiple-integrals/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Кратные интегралы и замена переменных");
+
+  const fig = page.locator(".area-stretch").first();
+  await fig.scrollIntoViewIfNeeded();
+  await expect(fig.locator("xpath=ancestor::astro-island[1]")).not.toHaveAttribute("ssr", "");
+  // r = 1.5, Δ = 0.4: S = ½(1.9² − 1.5²)·0.4 = 0.272, r Δr Δφ = 0.24, отношение 1.133; при Δ = 0.02 — 1.007
+  await expect(fig.locator("[aria-live]")).toContainText("площадь образа 0.2720, r Δr Δφ = 0.2400, отношение 1.133");
+  await fig.getByRole("slider", { name: "Δ" }).fill("0.02");
+  await expect(fig.locator("[aria-live]")).toContainText("отношение 1.007");
+
+  const pi = page.locator("[data-exercise][data-item='calc.polar-integral']").first();
+  const seed = Number(await pi.locator("[data-variant]:not([hidden])").getAttribute("data-seed"));
+  const task = generator("calc.polar-integral").make(seed);
+  if (task.kind !== "numeric") throw new Error("ожидалось число");
+  // неверный ответ получает разбор про якобиан r
+  await pi.locator("[data-variant]:not([hidden]) input").first().fill(String(task.answer + 1));
+  await pi.getByRole("button", { name: "Проверить" }).click();
+  await expect(pi.locator("[data-feedback]")).toContainText("якобиан");
+
+  const final = page.locator("#final-check");
+  const spec = generator("calc.polar-integral").make(31);
+  if (spec.kind !== "numeric") throw new Error("ожидалось число");
+  await final.locator("[data-variant]:not([hidden]) input").first().fill(String(spec.answer));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});

@@ -56,6 +56,7 @@ export const layoutPages = {
   ii7: "/foundations/calculus/newton/",
   ii8: "/foundations/calculus/lagrange/",
   ii9: "/foundations/calculus/duality-kkt/",
+  ii10: "/foundations/calculus/multiple-integrals/",
   divgame: "/games/divergence/",
   foggame: "/games/foggy-descent/",
   saddlegame: "/games/min-max-saddle/",

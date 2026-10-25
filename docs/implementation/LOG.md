@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-25 — L-II.10 L-II.10: кратные интегралы и замена переменных — готов
+- **Сделано:** урок multiple-integrals (три цикла: Фубини, замена переменных и полярные координаты, гауссов интеграл), виджет «Как растягивается площадь», формула f.gaussian-integral (шаги проверены квадратурой), генераторы calc.double-integral, calc.area-scale, calc.polar-integral, сниппет integrals.py с тестом
+- **Файлы:** content/courses/foundations/calculus/multiple-integrals.mdx, src/widgets/calc/area-stretch/, content/formulas/calc/gaussian-integral.yaml, src/lib/exercises/generators/calc.ts, code/snippets/calculus/integrals.py
+- **Проверка:** validate, lint, build, check, vitest, pytest, check_consistency, e2e урока и layout ii10 (axe)
+- **Отклонения от плана и решения:** нет
+- **Следующий шаг:** итоговая проверка модуля II.
+- **Вопросы пользователю:** —
+
 ### 2026-10-25 — L-II.9 L-II.9 ★: двойственность и условия KKT — готов
 - **Сделано:** урок duality-kkt (два цикла: KKT и дополняющая нежёсткость, двойственная задача и SVM), виджет «Активное и неактивное ограничение», формула f.dual-projection, генератор calc.kkt-alpha, понятие calc.kkt (core: false)
 - **Файлы:** content/courses/foundations/calculus/duality-kkt.mdx, src/widgets/calc/kkt/, content/formulas/calc/dual-projection.yaml, src/lib/exercises/generators/calc.ts
