@@ -12,6 +12,7 @@ test("по картинке: ошибка с разбором, три верны
   await page.goto(`/games/min-max-saddle/?seed=${SEED}&level=1`);
   await waitForIslands(page);
   await expect(page.locator(".game__level")).toHaveText(/^Уровень 1 из 5: по картинке/);
+  await expect(page.locator(".game__lead")).toHaveText(/Пять уровней, партия\u00a0— 3–5\u00a0минут\.$/);
   await expectNoAxeViolations(page);
 
   const level = levelOf(1);
