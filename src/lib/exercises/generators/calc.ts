@@ -465,3 +465,66 @@ export const lrThreshold: Generator = {
     };
   },
 };
+
+/** Урок II.7: один шаг метода Ньютона для функции одной переменной: θ := θ − f′(θ)/f″(θ). */
+export const newton1d: Generator = {
+  id: "calc.newton-1d",
+  version: 1,
+  title: "Шаг Ньютона",
+  make(seed) {
+    const r = rng(seed);
+    let p: number, q: number, s: number, t: number, d1: number, d2: number;
+    for (;;) {
+      [p, q, s, t] = [r.int(-1, 1), r.int(1, 3), r.int(-6, 6), r.nonzero(-2, 2)];
+      d1 = 3 * p * t * t + 2 * q * t + s;
+      d2 = 6 * p * t + 2 * q;
+      if (d2 > 0 && d1 !== 0) break;
+    }
+    const answer = Math.round((t - d1 / d2) * 1000) / 1000;
+    const tex = poly([[p, "\\theta^3"], [q, "\\theta^2"], [s, "\\theta"]]);
+    return {
+      kind: "numeric",
+      prompt: String.raw`Минимизируем $f(\theta) = ${tex}$ методом Ньютона. Сейчас $\theta = ${t}$. Найдите $\theta$ после одного шага.`,
+      label: String.raw`$\theta :=$`,
+      answer,
+      tol: 0.005,
+      hints: [String.raw`Ньютон ищет ноль $f'$: $\theta := \theta - f'(\theta) / f''(\theta)$.`, String.raw`$f'(\theta) = ${poly([[3 * p, "\\theta^2"], [2 * q, "\\theta"], [s, ""]])}$, $f''(\theta) = ${poly([[6 * p, "\\theta"], [2 * q, ""]])}$.`],
+      right: String.raw`$f'(${t}) = ${d1}$, $f''(${t}) = ${d2}$, $\theta := ${t} - ${d1 < 0 ? `(${d1})` : d1}/${d2} \approx ${answer}$.`,
+      wrong: String.raw`Шаг Ньютона — $\theta - f'/f''$: делим первую производную на вторую и вычитаем. Здесь $f'(${t}) = ${d1}$, $f''(${t}) = ${d2}$.`,
+    };
+  },
+};
+
+/** Урок II.7 (к V.2): первый шаг Ньютона для логистической регрессии с одним признаком из θ = 0. */
+export const newtonLogistic: Generator = {
+  id: "calc.newton-logistic",
+  version: 1,
+  title: "Шаг Ньютона для логистической регрессии",
+  make(seed) {
+    const r = rng(seed);
+    let xs: number[], ys: number[], num: number, den: number;
+    for (;;) {
+      xs = [r.nonzero(-3, 3), r.nonzero(-3, 3), r.nonzero(-3, 3), r.nonzero(-3, 3)];
+      ys = xs.map(() => r.pick([0, 1]));
+      // ℓ′(0) = Σ (½ − yᵢ) xᵢ, ℓ″(0) = ¼ Σ xᵢ²
+      num = xs.reduce((a, x, i) => a + (0.5 - ys[i]!) * x, 0);
+      den = 0.25 * xs.reduce((a, x) => a + x * x, 0);
+      if (num !== 0 && ys.some((y) => y === 0) && ys.some((y) => y === 1)) break;
+    }
+    const answer = Math.round((-num / den) * 1000) / 1000;
+    const rows = xs.map((x, i) => `(${x}, ${ys[i]})`).join(", ");
+    return {
+      kind: "numeric",
+      prompt: String.raw`Логистическая регрессия с одним признаком без свободного члена: $p(y = 1 \mid x) = g(\theta x)$. Объекты $(x^{(i)}, y^{(i)})$: ${rows}. Начинаем с $\theta = 0$. Найдите $\theta$ после одного шага Ньютона для потерь $\ell(\theta) = -\sum_i \log p(y^{(i)} \mid x^{(i)})$.`,
+      label: String.raw`$\theta :=$`,
+      answer,
+      tol: 0.005,
+      hints: [
+        String.raw`$\ell'(\theta) = \sum_i \bigl(g(\theta x^{(i)}) - y^{(i)}\bigr) x^{(i)}$, $\ell''(\theta) = \sum_i g(1 - g)\, (x^{(i)})^2$.`,
+        String.raw`При $\theta = 0$: $g(0) = \tfrac12$, $g(1 - g) = \tfrac14$.`,
+      ],
+      right: String.raw`$\ell'(0) = \sum_i (\tfrac12 - y^{(i)}) x^{(i)} = ${num}$, $\ell''(0) = \tfrac14 \sum_i (x^{(i)})^2 = ${den}$, $\theta := 0 - ${num < 0 ? `(${num})` : num}/${den} \approx ${answer}$.`,
+      wrong: String.raw`Шаг $\theta := \theta - \ell'(\theta)/\ell''(\theta)$; при $\theta = 0$ все $g = \tfrac12$, поэтому $\ell'(0) = ${num}$ и $\ell''(0) = ${den}$.`,
+    };
+  },
+};

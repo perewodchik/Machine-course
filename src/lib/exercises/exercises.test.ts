@@ -622,6 +622,39 @@ describe("генераторы", () => {
     }
   });
 
+  it("calc.newton-1d: шаг из условия совпадает с θ − f′/f″ по конечным разностям", () => {
+    for (let s = 1; s <= 30; s++) {
+      const t = make("calc.newton-1d", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const tex = /\$f\(\\theta\) = (.*?)\$/.exec(t.prompt)![1]!;
+      const k: Record<string, number> = {};
+      for (const u of tex.replace(/ - /g, " + -").split(" + ")) {
+        const m = /^(-?)(\d*)\\theta(\^(\d))?$/.exec(u.trim())!;
+        k[m[4] ?? "1"] = (m[1] ? -1 : 1) * (m[2] ? Number(m[2]) : 1);
+      }
+      const f = (x: number) => (k["3"] ?? 0) * x ** 3 + (k["2"] ?? 0) * x ** 2 + (k["1"] ?? 0) * x;
+      const th = Number(/Сейчас \$\\theta = (-?\d+)\$/.exec(t.prompt)![1]);
+      const h = 1e-3;
+      const d1 = (f(th + h) - f(th - h)) / (2 * h);
+      const d2 = (f(th + h) - 2 * f(th) + f(th - h)) / (h * h);
+      expect(d2).toBeGreaterThan(0);
+      expect(t.answer).toBeCloseTo(th - d1 / d2, 2);
+    }
+  });
+
+  it("calc.newton-logistic: ответ — шаг Ньютона, посчитанный по сигмоиде напрямую", () => {
+    const sig = (z: number) => 1 / (1 + Math.exp(-z));
+    for (let s = 1; s <= 30; s++) {
+      const t = make("calc.newton-logistic", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const pts = [...t.prompt.matchAll(/\((-?\d+), ([01])\)/g)].map((m) => [Number(m[1]), Number(m[2])] as const);
+      expect(pts).toHaveLength(4);
+      const d1 = pts.reduce((a, [x, y]) => a + (sig(0) - y) * x, 0);
+      const d2 = pts.reduce((a, [x]) => a + sig(0) * (1 - sig(0)) * x * x, 0);
+      expect(t.answer).toBeCloseTo(-d1 / d2, 2);
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

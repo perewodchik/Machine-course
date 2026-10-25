@@ -53,6 +53,7 @@ export const layoutPages = {
   ii4: "/foundations/calculus/hessian-taylor/",
   ii5: "/foundations/calculus/convexity/",
   ii6: "/foundations/calculus/gradient-descent/",
+  ii7: "/foundations/calculus/newton/",
   divgame: "/games/divergence/",
   foggame: "/games/foggy-descent/",
   saddlegame: "/games/min-max-saddle/",

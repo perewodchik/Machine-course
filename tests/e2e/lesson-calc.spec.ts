@@ -178,3 +178,31 @@ test("урок II.6: ссылки на игры и лабораторную, з�
   await page.evaluate(() => window.scrollTo(0, 0));
   await expectNoAxeViolations(page);
 });
+
+test("урок II.7: касательные Ньютона на логистической потере, расходимость из далёкой точки, итоговая проверка", async ({ page }) => {
+  await page.goto("/foundations/calculus/newton/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Метод Ньютона");
+
+  const fig = page.locator(".newton").first();
+  await fig.scrollIntoViewIfNeeded();
+  await expect(fig.locator("xpath=ancestor::astro-island[1]")).not.toHaveAttribute("ssr", "");
+  const step = fig.getByRole("button", { name: "Шаг Ньютона" });
+  for (let k = 0; k < 5; k++) await step.press("Enter");
+  // логистическая потеря из θ₀ = 0: пять шагов — минимум θ* ≈ 0.7274, как в model.test.ts
+  await expect(fig.locator(".newton__fact")).toContainText("Минимум найден: θ* = 0.727");
+  await expect(fig.locator(".newton__table tbody tr")).toHaveCount(6);
+  await fig.getByRole("button", { name: "Сначала" }).press("Enter");
+  const s = fig.getByRole("slider", { name: "θ₀" });
+  await s.fill("3");
+  await step.press("Enter");
+  await expect(fig.locator(".newton__fact")).toContainText("ушла за пределы рисунка");
+
+  const final = page.locator("#final-check");
+  const spec = generator("calc.newton-logistic").make(31);
+  if (spec.kind !== "numeric") throw new Error("ожидалось число");
+  await final.locator("[data-variant]:not([hidden]) input").first().fill(String(spec.answer));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});

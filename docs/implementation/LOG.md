@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-25 — L-II.7 L-II.7: метод Ньютона — готов
+- **Сделано:** урок newton (три цикла: касательная к f′, многомерный шаг и XᵀDX, сравнение с GD и контроль шага), виджет «Касательные Ньютона», формула f.newton-step, генераторы calc.newton-1d и calc.newton-logistic, сниппет newton.py с тестом (6 шагов Ньютона против 403 шагов спуска)
+- **Файлы:** content/courses/foundations/calculus/newton.mdx, src/widgets/calc/newton/, content/formulas/calc/newton-step.yaml, src/lib/exercises/generators/calc.ts, code/snippets/calculus/newton.py
+- **Проверка:** validate, lint, build, check, vitest 491, pytest, check_consistency, e2e урока и layout ii7 (axe)
+- **Отклонения от плана и решения:** нет
+- **Следующий шаг:** L-II.8 — множители Лагранжа.
+- **Вопросы пользователю:** —
+
 ### 2026-10-25 — L-II.6 L-II.6: градиентный спуск и SGD, игры и лабораторная — готов
 - **Сделано:** урок gradient-descent (четыре цикла: спуск и подъём, порог 2/λ_max и обусловленность, SGD и мини-батч, покоординатный спуск), игры «Порог расходимости» и «Спуск в тумане», лабораторная calc/apartments_gd (капстоун модуля II), формула f.gd-quadratic, генераторы calc.gd-step и calc.lr-threshold, сниппет gd.py с тестами
 - **Файлы:** content/courses/foundations/calculus/gradient-descent.mdx, src/games/divergence/, src/games/foggy-descent/, notebooks/src/calc/apartments_gd.py, content/formulas/calc/gd-quadratic.yaml, code/snippets/calculus/gd.py

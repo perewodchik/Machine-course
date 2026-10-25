@@ -336,3 +336,9 @@
 - id: coordinate-descent
   ru: 'покоординатный спуск'
   en: 'coordinate descent'
+- id: newton-method
+  ru: 'метод Ньютона (Ньютона — Рафсона)'
+  en: 'Newton''s method (Newton–Raphson)'
+- id: quadratic-convergence
+  ru: 'квадратичная сходимость'
+  en: 'quadratic convergence'

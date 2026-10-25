@@ -56,6 +56,15 @@
   prerequisites: [calc.gradient, calc.convexity, la.eigen]
   core: true
 
+- id: calc.newton
+  title:
+    ru: 'Метод Ньютона'
+    en: 'Newton''s method'
+  summary: '$\theta := \theta - H^{-1} \nabla \ell(\theta)$ — шаг к минимуму квадратичного приближения; вблизи минимума число верных знаков удваивается за итерацию.'
+  lesson: newton
+  prerequisites: [calc.hessian, calc.gradient-descent]
+  core: true
+
 - id: calc.log-exp
   title:
     ru: 'Логарифм и экспонента'
