@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-25 — S4.01 Отчёт о калибровке уверенности — готова
+- **Сделано:** Логика src/lib/progress/calibration.ts (первые попытки с отметкой, повтор задачи один раз; уровни «угадываю / скорее да / уверен» с ожидаемыми 40 / 70 / 95 %; уроки, где «уверен» верен реже 70 % при двух и более ответах) с тестами; страница /progress/ (src/pages/progress.astro, src/client/calibration.ts): таблица, SVG-график, вывод, список уроков; отметка уверенности по умолчанию у final-упражнений и в ExerciseSet; id final-check у итоговой проверки; ссылка из ProgressFile.
+- **Файлы:** src/lib/progress/calibration.ts, src/client/calibration.ts, src/pages/progress.astro, src/components/pedagogy/Exercise.astro, src/components/pedagogy/ExerciseSet.astro, src/components/layout/ProgressFile.astro, src/styles/layout.css, tests/e2e/progress.spec.ts
+- **Проверка:** vitest 438; e2e progress и layout progress — 10 passed; полный e2e — PENDING; lint, check — чисто
+- **Отклонения от плана и решения:** Отдельной страницы прогресса не было — создана /progress/. Уровни уверенности качественные, поэтому ожидаемые доли (40 / 70 / 95 %) заданы в LEVELS и показаны в таблице.
+- **Следующий шаг:** S4.L2.
+- **Вопросы пользователю:** —
+
 ### 2026-10-16 — L-I.12 Капстоун: МНК как проекция; итоговая проверка модуля I — готов
 - **Сделано:** Капстоун I.12 на «Квартирах» из урока 0.1: четыре цикла (пространство столбцов и нормальные уравнения, θ̂ = (0.852, 0.129) и цена 75 м²; геометрия остатка — центр масс, P² = P, tr P = d, Пифагор; зависимые признаки — площадь в футах, ранг 2, решение наименьшей нормы; чего не хватает — градиент, гребневая регрессия, обусловленность). Лабораторная «МНК как проекция» (notebooks/src/la/least_squares_projection.py, шесть заданий). Генератор la.normal-eq; ячейки la/least_squares.py закреплены тестом, копия генератора «Квартир» сверена с mlf.datasets. Итоговая проверка модуля I — ExerciseSet из двенадцати задач по урокам I.1–I.12. Модуль I и этап 3 закончены.
 - **Файлы:** content/courses/foundations/linear-algebra/capstone-least-squares.mdx, notebooks/src/la/least_squares_projection.py, notebooks/la/least_squares_projection.ipynb, code/snippets/la/least_squares.py, code/tests/test_least_squares.py, src/lib/exercises/generators/la.ts

@@ -1,0 +1,53 @@
+---
+// Страница прогресса (S4.01): калибровка уверенности по журналу попыток и уроки, где уверенность завышена.
+// Журнал живёт в браузере, поэтому таблица и график строятся на клиенте (src/client/calibration.ts).
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ProgressFile from "../components/layout/ProgressFile.astro";
+import { loadRegistry } from "../lib/content/registry";
+import { LEVELS } from "../lib/progress/calibration";
+
+const reg = await loadRegistry();
+const lessons = Object.fromEntries([...reg.lessonsByKey].map(([key, l]) => [key, { number: l.number, title: l.title, href: l.href }]));
+---
+<BaseLayout title="Прогресс и калибровка" description="Насколько ваша уверенность перед ответом совпадает с долей верных ответов: таблица по журналу задач и уроки, которые стоит повторить.">
+  <main class="shell" id="content">
+    <h1>Прогресс и калибровка</h1>
+    <p class="lead">Перед ответом на&nbsp;итоговую проверку урока можно отметить, насколько вы уверены. Здесь видно, совпадает&nbsp;ли эта уверенность с&nbsp;долей верных ответов.</p>
+
+    <section class="calibration" data-calibration aria-labelledby="calibration-title">
+      <script type="application/json" data-lessons set:html={JSON.stringify(lessons)} />
+      <h2 id="calibration-title">Калибровка уверенности</h2>
+      <p class="calibration__empty" data-calibration-empty>Пока нет ответов с&nbsp;отметкой уверенности. Отметьте «угадываю», «скорее да» или «уверен» перед ответом на&nbsp;итоговую проверку любого урока&nbsp;— и&nbsp;здесь появится таблица.</p>
+      <div data-calibration-body hidden>
+        <p class="calibration__verdict" data-calibration-verdict></p>
+        <div class="calibration__chart" data-calibration-chart aria-hidden="true"></div>
+        <p class="calibration__note" aria-hidden="true">Столбик — доля верных ответов, штрих — ожидаемая доля для этой отметки.</p>
+        <table class="calibration__table">
+          <caption class="visually-hidden">Доля верных первых ответов по отметке уверенности</caption>
+          <thead>
+            <tr><th scope="col">Отметка</th><th scope="col">Ожидаемо</th><th scope="col">Ответов</th><th scope="col">Верных</th></tr>
+          </thead>
+          <tbody>
+            {LEVELS.map((l) => (
+              <tr data-level={l.level}>
+                <th scope="row">{l.name}</th>
+                <td>около {Math.round(l.nominal * 100)}&nbsp;%</td>
+                <td data-n>0</td>
+                <td data-rate>—</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p class="calibration__note">Считается первая попытка каждой задачи: после неверного ответа вторая попытка уже знает, что первая была ошибкой.</p>
+      </div>
+    </section>
+
+    <section class="overconfident" data-overconfident hidden aria-labelledby="overconfident-title">
+      <h2 id="overconfident-title">Где уверенность завышена</h2>
+      <p>В&nbsp;этих уроках вы отвечали «уверен», но&nbsp;ошибались чаще, чем в&nbsp;трёх случаях из&nbsp;десяти. Стоит повторить урок или решить ещё одну задачу итоговой проверки.</p>
+      <ul data-overconfident-list></ul>
+    </section>
+
+    <ProgressFile calibrationLink={false} />
+  </main>
+</BaseLayout>

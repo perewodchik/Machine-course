@@ -29,9 +29,9 @@ const headingId = `set-${seed}`;
   {order.map((i, k) => {
     const it = items[i]!;
     return "gen" in it ? (
-      <Exercise gen={it.gen} seed={it.seed ?? seed * 100 + i} variants={1} n={k + 1} title="Задача" lesson={it.lesson} />
+      <Exercise gen={it.gen} seed={it.seed ?? seed * 100 + i} variants={1} n={k + 1} title="Задача" lesson={it.lesson} confidence />
     ) : (
-      <Exercise spec={it.spec} id={it.id} n={k + 1} title="Задача" lesson={it.lesson} />
+      <Exercise spec={it.spec} id={it.id} n={k + 1} title="Задача" lesson={it.lesson} confidence />
     );
   })}
   <div class="exercise-set__summary" role="status">

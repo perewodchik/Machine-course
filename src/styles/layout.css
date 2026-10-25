@@ -362,3 +362,20 @@
   }
 }
 
+
+@layer components {
+  /* Страница прогресса (S4.01): таблица и график калибровки, уроки с завышенной уверенностью */
+  .calibration, .overconfident { max-width: var(--measure); margin-top: var(--space-6); font-family: var(--font-ui); }
+  .calibration__empty, .calibration__note, .overconfident p { color: var(--ink-2); font-size: var(--text-sm); }
+  .calibration__verdict { font-size: var(--text-base); color: var(--ink); }
+  .calibration__svg { display: block; inline-size: 100%; max-inline-size: 420px; block-size: auto; margin: var(--space-3) 0; }
+  .calibration__bar { fill: var(--pen); }
+  .calibration__nominal { stroke: var(--ink-3); stroke-width: 2; stroke-dasharray: 5 3; }
+  .calibration__grid { stroke: var(--rule); stroke-width: 1; }
+  .calibration__label, .calibration__tick { fill: var(--ink-2); font: var(--text-xs) var(--font-ui); }
+  .calibration__table { border-collapse: collapse; font-size: var(--text-sm); font-variant-numeric: tabular-nums; }
+  .calibration__table th, .calibration__table td { padding: var(--space-1) var(--space-4) var(--space-1) 0; text-align: left; vertical-align: baseline; white-space: nowrap; border-bottom: 1px solid var(--rule); }
+  .calibration__table thead th { color: var(--ink-3); font-weight: 500; }
+  .overconfident ul { padding-left: var(--space-5); }
+  .overconfident li { margin: var(--space-2) 0; font-size: var(--text-sm); }
+}
