@@ -1,0 +1,56 @@
+id: f.svd-gram
+kind: formula
+title:
+  ru: 'Сингулярные числа через AᵀA'
+  en: 'singular values from the eigenvalues of A^T A'
+statement: 'A^\top A = V S^2 V^\top, \qquad \sigma_i = \sqrt{\lambda_i(A^\top A)}'
+
+# Урок I.11: подставить A = U S Vᵀ в AᵀA и сократить UᵀU = I. Получается спектральное разложение AᵀA ⪰ 0 (урок I.10),
+# поэтому σᵢ² — его собственные значения, а vᵢ — собственные векторы. В PCA (CS229) это XᵀX для центрированных данных.
+symbols:
+  - name: A
+    tex: 'A'
+    meaning: 'любая матрица $n \times d$'
+    shape: [n, d]
+
+dependsOn:
+  concepts: [la.svd, la.eigen, la.psd]
+  rules: [rule.transpose-product, rule.spectral]
+
+derivation:
+  plan:
+    - 'Подставить $A = U S V^\top$ и транспонировать произведение'
+    - 'Сократить $U^\top U = I$'
+    - 'Узнать спектральное разложение $A^\top A$'
+  steps:
+    - goal: 0
+      tex: 'A^\top A = (U S V^\top)^\top (U S V^\top)'
+      by: [la.svd]
+      note: 'Сингулярное разложение есть у любой матрицы. В сокращённом виде $U$ — $n \times d$ с ортонормированными столбцами, $S$ и $V$ — $d \times d$.'
+      check:
+        kind: same
+        py: 'A.T @ A'
+    - goal: 0
+      tex: '= V S^\top \changed{U^\top U}\, S V^\top'
+      by: [rule.transpose-product]
+      note: 'Транспонирование произведения меняет порядок: $(U S V^\top)^\top = V S^\top U^\top$.'
+      check:
+        kind: same
+        py: 'np.linalg.svd(A, full_matrices=False)[2].T @ np.diag(np.linalg.svd(A, full_matrices=False)[1]) @ np.linalg.svd(A, full_matrices=False)[0].T @ np.linalg.svd(A, full_matrices=False)[0] @ np.diag(np.linalg.svd(A, full_matrices=False)[1]) @ np.linalg.svd(A, full_matrices=False)[2]'
+    - goal: 2
+      tex: '= V \changed{S^2} V^\top'
+      by: [rule.spectral]
+      note: 'Столбцы $U$ ортонормированы, $U^\top U = I$, а у диагональной $S$ квадрат — квадраты $\sigma_i$. Это спектральное разложение $A^\top A$: собственные векторы — $v_i$, собственные значения — $\sigma_i^2 \ge 0$.'
+      check:
+        kind: same
+        py: 'np.linalg.svd(A, full_matrices=False)[2].T @ np.diag(np.linalg.svd(A, full_matrices=False)[1] ** 2) @ np.linalg.svd(A, full_matrices=False)[2]'
+
+pitfalls:
+  - 'Брать собственные значения самой $A$: у $\left(\begin{smallmatrix} 1 & 1 \\ 0 & 1 \end{smallmatrix}\right)$ оба собственных значения равны $1$, а сингулярные числа — $1.618$ и $0.618$.'
+  - 'Писать $\Sigma$ вместо $S$: в курсе $\Sigma$ — ковариационная матрица, и у неё свои собственные значения.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Principal components analysis'
+
+usedIn: [la.svd]

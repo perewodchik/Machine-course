@@ -161,6 +161,25 @@
   .plane-proj__facts i { font-family: var(--font-math); }
   .plane-proj__facts b { color: var(--ink); font-variant-numeric: tabular-nums; }
   @media (max-width: 900px) { .plane-proj__controls { grid-template-columns: minmax(0, 1fr); } }
+  /* «Окружность → эллипс по шагам»: шаги и заготовки — кнопки с aria-pressed, четыре бегунка, σ₁, σ₂ и пояснение шага */
+  .svd-steps__controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: var(--space-3) var(--space-5); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule); }
+  .svd-steps__group { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .svd-steps .btn[aria-pressed="true"] { border-color: var(--pen); color: var(--pen); box-shadow: inset 0 0 0 1px var(--pen); }
+  .svd-steps__readouts { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-6); }
+  .svd-steps__fact { grid-column: 1 / -1; margin: 0; font: var(--text-sm) var(--font-ui); color: var(--ink-2); }
+  @media (max-width: 900px) { .svd-steps__controls { grid-template-columns: minmax(0, 1fr); } }
+
+  /* «Сжать картинку SVD»: две картинки рядом, столбики сингулярных чисел, бегунок k и итог */
+  .low-rank__pics { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: var(--space-4); padding: var(--space-4); }
+  .low-rank__pic { inline-size: min(220px, 36vw); margin: 0; display: grid; justify-items: center; gap: var(--space-2); font: var(--text-sm) var(--font-ui); color: var(--ink-2); text-align: center; }
+  .low-rank__img { display: block; inline-size: 100%; block-size: auto; aspect-ratio: 1; border: 1px solid var(--rule); image-rendering: pixelated; }
+  .low-rank__bars { display: block; inline-size: calc(100% - 2 * var(--space-4)); block-size: 56px; margin-inline: var(--space-4); }
+  .low-rank__bar { fill: var(--ink-3); opacity: 0.45; }
+  .low-rank__bar.is-kept { fill: var(--sym-1); opacity: 1; }
+  .low-rank__axis { margin: var(--space-1) var(--space-4) 0; font: var(--text-xs) var(--font-ui); color: var(--ink-3); }
+  .low-rank__controls { display: grid; gap: var(--space-3); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule); margin-top: var(--space-3); }
+  .low-rank__fact { margin: 0; font: var(--text-sm) var(--font-ui); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+
   /* «Линии уровня xᵀAx»: заготовки — кнопки с aria-pressed, бегунки a, b, c, собственные значения и вывод */
   .level-sets__controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: var(--space-3) var(--space-5); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule); }
   .level-sets__group { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: var(--space-2); }
