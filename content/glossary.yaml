@@ -306,3 +306,6 @@
 - id: computational-graph
   ru: 'вычислительный граф; прямой и обратный проход'
   en: 'computational graph; forward and backward pass (backpropagation)'
+- id: gradient-check
+  ru: 'проверка градиента конечными разностями'
+  en: 'gradient check (finite differences)'

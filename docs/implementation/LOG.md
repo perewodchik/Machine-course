@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-25 — L-II.3 Матричное дифференцирование — готов
+- **Сделано:** Урок II.3: четыре цикла (градиент по вектору — ∇bᵀx, ∇xᵀAx = (A + Aᵀ)x; проверка размерностями и конечными разностями, ссылка на «Тетрис размерностей», ячейка Python; градиент по матрице — ∇tr(AB) = Bᵀ, ∇log|det A| = A⁻ᵀ, GDA; нормальные уравнения через градиент — формула f.normal-equations, вывод по шагам, «найди ошибку»). Правило rule.grad-trace; генератор calc.matrix-grad; ячейка calculus/matrix_grad.py закреплена тестом.
+- **Файлы:** content/courses/foundations/calculus/matrix-calculus.mdx, content/formulas/rules/grad-trace.yaml, src/lib/exercises/generators/calc.ts, code/snippets/calculus/matrix_grad.py
+- **Проверка:** vitest, pytest, validate, lint, check, check_consistency — чисто; e2e урока и layout ii3 — 14 passed; формулы на 390 px — чисто
+- **Отклонения от плана и решения:** Игра «Тетрис размерностей» уже есть (I.3) — в II.3 на неё ссылка, отдельного режима не делал.
+- **Следующий шаг:** L-II.4 — гессиан, ряд Тейлора, критические точки.
+- **Вопросы пользователю:** —
+
 ### 2026-10-25 — L-II.2 Многомерное правило цепочки и якобиан — готов
 - **Сделано:** Урок II.2: три цикла (якобиан и дифференциал; правило цепочки J_{g∘f} = J_g J_f и формула f.chain-rule-jacobian ∇(g∘f) = J_fᵀ∇g; вычислительный граф, прямой и обратный проход, обратное распространение ошибки). Виджет «Вычислительный граф» (calc/comp-graph) для L = (θᵀx − y)²; генераторы calc.jacobian, calc.jacobian-order, calc.backprop с численной сверкой; ячейка calculus/chain.py закреплена тестом; термины глоссария.
 - **Файлы:** content/courses/foundations/calculus/chain-rule-jacobian.mdx, src/widgets/calc/comp-graph/*, content/formulas/calc/chain-rule-jacobian.yaml, src/lib/exercises/generators/calc.ts, code/snippets/calculus/chain.py

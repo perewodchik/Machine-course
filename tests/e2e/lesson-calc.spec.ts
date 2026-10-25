@@ -1,6 +1,7 @@
 // Модуль II (S4.L2): урок II.1 — поле градиентов с клавиатуры (седло, критическая точка, D_u f), разбор частной
 // производной, итоговая проверка ставит «знаю». Урок II.2 — вычислительный граф по шагам до ∇θL, разбор порядка
-// якобианов, итоговая проверка. axe.
+// якобианов, итоговая проверка. Урок II.3 — ссылка на «Тетрис размерностей», «найди ошибку» в выводе нормальных
+// уравнений, итоговая проверка. axe.
 import { expect, test } from "@playwright/test";
 import { generator } from "../../src/lib/exercises/generators";
 import { expectNoAxeViolations } from "./support";
@@ -67,6 +68,28 @@ test("урок II.2: вычислительный граф вперёд и на�
   const spec = generator("calc.backprop").make(31);
   if (spec.kind !== "numeric") throw new Error("ожидалось число");
   await final.locator("[data-variant]:not([hidden]) input").first().fill(String(spec.answer));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});
+
+test("урок II.3: игра, найди ошибку в выводе, итоговая проверка", async ({ page }) => {
+  await page.goto("/foundations/calculus/matrix-calculus/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Матричное дифференцирование");
+  await expect(page.getByRole("link", { name: "Открыть игру" })).toHaveAttribute("href", "/games/dim-tetris/");
+  await expect(page.locator("[data-exercise][data-item='ii3.derive-steps']")).toBeVisible();
+
+  const fe = page.locator("[data-exercise][data-item='ii3.find-error']");
+  await fe.locator("[data-option]").filter({ hasText: "В строке 2" }).click();
+  await expect(fe.locator("[data-feedback]")).toContainText("Эта строка верна");
+  await fe.locator("[data-option]").filter({ hasText: "В строке 3" }).click();
+  await expect(fe.locator("[data-feedback]")).toContainText("Множители переставлены");
+
+  const final = page.locator("#final-check");
+  const spec = generator("calc.matrix-grad").make(31);
+  if (spec.kind !== "matrix") throw new Error("ожидалась матрица");
+  for (const [i, row] of spec.answer.entries()) for (const [j, v] of row.entries()) await final.locator(`[data-variant]:not([hidden]) [data-cell="${i},${j}"]`).fill(String(v));
   await final.getByRole("button", { name: "Проверить" }).click();
   await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
   await page.evaluate(() => window.scrollTo(0, 0));

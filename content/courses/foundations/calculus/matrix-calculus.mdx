@@ -1,0 +1,177 @@
+---
+id: matrix-calculus
+title: 'Матричное дифференцирование'
+number: 'II.3'
+concepts: [calc.matrix-calculus]
+minutes: 180
+lead: 'Конспекты CS229 берут градиенты целых выражений с векторами и матрицами одной строкой. Выведем четыре правила, на которых держатся эти выкладки, научимся проверять любой градиент размерностями и конечными разностями и получим нормальные уравнения как условие нулевого градиента.'
+---
+
+{/*
+  План урока (docs/program/02-calculus.md, карточка II.3) — четыре цикла:
+  1. Градиент по вектору: ∇bᵀx = b, предсказание (∇xᵀAx при несимметричной A), (A + Aᵀ)x; упражнения 1–2.
+  2. Проверка размерностями и конечными разностями: формы слагаемых, игра «Тетрис размерностей», ячейка Python;
+     упражнение 3.
+  3. Градиент по матрице: ∇tr(AB) = Bᵀ, ∇log|det A| = A⁻ᵀ, ошибка — без модуля; упражнения 4–5.
+  4. Нормальные уравнения через градиент: формула 1 (f.normal-equations), вывод по шагам, «найди ошибку»;
+     упражнения 6–7.
+  Итог, итоговая проверка (calc.matrix-grad, ставит «знаю»).
+*/}
+
+<Prereqs lessons={["foundations/calculus/gradient", "foundations/calculus/chain-rule-jacobian", "foundations/linear-algebra/transpose-trace"]} />
+
+## Градиент по вектору
+
+В уроке II.1 градиент считался по координатам: выписать $\partial f / \partial x_j$ для каждого $j$ и собрать столбец. Для выражений вроде $\tfrac12 \lVert X\theta - y \rVert^2$ с тысячами весов так не считают — пользуются правилами, выведенными один раз.
+
+Первое правило — линейная функция. $b^\top x = \sum_i b_i x_i$, и $\partial / \partial x_k$ оставляет одно слагаемое $b_k$:
+
+$$
+\nabla_x\, b^\top x = b .
+$$
+
+<Exercise
+  title="Предскажите"
+  id="ii3.predict-quadratic"
+  spec={{
+    kind: "predict",
+    prompt: "$A$ — несимметричная матрица $d \\times d$. Чему равен $\\nabla_x\\, x^\\top A x$?",
+    options: [
+      { text: "$(A + A^\\top)\\,x$", correct: true, why: "$x$ входит в форму дважды: слева как $x^\\top$ и справа как $x$. Первый вход даёт $Ax$, второй — $A^\\top x$." },
+      { text: "$2Ax$, как производная $ax^2$", why: "Это верно только для симметричной $A$. В общем случае вклады двух вхождений $x$ — $Ax$ и $A^\\top x$ — разные." },
+      { text: "$x^\\top A$", why: "Это строка, а градиент — столбец формы $x$. К тому же второй вклад $A^\\top x$ потерян." },
+    ],
+    reveal: "$(A + A^\\top)x$; для симметричной $A$ — $2Ax$.",
+  }}
+/>
+
+Распишем по координатам: $x^\top A x = \sum_{i,j} A_{ij} x_i x_j$. Производная по $x_k$ собирает слагаемые, где $k$ стоит на месте $i$ ($\sum_j A_{kj} x_j = (Ax)_k$) и на месте $j$ ($\sum_i A_{ik} x_i = (A^\top x)_k$):
+
+$$
+\nabla_x\, x^\top A x = (A + A^\top)\, x .
+$$
+
+Для симметричной $A$ это $2Ax$ — аналог $(ax^2)' = 2ax$. Квадратичная форма видит только симметричную часть $A$ (урок I.5), и градиент — удвоенная симметричная часть, умноженная на $x$.
+
+<Note label="По-английски">Градиент по вектору — *gradient with respect to a vector*, матричное дифференцирование — *matrix calculus*.</Note>
+
+<Exercise n={1} id="ii3.grad-quadratic" rule="rule.grad-quadratic" />
+
+<Exercise gen="calc.matrix-grad" n={2} variants={6} />
+
+## Проверка размерностями и конечными разностями
+
+Два способа поймать ошибку в матричном градиенте, не выводя его заново.
+
+**Размерности.** Градиент по $\theta$ имеет форму $\theta$, и каждое слагаемое ответа — тоже. Для $J(\theta) = \tfrac12 \lVert X\theta - y \rVert^2$ с $X$ размера $n \times d$ кандидат $X^\top X\theta - X^\top y$ проходит: оба слагаемых — $d \times 1$. А $XX^\top \theta$ не определено, $X\theta - y$ имеет форму $n \times 1$ — их сразу можно отбросить.
+
+**Конечные разности.** Численный градиент — центральная разность по каждой координате:
+
+$$
+\frac{\partial f}{\partial x_i} \approx \frac{f(x + h e_i) - f(x - h e_i)}{2h} .
+$$
+
+Для градиента по матрице то же делают по каждому элементу. Совпадение с формулой на случайной точке — сильное свидетельство; так проверяют все формулы этого курса и градиенты в библиотеках машинного обучения.
+
+<Note label="Игра">«Тетрис размерностей»: соберите из блоков-матриц выражение нужной формы — тот же навык, что проверка градиента размерностями. 3–5 минут. [Открыть игру](/games/dim-tetris/)</Note>
+
+<Exercise
+  n={3}
+  id="ii3.dim-check"
+  spec={{
+    kind: "choice",
+    prompt: "$X$ — матрица $n \\times d$, $y \\in \\mathbb{R}^n$, $\\theta \\in \\mathbb{R}^d$. Какой из кандидатов может быть $\\nabla_\\theta \\tfrac12 \\lVert X\\theta - y \\rVert^2$?",
+    options: [
+      { text: "$X^\\top (X\\theta - y)$", correct: true, why: "$X^\\top$ — $d \\times n$, $X\\theta - y$ — $n \\times 1$: произведение $d \\times 1$, форма $\\theta$. Это и есть верный ответ." },
+      { text: "$(X\\theta - y)^\\top X$", why: "Это строка $1 \\times d$ — транспонированный градиент. Градиент в курсе — столбец формы $\\theta$." },
+      { text: "$X (X\\theta - y)$", why: "$X$ — $n \\times d$, а $X\\theta - y$ — $n \\times 1$: при $n \\ne d$ произведение не определено." },
+    ],
+    hints: ["Какой формы должен быть ответ? Выпишите форму каждого множителя."],
+  }}
+/>
+
+Проверим правила конечными разностями. Перед запуском предскажите, какая строка напечатает `False`.
+
+<PyCode src="calculus/matrix_grad.py#demo" run />
+
+## Градиент по матрице
+
+Градиент по матрице $A$ размера $m \times k$ — матрица той же формы из $\partial f / \partial A_{ij}$. Два правила нужны постоянно.
+
+**След.** $\operatorname{tr}(AB) = \sum_{i,j} A_{ij} B_{ji}$, и $\partial / \partial A_{ij}$ оставляет $B_{ji}$ — индексы меняются местами:
+
+$$
+\nabla_A \operatorname{tr}(AB) = B^\top .
+$$
+
+**Логарифм определителя.** Для обратимой $A$
+
+$$
+\nabla_A \log\lvert\det A\rvert = A^{-\top} .
+$$
+
+Оба правила появляются в CS229 при выводе оценок максимального правдоподобия для гауссовского дискриминантного анализа («Generative learning algorithms»): $\log\lvert\Sigma\rvert$ из плотности нормального распределения (урок I.7) и квадратичная форма $(x - \mu)^\top \Sigma^{-1} (x - \mu) = \operatorname{tr}\bigl(\Sigma^{-1} (x - \mu)(x - \mu)^\top\bigr)$ дифференцируются по $\Sigma$ именно так.
+
+<Block kind="pitfall">
+
+Писать $\nabla_A \log\det A = A^{-\top}$ без модуля. Логарифм определён только при $\det A > 0$, и формула с модулем покрывает оба знака. Вторая тонкость: если $A$ обязана быть симметричной, как ковариация, «симметричная» производная выглядит иначе. CS229 это ограничение игнорирует — точка минимума от этого не меняется.
+
+</Block>
+
+<Exercise n={4} id="ii3.grad-trace" rule="rule.grad-trace" />
+
+<Exercise n={5} id="ii3.grad-logdet" rule="rule.grad-log-det" />
+
+## Нормальные уравнения через градиент
+
+Теперь всё вместе. Раскроем $J(\theta) = \tfrac12 (X\theta - y)^\top (X\theta - y)$, возьмём градиент по правилам этого урока и приравняем его к нулю.
+
+<Formula formula="f.normal-equations" n={1} />
+
+Тот же ответ, что в уроке I.12 из геометрии проекции. Градиентный путь длиннее, зато работает и там, где проекции нет: в логистической регрессии и нейросетях условие $\nabla J = 0$ не решается явно, но градиент по-прежнему считается по этим правилам — и по нему идёт спуск (урок II.6).
+
+<Exercise
+  n={6}
+  title="Проведите сами"
+  id="ii3.derive-steps"
+  spec={{
+    kind: "steps",
+    prompt: String.raw`Выведите нормальные уравнения и решите их. Строка «$= \ldots$» должна равняться строке выше; строка «$\nabla_\theta J = \ldots$» — быть её градиентом; уравнение — равносильным; последняя строка — «$\theta = \ldots$».`,
+    label: String.raw`$J(\theta) =$`,
+    start: String.raw`\tfrac12 (X\theta - y)^\top (X\theta - y)`,
+    goal: String.raw`\theta = (X^\top X)^{-1} X^\top y`,
+    symbols: [{ name: "X", shape: ["n", "d"] }, { name: "theta", shape: ["d", 1] }, { name: "y", shape: ["n", 1] }],
+    hints: [String.raw`Раскройте скобки: $\tfrac12(\theta^\top X^\top X \theta - 2 y^\top X \theta + y^\top y)$. Градиент — по правилам $\nabla\, x^\top A x$ и $\nabla\, b^\top x$.`],
+    right: "Каждая строка равна предыдущей, градиент совпал с конечными разностями, решение обращает уравнение в верное равенство.",
+    mutations: [
+      { tex: String.raw`\tfrac12 (\theta^\top X^\top X\theta - y^\top X\theta + y^\top y)`, why: String.raw`Потеряна двойка: $\theta^\top X^\top y$ и $y^\top X\theta$ — одно и то же число, при раскрытии скобок оно встречается дважды.` },
+      { tex: String.raw`2X^\top X\theta - 2X^\top y`, why: String.raw`Потерян множитель $\tfrac12$ из $J(\theta)$.` },
+      { tex: String.raw`X^\top X\theta + X^\top y`, why: String.raw`Знак: градиент слагаемого $-y^\top X\theta$ равен $-X^\top y$.` },
+    ],
+  }}
+/>
+
+<Exercise
+  n={7}
+  id="ii3.find-error"
+  spec={{
+    kind: "choice",
+    prompt: "В какой строке вывода ошибка? $$\\begin{aligned} &(1) \\quad J = \\tfrac12 (\\theta^\\top X^\\top X \\theta - 2 y^\\top X \\theta + y^\\top y) \\\\ &(2) \\quad \\nabla_\\theta J = \\tfrac12 (2 X^\\top X \\theta - 2 X^\\top y) \\\\ &(3) \\quad \\nabla_\\theta J = X X^\\top \\theta - X^\\top y \\\\ &(4) \\quad \\theta = (X^\\top X)^{-1} X^\\top y \\end{aligned}$$",
+    options: [
+      { text: "В строке 1", why: "Эта строка верна: $(X\\theta)^\\top y = y^\\top X\\theta$ — одно число, поэтому перекрёстное слагаемое удвоено." },
+      { text: "В строке 2", why: "Эта строка верна: $X^\\top X$ симметрична, $\\nabla\\, \\theta^\\top X^\\top X \\theta = 2X^\\top X\\theta$, а $\\nabla\\, y^\\top X\\theta = X^\\top y$." },
+      { text: "В строке 3", correct: true, why: "Множители переставлены: должно быть $X^\\top X \\theta$. Проверка размерами: $XX^\\top$ — матрица $n \\times n$, и $XX^\\top \\theta$ при $n \\ne d$ не определено." },
+      { text: "В строке 4", why: "Решение верное — если исправить строку 3: $X^\\top X\\theta = X^\\top y$ даёт $\\theta = (X^\\top X)^{-1} X^\\top y$." },
+    ],
+    hints: ["Проверьте размерности каждого слагаемого в каждой строке."],
+  }}
+/>
+
+## Итог
+
+- $\nabla_x\, b^\top x = b$; $\nabla_x\, x^\top A x = (A + A^\top)x$, для симметричной $A$ — $2Ax$.
+- Градиент имеет форму аргумента; каждое слагаемое — тоже. Конечные разности по каждой координате проверяют любую формулу.
+- $\nabla_A \operatorname{tr}(AB) = B^\top$; $\nabla_A \log\lvert\det A\rvert = A^{-\top}$ — с модулем.
+- $\nabla_\theta \tfrac12 \lVert X\theta - y \rVert^2 = X^\top X\theta - X^\top y = 0$ — нормальные уравнения.
+
+<Exercise gen="calc.matrix-grad" seed={31} id="post.ii3" title="Итоговая проверка" final />
