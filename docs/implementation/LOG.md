@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-25 — L-II.4 L-II.4: гессиан, ряд Тейлора, критические точки — готов
+- **Сделано:** урок hessian-taylor (три цикла, предсказание, ошибка «∇f = 0 — минимум»), формула f.taylor-second-order, игра «Минимум, максимум или седло» (5 уровней), генераторы calc.hessian и calc.classify, сниппет hessian.py с тестом, понятие calc.hessian
+- **Файлы:** content/courses/foundations/calculus/hessian-taylor.mdx, content/formulas/calc/taylor-second-order.yaml, src/games/min-max-saddle/, src/lib/exercises/generators/calc.ts, code/snippets/calculus/hessian.py
+- **Проверка:** validate, lint, build, check, vitest 455, pytest, check_consistency, e2e урока, игры и layout ii4/saddlegame (axe)
+- **Отклонения от плана и решения:** нет
+- **Следующий шаг:** L-II.5 — выпуклость.
+- **Вопросы пользователю:** —
+
 ### 2026-10-25 — L-II.3 Матричное дифференцирование — готов
 - **Сделано:** Урок II.3: четыре цикла (градиент по вектору — ∇bᵀx, ∇xᵀAx = (A + Aᵀ)x; проверка размерностями и конечными разностями, ссылка на «Тетрис размерностей», ячейка Python; градиент по матрице — ∇tr(AB) = Bᵀ, ∇log|det A| = A⁻ᵀ, GDA; нормальные уравнения через градиент — формула f.normal-equations, вывод по шагам, «найди ошибку»). Правило rule.grad-trace; генератор calc.matrix-grad; ячейка calculus/matrix_grad.py закреплена тестом.
 - **Файлы:** content/courses/foundations/calculus/matrix-calculus.mdx, content/formulas/rules/grad-trace.yaml, src/lib/exercises/generators/calc.ts, code/snippets/calculus/matrix_grad.py

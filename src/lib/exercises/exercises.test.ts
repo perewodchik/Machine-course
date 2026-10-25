@@ -522,6 +522,39 @@ describe("генераторы", () => {
     }
   });
 
+  it("задачи урока II.4: гессиан — вторые производные, тип точки — по знакам собственных значений", () => {
+    const mats = (tex: string) => [...tex.matchAll(/\\begin\{pmatrix\}(.*?)\\end\{pmatrix\}/g)].map((m) => m[1]!.split(" \\\\ ").map((row) => row.split(" & ").map(Number)));
+    for (let s = 1; s <= 40; s++) {
+      const he = make("calc.hessian", s);
+      if (he.kind !== "matrix") throw new Error("ожидалась матрица");
+      const tex = /f\(x, y\) = (.*?)\$/.exec(he.prompt)![1]!;
+      const f = (x: number, y: number) =>
+        tex.replace(/ - /g, " + -").split(" + ").reduce((acc, u) => {
+          const m = /^(-?)(\d*)(x\^3|x\^2 y|x y\^2|y\^2)$/.exec(u.trim())!;
+          const k = (m[1] ? -1 : 1) * (m[2] ? Number(m[2]) : 1);
+          return acc + k * ({ "x^3": x ** 3, "x^2 y": x * x * y, "x y^2": x * y * y, "y^2": y * y } as Record<string, number>)[m[3]!]!;
+        }, 0);
+      const [px, py] = /точке \$\((-?\d+), (-?\d+)\)/.exec(he.prompt)!.slice(1).map(Number) as [number, number];
+      const h = 1e-3;
+      const fxx = (f(px + h, py) - 2 * f(px, py) + f(px - h, py)) / (h * h);
+      const fyy = (f(px, py + h) - 2 * f(px, py) + f(px, py - h)) / (h * h);
+      const fxy = (f(px + h, py + h) - f(px + h, py - h) - f(px - h, py + h) + f(px - h, py - h)) / (4 * h * h);
+      expect(he.answer[0]![0]).toBeCloseTo(fxx, 3);
+      expect(he.answer[1]![1]).toBeCloseTo(fyy, 3);
+      expect(he.answer[0]![1]).toBeCloseTo(fxy, 3);
+      expect(he.answer[1]![0]).toBe(he.answer[0]![1]);
+
+      const cl = make("calc.classify", s);
+      if (cl.kind !== "choice") throw new Error("ожидался выбор");
+      const H = mats(cl.prompt)[0]!;
+      const m = (H[0]![0]! + H[1]![1]!) / 2;
+      const rr = Math.hypot((H[0]![0]! - H[1]![1]!) / 2, H[0]![1]!);
+      const [l1, l2] = [m + rr, m - rr];
+      const want = Math.abs(l1 * l2) < 1e-9 ? "По гессиану не определить" : l1 * l2 < 0 ? "Седло" : l1 > 0 ? "Минимум" : "Максимум";
+      expect(cl.options.find((o) => o.correct)!.text).toBe(want);
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

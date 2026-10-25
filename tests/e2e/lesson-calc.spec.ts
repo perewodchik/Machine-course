@@ -1,7 +1,8 @@
 // Модуль II (S4.L2): урок II.1 — поле градиентов с клавиатуры (седло, критическая точка, D_u f), разбор частной
 // производной, итоговая проверка ставит «знаю». Урок II.2 — вычислительный граф по шагам до ∇θL, разбор порядка
 // якобианов, итоговая проверка. Урок II.3 — ссылка на «Тетрис размерностей», «найди ошибку» в выводе нормальных
-// уравнений, итоговая проверка. axe.
+// уравнений, итоговая проверка. Урок II.4 — предсказание, ссылка на игру «Минимум, максимум или седло», разбор
+// типа критической точки, итоговая проверка. axe.
 import { expect, test } from "@playwright/test";
 import { generator } from "../../src/lib/exercises/generators";
 import { expectNoAxeViolations } from "./support";
@@ -91,6 +92,30 @@ test("урок II.3: игра, найди ошибку в выводе, итог
   if (spec.kind !== "matrix") throw new Error("ожидалась матрица");
   for (const [i, row] of spec.answer.entries()) for (const [j, v] of row.entries()) await final.locator(`[data-variant]:not([hidden]) [data-cell="${i},${j}"]`).fill(String(v));
   await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});
+
+test("урок II.4: предсказание, игра, тип критической точки, итоговая проверка", async ({ page }) => {
+  await page.goto("/foundations/calculus/hessian-taylor/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Гессиан, ряд Тейлора, критические точки");
+  await expect(page.getByRole("link", { name: "Открыть игру" })).toHaveAttribute("href", "/games/min-max-saddle/");
+
+  const pr = page.locator("[data-exercise][data-item='ii4.predict-critical']");
+  await pr.locator("[data-option]").filter({ hasText: "ниже не спуститься" }).click();
+  await expect(pr.locator("[data-feedback]")).toContainText("в первом приближении");
+
+  const cl = page.locator("[data-exercise][data-item='calc.classify']").first();
+  const task = generator("calc.classify").make(2);
+  if (task.kind !== "choice") throw new Error("ожидался выбор");
+  await cl.locator("[data-variant]:not([hidden]) [data-option]").nth(task.options.findIndex((o) => !o.correct)).click();
+  await expect(cl.locator("[data-feedback]")).toContainText("собственн");
+
+  const final = page.locator("#final-check");
+  const spec = generator("calc.classify").make(31);
+  if (spec.kind !== "choice") throw new Error("ожидался выбор");
+  await final.locator("[data-variant]:not([hidden]) [data-option]").nth(spec.options.findIndex((o) => o.correct)).click();
   await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
   await page.evaluate(() => window.scrollTo(0, 0));
   await expectNoAxeViolations(page);

@@ -309,3 +309,9 @@
 - id: gradient-check
   ru: 'проверка градиента конечными разностями'
   en: 'gradient check (finite differences)'
+- id: hessian
+  ru: 'гессиан (матрица Гессе); ряд Тейлора второго порядка'
+  en: 'Hessian; second-order Taylor expansion'
+- id: saddle-point
+  ru: 'седловая точка'
+  en: 'saddle point'

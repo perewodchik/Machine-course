@@ -245,3 +245,71 @@ export const matrixGrad: Generator = {
     }
   },
 };
+
+/** Урок II.4: гессиан многочлена в точке — симметричная матрица вторых производных. */
+export const hessian: Generator = {
+  id: "calc.hessian",
+  version: 1,
+  title: "Гессиан в точке",
+  make(seed) {
+    const r = rng(seed);
+    const [a, b, c, d] = [r.nonzero(-2, 2), r.nonzero(-2, 2), r.int(-2, 2), r.nonzero(-3, 3)];
+    const [x, y] = [r.nonzero(-2, 2), r.nonzero(-2, 2)];
+    // f = a x³ + b x² y + c x y² + d y²
+    const hxx = 6 * a * x + 2 * b * y;
+    const hxy = 2 * b * x + 2 * c * y;
+    const hyy = 2 * c * x + 2 * d;
+    const H = [[hxx, hxy], [hxy, hyy]];
+    return {
+      kind: "matrix",
+      prompt: String.raw`$f(x, y) = ${poly([[a, "x^3"], [b, "x^2 y"], [c, "x y^2"], [d, "y^2"]])}$. Найдите гессиан $H$ в точке $(${x}, ${y})$.`,
+      label: String.raw`$H =$`,
+      answer: H,
+      tol: 0,
+      hints: [String.raw`$H = \begin{pmatrix} f_{xx} & f_{xy} \\ f_{yx} & f_{yy} \end{pmatrix}$; смешанные производные равны: $f_{xy} = f_{yx}$.`, String.raw`$f_{xx} = ${poly([[6 * a, "x"], [2 * b, "y"]])}$.`],
+      right: String.raw`$f_{xx} = ${poly([[6 * a, "x"], [2 * b, "y"]])} = ${hxx}$, $f_{xy} = ${poly([[2 * b, "x"], [2 * c, "y"]])} = ${hxy}$, $f_{yy} = ${poly([[2 * c, "x"], [2 * d, ""]])} = ${hyy}$: $H = ${pm(H)}$.`,
+      wrong: String.raw`Продифференцируйте дважды: $f_{xy}$ — сначала по $x$, потом по $y$. Гессиан симметричен, поэтому внедиагональные элементы одинаковы.`,
+    };
+  },
+};
+
+type CpKind = "min" | "max" | "saddle" | "degenerate";
+
+/** Урок II.4: тип критической точки по гессиану 2 × 2 — по знакам det H и tr H. */
+export const classifyPoint: Generator = {
+  id: "calc.classify",
+  version: 1,
+  title: "Тип критической точки",
+  make(seed) {
+    const r = rng(seed);
+    const kind = (["min", "saddle", "max", "degenerate"] as const)[(seed - 1) % 4]!;
+    let H: number[];
+    for (;;) {
+      if (kind === "degenerate") {
+        const [p, q, s] = [r.nonzero(-2, 2), r.nonzero(-2, 2), r.pick([1, -1])];
+        H = [s * p * p, s * p * q, s * q * q];
+      } else H = [r.nonzero(-4, 4), r.nonzero(-3, 3), r.nonzero(-4, 4)];
+      const d = H[0]! * H[2]! - H[1]! ** 2;
+      const t = H[0]! + H[2]!;
+      const k: CpKind = d === 0 ? "degenerate" : d < 0 ? "saddle" : t > 0 ? "min" : "max";
+      if (k === kind) break;
+    }
+    const [a, b, c] = H as [number, number, number];
+    const d = a * c - b * b;
+    const t = a + c;
+    const facts = String.raw`$\det H = ${d}$, $\operatorname{tr} H = ${t}$`;
+    const why: Record<CpKind, string> = {
+      min: String.raw`${facts}: собственные значения одного знака, сумма положительна — оба $> 0$, $H \succ 0$. Это минимум.`,
+      max: String.raw`${facts}: собственные значения одного знака, сумма отрицательна — оба $< 0$, $H \prec 0$. Это максимум.`,
+      saddle: String.raw`${facts}: произведение собственных значений отрицательно — они разных знаков. Это седло.`,
+      degenerate: String.raw`${facts}: одно собственное значение — ноль. Вдоль его направления решают члены выше второго порядка, гессиан ответа не даёт.`,
+    };
+    const names: Record<CpKind, string> = { min: "Минимум", max: "Максимум", saddle: "Седло", degenerate: "По гессиану не определить" };
+    return {
+      kind: "choice",
+      prompt: String.raw`В точке $x^\star$ градиент равен нулю, а гессиан $$H = ${pm([[a, b], [b, c]])}.$$ Что это за точка?`,
+      options: (["min", "max", "saddle", "degenerate"] as const).map((k) => ({ text: names[k], correct: k === kind, why: why[kind] })),
+      hints: [String.raw`$\lambda_1 \lambda_2 = \det H$, $\lambda_1 + \lambda_2 = \operatorname{tr} H$ (урок I.10).`],
+    };
+  },
+};

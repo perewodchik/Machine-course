@@ -50,6 +50,8 @@ export const layoutPages = {
   ii1: "/foundations/calculus/gradient/",
   ii2: "/foundations/calculus/chain-rule-jacobian/",
   ii3: "/foundations/calculus/matrix-calculus/",
+  ii4: "/foundations/calculus/hessian-taylor/",
+  saddlegame: "/games/min-max-saddle/",
   dimgame: "/games/dim-tetris/",
   spangame: "/games/span-hit/",
   concept: "/concepts/la.dot-product/",

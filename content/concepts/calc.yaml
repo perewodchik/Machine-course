@@ -20,6 +20,15 @@
     - edition: main-notes-2026-spring
       section: 'Linear regression / The normal equations'
 
+- id: calc.hessian
+  title:
+    ru: 'Гессиан'
+    en: 'Hessian'
+  summary: 'Симметричная матрица вторых производных $\nabla^2 f$, $H_{ij} = \partial^2 f / \partial x_i \partial x_j$; задаёт квадратичную часть $f(x + h) \approx f(x) + \nabla f^\top h + \tfrac12 h^\top H h$.'
+  lesson: hessian-taylor
+  prerequisites: [calc.gradient, la.quadratic-form]
+  core: true
+
 - id: calc.stationary-point
   title:
     ru: 'Критическая точка'

@@ -169,6 +169,11 @@
   .game-span__op i { font-family: var(--font-math); font-style: italic; }
 
   /* «Охота на собственные векторы»: матрица строкой, бегунок угла цветом v, действия и выбор λ — кнопки */
+  /* «Минимум, максимум или седло»: матрица H на уровнях без картинки и собственные значения после ответа */
+  .game-saddle__matrix { display: flex; align-items: center; justify-content: center; gap: var(--space-3); min-block-size: 200px; margin: 0; font: 28px var(--font-math); color: var(--ink); }
+  .game-saddle__grid { display: inline-grid; grid-template-columns: repeat(2, auto); gap: var(--space-2) var(--space-5); padding: var(--space-2) var(--space-4); border-inline: 2px solid var(--ink); border-radius: 10px; font-family: var(--font-math-upright); font-variant-numeric: tabular-nums; }
+  .game-saddle__eigs { margin: var(--space-2) 0 0; text-align: center; font: var(--text-sm) var(--font-ui); color: var(--ink-2); }
+  .game__swatch--dashed { border-top-style: dashed; }
   .game-eigen { display: grid; gap: var(--space-3); }
   .game-eigen__matrix { margin: 0; font: 18px var(--font-math-upright); color: var(--ink); font-variant-numeric: tabular-nums; }
   .game-eigen__matrix i { font-family: var(--font-math); }
