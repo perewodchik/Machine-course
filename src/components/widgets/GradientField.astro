@@ -1,0 +1,14 @@
+---
+// Обёртка виджета «Поле градиентов над линиями уровня» для урока: рисунок с номером и подписью, остров React (client:visible).
+import { GradientField, type GradientFieldProps } from "../../widgets/calc/gradient-field";
+
+interface Props extends GradientFieldProps {
+  /** Номер рисунка в уроке. */
+  n?: number;
+}
+const { n, ...props } = Astro.props;
+---
+<figure class="figure wide">
+  <GradientField client:visible {...props} />
+  <figcaption class="figure__caption">{n && <b>Рисунок {n}.</b>} <slot /></figcaption>
+</figure>

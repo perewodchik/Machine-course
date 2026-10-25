@@ -1,5 +1,10 @@
 ---
 // Сохранить и загрузить прогресс файлом (src/client/know.ts): отметки живут в браузере, файл переносит их на другое устройство.
+// Ссылка на страницу калибровки (S4.01) — везде, кроме самой этой страницы.
+interface Props {
+  calibrationLink?: boolean;
+}
+const { calibrationLink = true } = Astro.props;
 ---
 <div class="progress-file" data-progress-file>
   <p>Отметки «знаю» хранятся в&nbsp;этом браузере. Чтобы не&nbsp;потерять их или перенести на&nbsp;другое устройство, сохраните файл и&nbsp;загрузите его там.</p>
@@ -11,4 +16,5 @@
     </label>
   </div>
   <p class="progress-file__status" role="status" data-marks-status></p>
+  {calibrationLink && <p><a href="/progress/">Калибровка уверенности</a>: насколько отметка «уверен» перед ответом совпадает с&nbsp;долей верных ответов.</p>}
 </div>

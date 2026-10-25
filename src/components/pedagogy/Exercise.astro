@@ -40,7 +40,7 @@ interface Props {
   extra?: ChoiceOption[];
 }
 
-const { gen, variants = 8, seed = 1, n, title = "Упражнение", id, lesson, confidence = false, final = false, rule, bind = {}, extra = [] } = Astro.props;
+const { gen, variants = 8, seed = 1, n, title = "Упражнение", id, lesson, final = false, confidence = final, rule, bind = {}, extra = [] } = Astro.props;
 let { spec } = Astro.props;
 if (rule) {
   // задача с выбором из правила: «Чему равно (Xθ)ᵀ?» — верно θᵀXᵀ, неверные — мутации правила с объяснениями
@@ -94,7 +94,7 @@ function answerData(s: ExerciseSpec, seedValue: number) {
   }
 }
 ---
-<div class="block block--exercise exercise" data-exercise data-kind={kind} data-item={item} data-lesson={lessonKey} data-version={g?.version} data-uid={uid} data-final={final ? "" : undefined}>
+<div class="block block--exercise exercise" data-exercise data-kind={kind} data-item={item} data-lesson={lessonKey} data-version={g?.version} data-uid={uid} data-final={final ? "" : undefined} id={final ? "final-check" : undefined}>
   {items.map(({ seed: s, spec: sp }, vi) => {
     const vid = `${uid}-${vi}`;
     return (

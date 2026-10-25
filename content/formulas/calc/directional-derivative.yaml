@@ -1,0 +1,70 @@
+id: f.directional-derivative
+kind: formula
+title:
+  ru: 'Производная по направлению через градиент'
+  en: 'directional derivative via the gradient'
+statement: 'D_u f(\sym{x}{x}) = \nabla f(\sym{x}{x})^\top u'
+
+# Урок II.1: идём из x по прямой x + tu и дифференцируем по t. Правило цепочки (урок 0.6) складывает вклады
+# всех координат — получается скалярное произведение градиента и направления. Проверка — на f(x) = ½ xᵀAx + bᵀx.
+symbols:
+  - name: x
+    tex: 'x'
+    meaning: 'точка, в которой считают производную'
+    shape: [d, 1]
+    role: data
+  - name: u
+    tex: 'u'
+    meaning: 'направление (для «скорости роста на единицу пути» — единичное)'
+    shape: [d, 1]
+  - name: A
+    tex: 'A'
+    meaning: 'матрица пробной функции $f(x) = \tfrac12 x^\top A x + b^\top x$'
+    shape: [d, d]
+    sample: spd
+  - name: b
+    tex: 'b'
+    meaning: 'вектор пробной функции'
+    shape: [d, 1]
+
+dependsOn:
+  concepts: [calc.gradient, calc.chain-rule, la.dot-product]
+  rules: []
+
+derivation:
+  plan:
+    - 'Свести задачу к функции одной переменной: $g(t) = f(x + tu)$'
+    - 'Продифференцировать $g$ по правилу цепочки: каждая координата $x_j + t u_j$ меняется со скоростью $u_j$'
+    - 'Собрать сумму в скалярное произведение'
+  steps:
+    - goal: 0
+      tex: 'D_u f(\sym{x}{x}) = \frac{d}{dt} f(\sym{x}{x} + t u) \Big|_{t = 0}'
+      by: [calc.derivative]
+      note: 'Производная по направлению — скорость изменения $f$ при движении из $x$ вдоль $u$; это обычная производная функции $g(t) = f(x + tu)$ в нуле.'
+      check:
+        kind: same
+        py: '((0.5 * (x + 1e-6 * u) @ A @ (x + 1e-6 * u) + b @ (x + 1e-6 * u)) - (0.5 * (x - 1e-6 * u) @ A @ (x - 1e-6 * u) + b @ (x - 1e-6 * u))) / 2e-6'
+    - goal: 1
+      tex: '= \changed{\sum_{j=1}^{d} \frac{\partial f}{\partial \sym{x}{x}_j}(\sym{x}{x})\, u_j}'
+      by: [calc.chain-rule]
+      note: 'Координата $j$ точки $x + tu$ равна $x_j + t u_j$ и растёт со скоростью $u_j$; правило цепочки складывает вклады всех координат.'
+      check:
+        kind: same
+        py: 'np.sum((A @ x + b) * u)'
+    - goal: 2
+      tex: '= \changed{\nabla f(\sym{x}{x})^\top u}'
+      by: [calc.gradient, la.dot-product]
+      note: 'Сумма произведений координат — скалярное произведение столбца частных производных и $u$.'
+      check:
+        kind: same
+        py: '(A @ x + b) @ u'
+
+pitfalls:
+  - 'Брать неединичное $u$ и называть результат скоростью роста: при $u = 2e_1$ получится удвоенная частная производная.'
+  - 'Записывать градиент строкой: в курсе $\nabla f$ — столбец той же формы, что $x$, поэтому $D_u f = \nabla f^\top u$, а не $\nabla f\, u$.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Linear regression / LMS algorithm'
+
+usedIn: [calc.gradient]

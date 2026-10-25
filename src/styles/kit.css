@@ -161,6 +161,14 @@
   .plane-proj__facts i { font-family: var(--font-math); }
   .plane-proj__facts b { color: var(--ink); font-variant-numeric: tabular-nums; }
   @media (max-width: 900px) { .plane-proj__controls { grid-template-columns: minmax(0, 1fr); } }
+  /* «Поле градиентов над линиями уровня»: заготовки, бегунки точки и направления, три показания и пояснение */
+  .gradient-field__controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: var(--space-3) var(--space-5); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule); }
+  .gradient-field__group { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .gradient-field .btn[aria-pressed="true"] { border-color: var(--pen); color: var(--pen); box-shadow: inset 0 0 0 1px var(--pen); }
+  .gradient-field__readouts { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-6); }
+  .gradient-field__fact { grid-column: 1 / -1; margin: 0; font: var(--text-sm) var(--font-ui); color: var(--ink-2); }
+  @media (max-width: 900px) { .gradient-field__controls { grid-template-columns: minmax(0, 1fr); } }
+
   /* «Окружность → эллипс по шагам»: шаги и заготовки — кнопки с aria-pressed, четыре бегунка, σ₁, σ₂ и пояснение шага */
   .svd-steps__controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: var(--space-3) var(--space-5); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule); }
   .svd-steps__group { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: var(--space-2); }
