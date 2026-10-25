@@ -505,6 +505,23 @@ describe("генераторы", () => {
     }
   });
 
+  it("задача урока II.3: градиент xᵀAx + bᵀx совпадает с численным", () => {
+    const mats = (tex: string) => [...tex.matchAll(/\\begin\{pmatrix\}(.*?)\\end\{pmatrix\}/g)].map((m) => m[1]!.split(" \\\\ ").map((row) => row.split(" & ").map(Number)));
+    for (let s = 1; s <= 40; s++) {
+      const mg = make("calc.matrix-grad", s);
+      if (mg.kind !== "matrix") throw new Error("ожидалась матрица");
+      const [A, b, x] = mats(mg.prompt) as [number[][], number[][], number[][]];
+      expect(A[0]![1]).not.toBe(A[1]![0]);
+      const f = (v: number[]) => v.reduce((acc, vi, i) => acc + vi * (A[i]![0]! * v[0]! + A[i]![1]! * v[1]!) + b[i]![0]! * vi, 0);
+      const h = 1e-5;
+      for (const j of [0, 1]) {
+        const e = [0, 0].map((_, k) => (k === j ? h : 0));
+        const p0 = x.map((r) => r[0]!);
+        expect(mg.answer[j]![0]).toBeCloseTo((f(p0.map((v, k) => v + e[k]!)) - f(p0.map((v, k) => v - e[k]!))) / (2 * h), 5);
+      }
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

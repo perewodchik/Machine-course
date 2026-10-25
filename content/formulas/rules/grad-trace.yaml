@@ -1,0 +1,28 @@
+id: rule.grad-trace
+kind: rule
+title:
+  ru: 'Градиент следа произведения'
+  en: 'gradient of tr(AB)'
+statement: '\nabla_A \operatorname{tr}(AB) = B^\top'
+symbols:
+  - name: A
+    tex: 'A'
+    shape: [m, k]
+  - name: B
+    tex: 'B'
+    shape: [k, m]
+concept: calc.matrix-calculus
+corollary: '$\operatorname{tr}(AB) = \sum_{i,j} A_{ij} B_{ji}$, поэтому $\partial / \partial A_{ij} = B_{ji}$: градиент — $B^\top$ той же формы $m \times k$, что $A$.'
+pitfall: 'Писать $B$ вместо $B^\top$: при $m \ne k$ формы не сходятся — градиент по $A$ обязан иметь форму $A$.'
+checks:
+  - kind: gradient
+    f: 'np.trace(A @ B)'
+    grad: 'B.T'
+    wrt: A
+mutations:
+  - tex: 'B'
+    py: 'B'
+    why: '$\partial \operatorname{tr}(AB) / \partial A_{ij} = B_{ji}$ — индексы меняются местами, поэтому $B^\top$. И форма: $B$ — матрица $k \times m$, а $A$ — $m \times k$.'
+  - tex: 'A^\top B^\top'
+    py: 'A.T @ B.T'
+    why: 'След линеен по $A$, поэтому градиент от $A$ не зависит: остаётся только $B^\top$.'

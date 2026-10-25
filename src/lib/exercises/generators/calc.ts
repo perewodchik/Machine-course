@@ -216,3 +216,32 @@ export const backprop: Generator = {
     };
   },
 };
+
+/** Урок II.3: градиент f(x) = xᵀAx + bᵀx с несимметричной A — (A + Aᵀ)x + b, а не 2Ax + b. */
+export const matrixGrad: Generator = {
+  id: "calc.matrix-grad",
+  version: 1,
+  title: "Градиент квадратичной функции",
+  make(seed) {
+    const r = rng(seed);
+    for (;;) {
+      const A = [[r.int(-2, 3), r.int(-3, 3)], [r.int(-3, 3), r.int(-2, 3)]];
+      if (A[0]![1] === A[1]![0]) continue; // несимметричная — иначе ловушка 2Ax не видна
+      const b = [r.int(-3, 3), r.int(-3, 3)];
+      const x = [r.nonzero(-2, 2), r.nonzero(-2, 2)];
+      const S = [[2 * A[0]![0]!, A[0]![1]! + A[1]![0]!], [A[0]![1]! + A[1]![0]!, 2 * A[1]![1]!]];
+      const g = S.map((row, i) => row[0]! * x[0]! + row[1]! * x[1]! + b[i]!);
+      const col = (w: readonly number[]) => pm(w.map((v) => [v]));
+      return {
+        kind: "matrix",
+        prompt: String.raw`$f(x) = x^\top A x + b^\top x$, $$A = ${pm(A)}, \quad b = ${col(b)}, \quad x = ${col(x)}.$$ Найдите $\nabla f(x)$.`,
+        label: String.raw`$\nabla f =$`,
+        answer: g.map((v) => [v]),
+        tol: 0,
+        hints: [String.raw`$\nabla_x\, x^\top A x = (A + A^\top)x$, $\nabla_x\, b^\top x = b$.`, String.raw`$A + A^\top = ${pm(S)}$.`],
+        right: String.raw`$\nabla f = (A + A^\top)x + b = ${pm(S)} ${col(x)} + ${col(b)} = ${col(g)}$.`,
+        wrong: String.raw`Матрица $A$ несимметрична, поэтому $2Ax$ не подходит: $\nabla_x\, x^\top A x = (A + A^\top)x$. Не забудьте прибавить $b$.`,
+      };
+    }
+  },
+};

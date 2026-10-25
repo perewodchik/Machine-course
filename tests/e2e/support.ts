@@ -49,6 +49,7 @@ export const layoutPages = {
   // модуль II
   ii1: "/foundations/calculus/gradient/",
   ii2: "/foundations/calculus/chain-rule-jacobian/",
+  ii3: "/foundations/calculus/matrix-calculus/",
   dimgame: "/games/dim-tetris/",
   spangame: "/games/span-hit/",
   concept: "/concepts/la.dot-product/",
