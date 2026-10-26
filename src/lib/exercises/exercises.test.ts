@@ -1023,6 +1023,31 @@ describe("генераторы", () => {
     }
   });
 
+  it("prob.mixture: p(x) и ответственность по Байесу; prob.mixture-moments совпадают с интегралом по плотности смеси", () => {
+    const npdf = (x: number, mu: number, v: number) => Math.exp(-((x - mu) ** 2) / (2 * v)) / Math.sqrt(2 * Math.PI * v);
+    for (let s = 1; s <= 30; s++) {
+      const t = make("prob.mixture", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const phi = Number(/phi = ([\d.]+)\$/.exec(t.prompt)![1]);
+      const p1 = Number(/mid z = 1\) = ([\d.]+)\$/.exec(t.prompt)![1]);
+      const p2 = Number(/mid z = 2\) = ([\d.]+)\$/.exec(t.prompt)![1]);
+      const mix = phi * p1 + (1 - phi) * p2;
+      expect(Math.abs(t.answer - (t.prompt.includes("ответственность") ? (phi * p1) / mix : mix))).toBeLessThan(0.001);
+
+      const m = make("prob.mixture-moments", s);
+      if (m.kind !== "numeric") throw new Error("ожидалось число");
+      const [w, mu1, v1, mu2, v2] = /вероятностью \$([\d.]+)\$ из \$\\mathcal\{N\}\((-?\d+), (\d+)\)\$, иначе из \$\\mathcal\{N\}\((-?\d+), (\d+)\)/.exec(m.prompt)!.slice(1).map(Number) as [number, number, number, number, number];
+      const dens = (x: number) => w * npdf(x, mu1, v1) + (1 - w) * npdf(x, mu2, v2);
+      let e = 0;
+      let e2 = 0;
+      for (let x = -25; x <= 25; x += 0.005) {
+        e += x * dens(x) * 0.005;
+        e2 += x * x * dens(x) * 0.005;
+      }
+      expect(Math.abs(m.answer - (m.prompt.includes("Var") ? e2 - e * e : e))).toBeLessThan(0.01);
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

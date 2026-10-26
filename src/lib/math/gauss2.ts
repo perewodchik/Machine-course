@@ -22,7 +22,13 @@ export function eig2([a, b, c]: Sym2): { l1: number; l2: number; u: Vec2 } {
   const m = (a + c) / 2;
   const r = Math.hypot((a - c) / 2, b);
   const l1 = m + r;
-  const u: Vec2 = Math.abs(b) < 1e-12 ? (a >= c ? [1, 0] : [0, 1]) : ([l1 - c, b].map((v, _, arr) => v / Math.hypot(arr[0]!, arr[1]!)) as unknown as Vec2);
+  // (Σ − λ₁I)u = 0 даёт два кандидата: (λ₁ − c, b) и (b, λ₁ − a). Берём более длинный — у короткого при малом b
+  // координаты почти нули, и вычитание теряет точность.
+  const p: Vec2 = [l1 - c, b];
+  const q: Vec2 = [b, l1 - a];
+  const w = Math.hypot(...p) >= Math.hypot(...q) ? p : q;
+  const len = Math.hypot(...w);
+  const u: Vec2 = len < 1e-15 ? [1, 0] : [w[0] / len, w[1] / len];
   return { l1, l2: m - r, u };
 }
 

@@ -381,3 +381,6 @@
 - id: multivariate-normal
   ru: 'многомерное нормальное распределение; расстояние Махаланобиса; линии уровня; условное гауссово'
   en: 'multivariate Gaussian; Mahalanobis distance; isocontours; conditional Gaussian'
+- id: mixtures
+  ru: 'смесь распределений; скрытая переменная; ответственность'
+  en: 'mixture model; latent variable; responsibility'

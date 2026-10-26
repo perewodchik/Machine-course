@@ -194,6 +194,9 @@
   .gauss-editor__controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: var(--space-3) var(--space-5); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule); }
   .gauss-editor__readouts { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: start; gap: var(--space-3) var(--space-5); }
   @media (max-width: 900px) { .gauss-editor__controls { grid-template-columns: minmax(0, 1fr); } .gauss-editor__readouts { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .mixture__controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: var(--space-3) var(--space-5); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule); }
+  .mixture__readouts { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; gap: var(--space-3) var(--space-5); }
+  @media (max-width: 900px) { .mixture__controls, .mixture__readouts { grid-template-columns: minmax(0, 1fr); } }
   .riemann__fn { font-family: var(--font-math); font-size: 1.05em; }
   .riemann__fn sup { font-size: 0.7em; }
   @media (max-width: 900px) { .riemann__controls { grid-template-columns: minmax(0, 1fr); } }

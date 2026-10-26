@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — L-III.12 L-III.12 — смеси и скрытые переменные — готов
+- **Сделано:** урок mixtures-latent (три цикла: порождение через z и смесь ≠ сумма, ответственность и log-sum-exp, моменты смеси и EM), виджет «Смесь двух гауссиан и ответственности», формула f.responsibility, генераторы prob.mixture и prob.mixture-moments, сниппет mixture.py с тестом; исправлен eig2 в gauss2.ts: при ρ ≈ 0 и σ₁ < σ₂ собственный вектор терял точность (тест свойств падал на случайном seed)
+- **Файлы:** content/courses/foundations/probability/mixtures-latent.mdx, src/widgets/prob/mixture/, content/formulas/prob/responsibility.yaml, code/snippets/prob/mixture.py, src/lib/math/gauss2.ts
+- **Проверка:** validate, lint, build, check, vitest 586 (gauss2 ×8), pytest, check_consistency, e2e III.12 и раскладка iii12 (axe)
+- **Отклонения от плана и решения:** нет
+- **Следующий шаг:** L-III.13 — энтропия, кросс-энтропия, KL.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — L-III.11 L-III.11 — многомерное нормальное распределение — готов
 - **Сделано:** урок multivariate-normal (три цикла: плотность по множителям, эллипсы уровня, выборка и условные), виджет «Редактор μ и Σ», игра «Скульптор Σ» (/games/sigma-sculptor/, KL между облаком и догадкой), модель src/lib/math/gauss2.ts, формула f.gaussian-axes, генераторы prob.mahalanobis и prob.gauss-axes, сниппет mvn.py с тестом
 - **Файлы:** content/courses/foundations/probability/multivariate-normal.mdx, src/widgets/prob/gauss-editor/, src/games/sigma-sculptor/, src/lib/math/gauss2.ts, content/formulas/prob/gaussian-axes.yaml, code/snippets/prob/mvn.py

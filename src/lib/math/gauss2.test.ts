@@ -21,6 +21,13 @@ describe("двумерное нормальное", () => {
     for (let i = 0; i < 3; i++) expect(Math.abs(F[i]! - S[i]!)).toBeLessThan(0.06);
   });
 
+  it("почти диагональная Σ (ρ ≈ 1e−12, σ₁ < σ₂): собственный вектор точный", () => {
+    const S = sigmaOf(0.52, 1.96, 1e-12);
+    const { l1, u } = eig2(S);
+    expect(S[0] * u[0] + S[1] * u[1]).toBeCloseTo(l1 * u[0], 9);
+    expect(S[1] * u[0] + S[2] * u[1]).toBeCloseTo(l1 * u[1], 9);
+  });
+
   it("собственный вектор: Σu = λ₁u; λ₁λ₂ = det Σ; вдоль u расстояние Махаланобиса 1 на √λ₁", () => {
     fc.assert(
       fc.property(fc.double({ min: 0.3, max: 3, noNaN: true }), fc.double({ min: 0.3, max: 3, noNaN: true }), fc.double({ min: -0.95, max: 0.95, noNaN: true }), (s1, s2, rho) => {

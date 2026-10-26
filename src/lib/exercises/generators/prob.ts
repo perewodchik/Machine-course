@@ -911,3 +911,74 @@ export const gaussAxes: Generator = {
     };
   },
 };
+
+/** Урок III.12: смесь двух компонент — плотность в точке или ответственность по формуле Байеса. */
+export const mixtureGen: Generator = {
+  id: "prob.mixture",
+  version: 1,
+  title: "Плотность смеси и ответственность",
+  make(seed) {
+    const r = rng(seed);
+    const phi = r.pick([0.2, 0.3, 0.4, 0.6, 0.7]);
+    const p1 = r.pick([0.05, 0.1, 0.2, 0.3]);
+    const p2 = r.pick([0.1, 0.15, 0.25, 0.4].filter((v) => v !== p1));
+    const mix = phi * p1 + (1 - phi) * p2;
+    const ctx = String.raw`Смесь двух компонент: $P(z = 1) = \phi = ${phi}$, $P(z = 2) = ${round(1 - phi)}$. В точке $x$ плотности компонент $p(x \mid z = 1) = ${p1}$, $p(x \mid z = 2) = ${p2}$.`;
+    if (seed % 2 === 0) {
+      const answer = round(mix);
+      return {
+        kind: "numeric",
+        prompt: String.raw`${ctx} Найдите плотность смеси $p(x)$.`,
+        label: String.raw`$p(x) =$`,
+        answer,
+        tol: 0.0005,
+        hints: [String.raw`$p(x) = \sum_k P(z = k)\, p(x \mid z = k)$ — маргинализация по скрытой $z$.`],
+        right: String.raw`$${phi} \cdot ${p1} + ${round(1 - phi)} \cdot ${p2} = ${answer}$.`,
+        wrong: String.raw`Плотности компонент нужно взвесить вероятностями $\phi$ и $1 - \phi$, а не сложить и не усреднить поровну.`,
+      };
+    }
+    const answer = round((phi * p1) / mix, 3);
+    return {
+      kind: "numeric",
+      prompt: String.raw`${ctx} Найдите ответственность первой компоненты $P(z = 1 \mid x)$.`,
+      label: String.raw`$P(z = 1 \mid x) =$`,
+      answer,
+      tol: 0.005,
+      hints: [String.raw`Формула Байеса: числитель $\phi\, p(x \mid z = 1)$, знаменатель — плотность смеси $p(x)$.`],
+      right: String.raw`$\dfrac{${phi} \cdot ${p1}}{${phi} \cdot ${p1} + ${round(1 - phi)} \cdot ${p2}} = \dfrac{${round(phi * p1)}}{${round(mix)}} \approx ${answer}$.`,
+      wrong: String.raw`Не забудьте априорные веса: сравнивают не $${p1}$ и $${p2}$, а $\phi\, p(x \mid z = 1) = ${round(phi * p1)}$ и $(1 - \phi)\, p(x \mid z = 2) = ${round((1 - phi) * p2)}$.`,
+    };
+  },
+};
+
+/** Урок III.12: матожидание или дисперсия смеси двух нормальных — по полному матожиданию. */
+export const mixtureMoments: Generator = {
+  id: "prob.mixture-moments",
+  version: 1,
+  title: "Моменты смеси",
+  make(seed) {
+    const r = rng(seed);
+    const phi = r.pick([0.25, 0.5, 0.75]);
+    const mu1 = r.int(-3, 0);
+    const mu2 = r.int(1, 4);
+    const v1 = r.pick([1, 2, 4]);
+    const v2 = r.pick([1, 2, 4]);
+    const mean = phi * mu1 + (1 - phi) * mu2;
+    const variance = phi * (v1 + mu1 * mu1) + (1 - phi) * (v2 + mu2 * mu2) - mean * mean;
+    const wantVar = seed % 2 === 1;
+    const answer = round(wantVar ? variance : mean, 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`$X$ — смесь: с вероятностью $${phi}$ из $\mathcal{N}(${mu1}, ${v1})$, иначе из $\mathcal{N}(${mu2}, ${v2})$ (второй параметр — дисперсия). Найдите $${wantVar ? String.raw`\operatorname{Var} X` : String.raw`\mathbb{E}X`}$.`,
+      label: wantVar ? String.raw`$\operatorname{Var} X =$` : String.raw`$\mathbb{E}X =$`,
+      answer,
+      tol: 0.005,
+      hints: [
+        String.raw`Закон полного матожидания: $\mathbb{E}X = \sum_k \phi_k\, \mathbb{E}[X \mid z = k]$.`,
+        ...(wantVar ? [String.raw`$\mathbb{E}X^2 = \sum_k \phi_k (\sigma_k^2 + \mu_k^2)$, потом $\operatorname{Var} X = \mathbb{E}X^2 - (\mathbb{E}X)^2$.`] : []),
+      ],
+      right: wantVar ? String.raw`$\mathbb{E}X^2 = ${round(phi * (v1 + mu1 * mu1) + (1 - phi) * (v2 + mu2 * mu2), 4)}$, $\mathbb{E}X = ${round(mean, 4)}$, $\operatorname{Var} X = ${answer}$ — больше обеих дисперсий компонент, если их средние далеко.` : String.raw`$${phi} \cdot ${par(mu1)} + ${1 - phi} \cdot ${mu2} = ${answer}$.`,
+      wrong: wantVar ? String.raw`Дисперсия смеси — не $\sum_k \phi_k \sigma_k^2$: к ней добавляется разброс самих средних, $\sum_k \phi_k (\mu_k - \mathbb{E}X)^2$. И это не сумма величин: $\phi^2\sigma_1^2 + (1 - \phi)^2\sigma_2^2$ — дисперсия взвешенной суммы.` : String.raw`Средние компонент нужно взвесить вероятностями: $\phi\mu_1 + (1 - \phi)\mu_2$.`,
+    };
+  },
+};

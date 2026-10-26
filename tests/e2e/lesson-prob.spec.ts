@@ -295,3 +295,27 @@ test("урок III.11: редактор μ и Σ — оси и Махалано�
   await page.evaluate(() => window.scrollTo(0, 0));
   await expectNoAxeViolations(page);
 });
+
+test("урок III.12: смесь — ответственность в x₀ как в ячейке Python, граница при x₀ = −0.1, итоговая проверка", async ({ page }) => {
+  await page.goto("/foundations/probability/mixtures-latent/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Смеси и скрытые переменные");
+
+  const fig = page.locator(".mixture").first();
+  await fig.scrollIntoViewIfNeeded();
+  await expect(fig.locator("xpath=ancestor::astro-island[1]")).not.toHaveAttribute("ssr", "");
+  // те же параметры, что в ячейке: P(z = 1 | x = 0.5) = 0.088
+  await expect(fig.locator("[aria-live]")).toContainText("P(z = 1 | x₀) = 0.09");
+  const x0 = fig.getByRole("slider", { name: "x0" });
+  for (let i = 0; i < 6; i++) await x0.press("ArrowLeft");
+  // граница w₁ = w₂ около x = −0.09, а не посередине между средними (0.25)
+  await expect(fig.locator("[aria-live]")).toContainText(/x₀ = −0\.1: .*P\(z = 1 \| x₀\) = 0\.(4\d|5[0-5])/);
+
+  const final = page.locator("#final-check");
+  const spec = generator("prob.mixture").make(31);
+  if (spec.kind !== "numeric") throw new Error("ожидалось число");
+  await final.locator("[data-variant]:not([hidden]) input").first().fill(String(spec.answer));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});

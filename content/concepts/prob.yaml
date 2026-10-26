@@ -81,6 +81,15 @@
   prerequisites: [prob.random-vectors, prob.normal, la.eigen]
   core: true
 
+- id: prob.mixtures
+  title:
+    ru: 'Смеси и скрытые переменные'
+    en: 'mixtures and latent variables'
+  summary: 'Смесь $p(x) = \sum_k \phi_k\, p(x \mid z = k)$ — маргинализация по скрытой $z$; порождение: сначала $z \sim \phi$, потом $x \mid z$; ответственность $P(z = k \mid x)$ по формуле Байеса; смесь — не сумма величин.'
+  lesson: mixtures-latent
+  prerequisites: [prob.multivariate-normal, prob.bayes]
+  core: true
+
 - id: prob.independence
   title:
     ru: 'Независимость'
