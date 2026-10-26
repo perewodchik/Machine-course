@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — S5.03 компаньон к конспекту CS229 — готова
+- **Сделано:** логика src/lib/content/companion.ts (разделы, адреса, формулы по разделу и подразделу, генератор итоговой проверки из MDX) и сборка данных companion-data.ts; страницы src/pages/cs229/; ExerciseSet получил prop intro; ссылка с /ready/
+- **Файлы:** src/lib/content/companion.ts, src/lib/content/companion-data.ts, src/pages/cs229/, src/components/pedagogy/ExerciseSet.astro
+- **Проверка:** vitest 648, lint, check, validate, build, e2e companion.spec.ts, раскладка и axe cs229
+- **Отклонения от плана и решения:** разминка берёт генератор итоговой проверки урока из его MDX; уроки без генератора (V.2 — фрагменты) в разминку не идут; уроки курсов ML пока без текста — ссылки ведут на их страницы-заглушки
+- **Следующий шаг:** S5.04.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — S5.02 карта готовности к курсам ML — готова
 - **Сделано:** content/readiness.yaml (семь курсов ML), логика src/lib/progress/readiness.ts (диапазоны номеров, освежить, первая попытка задач V.2, согласование числительных), страница src/pages/ready.astro и клиент src/client/ready.ts; ссылка из итога V.2
 - **Файлы:** content/readiness.yaml, src/lib/progress/readiness.ts, src/pages/ready.astro, src/client/ready.ts, src/styles/layout.css

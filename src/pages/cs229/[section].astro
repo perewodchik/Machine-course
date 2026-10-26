@@ -1,0 +1,57 @@
+---
+// Страница раздела конспекта CS229 (S5.03): уроки-пререквизиты всех курсов с галочкой «знаю», разминка из итоговых
+// проверок уроков математики и карточки формул на шаги вывода. Текст Stanford не копируется.
+import type { GetStaticPaths } from "astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Know from "../../components/layout/Know.astro";
+import ExerciseSet from "../../components/pedagogy/ExerciseSet.astro";
+import Formula from "../../components/pedagogy/Formula.astro";
+import { companion } from "../../lib/content/companion-data";
+import { loadCourse } from "../../lib/content/collections";
+
+export const getStaticPaths = (async () => (await companion()).map((s) => ({ params: { section: s.slug }, props: { s } }))) satisfies GetStaticPaths;
+
+type S = Awaited<ReturnType<typeof companion>>[number];
+const { s } = Astro.props as { s: S };
+const math = await loadCourse("foundations");
+const courses = [...new Set(s.lessons.map((l) => l.course))];
+---
+<BaseLayout title={`CS229: ${s.name}`} description={`Перед чтением раздела «${s.name}» конспекта CS229: уроки, формулы и разминка.`} course={math}>
+  <main class="shell companion" id="content">
+    <nav class="breadcrumb" aria-label="Путь"><a href="/cs229/">Компаньон к конспекту CS229</a></nav>
+    <h1 lang="en">{s.name}</h1>
+    <p class="lead">Перед чтением этого раздела конспекта CS229 проверьте, что уроки ниже отмечены «знаю», и&nbsp;решите разминку. Формулы внизу&nbsp;— шаги выводов, которые встретятся в&nbsp;разделе, с&nbsp;проверкой каждого шага.</p>
+
+    <section aria-labelledby="c-lessons">
+      <h2 id="c-lessons">Уроки</h2>
+      {courses.map((c) => (
+        <>
+          <h3>{s.courseTitles.get(c)}</h3>
+          <ul class="ready__lessons">
+            {s.lessons.filter((l) => l.course === c).map((l) => (
+              <li>
+                <Know lesson={l} />
+                <span class="ready__num">{l.number}</span>
+                <a href={l.href}>{l.title}</a>
+              </li>
+            ))}
+          </ul>
+        </>
+      ))}
+    </section>
+
+    {s.warmup.length > 0 && (
+      <section aria-labelledby="c-warmup">
+        <h2 id="c-warmup">Разминка</h2>
+        <ExerciseSet items={s.warmup} seed={7} title="Пять минут перед чтением" intro="По задаче из итоговых проверок уроков математики, на которые опирается раздел. Неверный ответ — повод открыть урок до чтения." />
+      </section>
+    )}
+
+    {s.formulas.length > 0 && (
+      <section aria-labelledby="c-formulas">
+        <h2 id="c-formulas">Формулы раздела</h2>
+        {s.formulas.map((id, i) => <Formula formula={id} n={i + 1} />)}
+      </section>
+    )}
+  </main>
+</BaseLayout>

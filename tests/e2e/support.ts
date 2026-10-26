@@ -37,6 +37,7 @@ export const layoutPages = {
   iv8: "/foundations/statistics/intervals-tests/",
   v2: "/foundations/bridge/math-in-ml/",
   ready: "/ready/",
+  cs229: "/cs229/linear-regression/",
   zoogame: "/games/dist-zoo/",
   corrgame: "/games/guess-correlation/",
   sigmagame: "/games/sigma-sculptor/",

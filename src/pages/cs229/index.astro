@@ -1,0 +1,24 @@
+---
+// Компаньон к конспекту CS229 (S5.03, идея B3): список разделов конспекта, у каждого — страница с уроками всех курсов,
+// формулами и разминкой перед чтением. Текст конспекта не копируется: только названия разделов и ссылки на наши уроки.
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { companion } from "../../lib/content/companion-data";
+import { loadCourse } from "../../lib/content/collections";
+
+const math = await loadCourse("foundations");
+const list = await companion();
+---
+<BaseLayout title="Компаньон к конспекту CS229" description="Перед чтением раздела конспекта Stanford CS229: какие уроки нужны, какие формулы встретятся, короткая разминка." course={math}>
+  <main class="shell companion" id="content">
+    <h1>Компаньон к конспекту CS229</h1>
+    <p class="lead">Перед чтением раздела конспекта откройте его страницу здесь: какие уроки он предполагает, какие формулы в&nbsp;нём встретятся и&nbsp;пятиминутная разминка. Сам конспект читайте на&nbsp;сайте курса&nbsp;— здесь только названия разделов и&nbsp;наши уроки.</p>
+    <ul class="companion__sections">
+      {list.map((s) => (
+        <li>
+          <a href={`/cs229/${s.slug}/`} lang="en">{s.name}</a>
+          <span class="ref">{s.lessons.length} {s.lessons.length % 10 === 1 && s.lessons.length % 100 !== 11 ? "урок" : [2, 3, 4].includes(s.lessons.length % 10) && ![12, 13, 14].includes(s.lessons.length % 100) ? "урока" : "уроков"}{s.formulas.length ? `, формул: ${s.formulas.length}` : ""}</span>
+        </li>
+      ))}
+    </ul>
+  </main>
+</BaseLayout>
