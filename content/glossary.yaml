@@ -393,3 +393,6 @@
 - id: estimators
   ru: 'оценка; смещение; среднеквадратичная ошибка; состоятельность; поправка Бесселя'
   en: 'estimator; bias; mean squared error (MSE); consistency; Bessel''s correction'
+- id: multivariate-mle
+  ru: 'трюк со следом; выборочная ковариационная матрица; матрица точности'
+  en: 'trace trick; sample covariance matrix; precision matrix'

@@ -1,0 +1,72 @@
+id: f.mvn-mle
+kind: formula
+title:
+  ru: 'Оценка максимального правдоподобия ковариационной матрицы'
+  en: 'maximum likelihood estimate of a Gaussian covariance'
+statement: '\hat\mu = \frac1n \sum_{i=1}^{n} x^{(i)}, \qquad \hat\Sigma = \frac1n \sum_{i=1}^{n} \bigl(x^{(i)} - \hat\mu\bigr)\bigl(x^{(i)} - \hat\mu\bigr)^\top'
+
+# Урок IV.4: после μ̂ = x̄ удобно максимизировать по матрице точности Λ = Σ⁻¹: log det Σ = −log det Λ, квадратичная
+# форма по трюку со следом — tr(Λ S) с S = Σᵢ (xᵢ − x̄)(xᵢ − x̄)ᵀ. Градиент n/2 · Λ⁻ᵀ − S/2 обнуляется при
+# Λ⁻¹ = S/n. Проверка — выборка X размера n × d = 7 × 3 (строки — объекты), Λ — случайная Λ ≻ 0.
+symbols:
+  - name: X
+    tex: 'X'
+    meaning: 'выборка: строки — $x^{(i)\top}$'
+    shape: [n, d]
+  - name: Lambda
+    tex: '\Lambda'
+    meaning: 'матрица точности $\Lambda = \Sigma^{-1}$'
+    shape: [d, d]
+    sample: spd
+
+dependsOn:
+  concepts: [stat.mle, prob.multivariate-normal, calc.matrix-calculus]
+  rules: [rule.trace-quadratic, rule.trace-cyclic, rule.grad-log-det, rule.grad-trace]
+
+derivation:
+  plan:
+    - 'Записать логарифм правдоподобия через $\Lambda = \Sigma^{-1}$, подставив $\hat\mu = \bar x$'
+    - 'Превратить сумму квадратичных форм в след: $x^\top \Lambda x = \operatorname{tr}(\Lambda x x^\top)$'
+    - 'Взять градиент по $\Lambda$: $\nabla \log\lvert\det\Lambda\rvert = \Lambda^{-\top}$, $\nabla \operatorname{tr}(\Lambda S) = S^\top$'
+    - 'Приравнять к нулю и выразить $\Sigma = \Lambda^{-1}$'
+  steps:
+    - goal: 0
+      tex: '\ell(\Lambda) = \frac{n}{2} \log \det \Lambda - \frac12 \sum_{i=1}^{n} \bigl(x^{(i)} - \bar x\bigr)^\top \Lambda \bigl(x^{(i)} - \bar x\bigr) + \text{const}'
+      by: [prob.multivariate-normal]
+      note: '$-\frac12 \log\det\Sigma = +\frac12 \log\det\Lambda$; множитель $(2\pi)^{-d/2}$ уходит в константу. Максимум по $\mu$ при любом $\Lambda$ — $\bar x$: градиент $\Lambda \sum_i (x^{(i)} - \mu)$ равен нулю.'
+      check:
+        kind: same
+        py: 'X.shape[0] / 2 * np.log(np.linalg.det(Lambda)) - 0.5 * np.sum(((X - np.sum(X, axis=0) / X.shape[0]) @ Lambda) * (X - np.sum(X, axis=0) / X.shape[0]))'
+    - goal: 1
+      tex: '= \frac{n}{2} \log \det \Lambda - \frac12 \changed{\operatorname{tr}\bigl(\Lambda S\bigr)}, \qquad S = \sum_{i=1}^{n} \bigl(x^{(i)} - \bar x\bigr)\bigl(x^{(i)} - \bar x\bigr)^\top'
+      by: [rule.trace-quadratic, rule.trace-cyclic]
+      note: 'Число равно своему следу, а след не меняется при циклической перестановке: $v^\top \Lambda v = \operatorname{tr}(\Lambda v v^\top)$. След суммы — сумма следов.'
+      check:
+        kind: same
+        py: 'X.shape[0] / 2 * np.log(np.linalg.det(Lambda)) - 0.5 * np.trace(Lambda @ ((X - np.sum(X, axis=0) / X.shape[0]).T @ (X - np.sum(X, axis=0) / X.shape[0])))'
+    - goal: 2
+      tex: '\nabla_\Lambda \ell = \changed{\frac{n}{2} \Lambda^{-\top} - \frac12 S^\top} = \frac{n}{2} \Lambda^{-1} - \frac12 S'
+      by: [rule.grad-log-det, rule.grad-trace]
+      note: '$\Lambda$ и $S$ симметричны, транспонирования пропадают. Градиент по всем $d^2$ элементам сразу — матрица той же формы, что $\Lambda$.'
+      check:
+        kind: gradient
+        wrt: Lambda
+        py: 'X.shape[0] / 2 * np.linalg.inv(Lambda).T - 0.5 * ((X - np.sum(X, axis=0) / X.shape[0]).T @ (X - np.sum(X, axis=0) / X.shape[0])).T'
+    - goal: 3
+      tex: '\hat\Sigma = \hat\Lambda^{-1} = \changed{\frac1n S} = \frac1n \sum_{i=1}^{n} \bigl(x^{(i)} - \bar x\bigr)\bigl(x^{(i)} - \bar x\bigr)^\top'
+      by: [stat.mle]
+      note: 'Делим на $n$, как и в одномерном случае (урок IV.3). $\hat\Sigma$ симметрична и $\succeq 0$ — сумма внешних произведений; обратима, если точки не лежат в гиперплоскости.'
+      check:
+        kind: solution
+        wrt: Lambda
+        py: 'np.linalg.inv((X - np.sum(X, axis=0) / X.shape[0]).T @ (X - np.sum(X, axis=0) / X.shape[0]) / X.shape[0])'
+
+pitfalls:
+  - 'Делить на $n - 1$: так получается несмещённая выборочная ковариация, а MLE делит на $n$.'
+  - 'Терять симметричность: $\nabla_\Lambda \log\det\Lambda = \Lambda^{-\top}$ и $\nabla \operatorname{tr}(\Lambda S) = S^\top$ — транспонирования пропадают только потому, что $\Lambda$ и $S$ симметричны.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Generative learning algorithms / Gaussian discriminant analysis'
+
+usedIn: [stat.multivariate-mle]

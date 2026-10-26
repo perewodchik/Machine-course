@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — L-IV.4 L-IV.4 — многомерный MLE — готов
+- **Сделано:** урок statistics/multivariate-mle (три цикла: трюк со следом и μ̂, Σ̂ рабочим примером и «найди ошибку», параметры GDA), формула f.mvn-mle (через матрицу точности, проверка gradient и solution по матрице), генераторы stat.cov-mle (матрица) и stat.gda-mle, сниппет stats/mvn_mle.py с тестом
+- **Файлы:** content/courses/foundations/statistics/multivariate-mle.mdx, content/formulas/stat/mvn-mle.yaml, code/snippets/stats/mvn_mle.py
+- **Проверка:** validate, lint, build, check, vitest 608, pytest, check_consistency, e2e IV.4 и раскладка iv4 (axe)
+- **Отклонения от плана и решения:** «вывод по шагам с угасающими подсказками» сделан как рабочий пример (формула по шагам) → упражнение «соберите вывод» (order) → «найдите ошибку»: проверщик строк вывода не умеет log det
+- **Следующий шаг:** L-IV.5 — экспоненциальное семейство.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — L-IV.3 L-IV.3 — метод максимального правдоподобия — готов
 - **Сделано:** урок statistics/mle (четыре цикла: правдоподобие, логарифм и максимум, нормальное, условное и совместное), игра «Машина правдоподобия» (/games/likelihood-machine/), лабораторная stats/mle_by_hand (перебор, подъём, нормальное, МНК как MLE), формулы f.poisson-mle и f.normal-variance-mle, генераторы stat.mle-family и stat.log-likelihood, сниппет stats/mle.py с тестом
 - **Файлы:** content/courses/foundations/statistics/mle.mdx, src/games/likelihood-machine/, notebooks/src/stats/mle_by_hand.py, content/formulas/stat/poisson-mle.yaml, content/formulas/stat/normal-variance-mle.yaml, code/snippets/stats/mle.py

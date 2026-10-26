@@ -224,3 +224,60 @@ export const logLik: Generator = {
     };
   },
 };
+
+const pmx = (m: number[][]) => String.raw`\begin{pmatrix} ${m.map((row) => row.join(" & ")).join(String.raw` \\ `)} \end{pmatrix}`;
+
+/** Урок IV.4: MLE ковариации по трём-четырём точкам на плоскости (матрица, деление на n). */
+export const covMle: Generator = {
+  id: "stat.cov-mle",
+  version: 1,
+  title: "Выборочная ковариационная матрица",
+  make(seed) {
+    const r = rng(seed);
+    // n = 4 точки с целым средним: последнюю подбираем так, чтобы сумма делилась на 4
+    const pts = Array.from({ length: 3 }, () => [r.int(-3, 4), r.int(-3, 4)]);
+    const want = [r.int(-1, 1) * 4, r.int(-1, 1) * 4];
+    pts.push([want[0]! - pts.reduce((a, p) => a + p[0]!, 0) + 4 * r.int(-1, 1), want[1]! - pts.reduce((a, p) => a + p[1]!, 0) + 4 * r.int(-1, 1)]);
+    const n = pts.length;
+    const mu = [0, 1].map((j) => pts.reduce((a, p) => a + p[j]!, 0) / n);
+    const S = [0, 1].map((a) => [0, 1].map((b) => round(pts.reduce((acc, p) => acc + (p[a]! - mu[a]!) * (p[b]! - mu[b]!), 0) / n, 4)));
+    return {
+      kind: "matrix",
+      prompt: String.raw`Четыре наблюдения $x^{(i)} \in \mathbb{R}^2$: $${pts.map((p) => String.raw`(${p[0]}, ${p[1]})`).join(", ")}$. Найдите оценку максимального правдоподобия ковариационной матрицы $\hat\Sigma$.`,
+      label: String.raw`$\hat\Sigma =$`,
+      answer: S,
+      tol: 0.005,
+      hints: [String.raw`$\hat\mu = (${mu[0]}, ${mu[1]})^\top$. $\hat\Sigma = \frac1n \sum_i (x^{(i)} - \hat\mu)(x^{(i)} - \hat\mu)^\top$ — делим на $n = 4$.`],
+      right: String.raw`$\hat\mu = (${mu[0]}, ${mu[1]})^\top$, $\hat\Sigma = ${pmx(S)}$ — симметрична, на диагонали дисперсии.`,
+      wrong: String.raw`Проверьте: $\hat\Sigma$ симметрична; деление — на $n = 4$, не на $3$; отклонения — от среднего $\hat\mu = (${mu[0]}, ${mu[1]})^\top$.`,
+    };
+  },
+};
+
+/** Урок IV.4: MLE параметров GDA в одном измерении — доля класса, среднее класса или общая дисперсия. */
+export const gdaMle: Generator = {
+  id: "stat.gda-mle",
+  version: 1,
+  title: "Параметры GDA",
+  make(seed) {
+    const r = rng(seed);
+    const x0 = Array.from({ length: r.pick([3, 4]) }, () => r.int(1, 5));
+    const x1 = Array.from({ length: r.pick([2, 3]) }, () => r.int(5, 10));
+    const n = x0.length + x1.length;
+    const m0 = x0.reduce((a, b) => a + b, 0) / x0.length;
+    const m1 = x1.reduce((a, b) => a + b, 0) / x1.length;
+    const pooled = (x0.reduce((a, v) => a + (v - m0) ** 2, 0) + x1.reduce((a, v) => a + (v - m1) ** 2, 0)) / n;
+    const kind = (seed - 1) % 3;
+    const [what, label, answer] = kind === 0 ? [String.raw`$\hat\phi = \hat P(y = 1)$`, String.raw`$\hat\phi =$`, x1.length / n] : kind === 1 ? [String.raw`$\hat\mu_1$`, String.raw`$\hat\mu_1 =$`, m1] : [String.raw`общую дисперсию $\hat\sigma^2$ (одна на оба класса, как $\Sigma$ в GDA)`, String.raw`$\hat\sigma^2 =$`, pooled];
+    return {
+      kind: "numeric",
+      prompt: String.raw`Обучающая выборка для GDA с одним признаком: класс $y = 0$ — $x = ${x0.join(", ")}$; класс $y = 1$ — $x = ${x1.join(", ")}$. Найдите оценку максимального правдоподобия: ${what}.`,
+      label,
+      answer: round(answer, 4),
+      tol: 0.005,
+      hints: [String.raw`MLE GDA: $\hat\phi$ — доля класса $1$, $\hat\mu_k$ — среднее $x$ в классе $k$, $\hat\sigma^2 = \frac1n \sum_i (x^{(i)} - \hat\mu_{y^{(i)}})^2$ — отклонения каждого объекта от среднего своего класса, деление на всё $n = ${n}$.`],
+      right: String.raw`$\hat\phi = ${x1.length}/${n}$, $\hat\mu_0 = ${round(m0, 4)}$, $\hat\mu_1 = ${round(m1, 4)}$, $\hat\sigma^2 = ${round(pooled, 4)}$.`,
+      wrong: kind === 2 ? String.raw`Отклонения берут от среднего **своего** класса, а делят на общее $n = ${n}$: $\hat\sigma^2 = ${round(pooled, 4)}$.` : String.raw`Оценки GDA — доли и средние по классам: $\hat\phi = ${x1.length}/${n}$, $\hat\mu_1$ — среднее только объектов класса $1$.`,
+    };
+  },
+};

@@ -30,6 +30,7 @@ export const layoutPages = {
   iv1: "/foundations/statistics/descriptive/",
   iv2: "/foundations/statistics/estimators/",
   iv3: "/foundations/statistics/mle/",
+  iv4: "/foundations/statistics/multivariate-mle/",
   zoogame: "/games/dist-zoo/",
   corrgame: "/games/guess-correlation/",
   sigmagame: "/games/sigma-sculptor/",

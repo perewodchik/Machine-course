@@ -1162,6 +1162,28 @@ describe("генераторы", () => {
     }
   });
 
+  it("stat.cov-mle: Σ̂ = (1/n) Σ (x − x̄)(x − x̄)ᵀ, симметрична; stat.gda-mle — доли, средние, общая дисперсия", () => {
+    for (let s = 1; s <= 30; s++) {
+      const t = make("stat.cov-mle", s);
+      if (t.kind !== "matrix") throw new Error("ожидалась матрица");
+      const pts = [...t.prompt.matchAll(/\((-?\d+), (-?\d+)\)/g)].map((m) => [Number(m[1]), Number(m[2])] as [number, number]);
+      expect(pts).toHaveLength(4);
+      const mu = [0, 1].map((j) => pts.reduce((a, p) => a + p[j]!, 0) / 4);
+      for (const a of [0, 1]) for (const b of [0, 1]) expect(t.answer[a]![b]!).toBeCloseTo(pts.reduce((acc, p) => acc + (p[a]! - mu[a]!) * (p[b]! - mu[b]!), 0) / 4, 3);
+      expect(t.answer[0]![1]).toBe(t.answer[1]![0]);
+      expect(Number.isInteger(mu[0]) && Number.isInteger(mu[1])).toBe(true);
+
+      const g = make("stat.gda-mle", s);
+      if (g.kind !== "numeric") throw new Error("ожидалось число");
+      const [x0, x1] = [...g.prompt.matchAll(/— \$x = ([\d, ]+)\$/g)].map((m) => m[1]!.split(", ").map(Number)) as [number[], number[]];
+      const n = x0.length + x1.length;
+      const mean = (v: number[]) => v.reduce((a, b) => a + b, 0) / v.length;
+      const pooled = (x0.reduce((a, v) => a + (v - mean(x0)) ** 2, 0) + x1.reduce((a, v) => a + (v - mean(x1)) ** 2, 0)) / n;
+      const want = g.prompt.includes("hat\\phi") ? x1.length / n : g.prompt.includes("hat\\mu_1") ? mean(x1) : pooled;
+      expect(g.answer).toBeCloseTo(want, 3);
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

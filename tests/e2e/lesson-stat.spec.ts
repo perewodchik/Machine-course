@@ -74,3 +74,24 @@ test("урок IV.3: ссылки на игру и лабораторную, и�
   await page.evaluate(() => window.scrollTo(0, 0));
   await expectNoAxeViolations(page);
 });
+
+test("урок IV.4: найди ошибку — деление на n − 1, итоговая проверка матрицей", async ({ page }) => {
+  await page.goto("/foundations/statistics/multivariate-mle/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Многомерный MLE");
+
+  const err = page.locator("[data-exercise]").filter({ hasText: "В какой строке вывода ошибка?" }).first();
+  await err.locator("[data-option]").nth(1).click();
+  await expect(err.locator("[data-feedback]")).toContainText("Строка верна");
+  await err.locator("[data-option]").nth(2).click();
+  await expect(err.locator("[data-feedback]")).toContainText("Деление на");
+
+  const final = page.locator("#final-check");
+  const spec = generator("stat.cov-mle").make(31);
+  if (spec.kind !== "matrix") throw new Error("ожидалась матрица");
+  const cells = final.locator("[data-variant]:not([hidden]) input");
+  for (const [k, v] of spec.answer.flat().entries()) await cells.nth(k).fill(String(v));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});

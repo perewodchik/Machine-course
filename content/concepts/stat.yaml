@@ -17,6 +17,15 @@
   prerequisites: [stat.descriptive, prob.limit-theorems]
   core: true
 
+- id: stat.multivariate-mle
+  title:
+    ru: 'Многомерный MLE'
+    en: 'multivariate maximum likelihood'
+  summary: 'MLE многомерного нормального: $\hat\mu = \bar x$, $\hat\Sigma = \frac1n \sum_i (x^{(i)} - \hat\mu)(x^{(i)} - \hat\mu)^\top$; вывод через матрицу точности, трюк со следом $x^\top A x = \operatorname{tr}(A x x^\top)$ и $\nabla \log\lvert\det A\rvert = A^{-\top}$; MLE параметров GDA — доли, средние классов и общая ковариация.'
+  lesson: multivariate-mle
+  prerequisites: [stat.mle, prob.multivariate-normal, calc.matrix-calculus]
+  core: true
+
 - id: stat.mle
   title:
     ru: 'Метод максимального правдоподобия'

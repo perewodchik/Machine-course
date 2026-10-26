@@ -1,0 +1,113 @@
+---
+id: multivariate-mle
+title: 'Многомерный MLE'
+number: 'IV.4'
+concepts: [stat.multivariate-mle]
+minutes: 120
+lead: 'Гауссовский дискриминантный анализ — первая генеративная модель CS229 — обучается одной формулой: средние и ковариация по выборке. Выведем её сами: найдём оценки максимального правдоподобия для μ и Σ многомерного нормального с помощью трюка со следом и градиента логарифма определителя, а потом получим параметры GDA.'
+---
+
+{/*
+  План урока (docs/program/04-statistics.md, карточка IV.4) — три цикла:
+  1. Трюк со следом и μ̂: x^T A x = tr(A x x^T), градиент по μ; упражнение 1 (order: шаги вывода μ̂).
+  2. Σ̂: рабочий пример — формула 1 (f.mvn-mle) по шагам, затем «найди ошибку» с угасающей подсказкой;
+     ошибки — n − 1 и потеря симметрии; упражнение 2 (stat.cov-mle).
+  3. GDA: параметры φ, μ₀, μ₁, Σ, ячейка Python, CS229; упражнение 3 (stat.gda-mle).
+  Итог, итоговая проверка (stat.cov-mle, ставит «знаю»).
+*/}
+
+<Prereqs lessons={["foundations/statistics/mle", "foundations/probability/multivariate-normal", "foundations/calculus/matrix-calculus"]} />
+
+## Трюк со следом и оценка среднего
+
+Логарифм правдоподобия выборки из $\mathcal{N}(\mu, \Sigma)$ в $\mathbb{R}^d$ — сумма логарифмов плотности (урок III.11):
+
+$$
+\ell(\mu, \Sigma) = -\frac{nd}{2} \log 2\pi - \frac{n}{2} \log \det \Sigma - \frac12 \sum_{i=1}^{n} \bigl(x^{(i)} - \mu\bigr)^\top \Sigma^{-1} \bigl(x^{(i)} - \mu\bigr) .
+$$
+
+**По $\mu$.** От $\mu$ зависит только сумма квадратичных форм. Её градиент по правилу $\nabla_x\, x^\top A x = 2Ax$ (урок II.3) — $-\Sigma^{-1} \sum_i (\mu - x^{(i)})$. Он равен нулю при $\sum_i (x^{(i)} - \mu) = 0$, то есть $\hat\mu = \bar x$ — при любой $\Sigma$, поэтому его можно подставить сразу.
+
+**Трюк со следом.** Квадратичная форма — число, а число равно своему следу. След не меняется при циклической перестановке (урок I.5), поэтому
+
+$$
+v^\top A v = \operatorname{tr}\bigl(v^\top A v\bigr) = \operatorname{tr}\bigl(A\, v v^\top\bigr) .
+$$
+
+Сумма квадратичных форм превращается в след произведения $A$ на одну матрицу $\sum_i v_i v_i^\top$ — градиент по $A$ от него берётся одним правилом $\nabla_A \operatorname{tr}(AB) = B^\top$.
+
+<Exercise
+  n={1}
+  title="Соберите вывод"
+  id="iv4.order-mu"
+  spec={{
+    kind: "order",
+    prompt: "Расставьте шаги вывода $\\hat\\mu$ по порядку.",
+    steps: [
+      "Выписать часть $\\ell$, зависящую от $\\mu$: $-\\frac12 \\sum_i (x^{(i)} - \\mu)^\\top \\Sigma^{-1} (x^{(i)} - \\mu)$",
+      "Взять градиент по $\\mu$: $\\Sigma^{-1} \\sum_i (x^{(i)} - \\mu)$",
+      "Приравнять к нулю и умножить слева на $\\Sigma$: $\\sum_i (x^{(i)} - \\mu) = 0$",
+      "Выразить $\\hat\\mu = \\frac1n \\sum_i x^{(i)}$",
+    ],
+    hints: ["Сначала функция, потом градиент, потом условие максимума, потом решение."],
+  }}
+/>
+
+<Note label="По-английски">Трюк со следом — *trace trick*, матрица точности $\Lambda = \Sigma^{-1}$ — *precision matrix*.</Note>
+
+## Оценка ковариации
+
+По $\Sigma$ удобнее искать максимум через **матрицу точности** $\Lambda = \Sigma^{-1}$: тогда $-\frac n2 \log\det\Sigma = +\frac n2 \log\det\Lambda$, а $\Lambda$ входит в след линейно. Вот вывод целиком, каждый шаг проверен численно.
+
+<Formula formula="f.mvn-mle" n={1} />
+
+Теперь проверьте, что вы видите, где в таком выводе прячутся ошибки.
+
+<Exercise
+  n={2}
+  title="Найдите ошибку"
+  id="iv4.find-error"
+  spec={{
+    kind: "choice",
+    prompt: "В какой строке вывода ошибка? $$\\begin{aligned} &(1) \\quad \\ell(\\Lambda) = \\tfrac n2 \\log\\det\\Lambda - \\tfrac12 \\operatorname{tr}(\\Lambda S) \\\\ &(2) \\quad \\nabla_\\Lambda \\ell = \\tfrac n2 \\Lambda^{-1} - \\tfrac12 S \\\\ &(3) \\quad \\Lambda^{-1} = \\tfrac{1}{n - 1} S \\\\ &(4) \\quad \\hat\\Sigma = \\tfrac{1}{n - 1} \\sum_i (x^{(i)} - \\bar x)(x^{(i)} - \\bar x)^\\top \\end{aligned}$$",
+    options: [
+      { text: "В строке 1", why: "Строка верна: $-\\frac n2 \\log\\det\\Sigma = \\frac n2 \\log\\det\\Lambda$, сумма квадратичных форм по трюку со следом — $\\operatorname{tr}(\\Lambda S)$." },
+      { text: "В строке 2", why: "Строка верна: $\\nabla \\log\\det\\Lambda = \\Lambda^{-\\top} = \\Lambda^{-1}$ для симметричной $\\Lambda$, $\\nabla \\operatorname{tr}(\\Lambda S) = S^\\top = S$." },
+      { text: "В строке 3", correct: true, why: "Из $\\tfrac n2 \\Lambda^{-1} = \\tfrac12 S$ следует $\\Lambda^{-1} = S/n$. Деление на $n - 1$ — это несмещённая оценка, а не максимум правдоподобия; строка 4 лишь повторяет ошибку." },
+      { text: "В строке 4", why: "Строка 4 следует из строки 3. Ошибка раньше — там, где решали уравнение градиента." },
+    ],
+    hints: ["Решите уравнение $\\nabla_\\Lambda \\ell = 0$ из строки 2 сами и сравните."],
+  }}
+/>
+
+<Block kind="pitfall">
+
+Делить на $n - 1$ в MLE и терять симметричность. MLE ковариации делит на $n$ — в CS229 так считают $\Sigma$ и в GDA, и в PCA; `np.cov` по умолчанию делит на $n - 1$, нужен `bias=True`. Транспонирования в $\Lambda^{-\top}$ и $S^\top$ пропадают только потому, что обе матрицы симметричны: в выводе для несимметричной матрицы так делать нельзя.
+
+</Block>
+
+<Exercise gen="stat.cov-mle" n={3} variants={6} />
+
+## Параметры GDA
+
+**Гауссовский дискриминантный анализ** (CS229, «Generative learning algorithms», «Gaussian discriminant analysis») — генеративная модель классификации: $y \sim \operatorname{Bernoulli}(\phi)$, $x \mid y = k \sim \mathcal{N}(\mu_k, \Sigma)$ с одной ковариацией на оба класса. Совместное правдоподобие $\prod_i p(x^{(i)} \mid y^{(i)})\, p(y^{(i)})$ (урок IV.3) распадается на независимые куски, и максимум по каждому параметру находится как выше:
+
+- $\hat\phi = \frac1n \sum_i 1\{y^{(i)} = 1\}$ — доля класса $1$;
+- $\hat\mu_k$ — среднее $x^{(i)}$ по объектам класса $k$;
+- $\hat\Sigma = \frac1n \sum_i (x^{(i)} - \hat\mu_{y^{(i)}})(x^{(i)} - \hat\mu_{y^{(i)}})^\top$ — каждый объект отклоняется от среднего **своего** класса.
+
+Проверим обе формулы на выборках; перед запуском предскажите, совпадёт ли $\hat\Sigma$ с `np.cov`.
+
+<PyCode src="stats/mvn_mle.py#demo" run />
+
+$\hat\Sigma$ по формуле с внешними произведениями совпала с `np.cov(bias=True)` и не совпала с `np.cov` по умолчанию. Оценки GDA близки к истинным: $\phi = 0.3$, сдвиг средних $(2, 1)$, $\Sigma$ — та же матрица, что в первой части. Из этих параметров GDA по формуле Байеса получает $P(y = 1 \mid x)$ — и это оказывается сигмоида от линейной функции $x$, как в логистической регрессии; это разбирают в курсах направления ML.
+
+<Exercise gen="stat.gda-mle" n={4} variants={6} />
+
+## Итог
+
+- Трюк со следом: $v^\top A v = \operatorname{tr}(A v v^\top)$; сумма квадратичных форм — $\operatorname{tr}(A \sum_i v_i v_i^\top)$.
+- MLE многомерного нормального: $\hat\mu = \bar x$, $\hat\Sigma = \frac1n \sum_i (x^{(i)} - \hat\mu)(x^{(i)} - \hat\mu)^\top$ — делим на $n$; вывод через $\Lambda = \Sigma^{-1}$ и $\nabla \log\lvert\det\Lambda\rvert = \Lambda^{-\top}$.
+- GDA: $\hat\phi$ — доля класса, $\hat\mu_k$ — средние классов, $\hat\Sigma$ — отклонения от среднего своего класса, делённые на $n$.
+
+<Exercise gen="stat.cov-mle" seed={31} id="post.iv4" title="Итоговая проверка" final />
