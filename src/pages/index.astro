@@ -1,36 +1,114 @@
 ---
-// Главная: список курсов. Каталог с графом курсов и маршрутами по целям — S7.01 (эталон prototype/courses.html).
+// Главная — каталог курсов (S7.01, эталон prototype/courses.html): карта курсов с прогрессом и маршрутами по целям,
+// затем список курсов с фактами, прогрессом и кнопкой «Продолжить». Данные карты — content/catalog.yaml;
+// прогресс, «Продолжить» и маршруты меняются на клиенте (src/client/catalog.ts).
+import { existsSync, readFileSync } from "node:fs";
+import { parse } from "yaml";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { loadCatalog } from "../lib/content/collections";
-import { hoursRange, ofLessons, plural } from "../i18n/ru";
 import ProgressFile from "../components/layout/ProgressFile.astro";
+import { loadCatalog } from "../lib/content/collections";
+import { edgePath, mapSize, NODE, nodeXY, type CatalogMap } from "../lib/content/catalog-map";
+import { ofLessons, plural } from "../i18n/ru";
 
 const courses = await loadCatalog();
-const hours = (c: (typeof courses)[number]) =>
-  c.modules.reduce<[number, number]>(([a, b], m) => [a + m.hours[0], b + m.hours[1]], [0, 0]);
+const map = parse(readFileSync("content/catalog.yaml", "utf8")) as CatalogMap;
+const byId = new Map(courses.map((c) => [c.id, c]));
+const nodeOf = new Map(map.nodes.map((n) => [n.course, n]));
+const size = mapSize(map.nodes);
+const hours = (c: (typeof courses)[number]) => c.modules.reduce<[number, number]>(([a, b], m) => [a + m.hours[0], b + m.hours[1]], [0, 0]);
+// обязательные уроки по порядку: «Продолжить» ведёт к первому без галочки; written — у урока уже есть текст
+const lessonsOf = (c: (typeof courses)[number]) =>
+  c.lessons.filter((l) => !l.optional).map((l) => ({ key: l.key, number: l.number, href: l.href, written: existsSync(`content/courses/${l.course}/${l.module}/${l.slug}.mdx`) }));
+const routeOf = (id: string) => map.routes.filter((r) => r.courses.includes(id)).map((r) => r.id).join(" ");
+const mapDesc = `Карта курсов. ${map.edges
+  .filter((e) => !e[2])
+  .map(([a, b]) => `${nodeOf.get(a)!.short} ведёт к курсу «${nodeOf.get(b)!.short}»`)
+  .join("; ")}. Пунктиром — рекомендуемый порядок: ${map.edges
+  .filter((e) => e[2])
+  .map(([a, b]) => `«${nodeOf.get(a)!.short}» до «${nodeOf.get(b)!.short}»`)
+  .join(", ")}.`;
 ---
 <BaseLayout title="Курсы ML" description="Математика для машинного обучения и восемь курсов машинного обучения по программе Stanford CS229.">
-  <main class="shell" id="content">
-    <h1>Курсы ML</h1>
-    <p class="lead">«Математика для машинного обучения»&nbsp;— предисловие ко&nbsp;всем курсам, «Основы машинного обучения»&nbsp;— база для остальных.</p>
-    <ul class="course-list">
-      {courses.map((c) => (
-        <li>
-          <span class="n">{c.number ?? ""}</span>
-          <div>
-            <h2><a href={c.href}>{c.title}</a></h2>
-            <p>{c.summary}</p>
-            <p class="facts">
-              {c.lessons.length}&nbsp;{plural(c.lessons.length, "урок", "урока", "уроков")}
-              {c.required < c.lessons.length && `, из них ${c.lessons.length - c.required} ★ по желанию`}; <span class="nowrap">{hoursRange(hours(c))}</span>
-            </p>
-            <p class="facts course-progress" data-progress-lessons={JSON.stringify(c.lessons.filter((l) => !l.optional).map((l) => l.key))}>
-              Знаю <span data-known-total>0</span> из&nbsp;{c.required} {ofLessons(c.required)}
-            </p>
-          </div>
-        </li>
-      ))}
-    </ul>
+  <main class="shell catalog-page" id="content">
+    <h1>Курсы по&nbsp;машинному обучению</h1>
+    <p class="lead">Математика&nbsp;— предисловие. Машинное обучение разбито на&nbsp;восемь курсов по&nbsp;20–45 часов, и&nbsp;каждый заканчивается проектом, который можно показать работодателю.</p>
+
+    <section class="catalog-map" aria-labelledby="map-title">
+      <h2 id="map-title" class="visually-hidden">Карта курсов</h2>
+      <fieldset class="routes" data-routes>
+        <legend>Маршрут</legend>
+        <label><input type="radio" name="route" value="all" checked />Все курсы</label>
+        {map.routes.map((r) => <label><input type="radio" name="route" value={r.id} />{r.title}</label>)}
+      </fieldset>
+      <div class="map-scroll" role="region" aria-label="Карта курсов: прокручивается по горизонтали" tabindex="0">
+        <svg class="catalog-graph" viewBox={`0 0 ${size.w} ${size.h}`} role="img" aria-labelledby="map-desc" data-map>
+          <desc id="map-desc">{mapDesc}</desc>
+          <defs>
+            <pattern id="map-cells" width="20" height="20" patternUnits="userSpaceOnUse"><path class="grid-line" d="M20 0H0V20" fill="none" /></pattern>
+            <marker id="map-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 1 9 5 0 9z" /></marker>
+          </defs>
+          <rect width={size.w} height={size.h} fill="url(#map-cells)" />
+          <g class="edges">
+            {map.edges.map(([a, b, soft]) => (
+              <path class:list={["edge", soft && "edge--soft"]} data-edge={`${a} ${b}`} d={edgePath(nodeOf.get(a)!, nodeOf.get(b)!)} />
+            ))}
+          </g>
+          <g class="nodes">
+            {map.nodes.map((n) => {
+              const c = byId.get(n.course)!;
+              const { x, y } = nodeXY(n);
+              const ls = lessonsOf(c);
+              return (
+                <g class="node" data-node={n.course} transform={`translate(${x} ${y})`} data-lessons={JSON.stringify(ls.map((l) => l.key))}>
+                  <rect class="box" width={NODE.w} height={NODE.h} rx="6" />
+                  <text x="12" y="21">{n.short}</text>
+                  <text class="sub" x="12" y="36">{n.course === "ml-project" ? "свой проект" : `${c.lessons.length} ${plural(c.lessons.length, "урок", "урока", "уроков")}`}</text>
+                  <rect class="bar-bg" x="12" y="42" width={NODE.w - 24} height="3" rx="1.5" />
+                  <rect class="bar" x="12" y="42" width="0" height="3" rx="1.5" data-bar data-full={NODE.w - 24} />
+                </g>
+              );
+            })}
+          </g>
+        </svg>
+      </div>
+      <p class="map-legend">Сплошная стрелка&nbsp;— курс нужен до&nbsp;начала, пунктир&nbsp;— рекомендуется. Полоска&nbsp;— доля уроков с&nbsp;галочкой «знаю».</p>
+    </section>
+
+    <section aria-labelledby="list-title">
+      <h2 id="list-title">Все курсы</h2>
+      <ol class="catalog">
+        {map.nodes
+          .slice()
+          .sort((a, b) => (byId.get(a.course)!.number ?? 0) - (byId.get(b.course)!.number ?? 0))
+          .map((n) => {
+            const c = byId.get(n.course)!;
+            const ls = lessonsOf(c);
+            return (
+              <li class="catalog__row" id={n.course} data-course-row={n.course} data-routes={routeOf(n.course)} data-lessons={JSON.stringify(ls)}>
+                <div class="catalog__main">
+                  <h3><a href={c.href}>{c.title}</a></h3>
+                  <p>{c.summary}</p>
+                </div>
+                <dl class="catalog__facts">
+                  <div><dt>Уроков</dt><dd>{c.lessons.length}{c.required < c.lessons.length && ` (${c.lessons.length - c.required} ★)`}</dd></div>
+                  <div><dt>Часов</dt><dd>{hours(c)[0] === hours(c)[1] ? hours(c)[0] : hours(c).join("–")}</dd></div>
+                  <div><dt>{n.projects ? (n.projects.length > 1 ? "Проекты" : "Проект") : "Практика"}</dt><dd>{n.projects ? n.projects.join(", ") : n.practice}</dd></div>
+                  <div><dt>Нужно до&nbsp;начала</dt><dd>{n.before}</dd></div>
+                </dl>
+                <div class="catalog__progress" data-progress-lessons={JSON.stringify(ls.map((l) => l.key))}>
+                  <span data-catalog-status>Знаю <span data-known-total>0</span> из&nbsp;{c.required} {ofLessons(c.required)}</span>
+                  <span class="progress" aria-hidden="true"><span data-known-bar style="width:0%"></span></span>
+                  <a class="btn btn--sm" href={c.href} data-continue>Программа курса</a>
+                </div>
+              </li>
+            );
+          })}
+      </ol>
+    </section>
     <ProgressFile />
   </main>
 </BaseLayout>
+
+<script>
+  import "../client/catalog";
+</script>

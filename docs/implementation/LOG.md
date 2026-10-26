@@ -17,6 +17,28 @@
 
 ---
 
+### 2026-10-26 — S7.03 инфраструктура проектов — готова
+- **Сделано:** code/mlf/project.py и тесты (подложенная утечка — чтение теста до финала, повторная финальная оценка — ловятся), демонстрационный проект на «Квартирах», шаблон отчёта, content/projects.yaml, src/pages/projects/[id].astro, ссылка со страницы «Основ ML»
+- **Файлы:** code/mlf/project.py, code/tests/test_project.py, notebooks/src/projects/demo_apartments.py, notebooks/templates/project-report.md, content/projects.yaml, src/pages/projects/[id].astro
+- **Проверка:** pytest (test_project), build_notebooks --solutions и nbmake всех лабораторных, vitest 654, check, lint, build, e2e project.spec.ts, раскладка и axe project
+- **Отклонения от плана и решения:** демонстрационный проект — на синтетических «Квартирах»: настоящие наборы ждут S7.02 (сеть); эталон fit_ols отклоняет вырожденные XᵀX — нормальные уравнения на них не определены
+- **Следующий шаг:** S7.04.
+- **Вопросы пользователю:** —
+
+### 2026-10-26 — S7.02 данные курса и лицензии — нужен пользователь
+- **Сделано:** лицензии проверены по открытым источникам: Bank Marketing (UCI, Moro, Rita, Cortez 2014) — CC BY 4.0, распространять можно с указанием авторства; California Housing (StatLib, Pace и Barry 1997, перепись США 1990) — явной лицензии нет, источники просят ссылку на статью
+- **Где остановился:** скачать наборы и записать контрольные суммы нельзя: сетевая политика среды отклоняет archive.ics.uci.edu, ndownloader.figshare.com, www.openml.org, lib.stat.cmu.edu (403 на CONNECT). ADR и загрузчики с суммами — после того, как домены разрешат; выдумывать суммы нельзя
+- **Следующий шаг:** S7.03.
+- **Вопросы пользователю:** разрешить в настройках сети среды домены archive.ics.uci.edu и ndownloader.figshare.com (или www.openml.org); решить, берём ли California Housing без явной лицензии (только со ссылкой на Pace и Barry) или заменяем синтетическими «Квартирами»
+
+### 2026-10-26 — S7.01 каталог курсов на сайте — готова
+- **Сделано:** content/catalog.yaml (узлы, рёбра сплошные и рекомендуемые, маршруты, проекты), геометрия src/lib/content/catalog-map.ts с тестом согласованности, src/pages/index.astro и src/client/catalog.ts, прогресс и пререквизиты на src/pages/[course]/index.astro, Prereqs на странице-заглушке урока
+- **Файлы:** content/catalog.yaml, src/lib/content/catalog-map.ts, src/pages/index.astro, src/client/catalog.ts, src/pages/[course]/index.astro, src/pages/[course]/[module]/[lesson].astro, src/styles/layout.css
+- **Проверка:** vitest 654, lint, check, validate, build, e2e catalog.spec.ts и know.spec.ts, раскладка и axe home, course, уроков
+- **Отклонения от плана и решения:** стор отметок по LessonKey, общий для курсов, миграция ключей v1, курс в шапке и название курса у «Опирается на» уже были (S2.04, S3.02) — проверены e2e; вне маршрута узлы и строки приглушаются цветом, а не прозрачностью (контраст)
+- **Следующий шаг:** S7.02.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — S5.04 шпаргалки — готова
 - **Сделано:** логика src/lib/content/cheatsheet.ts (формулы и блоки pitfall из MDX), данные cheatsheet-data.ts (по модулям и разделам CS229 через компаньон), страницы src/pages/cheatsheet/, клиент src/client/cheatsheet.ts, стили @media print
 - **Файлы:** src/lib/content/cheatsheet.ts, src/lib/content/cheatsheet-data.ts, src/pages/cheatsheet/, src/client/cheatsheet.ts, src/styles/layout.css

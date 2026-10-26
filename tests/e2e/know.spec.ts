@@ -47,7 +47,7 @@ test("урок ★ отмечается, но в счётчик не входи�
   await expect(part.locator("[data-module-done]")).not.toHaveAttribute("hidden", "");
   await expect(part.locator(".toc__part-head .count")).toHaveAttribute("hidden", "");
   await page.goto("/");
-  await expect(page.locator(".course-progress").first()).toContainText(/Знаю 2 из\s52 уроков/);
+  await expect(page.locator(".catalog__progress").first()).toContainText(/Знаю 2 из\s52 уроков/);
 });
 
 test("верная итоговая проверка урока ставит галочку сама", async ({ page }) => {

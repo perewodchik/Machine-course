@@ -390,6 +390,61 @@
   .ready__lessons li { display: flex; align-items: flex-start; gap: var(--space-2); padding: 3px 0; }
   .ready__lessons li > .know { margin-top: 1px; }
   .ready__num { min-width: 2.8em; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  /* Каталог курсов (S7.01, эталон prototype/courses.html): карта с маршрутами и список курсов.
+     Вне маршрута — приглушение цветом, а не прозрачностью: так текст сохраняет контраст */
+  .catalog-page h1 { max-width: 18ch; }
+  .catalog-map { margin: var(--space-6) 0 var(--space-7); }
+  .routes { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-3); margin: 0 0 var(--space-3); padding: 0; border: 0; font: var(--text-sm)/1.4 var(--font-ui); }
+  .routes legend { float: left; margin-right: var(--space-2); padding: 6px 0; color: var(--ink-3); }
+  .routes label { display: inline-flex; align-items: center; gap: 6px; min-height: var(--target-touch); padding: 0 12px; border: 1px solid var(--rule); border-radius: var(--radius-control); background: var(--surface); color: var(--ink-2); cursor: pointer; }
+  .routes label:hover { border-color: var(--pen); color: var(--ink); }
+  .routes input { accent-color: var(--pen); margin: 0; }
+  .routes label:has(input:checked) { border-color: var(--pen); background: var(--pen-wash); color: var(--ink); }
+  .routes label:has(input:focus-visible) { outline: 2px solid var(--pen); outline-offset: 2px; }
+  .map-scroll { overflow-x: auto; border: 1px solid var(--rule); border-radius: var(--radius-panel); background: var(--surface); }
+  .map-scroll:focus-visible { outline: 2px solid var(--pen); outline-offset: 2px; }
+  .catalog-graph { display: block; width: 100%; min-width: 680px; height: auto; }
+  .catalog-graph .grid-line { stroke: var(--grid); }
+  .catalog-graph .edge { stroke: var(--ink-3); stroke-width: 1.3; fill: none; marker-end: url(#map-arrow); }
+  .catalog-graph .edge--soft { stroke-dasharray: 5 4; }
+  .catalog-graph #map-arrow path { fill: var(--ink-3); }
+  .catalog-graph .node .box { fill: var(--surface); stroke: var(--control-border); stroke-width: 1.25; }
+  .catalog-graph .node text { font: 500 13px var(--font-ui); fill: var(--ink); }
+  .catalog-graph .node .sub { font-weight: 400; font-size: 12px; fill: var(--ink-3); }
+  .catalog-graph .node .bar-bg { fill: var(--rule); }
+  .catalog-graph .node .bar { fill: var(--green-pen); }
+  .catalog-graph.has-route .node:not(.on-route) .box { stroke: var(--rule); }
+  .catalog-graph.has-route .node:not(.on-route) text { fill: var(--ink-3); }
+  .catalog-graph.has-route .edge:not(.on-route) { stroke: var(--rule); }
+  .catalog-graph .node.on-route .box { stroke: var(--pen); stroke-width: 2; fill: var(--pen-wash); }
+  .catalog-graph .edge.on-route { stroke: var(--pen); stroke-width: 2; }
+  .map-legend { margin: var(--space-2) 0 0; font: var(--text-sm)/1.5 var(--font-ui); color: var(--ink-3); }
+  .catalog { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ink); }
+  .catalog__row { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1.35fr) minmax(0, 0.9fr); gap: var(--space-3) var(--space-6); align-items: start; padding: var(--space-4) 0; border-bottom: 1px solid var(--rule); }
+  .catalog__row.is-off-route .catalog__main h3 a, .catalog__row.is-off-route .catalog__main p, .catalog__row.is-off-route dd { color: var(--ink-3); }
+  .catalog__main h3 { margin: 0 0 4px; font-size: var(--text-lg); }
+  .catalog__main h3 a { color: var(--ink); text-decoration: none; }
+  .catalog__main h3 a:hover { color: var(--pen); text-decoration: underline; }
+  .catalog__main p { margin: 0; color: var(--ink-2); }
+  .catalog__facts { display: grid; grid-template-columns: auto auto; justify-content: start; gap: 4px var(--space-4); margin: 2px 0 0; font: var(--text-sm)/1.4 var(--font-ui); }
+  .catalog__facts div { display: contents; }
+  .catalog__facts dt { color: var(--ink-3); }
+  .catalog__facts dd { margin: 0; color: var(--ink); }
+  .catalog__progress { display: grid; gap: 8px; justify-items: start; font: var(--text-sm)/1.4 var(--font-ui); color: var(--ink-2); }
+  .catalog__progress .progress { display: block; width: 100%; max-width: 12rem; height: 4px; border-radius: 2px; background: var(--rule); overflow: hidden; }
+  .catalog__progress .progress > span { display: block; height: 100%; background: var(--green-pen); }
+  @media (max-width: 900px) { .catalog__row { grid-template-columns: minmax(0, 1fr); } }
+  .course-facts { margin: var(--space-4) 0 var(--space-2); }
+  .course-facts__progress { margin: 0 0 var(--space-5); font: var(--text-sm)/1.4 var(--font-ui); color: var(--ink-2); }
+  /* Страница проекта (S7.03): этапы с автопроверкой и рубрика */
+  .project section { max-width: var(--measure); margin-top: var(--space-6); }
+  .project__links { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; font: var(--text-sm)/1.4 var(--font-ui); }
+  .project__stages li { margin: var(--space-2) 0; }
+  .project__stage { font-weight: 500; }
+  .project__rubric { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--space-2) var(--space-4); }
+  .project__rubric div { display: contents; }
+  .project__rubric dt { font: 500 var(--text-sm)/1.6 var(--font-ui); color: var(--ink-2); }
+  .project__rubric dd { margin: 0; }
   /* Компаньон к конспекту CS229 (S5.03): список разделов; уроки раздела — та же сетка, что у карты готовности */
   .companion section { max-width: var(--measure); margin-top: var(--space-7); }
   .companion h3 { margin-top: var(--space-5); font: 500 var(--text-base)/1.4 var(--font-ui); color: var(--ink-2); }
