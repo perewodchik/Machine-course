@@ -3,23 +3,29 @@
 // Выбор A, B и операции; показания — числа клеток и проверка включений-исключений. Логика — model.ts.
 import { Fragment, useState } from "react";
 import { fmt, useLiveText } from "../../_kit";
-import { combine, count, EVENT_IDS, EVENTS, OMEGA, OP_NAMES, prob, type EventId, type Op } from "./model";
+import { combine, count, EVENT_IDS, EVENTS, independent, OMEGA, OP_NAMES, prob, type EventId, type Op } from "./model";
 
 export interface EventsProps {
   initial?: { a?: EventId; b?: EventId; op?: Op };
+  /** Какие операции показывать; по умолчанию — объединение, пересечение и дополнение (урок III.1). */
+  ops?: Op[];
+  /** Показывать проверку независимости P(A ∩ B) = P(A) P(B) (урок III.2). */
+  showIndependence?: boolean;
 }
 
 const frac = (k: number) => `${k}/36`;
 
-export default function Events({ initial = {} }: EventsProps) {
+export default function Events({ initial = {}, ops = ["union", "intersection", "complementA"], showIndependence = false }: EventsProps) {
   const [aId, setA] = useState<EventId>(initial.a ?? "sum8");
   const [bId, setB] = useState<EventId>(initial.b ?? "evenFirst");
   const [op, setOp] = useState<Op>(initial.op ?? "union");
   const [a, b] = [EVENTS[aId], EVENTS[bId]];
   const res = combine(op, a, b);
   const [na, nb, nab, nr] = [count(a.has), count(b.has), count(combine("intersection", a, b)), count(res)];
-  const check = op === "union" ? `${frac(na)} + ${frac(nb)} − ${frac(nab)} = ${frac(na + nb - nab)}` : op === "complementA" ? `1 − ${frac(na)} = ${frac(36 - na)}` : `${frac(nab)}`;
-  const live = useLiveText(`A — ${a.name}, ${na} исходов; B — ${b.name}, ${nb}; A ∩ B — ${nab}. ${OP_NAMES[op]}: ${nr} из 36, вероятность ${fmt(prob(res), 3)}.`);
+  const check =
+    op === "union" ? `${frac(na)} + ${frac(nb)} − ${frac(nab)} = ${frac(na + nb - nab)}` : op === "complementA" ? `1 − ${frac(na)} = ${frac(36 - na)}` : op === "given" ? `${nab}/${nb} ≈ ${fmt(nab / nb, 3)}` : `${frac(nab)}`;
+  const indep = independent(a, b);
+  const live = useLiveText(`A — ${a.name}, ${na} исходов; B — ${b.name}, ${nb}; A ∩ B — ${nab}. ${op === "given" ? `P(A | B) = ${nab}/${nb}` : `${OP_NAMES[op]}: ${nr} из 36, вероятность ${fmt(prob(res), 3)}`}.${showIndependence ? (indep ? " A и B независимы." : " A и B зависимы.") : ""}`);
 
   return (
     <div className="events">
@@ -37,7 +43,7 @@ export default function Events({ initial = {} }: EventsProps) {
                 {o[0]}
               </span>
             )}
-            <span className={["events__cell", a.has(o) && "is-a", b.has(o) && "is-b", res(o) && "is-res"].filter(Boolean).join(" ")} aria-hidden="true">
+            <span className={["events__cell", a.has(o) && "is-a", b.has(o) && "is-b", res(o) && "is-res", op === "given" && !b.has(o) && "is-out"].filter(Boolean).join(" ")} aria-hidden="true">
               <span className="events__tags">{`${a.has(o) ? "A" : ""}${b.has(o) ? "B" : ""}`}</span>
             </span>
           </Fragment>
@@ -61,7 +67,7 @@ export default function Events({ initial = {} }: EventsProps) {
           ))}
         </div>
         <div className="events__group" role="group" aria-label="Операция">
-          {(Object.keys(OP_NAMES) as Op[]).map((k) => (
+          {ops.map((k) => (
             <button key={k} type="button" className="btn btn--sm" aria-pressed={op === k} onClick={() => setOp(k)}>
               {OP_NAMES[k]}
             </button>
@@ -81,6 +87,17 @@ export default function Events({ initial = {} }: EventsProps) {
             P({OP_NAMES[op]}) = <b>{check}</b>
           </span>
         </p>
+        {showIndependence && (
+          <p className="events__facts">
+            <span>
+              P(A ∩ B) = <b>{`${frac(nab)} ≈ ${fmt(nab / 36, 4)}`}</b>
+            </span>
+            <span>
+              P(A) · P(B) = <b>{fmt((na * nb) / 1296, 4)}</b>
+            </span>
+            <span className="events__verdict">{indep ? "A и B независимы" : "A и B зависимы"}</span>
+          </p>
+        )}
       </div>
       <p className="visually-hidden" aria-live="polite">
         {live}

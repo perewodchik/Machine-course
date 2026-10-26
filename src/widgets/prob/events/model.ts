@@ -1,9 +1,9 @@
 // Виджет «События как области» (урок III.1): пространство исходов — 36 пар очков двух кубиков. События —
-// подмножества; вероятность при равновозможных исходах — доля клеток. Модель без DOM: заготовки событий, операции
+// подмножества; вероятность при равновозможных исходах — доля клеток. В уроке III.2 — условие «A | B» и независимость. Модель без DOM: заготовки событий, операции
 // и проверка формулы включений-исключений.
 export type Outcome = readonly [number, number];
 export type EventId = "sum8" | "evenFirst" | "double" | "six2" | "sumLe4" | "max5";
-export type Op = "union" | "intersection" | "complementA";
+export type Op = "union" | "intersection" | "complementA" | "given";
 
 export interface EventDef {
   id: EventId;
@@ -25,7 +25,7 @@ export const EVENTS: Record<EventId, EventDef> = {
 
 export const EVENT_IDS = Object.keys(EVENTS) as EventId[];
 
-export const OP_NAMES: Record<Op, string> = { union: "A ∪ B", intersection: "A ∩ B", complementA: "не A" };
+export const OP_NAMES: Record<Op, string> = { union: "A ∪ B", intersection: "A ∩ B", complementA: "не A", given: "A | B" };
 
 /** Число исходов в событии. */
 export const count = (has: (o: Outcome) => boolean) => OMEGA.filter(has).length;
@@ -42,5 +42,14 @@ export function combine(op: Op, a: EventDef, b: EventDef): (o: Outcome) => boole
       return (o) => a.has(o) && b.has(o);
     case "complementA":
       return (o) => !a.has(o);
+    case "given":
+      // урок III.2: в мире «произошло B» остаются исходы B, событие A в нём — A ∩ B
+      return (o) => a.has(o) && b.has(o);
   }
 }
+
+/** P(A | B) = |A ∩ B| / |B|: условие сужает мир до исходов B (урок III.2). */
+export const conditional = (a: EventDef, b: EventDef) => count((o) => a.has(o) && b.has(o)) / count(b.has);
+
+/** Независимость: P(A ∩ B) = P(A) P(B), в числах клеток — 36 |A ∩ B| = |A| |B|. */
+export const independent = (a: EventDef, b: EventDef) => 36 * count((o) => a.has(o) && b.has(o)) === count(a.has) * count(b.has);

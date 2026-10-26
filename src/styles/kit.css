@@ -145,6 +145,8 @@
   .events__cell { position: relative; aspect-ratio: 1; border: 1px solid var(--rule); border-radius: var(--radius-inline); background: var(--surface); }
   .events__cell.is-a { background: color-mix(in oklab, var(--sym-1) 24%, var(--surface)); }
   .events__cell.is-b { border: 2.5px solid var(--sym-3); }
+  .events__cell.is-out { opacity: 0.25; }
+  .events__verdict { color: var(--ink); font-weight: 500; }
   .events__cell.is-res::after { content: ""; position: absolute; inset: 50% auto auto 50%; inline-size: 10px; block-size: 10px; margin: -5px 0 0 -5px; border-radius: 50%; background: var(--ink); }
   .events__tags { position: absolute; inset-block-start: 2px; inset-inline-start: 4px; font-size: 11px; line-height: 1; color: var(--ink); }
   .events__controls { display: grid; gap: var(--space-3); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule); }
