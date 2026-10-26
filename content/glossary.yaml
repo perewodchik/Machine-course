@@ -402,3 +402,6 @@
 - id: bayes-map
   ru: 'априорное и апостериорное распределения; сопряжённое априорное; оценка апостериорного максимума; апостериорное предсказательное; сглаживание Лапласа'
   en: 'prior and posterior; conjugate prior; maximum a posteriori (MAP); posterior predictive; Laplace smoothing'
+- id: risk-generalization
+  ru: 'риск; эмпирический риск; переобучение; обучающая, валидационная и тестовая выборки; кросс-валидация; неустранимая ошибка; смещение и разброс'
+  en: 'risk; empirical risk; overfitting; training, validation and test sets; cross-validation; irreducible error; bias and variance'

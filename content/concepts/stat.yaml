@@ -44,6 +44,15 @@
   prerequisites: [stat.mle, prob.bayes, prob.continuous-distributions]
   core: true
 
+- id: stat.risk-generalization
+  title:
+    ru: 'Риск, обобщение, кросс-валидация'
+    en: 'risk, generalization and cross-validation'
+  summary: 'Риск $\mathbb{E}\,\ell(h(x), y)$ против эмпирического риска на выборке; переобучение; разбиение на обучающую, валидационную и тестовую части, $k$-кратная кросс-валидация; ошибка предсказания $= \sigma^2 + \text{смещение}^2 + \text{разброс}$.'
+  lesson: risk-generalization
+  prerequisites: [stat.estimators]
+  core: true
+
 - id: stat.mle
   title:
     ru: 'Метод максимального правдоподобия'

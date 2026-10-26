@@ -137,3 +137,28 @@ test("урок IV.6: ссылка на игру, разбор ridge, итого�
   await page.evaluate(() => window.scrollTo(0, 0));
   await expectNoAxeViolations(page);
 });
+
+test("урок IV.7: предсказание, ссылка на игру, разбор ошибки, итоговая проверка", async ({ page }) => {
+  await page.goto("/foundations/statistics/risk-generalization/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Риск, обобщение, кросс-валидация");
+  await expect(page.getByRole("link", { name: "Открыть игру" })).toHaveAttribute("href", "/games/overfit/");
+
+  const pr = page.locator("[data-exercise][data-item='iv7.predict-degree-11']");
+  await pr.locator("[data-option]").filter({ hasText: "Обе почти ноль" }).click();
+  await expect(pr.locator("[data-feedback]")).toContainText("выучить и шум");
+
+  const final = page.locator("#final-check");
+  const spec = generator("stat.pred-error").make(31);
+  if (spec.kind !== "numeric") throw new Error("ожидалось число");
+  // типичная ошибка — забыть шум: ответ без σ²
+  const nums = [...spec.prompt.matchAll(/= (0\.\d+)\$/g)].map((m) => Number(m[1]));
+  const wrong = Math.round((nums[1]! + nums[2]!) * 10000) / 10000;
+  await final.locator("[data-variant]:not([hidden]) input").first().fill(String(wrong));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).not.toContainText("Урок отмечен");
+  await final.locator("[data-variant]:not([hidden]) input").first().fill(String(spec.answer));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});

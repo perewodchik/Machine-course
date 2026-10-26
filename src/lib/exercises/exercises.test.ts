@@ -1240,6 +1240,26 @@ describe("генераторы", () => {
     }
   });
 
+  it("stat.pred-error: три слагаемых ошибки; stat.kfold: среднее по частям и число обучений", () => {
+    for (let s = 1; s <= 30; s++) {
+      const t = make("stat.pred-error", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const nums = [...t.prompt.matchAll(/= (0\.\d+)\$/g)].map((m) => Number(m[1]));
+      // нечётный: σ², смещение², разброс → сумма; чётный: σ², ошибка, разброс → смещение²
+      if (s % 2 === 1) expect(t.answer).toBeCloseTo(nums[0]! + nums[1]! + nums[2]!, 6);
+      else expect(t.answer + nums[0]! + nums[2]!).toBeCloseTo(nums[1]!, 6);
+
+      const c = make("stat.kfold", s);
+      if (c.kind !== "numeric") throw new Error("ожидалось число");
+      const k = Number(/(\d)-кратн/.exec(c.prompt)![1]);
+      if (s % 2 === 1) {
+        const errs = /отложенной: \$([^$]+)\$/.exec(c.prompt)![1]!.split(", ").map(Number);
+        expect(errs).toHaveLength(k);
+        expect(c.answer).toBeCloseTo(errs.reduce((a, b) => a + b, 0) / k, 4);
+      } else expect(c.answer).toBe(Number(/Сравниваем (\d+)/.exec(c.prompt)![1]) * k + 1);
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

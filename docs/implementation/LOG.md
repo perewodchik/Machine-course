@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — L-IV.7 риск, обобщение, кросс-валидация — готов
+- **Сделано:** урок statistics/risk-generalization (три цикла: риск и эмпирический риск, валидация и k-кратная кросс-валидация, шум + смещение² + разброс), игра «Переобучи, если сможешь» (/games/overfit/: степень и λ по валидации, скрытый тест), формула f.prediction-error-decomposition, генераторы stat.pred-error и stat.kfold, сниппет stats/cross_validation.py с тестом
+- **Файлы:** content/courses/foundations/statistics/risk-generalization.mdx, src/games/overfit/, content/formulas/stat/prediction-error-decomposition.yaml, code/snippets/stats/cross_validation.py
+- **Проверка:** validate, lint, build, check, vitest 624, pytest, check_consistency, e2e IV.7 и игры, раскладка iv7 и overfitgame (axe)
+- **Отклонения от плана и решения:** обучающие x в игре — почти равномерная сетка, а степень ограничена 10: иначе выбор по валидации изредка давал модель, улетающую на краях
+- **Следующий шаг:** L-IV.8★ — доверительные интервалы и проверка гипотез..
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — L-IV.6 L-IV.6 — байесовский подход и MAP — готов
 - **Сделано:** урок statistics/bayes-map (три цикла: априорное и апостериорное, MAP и сглаживание Лапласа, гауссово априорное = ridge), игра «Приор против монеты» (/games/prior-vs-coin/, уровень всегда проходим, ничья при большом n), формулы f.beta-map и f.ridge-map, генераторы stat.beta-update и stat.ridge-map, сниппет stats/bayes_map.py с тестом
 - **Файлы:** content/courses/foundations/statistics/bayes-map.mdx, src/games/prior-vs-coin/, content/formulas/stat/beta-map.yaml, content/formulas/stat/ridge-map.yaml, code/snippets/stats/bayes_map.py

@@ -422,3 +422,74 @@ export const ridgeMap: Generator = {
     };
   },
 };
+
+export const predError: Generator = {
+  id: "stat.pred-error",
+  version: 1,
+  title: "Шум, смещение², разброс",
+  make(seed) {
+    const r = rng(seed);
+    const s2 = r.pick([0.04, 0.09, 0.25]);
+    const b2 = r.pick([0.01, 0.05, 0.16]);
+    const v = r.pick([0.02, 0.08, 0.2]);
+    const total = round(s2 + b2 + v, 4);
+    if (seed % 2 === 1) {
+      return {
+        kind: "numeric",
+        prompt: String.raw`Данные $y = h^*(x) + \epsilon$, $\operatorname{Var}\epsilon = ${s2}$. Для модели, обученной на случайной выборке $S$, в точке $x$: $\bigl(h^*(x) - \bar h(x)\bigr)^2 = ${b2}$, $\operatorname{Var} h_S(x) = ${v}$. Найдите ожидаемую ошибку предсказания $\mathbb{E}\bigl(y - h_S(x)\bigr)^2$.`,
+        label: String.raw`$\mathbb{E}(y - h_S)^2 =$`,
+        answer: total,
+        tol: 0.0005,
+        hints: [String.raw`Три слагаемых: шум $\sigma^2$, смещение² и разброс.`],
+        right: String.raw`$${s2} + ${b2} + ${v} = ${total}$.`,
+        wrong: String.raw`Не забудьте шум: $\sigma^2 + \text{смещение}^2 + \text{разброс} = ${s2} + ${b2} + ${v}$.`,
+      };
+    }
+    return {
+      kind: "numeric",
+      prompt: String.raw`Шум данных $\sigma^2 = ${s2}$. Модель в точке $x$ имеет ожидаемую ошибку предсказания $\mathbb{E}\bigl(y - h_S(x)\bigr)^2 = ${total}$ и разброс $\operatorname{Var} h_S(x) = ${v}$. Найдите смещение² $\bigl(h^*(x) - \bar h(x)\bigr)^2$.`,
+      label: String.raw`смещение² $=$`,
+      answer: b2,
+      tol: 0.0005,
+      hints: [String.raw`$\mathbb{E}(y - h_S)^2 = \sigma^2 + \text{смещение}^2 + \operatorname{Var} h_S$.`],
+      right: String.raw`$${total} - ${s2} - ${v} = ${b2}$.`,
+      wrong: String.raw`Вычтите из ошибки и шум, и разброс: $${total} - ${s2} - ${v}$. Без шума получилось бы двухчленное разложение — оно для оценки параметра, а не для предсказания.`,
+    };
+  },
+};
+
+export const kfoldGen: Generator = {
+  id: "stat.kfold",
+  version: 1,
+  title: "k-кратная кросс-валидация",
+  make(seed) {
+    const r = rng(seed);
+    const k = r.pick([3, 4, 5]);
+    if (seed % 2 === 1) {
+      const errs = Array.from({ length: k }, () => r.int(10, 40) / 100);
+      const answer = round(errs.reduce((a, b) => a + b, 0) / k, 4);
+      return {
+        kind: "numeric",
+        prompt: String.raw`При ${k}-кратной кросс-валидации модель ${k} раз обучили на всех частях, кроме одной, и измерили ошибку на отложенной: $${errs.join(", ")}$. Найдите оценку ошибки кросс-валидацией.`,
+        label: String.raw`$\text{CV} =$`,
+        answer,
+        tol: 0.0005,
+        hints: [String.raw`Оценка — среднее ошибок по отложенным частям.`],
+        right: String.raw`Среднее ${k} чисел: $${answer}$.`,
+        wrong: String.raw`Сложите ошибки и разделите на $k = ${k}$.`,
+      };
+    }
+    const models = r.pick([3, 4, 6, 8]);
+    const answer = models * k + 1;
+    return {
+      kind: "numeric",
+      prompt: String.raw`Сравниваем ${models} моделей ${k}-кратной кросс-валидацией, затем лучшую обучаем заново на всех данных. Сколько всего раз запускается обучение?`,
+      label: "обучений:",
+      answer,
+      tol: 0,
+      hints: [String.raw`Каждая модель обучается $k$ раз — по разу на каждую отложенную часть.`],
+      right: String.raw`$${models} \cdot ${k} + 1 = ${answer}$.`,
+      wrong: String.raw`$${models}$ моделей по $${k}$ обучений и ещё одно финальное: $${answer}$.`,
+    };
+  },
+};
