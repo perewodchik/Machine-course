@@ -1308,6 +1308,53 @@ describe("генераторы", () => {
     }
   });
 
+  it("ml.lms-update: шаг LMS совпадает с шагом по градиенту J⁽ⁱ⁾; ml.step-scale: порог по λ_max; ml.standardize-back: та же модель", () => {
+    const nums = (t: string) => t.replace(/−/g, "-");
+    for (let s = 1; s <= 30; s++) {
+      const u = make("ml.lms-update", s);
+      if (u.kind !== "numeric") throw new Error("ожидалось число");
+      const p = nums(u.prompt);
+      const [t0, t1] = /\(([-\d.]+),\\ ([-\d.]+)\)/.exec(p)!.slice(1).map(Number) as [number, number];
+      const x = Number(/x\^\{\(i\)\} = ([-\d.]+)/.exec(p)![1]);
+      const y = Number(/y\^\{\(i\)\} = ([-\d.]+)/.exec(p)![1]);
+      const a = Number(/alpha = ([\d.]+)/.exec(p)![1]);
+      // градиент J⁽ⁱ⁾ = ½(h − y)² конечными разностями
+      const J = (q0: number, q1: number) => 0.5 * (q0 + q1 * x - y) ** 2;
+      const h = 1e-6;
+      const g = [(J(t0 + h, t1) - J(t0 - h, t1)) / (2 * h), (J(t0, t1 + h) - J(t0, t1 - h)) / (2 * h)];
+      const j = /theta_1\$ после/.test(p) ? 1 : 0;
+      expect(u.answer).toBeCloseTo([t0, t1][j]! - a * g[j]!, 4);
+
+      const sc = make("ml.step-scale", s);
+      if (sc.kind !== "numeric") throw new Error("ожидалось число");
+      const limit = Number(/alpha < ([\d.]+)/.exec(sc.prompt)![1]);
+      // случайная X 30×2, нормированная так, что 2/λ_max(XᵀX/n) = limit
+      const r = rng(s);
+      const X = Array.from({ length: 30 }, () => [r.next() * 2 - 1, r.next() * 3]);
+      const lmax = (M: number[][], div: number) => {
+        const [a11, a12, a22] = [0, 1, 3].map((k) => M.reduce((acc, row) => acc + row[k >> 1]! * row[k & 1]!, 0) / div) as [number, number, number];
+        return (a11 + a22) / 2 + Math.hypot((a11 - a22) / 2, a12);
+      };
+      const c = Math.sqrt(lmax(X, 30) * limit / 2);
+      const Xn = X.map((row) => row.map((v) => v / c));
+      expect(2 / lmax(Xn, 30)).toBeCloseTo(limit, 9);
+      const k = /умножили на (\d+)/.exec(sc.prompt);
+      const n = /n = (\d+)\$ объектах/.exec(sc.prompt);
+      const want = k ? 2 / lmax(Xn.map((row) => row.map((v) => v * Number(k[1]))), 30) : 2 / (lmax(Xn, 30) * Number(n![1]));
+      expect(sc.answer).toBeCloseTo(want, 6);
+
+      const b = make("ml.standardize-back", s);
+      if (b.kind !== "numeric") throw new Error("ожидалось число");
+      const q = nums(b.prompt);
+      const mu = Number(/mu = (\d+)/.exec(q)![1]);
+      const sd = Number(/s = (\d+)\$ м²,/.exec(q)![1]);
+      const [p0, p1] = /h\(z\) = ([-\d.]+) \+ ([-\d.]+)/.exec(q)!.slice(1).map(Number) as [number, number];
+      const hz = (area: number) => p0 + (p1 * (area - mu)) / sd;
+      const slope = (hz(100) - hz(0)) / 100;
+      expect(b.answer).toBeCloseTo(/theta_1\$\.$/.test(q) ? slope : hz(0), 4);
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

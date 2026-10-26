@@ -16,7 +16,7 @@ const below = (k: number) => {
 test("одна переменная: выше порога расходится, ниже — сходится, сдача и журнал", async ({ page }) => {
   await page.goto(`/games/divergence/?seed=${SEED}&level=1`);
   await waitForIslands(page);
-  await expect(page.locator(".game__level")).toHaveText(/^Уровень 1 из 5: одна переменная/);
+  await expect(page.locator(".game__level")).toHaveText(/^Уровень 1 из 7: одна переменная/);
   await expectNoAxeViolations(page);
 
   const slider = page.getByRole("slider", { name: "η" });

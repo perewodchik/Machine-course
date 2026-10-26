@@ -43,6 +43,7 @@ export const layoutPages = {
   threshold: "/demo/threshold/",
   costgame: "/games/error-cost/",
   ml11: "/ml-basics/linear-models/learning-problem/",
+  ml12: "/ml-basics/linear-models/linear-regression-lms/",
   zoogame: "/games/dist-zoo/",
   corrgame: "/games/guess-correlation/",
   sigmagame: "/games/sigma-sculptor/",

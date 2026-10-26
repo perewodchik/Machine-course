@@ -1,0 +1,14 @@
+---
+// Обёртка виджета «Спуск по линиям уровня» для урока: рисунок с номером и подписью, остров React (client:visible).
+import { LmsPath, type LmsPathProps } from "../../widgets/ml/lms-path";
+
+interface Props extends LmsPathProps {
+  /** Номер рисунка в уроке. */
+  n?: number;
+}
+const { n, ...props } = Astro.props;
+---
+<figure class="figure wide">
+  <LmsPath client:visible {...props} />
+  <figcaption class="figure__caption">{n && <b>Рисунок {n}.</b>} <slot /></figcaption>
+</figure>

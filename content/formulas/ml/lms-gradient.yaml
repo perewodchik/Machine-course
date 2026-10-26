@@ -1,0 +1,80 @@
+id: f.lms-gradient
+kind: formula
+title:
+  ru: 'Градиент среднеквадратичных потерь и правило LMS'
+  en: 'gradient of the mean squared loss and the LMS rule'
+statement: '\nabla_\theta J(\theta) = \frac1n X^\top (X\theta - y), \qquad \theta := \theta + \frac{\alpha}{n} X^\top (y - X\theta)'
+
+# Урок 1.2 «Основ ML»: потери — среднее по объектам, градиент на объекте — (h − y)x, сумма по объектам в матричной
+# записи — Xᵀ(Xθ − y)/n. Шаг пакетного спуска против градиента — правило LMS для всех объектов сразу.
+symbols:
+  - name: X
+    tex: 'X'
+    meaning: 'объекты по строкам, первый столбец — единицы'
+    shape: [n, d]
+  - name: y
+    tex: 'y'
+    meaning: 'ответы'
+    shape: [n, 1]
+  - name: theta
+    tex: '\theta'
+    meaning: 'веса'
+    shape: [d, 1]
+  - name: alpha
+    tex: '\alpha'
+    meaning: 'шаг'
+    shape: []
+    sample: fraction
+
+dependsOn:
+  concepts: [ml.loss, calc.gradient-descent, calc.matrix-calculus]
+  rules: [rule.grad-quadratic, rule.matvec-columns]
+
+derivation:
+  plan:
+    - 'Записать потери как среднее квадратов ошибок'
+    - 'Градиент на одном объекте и сумма по объектам в матричной форме'
+    - 'Шаг против градиента — правило LMS'
+  steps:
+    - goal: 0
+      tex: 'J(\theta) = \frac1n \sum_{i=1}^{n} \tfrac12 \bigl(\theta^\top x^{(i)} - y^{(i)}\bigr)^2 = \frac{1}{2n} \lVert X\theta - y \rVert^2'
+      by: [ml.loss]
+      check:
+        kind: same
+        py: '0.5 * np.mean((X @ theta - y) ** 2)'
+    - goal: 1
+      tex: '\nabla_\theta J = \frac1n \sum_{i=1}^{n} \bigl(h_\theta(x^{(i)}) - y^{(i)}\bigr)\, x^{(i)} = \changed{\frac1n X^\top (X\theta - y)}'
+      by: [rule.grad-quadratic, rule.matvec-columns]
+      note: 'На объекте $\nabla_\theta \tfrac12 (\theta^\top x - y)^2 = (\theta^\top x - y)\, x$; сумма векторов $x^{(i)}$ с весами-ошибками — это $X^\top$, умноженная на вектор ошибок.'
+      check:
+        kind: gradient
+        wrt: theta
+        py: 'X.T @ (X @ theta - y) / X.shape[0]'
+      mutations:
+        - tex: '\nabla_\theta J = X^\top (X\theta - y)'
+          py: 'X.T @ (X @ theta - y)'
+          why: 'Потерян множитель $\tfrac1n$: так выглядит градиент суммы (как в CS229), а не среднего. Шаг, подобранный для одной записи, в другой ошибается в $n$ раз.'
+        - tex: '\nabla_\theta J = \frac1n X (X\theta - y)'
+          py: 'X @ (X @ theta - y) / X.shape[0]'
+          why: 'Потеряно транспонирование: $X$ размера $n \times d$ нельзя умножить на вектор длины $n$. Сумма $\sum_i e_i x^{(i)}$ — это $X^\top e$.'
+    - goal: 2
+      tex: '\theta - \alpha \nabla_\theta J = \changed{\theta + \frac{\alpha}{n} X^\top (y - X\theta)}'
+      by: [calc.gradient-descent]
+      note: 'Каждый объект сдвигает веса пропорционально своей ошибке $y^{(i)} - h_\theta(x^{(i)})$ — правило Уидроу — Хоффа (LMS). По одному объекту — стохастический спуск.'
+      check:
+        kind: identity
+        lhs: 'theta - alpha * X.T @ (X @ theta - y) / X.shape[0]'
+        rhs: 'theta + alpha / X.shape[0] * X.T @ (y - X @ theta)'
+      mutations:
+        - tex: '\theta - \alpha \nabla_\theta J = \theta + \frac{\alpha}{n} X^\top (X\theta - y)'
+          py: 'theta + alpha / X.shape[0] * X.T @ (X @ theta - y)'
+          why: 'Знак: это шаг вдоль градиента — подъём, потери растут. Поправка должна идти по ошибке $y - X\theta$, а не $X\theta - y$.'
+
+pitfalls:
+  - 'Перенести шаг из записи с суммой (CS229) в запись со средним: там градиент в $n$ раз больше, и тот же шаг в $n$ раз опаснее.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Linear regression / LMS algorithm'
+
+usedIn: [ml.least-squares]

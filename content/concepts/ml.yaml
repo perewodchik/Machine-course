@@ -57,3 +57,15 @@
   cs229:
     - edition: main-notes-2026-spring
       section: 'Supervised learning'
+
+- id: ml.lms
+  title:
+    ru: 'Правило LMS и стохастический спуск'
+    en: 'LMS rule, stochastic gradient descent'
+  summary: 'Градиентный спуск по $J(\theta) = \tfrac{1}{2n}\lVert X\theta - y\rVert^2$: пакетный шаг $\theta \leftarrow \theta - \tfrac{\alpha}{n} X^\top(X\theta - y)$, SGD — по одному объекту, мини-батч — по пакету. Сходимость при $\alpha < 2/\lambda_{\max}$, скорость задаёт число обусловленности; стандартизация признаков выравнивает линии уровня.'
+  lesson: linear-regression-lms
+  prerequisites: [ml.least-squares, calc.gradient-descent, ml.supervised-learning]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Linear regression / LMS algorithm'

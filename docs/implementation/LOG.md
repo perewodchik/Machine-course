@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — L-ml-basics-1.2 Линейная регрессия и LMS — готов
+- **Сделано:** урок (4 цикла, 2 формулы f.lms-gradient и f.standardize-inverse, 5 упражнений, итоговая ml.step-scale); виджет «Спуск по линиям уровня» (src/widgets/ml/lms-path); уровни 6–7 «Квартиры» в игре «Порог расходимости»; генераторы ml.lms-update, ml.step-scale, ml.standardize-back; понятие ml.lms; ячейка ml_basics/lms.py со сверкой с LinearRegression и SGDRegressor
+- **Файлы:** content/courses/ml-basics/linear-models/linear-regression-lms.mdx, src/widgets/ml/lms-path/, src/games/divergence/, code/snippets/ml_basics/lms.py, code/tests/test_lms.py, tests/e2e/lesson-ml-1-2.spec.ts
+- **Проверка:** validate, lint, check, build, vitest 672, pytest, check_consistency, e2e lesson-ml-1-2/divergence/lesson-calc (32), скриншоты 1440 и 390
+- **Отклонения от плана и решения:** старт виджета — кнопка «Другой старт» вместо щелчка; график J по эпохам в ячейке не рисуется (вывод — текст); проверка градиента печатает True/False: число конечных разностей в Pyodide отличается от CPython; заодно исправлена тень в .threshold__cm (линтер стилей)
+- **Следующий шаг:** L-ml-basics-1.3 — признаки, полиномы и LWR.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — L-ml-basics-1.1 задача обучения: данные, модель, потери, обобщение — готов
 - **Сделано:** урок ml-basics/linear-models/learning-problem: входная проверка (content/diagnostic-ml-basics.yaml, 12 задач; <Diagnostic bank> с отдельным ходом на банк), три цикла: постановка, цикл «разбиение — бейзлайн — модель — метрика», обобщение; формула f.constant-baseline (оценка снизу для медианы, тождество для среднего), генераторы ml.rmse-mae и ml.best-constant, виджет «Обучение и тест» (src/widgets/ml/train-test, src/lib/math/poly.ts), mlf.datasets.apartments_full, сниппет ml_basics/learning_problem.py с тестом против sklearn
 - **Файлы:** content/courses/ml-basics/linear-models/learning-problem.mdx, content/diagnostic-ml-basics.yaml, content/formulas/ml/constant-baseline.yaml, src/widgets/ml/train-test/, src/lib/exercises/generators/ml.ts, code/snippets/ml_basics/learning_problem.py, code/tests/test_learning_problem.py
