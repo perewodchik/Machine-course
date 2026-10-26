@@ -42,7 +42,8 @@ export interface FragmentTaskOptions {
   pool: readonly string[];
 }
 
-const line = (tex: string, tag?: number) => `$$${tex.replace(/\\changed\{/g, "{")}${tag ? ` \\tag{${tag}}` : ""}$$`;
+// номер строки — слева текстом, а не \tag: на узком экране \tag справа наезжает на прокручиваемую формулу
+const line = (tex: string, tag?: number) => `$$${tag ? `\\text{(${tag})}\\qquad ` : ""}${tex.replace(/\\changed\{/g, "{")}$$`;
 const plain = (tex: string) => tex.replace(/\\changed\{/g, "{");
 
 function stepOf(f: Formula, n: number): DerivationStep {

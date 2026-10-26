@@ -408,3 +408,6 @@
 - id: intervals-tests
   ru: 'доверительный интервал; уровень доверия; бутстрэп; нулевая гипотеза; p-значение; ошибки первого и второго рода; мощность; множественные сравнения; поправка Бонферрони'
   en: 'confidence interval; confidence level; bootstrap; null hypothesis; p-value; type I and type II errors; power; multiple comparisons; Bonferroni correction'
+- id: math-in-ml
+  ru: 'обратный проход; обратное распространение ошибки; мини-батч; нижняя оценка правдоподобия; метод главных компонент'
+  en: 'backward pass; backpropagation; mini-batch; evidence lower bound (ELBO); principal component analysis (PCA)'

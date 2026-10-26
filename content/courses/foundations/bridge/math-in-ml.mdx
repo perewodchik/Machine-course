@@ -1,0 +1,102 @@
+---
+id: math-in-ml
+title: 'Итоговая проверка: математика в выводах ML'
+number: 'V.2'
+concepts: [ml.loss]
+minutes: 120
+lead: 'Выводы в машинном обучении собраны из нескольких приёмов: правило цепочки, матричное дифференцирование, логарифм правдоподобия, неравенство Йенсена, собственные векторы. Здесь восемь фрагментов из будущих курсов ML. В каждом нужно восстановить строку, назвать приём или найти подложенную ошибку. Ошибки покажут, какие уроки освежить до начала курса.'
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Classification and logistic regression'
+  - edition: main-notes-2026-spring
+    section: 'Generalized linear models'
+  - edition: main-notes-2026-spring
+    section: 'Generative learning algorithms'
+  - edition: main-notes-2026-spring
+    section: 'Deep learning'
+---
+
+{/*
+  План урока (docs/program/05-bridge.md, карточка V.2) — четыре цикла по курсам ML, в каждом 2–3 фрагмента из банка
+  S5.01 (content/formulas/ml, src/lib/content/fragments.ts) и по 2–3 задачи на фрагмент: «какое правило применено»,
+  «восстанови строку», «найди ошибку». Подложенные ошибки — знак, транспонирование, потерянный множитель; каждая
+  проверена численно. Итоговая проверка — задача по обратному проходу (ставит «знаю»).
+*/}
+
+<Prereqs lessons={["foundations/bridge/linear-regression"]} />
+
+Каждый фрагмент — короткий вывод. Сам вывод виден только в задачах: сначала решите, потом читайте разбор. Числа и матрицы в нём — как в CS229: $n$ объектов, $d$ признаков, $X$ — матрица объектов по строкам, $g$ — сигмоида.
+
+## «Основы ML»: логистическая регрессия и GLM
+
+Первые три фрагмента — из курса «Основы машинного обучения». Логарифм правдоподобия логистической регрессии и его градиент опираются на производную сигмоиды (урок 0.5), матричное дифференцирование (II.3) и метод максимального правдоподобия (IV.3). Гессиан и вогнутость — на уроки II.4, II.5 и I.10, отклик GLM — на IV.5.
+
+<Exercise fragment="f.logistic-gradient" ask="fill" step={3} n={1} />
+
+<Exercise fragment="f.logistic-gradient" ask="error" step={2} n={2} />
+
+<Exercise fragment="f.logistic-gradient" ask="rule" step={3} n={3} seed={3} />
+
+<Exercise fragment="f.logistic-hessian" ask="error" step={3} mutation={2} n={4} />
+
+<Exercise fragment="f.logistic-hessian" ask="rule" step={4} n={5} seed={5} />
+
+<Exercise fragment="f.glm-response" ask="fill" step={2} n={6} />
+
+<Exercise fragment="f.glm-response" ask="error" step={1} n={7} />
+
+<Note label="Учитель" teacher>Знак шага — главная ловушка: $\ell$ максимизируют подъёмом, потерю $-\ell$ минимизируют спуском. Градиенты отличаются знаком.</Note>
+
+## «Классические методы»: GDA и SVM
+
+Среднее класса в GDA — многомерный MLE (уроки IV.4 и III.11): градиент квадратичной формы и решение уравнения «градиент равен нулю». Веса SVM через двойственные переменные — метод Лагранжа и условия KKT (II.8, II.9★).
+
+<Exercise fragment="f.gda-mean" ask="error" step={2} mutation={2} n={8} />
+
+<Exercise fragment="f.gda-mean" ask="fill" step={3} n={9} />
+
+<Exercise fragment="f.svm-dual" ask="rule" step={1} n={10} seed={10} />
+
+<Exercise fragment="f.svm-dual" ask="fill" step={3} n={11} />
+
+<Exercise fragment="f.svm-dual" ask="error" step={4} n={12} />
+
+## «Глубокое обучение»: обратный проход
+
+Обратный проход двухслойной сети для мини-батча — правило цепочки в матричной записи (уроки II.2 и II.3) и произведение матриц как сумма внешних произведений (I.3). Главная проверка здесь — формы: градиент по $W$ имеет форму $W$.
+
+<Exercise fragment="f.backprop-two-layer" ask="fill" step={2} n={13} />
+
+<Exercise fragment="f.backprop-two-layer" ask="error" step={3} n={14} />
+
+<Note label="По-английски">Обратный проход — *backward pass*, обратное распространение ошибки — *backpropagation*, мини-батч — *mini-batch*.</Note>
+
+## «Обучение без учителя»: EM и PCA
+
+Нижняя оценка EM — смесь и скрытая переменная (урок III.12), матожидание и неравенство Йенсена (III.5) для вогнутого логарифма (II.5). Главная компонента — квадратичная форма выборочной ковариации (III.10), метод Лагранжа (II.8) и собственные векторы (I.9).
+
+<Exercise fragment="f.em-jensen" ask="rule" step={3} n={15} seed={15} />
+
+<Exercise fragment="f.em-jensen" ask="error" step={2} n={16} />
+
+<Exercise fragment="f.em-jensen" ask="fill" step={4} n={17} />
+
+<Exercise fragment="f.pca-eigen" ask="error" step={2} n={18} />
+
+<Exercise fragment="f.pca-eigen" ask="rule" step={3} n={19} seed={19} />
+
+<Block kind="pitfall">
+
+Применить неравенство Йенсена не в ту сторону. Для вогнутой функции — логарифма — $\log \mathbb{E}\, U \ge \mathbb{E} \log U$, и сумма $\sum_z q(z) \log \frac{p(x, z; \theta)}{q(z)}$ — оценка снизу. Если перевернуть знак, EM перестаёт гарантировать рост правдоподобия.
+
+</Block>
+
+<Note label="По-английски">Нижняя оценка правдоподобия — *evidence lower bound (ELBO)*, метод главных компонент — *principal component analysis (PCA)*.</Note>
+
+## Итог
+
+- Выводы курсов ML собраны из немногих приёмов: правило цепочки и матричные градиенты, логарифм правдоподобия, условия оптимальности и множители Лагранжа, неравенство Йенсена, собственные векторы.
+- Типичные ошибки одни и те же: знак (подъём и спуск), транспонирование при переходе от суммы к матричной записи, потерянный множитель $2$ или производная нелинейности.
+- Ошибка в задачах раздела — повод освежить уроки, перечисленные в его начале, до начала соответствующего курса.
+
+<Exercise fragment="f.backprop-two-layer" ask="fill" step={3} id="post.v2" title="Итоговая проверка" final />
