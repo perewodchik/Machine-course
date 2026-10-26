@@ -15,3 +15,24 @@ def apartments(n: int = 16, seed: int = 2026) -> tuple[np.ndarray, np.ndarray]:
     area = np.round(rng.uniform(28, 110, size=n))
     price = np.round(1.5 + 0.12 * area + rng.normal(0, 0.9, size=n), 1)
     return area, price
+
+
+# Слова объявлений «Квартир» для наивного Байеса (капстоун модуля III): метка — продалась ли квартира за неделю.
+ADS_WORDS = ("метро", "ремонт", "срочно", "торг", "новостройка", "без посредников", "аукцион")
+_ADS_PHI_Y = 0.35
+_ADS_PHI_1 = (0.70, 0.60, 0.50, 0.40, 0.30, 0.50, 0.01)
+_ADS_PHI_0 = (0.40, 0.30, 0.10, 0.30, 0.30, 0.45, 0.04)
+
+
+def apartment_ads(n: int = 600, seed: int = 2027) -> tuple[np.ndarray, np.ndarray]:
+    """Объявления о квартирах: X — n × 7 из 0 и 1 (есть ли слово ``ADS_WORDS[j]``), y — продалась ли за неделю.
+
+    Порождены моделью наивного Байеса: y ~ Bernoulli(0.35), слова независимы при известном y. Слово «аукцион»
+    у быстро проданных редкое (1 %): в первых 400 объявлениях его у них нет, а в остальных 200 оно встречается
+    дважды — на нём видно, зачем нужно сглаживание Лапласа. Seed подобран под это.
+    """
+    rng = np.random.default_rng(seed)
+    y = (rng.random(n) < _ADS_PHI_Y).astype(int)
+    phi = np.where(y[:, None] == 1, np.array(_ADS_PHI_1), np.array(_ADS_PHI_0))
+    X = (rng.random((n, len(ADS_WORDS))) < phi).astype(int)
+    return X, y

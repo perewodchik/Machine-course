@@ -1,0 +1,14 @@
+---
+// Обёртка виджета «KL между двумя распределениями» для урока: рисунок с номером и подписью, остров React (client:visible).
+import { KlExplorer, type KlExplorerProps } from "../../widgets/prob/kl-explorer";
+
+interface Props extends KlExplorerProps {
+  /** Номер рисунка в уроке. */
+  n?: number;
+}
+const { n, ...props } = Astro.props;
+---
+<figure class="figure wide">
+  <KlExplorer client:visible {...props} />
+  <figcaption class="figure__caption">{n && <b>Рисунок {n}.</b>} <slot /></figcaption>
+</figure>

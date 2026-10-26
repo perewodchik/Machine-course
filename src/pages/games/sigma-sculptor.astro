@@ -1,0 +1,26 @@
+---
+// Игра «Скульптор Σ» (S4.L3, урок III.11): остров React с оболочкой GameShell. Блок «Чему учит игра» — статичный HTML.
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { SigmaSculptor, meta } from "../../games/sigma-sculptor";
+import { loadCourse } from "../../lib/content/collections";
+
+const course = await loadCourse("foundations");
+const lesson = course.lessons.find((l) => l.key === meta.lesson);
+if (!lesson) throw new Error(`игра ${meta.id}: нет урока ${meta.lesson}`);
+const module = course.modules.find((m) => m.id === lesson.module);
+---
+<BaseLayout title={meta.title} description="Подгоните эллипс многомерного нормального распределения под облако точек: центр, разбросы и наклон." course={course}>
+  <main class="game shell" id="content">
+    <nav class="breadcrumb" aria-label="Путь">
+      <a href={`${course.href}#m-${lesson.module}`}>{module?.title}</a><span aria-hidden="true">/</span><span>Игра к уроку {lesson.number}</span>
+    </nav>
+    <h1>{meta.title}</h1>
+    <p class="lead game__lead">Облако точек&nbsp;— выборка из&nbsp;двумерного нормального. Подберите центр, разбросы и&nbsp;наклон так, чтобы эллипс лёг на&nbsp;облако. Пять уровней, партия&nbsp;— <span class="nowrap">4–6&nbsp;минут</span>.</p>
+    <SigmaSculptor client:load>
+      <div class="block block--intuition game__teaches">
+        <p><span class="block__title">Чему учит игра.</span> Эллипс уровня плотности <i>N</i>(<i>μ</i>,&nbsp;<i>Σ</i>) читается по&nbsp;параметрам: центр&nbsp;— <i>μ</i>, разброс по&nbsp;осям&nbsp;— <i>σ</i><sub>1</sub> и&nbsp;<i>σ</i><sub>2</sub>, наклон&nbsp;— <i>ρ</i>. Лучшая подгонка&nbsp;— выборочные среднее и&nbsp;ковариация: так оценивает классы GDA в&nbsp;CS229.</p>
+        <p><a href={lesson.href}>Урок {lesson.number}. {lesson.title}</a></p>
+      </div>
+    </SigmaSculptor>
+  </main>
+</BaseLayout>

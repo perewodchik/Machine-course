@@ -1,8 +1,10 @@
 // Числа и подписи на рисунках: десятичная точка (как в коде и CS229), настоящий минус, индексы.
 const MINUS = "−";
 
-/** 0.5 → «0.50», −1 → «−1.00». Ноль без знака. */
+/** 0.5 → «0.50», −1 → «−1.00», Infinity → «∞». Ноль без знака. */
 export function fmt(v: number, digits = 2): string {
+  // бесконечность — законное показание: KL при q(x) = 0 там, где p(x) > 0
+  if (v === Infinity || v === -Infinity) return v > 0 ? "∞" : `${MINUS}∞`;
   const s = v.toFixed(digits);
   return Number(s) === 0 ? s.replace("-", "") : s.replace("-", MINUS);
 }

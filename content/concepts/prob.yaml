@@ -72,6 +72,33 @@
   prerequisites: [prob.joint-distributions, la.psd]
   core: true
 
+- id: prob.multivariate-normal
+  title:
+    ru: 'Многомерное нормальное распределение'
+    en: 'multivariate Gaussian'
+  summary: 'Плотность $\frac{1}{(2\pi)^{d/2} \lvert \Sigma \rvert^{1/2}} \exp\bigl(-\frac12 (x - \mu)^\top \Sigma^{-1} (x - \mu)\bigr)$ при $\Sigma \succ 0$; линии уровня — эллипсы с осями вдоль собственных векторов $\Sigma$ и полуосями $k\sqrt{\lambda_i}$; расстояние Махаланобиса; выборка $\mu + Lz$, $\Sigma = LL^\top$; маргинальные и условные распределения гауссовы.'
+  lesson: multivariate-normal
+  prerequisites: [prob.random-vectors, prob.normal, la.eigen]
+  core: true
+
+- id: prob.mixtures
+  title:
+    ru: 'Смеси и скрытые переменные'
+    en: 'mixtures and latent variables'
+  summary: 'Смесь $p(x) = \sum_k \phi_k\, p(x \mid z = k)$ — маргинализация по скрытой $z$; порождение: сначала $z \sim \phi$, потом $x \mid z$; ответственность $P(z = k \mid x)$ по формуле Байеса; смесь — не сумма величин.'
+  lesson: mixtures-latent
+  prerequisites: [prob.multivariate-normal, prob.bayes]
+  core: true
+
+- id: prob.information
+  title:
+    ru: 'Энтропия, кросс-энтропия, KL'
+    en: 'entropy, cross-entropy, KL divergence'
+  summary: 'Энтропия $H(p) = -\sum p \log p$ — средняя неожиданность; кросс-энтропия $H(p, q) = -\sum p \log q = H(p) + D_{KL}(p \,\Vert\, q)$; $D_{KL} \ge 0$ по Йенсену и не симметрична; минимизация кросс-энтропии — максимизация правдоподобия; ★ ELBO.'
+  lesson: information
+  prerequisites: [prob.expectation, prob.discrete-distributions]
+  core: true
+
 - id: prob.independence
   title:
     ru: 'Независимость'

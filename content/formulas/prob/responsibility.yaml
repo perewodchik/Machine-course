@@ -1,0 +1,71 @@
+id: f.responsibility
+kind: formula
+title:
+  ru: 'Ответственность компоненты смеси'
+  en: 'responsibility of a mixture component'
+statement: 'w_j(x) = P(z = j \mid x) = \frac{\phi_j\, p(x \mid z = j)}{\sum_{l} \phi_l\, p(x \mid z = l)}'
+
+# Урок III.12: формула Байеса для скрытой переменной z — номера компоненты; знаменатель — плотность смеси
+# p(x) по формуле полной вероятности. Последний шаг — та же величина через логарифмы со сдвигом на максимум
+# (log-sum-exp), как её считают в коде: без переполнения при далёких x. Проверка — смесь k = 5 одномерных
+# нормальных в случайной точке x.
+symbols:
+  - name: phi
+    tex: '\phi'
+    meaning: 'веса компонент: $\phi_j = P(z = j)$, $\sum_j \phi_j = 1$'
+    shape: [k, 1]
+    sample: simplex
+  - name: mu
+    tex: '\mu'
+    meaning: 'средние компонент'
+    shape: [k, 1]
+  - name: sigma
+    tex: '\sigma'
+    meaning: 'стандартные отклонения компонент'
+    shape: [k, 1]
+    sample: positive
+  - name: x
+    tex: 'x'
+    meaning: 'наблюдение'
+    shape: []
+
+dependsOn:
+  concepts: [prob.bayes, prob.total-probability, prob.normal]
+  rules: []
+
+derivation:
+  plan:
+    - 'Записать формулу Байеса для $z$ при известном $x$'
+    - 'Развернуть знаменатель по формуле полной вероятности — это плотность смеси'
+    - 'Переписать через логарифмы со сдвигом на максимум: так считают в коде'
+  steps:
+    - goal: 0
+      tex: 'P(z = j \mid x) = \frac{p(x, z = j)}{p(x)} = \frac{\phi_j\, p(x \mid z = j)}{p(x)}'
+      by: [prob.bayes]
+      note: 'Совместная плотность — произведение априорной вероятности компоненты и плотности внутри неё.'
+      check:
+        kind: same
+        py: 'phi * np.exp(-(x - mu) ** 2 / (2 * sigma ** 2)) / (np.sqrt(2 * np.pi) * sigma) / np.sum(phi * np.exp(-(x - mu) ** 2 / (2 * sigma ** 2)) / (np.sqrt(2 * np.pi) * sigma))'
+    - goal: 1
+      tex: '= \frac{\phi_j\, p(x \mid z = j)}{\changed{\sum_l \phi_l\, p(x \mid z = l)}}'
+      by: [prob.total-probability]
+      note: 'Плотность смеси $p(x) = \sum_l \phi_l\, p(x \mid z = l)$ — маргинализация по скрытой $z$. Ответственности в сумме дают $1$.'
+      check:
+        kind: same
+        py: '(phi * np.exp(-(x - mu) ** 2 / (2 * sigma ** 2)) / sigma) / np.sum(phi * np.exp(-(x - mu) ** 2 / (2 * sigma ** 2)) / sigma)'
+    - goal: 2
+      tex: '= \exp\Bigl(a_j - \changed{\log \sum_l e^{a_l}}\Bigr), \qquad a_j = \log \phi_j + \log p(x \mid z = j)'
+      by: [calc.log-exp]
+      note: 'При далёком $x$ все $p(x \mid z = l)$ меньше наименьшего числа с плавающей точкой, и прямая формула даёт $0/0$. В логарифмах вычитают $\max_l a_l$ перед экспонентой — это log-sum-exp (урок 0.5).'
+      check:
+        kind: same
+        py: 'np.exp(np.log(phi) - (x - mu) ** 2 / (2 * sigma ** 2) - np.log(sigma) - np.max(np.log(phi) - (x - mu) ** 2 / (2 * sigma ** 2) - np.log(sigma)) - np.log(np.sum(np.exp(np.log(phi) - (x - mu) ** 2 / (2 * sigma ** 2) - np.log(sigma) - np.max(np.log(phi) - (x - mu) ** 2 / (2 * sigma ** 2) - np.log(sigma))))))'
+
+pitfalls:
+  - 'Путать смесь распределений и сумму случайных величин: смесь выбирает одну компоненту и берёт её значение, сумма складывает значения всех.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'The EM algorithm / Mixture of Gaussians'
+
+usedIn: [prob.mixtures]

@@ -17,6 +17,35 @@
 
 ---
 
+### 2026-10-26 — S4.L3 None — готова
+- **Сделано:** None
+- **Следующий шаг:** S4.L4 — L-IV.1 — выборка, статистики, оценки.
+- **Вопросы пользователю:** —
+
+### 2026-10-26 — L-III.13 L-III.13 — энтропия, кросс-энтропия, KL; итоговая проверка модуля III — готов
+- **Сделано:** урок information (три цикла: энтропия, кросс-энтропия и KL ≥ 0 через Йенсена, кросс-энтропия = правдоподобие и ★ ELBO), виджет «KL между двумя распределениями», капстоун модуля — лабораторная prob/naive_bayes_apartments (данные mlf.datasets.apartment_ads), формула f.cross-entropy-kl, генераторы prob.entropy, prob.kl, prob.log-loss, сниппеты information.py и naive_bayes.py с тестами, итоговая проверка модуля III (ExerciseSet из 13 задач); fmt показывает ∞; в «Скульпторе Σ» шаг ρ 0.01 — при |ρ| ≈ 0.9 шаг 0.05 не давал пройти порог
+- **Файлы:** content/courses/foundations/probability/information.mdx, src/widgets/prob/kl-explorer/, notebooks/src/prob/naive_bayes_apartments.py, code/mlf/datasets.py, content/formulas/prob/cross-entropy-kl.yaml, code/snippets/prob/information.py
+- **Проверка:** validate, lint, build, check, vitest 590, pytest, nbmake обеих лабораторных модуля, check_consistency, e2e III.13 и итоговой проверки модуля, раскладка iii13 (axe)
+- **Отклонения от плана и решения:** нет
+- **Следующий шаг:** L-IV.1 — выборка, статистики, оценки.
+- **Вопросы пользователю:** —
+
+### 2026-10-26 — L-III.12 L-III.12 — смеси и скрытые переменные — готов
+- **Сделано:** урок mixtures-latent (три цикла: порождение через z и смесь ≠ сумма, ответственность и log-sum-exp, моменты смеси и EM), виджет «Смесь двух гауссиан и ответственности», формула f.responsibility, генераторы prob.mixture и prob.mixture-moments, сниппет mixture.py с тестом; исправлен eig2 в gauss2.ts: при ρ ≈ 0 и σ₁ < σ₂ собственный вектор терял точность (тест свойств падал на случайном seed)
+- **Файлы:** content/courses/foundations/probability/mixtures-latent.mdx, src/widgets/prob/mixture/, content/formulas/prob/responsibility.yaml, code/snippets/prob/mixture.py, src/lib/math/gauss2.ts
+- **Проверка:** validate, lint, build, check, vitest 586 (gauss2 ×8), pytest, check_consistency, e2e III.12 и раскладка iii12 (axe)
+- **Отклонения от плана и решения:** нет
+- **Следующий шаг:** L-III.13 — энтропия, кросс-энтропия, KL.
+- **Вопросы пользователю:** —
+
+### 2026-10-26 — L-III.11 L-III.11 — многомерное нормальное распределение — готов
+- **Сделано:** урок multivariate-normal (три цикла: плотность по множителям, эллипсы уровня, выборка и условные), виджет «Редактор μ и Σ», игра «Скульптор Σ» (/games/sigma-sculptor/, KL между облаком и догадкой), модель src/lib/math/gauss2.ts, формула f.gaussian-axes, генераторы prob.mahalanobis и prob.gauss-axes, сниппет mvn.py с тестом
+- **Файлы:** content/courses/foundations/probability/multivariate-normal.mdx, src/widgets/prob/gauss-editor/, src/games/sigma-sculptor/, src/lib/math/gauss2.ts, content/formulas/prob/gaussian-axes.yaml, code/snippets/prob/mvn.py
+- **Проверка:** validate, lint, build, check, vitest 581, pytest, check_consistency, e2e III.11 и игры, раскладка iii11 и sigmagame (axe)
+- **Отклонения от плана и решения:** нет
+- **Следующий шаг:** L-III.12 — смеси и скрытые переменные.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — L-III.10 L-III.10 — случайные векторы и линейные преобразования — готов
 - **Сделано:** урок random-vectors (три цикла: среднее и Σ ⪰ 0, Cov(AX + b) = AΣAᵀ, плотность и |det A|), виджет «Линейное преобразование облака», формула f.covariance-linear, генераторы prob.cov-linear (матрица и aᵀΣa) и prob.density-linear, сниппет random_vectors.py с тестом; e2e: axe ждёт конца переходов (reducedMotion) — гонка на кнопке «Следующий уровень» в CI PR #27
 - **Файлы:** content/courses/foundations/probability/random-vectors.mdx, src/widgets/prob/cloud-transform/, content/formulas/prob/covariance-linear.yaml, code/snippets/prob/random_vectors.py, tests/e2e/support.ts

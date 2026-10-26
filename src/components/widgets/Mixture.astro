@@ -1,0 +1,14 @@
+---
+// Обёртка виджета «Смесь двух гауссиан и ответственности» для урока: рисунок с номером и подписью, остров React (client:visible).
+import { Mixture, type MixtureProps } from "../../widgets/prob/mixture";
+
+interface Props extends MixtureProps {
+  /** Номер рисунка в уроке. */
+  n?: number;
+}
+const { n, ...props } = Astro.props;
+---
+<figure class="figure wide">
+  <Mixture client:visible {...props} />
+  <figcaption class="figure__caption">{n && <b>Рисунок {n}.</b>} <slot /></figcaption>
+</figure>

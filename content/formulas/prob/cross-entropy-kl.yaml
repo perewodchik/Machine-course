@@ -1,0 +1,62 @@
+id: f.cross-entropy-kl
+kind: formula
+title:
+  ru: 'Кросс-энтропия — энтропия плюс KL'
+  en: 'cross-entropy as entropy plus KL divergence'
+statement: 'H(p, q) = -\sum_x p(x) \log q(x) = H(p) + D_{KL}(p \,\Vert\, q)'
+
+# Урок III.13: добавить и вычесть log p(x) под знаком суммы. Первое слагаемое — энтропия, второе — KL.
+# Отсюда: при фиксированных данных p минимум кросс-энтропии по модели q — там же, где минимум KL.
+# Проверка — на двух случайных распределениях из k = 5 исходов.
+symbols:
+  - name: p
+    tex: 'p'
+    meaning: 'истинное (или эмпирическое) распределение'
+    shape: [k, 1]
+    sample: simplex
+  - name: q
+    tex: 'q'
+    meaning: 'распределение модели'
+    shape: [k, 1]
+    sample: simplex
+
+dependsOn:
+  concepts: [prob.expectation, calc.log-exp]
+  rules: []
+
+derivation:
+  plan:
+    - 'Записать кросс-энтропию как матожидание $-\log q(X)$ при $X \sim p$'
+    - 'Добавить и вычесть $\log p(x)$, разбить сумму на две'
+    - 'Узнать в слагаемых энтропию $H(p)$ и дивергенцию $D_{KL}(p \,\Vert\, q)$'
+  steps:
+    - goal: 0
+      tex: 'H(p, q) = -\sum_x p(x) \log q(x) = \mathbb{E}_{X \sim p}\bigl[-\log q(X)\bigr]'
+      by: [prob.expectation]
+      note: 'Средняя «неожиданность» $-\log q$ исходов, которые на самом деле выпадают с частотами $p$.'
+      check:
+        kind: same
+        py: '-(p @ np.log(q))'
+    - goal: 1
+      tex: '= -\sum_x p(x) \bigl(\changed{\log p(x) + \log \tfrac{q(x)}{p(x)}}\bigr)'
+      by: [calc.log-exp]
+      note: '$\log q = \log p + \log (q/p)$ — логарифм произведения.'
+      check:
+        kind: same
+        py: '-(p @ (np.log(p) + np.log(q / p)))'
+    - goal: 2
+      tex: '= \changed{-\sum_x p(x) \log p(x)} + \changed{\sum_x p(x) \log \frac{p(x)}{q(x)}} = H(p) + D_{KL}(p \,\Vert\, q)'
+      by: [prob.expectation]
+      note: 'Энтропия не зависит от модели $q$, поэтому минимизировать кросс-энтропию по $q$ — то же, что минимизировать $D_{KL}(p \,\Vert\, q)$. Минимум $H(p)$ достигается при $q = p$.'
+      check:
+        kind: same
+        py: '-(p @ np.log(p)) + p @ np.log(p / q)'
+
+pitfalls:
+  - 'Считать KL расстоянием: $D_{KL}(p \,\Vert\, q) \ne D_{KL}(q \,\Vert\, p)$, и неравенство треугольника не выполняется.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Classification and logistic regression'
+
+usedIn: [prob.information]

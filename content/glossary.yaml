@@ -378,3 +378,12 @@
 - id: random-vectors
   ru: 'случайный вектор; ковариационная матрица; линейное преобразование случайного вектора'
   en: 'random vector; covariance matrix; linear transformation of a random vector'
+- id: multivariate-normal
+  ru: 'многомерное нормальное распределение; расстояние Махаланобиса; линии уровня; условное гауссово'
+  en: 'multivariate Gaussian; Mahalanobis distance; isocontours; conditional Gaussian'
+- id: mixtures
+  ru: 'смесь распределений; скрытая переменная; ответственность'
+  en: 'mixture model; latent variable; responsibility'
+- id: information
+  ru: 'энтропия; кросс-энтропия; дивергенция Кульбака — Лейблера; нижняя оценка правдоподобия (ELBO)'
+  en: 'entropy; cross-entropy; Kullback–Leibler divergence; evidence lower bound (ELBO)'

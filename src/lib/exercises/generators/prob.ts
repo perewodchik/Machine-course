@@ -780,6 +780,9 @@ export const covariance: Generator = {
   },
 };
 
+/** Коэффициент перед переменной: 1 и −1 не пишут. */
+const coef = (c: number) => (c === 1 ? "" : c === -1 ? "-" : String(c));
+
 const pm = (m: number[][]) => String.raw`\begin{pmatrix} ${m.map((row) => row.join(" & ")).join(String.raw` \\ `)} \end{pmatrix}`;
 
 /** Урок III.10: ковариация линейного преобразования — матрица AΣAᵀ или дисперсия aᵀX = aᵀΣa. */
@@ -819,7 +822,7 @@ export const covLinearGen: Generator = {
     const answer = a[0]! ** 2 * s1 + 2 * a[0]! * a[1]! * c + a[1]! ** 2 * s2;
     return {
       kind: "numeric",
-      prompt: String.raw`$\operatorname{Cov} X = \Sigma = ${pm(S)}$. Найдите $\operatorname{Var}(${a[0]}X_1 ${a[1]! < 0 ? "-" : "+"} ${Math.abs(a[1]!)}X_2)$.`,
+      prompt: String.raw`$\operatorname{Cov} X = \Sigma = ${pm(S)}$. Найдите $\operatorname{Var}(${coef(a[0]!)}X_1 ${a[1]! < 0 ? "-" : "+"} ${coef(Math.abs(a[1]!))}X_2)$.`,
       label: String.raw`$\operatorname{Var} =$`,
       answer,
       tol: 0.001,
@@ -855,6 +858,212 @@ export const densityLinear: Generator = {
       hints: [String.raw`$p_Y(y) = p_X(A^{-1}y)\, \lvert \det A \rvert^{-1}$; площадь параллелограмма — $\lvert \det A \rvert$ (урок I.7).`],
       right: String.raw`$\det A = ${d}$, $p_Y = 1/${Math.abs(d)} \approx ${answer}$: площадь выросла в $${Math.abs(d)}$ раз, плотность упала во столько же.`,
       wrong: d < 0 ? String.raw`$\det A = ${d} < 0$, но плотность не бывает отрицательной: делить нужно на модуль, $\lvert \det A \rvert = ${-d}$.` : String.raw`Плотность делится на $\lvert \det A \rvert = ${d}$, а не умножается: вероятность квадрата растекается по площади $${d}$.`,
+    };
+  },
+};
+
+/** Урок III.11: квадрат расстояния Махаланобиса при диагональной Σ — сколько «сигм» от центра. */
+export const mahalanobisGen: Generator = {
+  id: "prob.mahalanobis",
+  version: 1,
+  title: "Расстояние Махаланобиса",
+  make(seed) {
+    const r = rng(seed);
+    const s1 = r.pick([1, 2, 3, 5]);
+    const s2 = r.pick([1, 2, 4]);
+    const mu = [r.int(-2, 2), r.int(-2, 2)];
+    const x = [mu[0]! + s1 * r.nonzero(-2, 2), mu[1]! + s2 * r.int(-2, 2)];
+    const z = [(x[0]! - mu[0]!) / s1, (x[1]! - mu[1]!) / s2];
+    const answer = z[0]! ** 2 + z[1]! ** 2;
+    const eucl = (x[0]! - mu[0]!) ** 2 + (x[1]! - mu[1]!) ** 2;
+    return {
+      kind: "numeric",
+      prompt: String.raw`$X \sim \mathcal{N}(\mu, \Sigma)$, $\mu = (${mu[0]}, ${mu[1]})^\top$, $\Sigma = ${pm([[s1 * s1, 0], [0, s2 * s2]])}$. Найдите квадрат расстояния Махаланобиса от точки $x = (${x[0]}, ${x[1]})^\top$ до $\mu$.`,
+      label: String.raw`$(x - \mu)^\top \Sigma^{-1} (x - \mu) =$`,
+      answer,
+      tol: 0.001,
+      hints: [String.raw`$\Sigma$ диагональна: $\Sigma^{-1} = \operatorname{diag}(1/${s1 * s1}, 1/${s2 * s2})$, и форма — сумма квадратов отклонений в «сигмах».`],
+      right: String.raw`$\bigl(\tfrac{${x[0]! - mu[0]!}}{${s1}}\bigr)^2 + \bigl(\tfrac{${x[1]! - mu[1]!}}{${s2}}\bigr)^2 = ${answer}$.`,
+      wrong: String.raw`Отклонения делятся на $\sigma$, а в квадрате — на дисперсии $${s1 * s1}$ и $${s2 * s2}$. Обычный квадрат расстояния — $${eucl}$ — не учитывает разброс.`,
+    };
+  },
+};
+
+/** Урок III.11: полуось эллипса уровня k по собственным числам Σ = [[a, b], [b, a]] (λ = a ± b). */
+export const gaussAxes: Generator = {
+  id: "prob.gauss-axes",
+  version: 1,
+  title: "Полуоси эллипса уровня",
+  make(seed) {
+    const r = rng(seed);
+    const [l1, l2] = r.pick([[9, 1], [16, 4], [9, 4], [25, 9], [16, 1]] as const);
+    const a = (l1 + l2) / 2;
+    const b = r.pick([1, -1]) * ((l1 - l2) / 2);
+    const k = r.pick([1, 2, 3]);
+    const long = seed % 2 === 1;
+    const answer = k * Math.sqrt(long ? l1 : l2);
+    return {
+      kind: "numeric",
+      prompt: String.raw`$\Sigma = ${pm([[a, b], [b, a]])}$. Найдите длину ${long ? "длинной" : "короткой"} полуоси эллипса $(x - \mu)^\top \Sigma^{-1} (x - \mu) = ${k * k}$.`,
+      label: String.raw`полуось $=$`,
+      answer,
+      tol: 0.001,
+      hints: [String.raw`У $\begin{pmatrix} a & b \\ b & a \end{pmatrix}$ собственные векторы $(1, \pm 1)^\top$, числа $a \pm b$.`, String.raw`Полуось уровня $k$ вдоль $u_i$ — $k\sqrt{\lambda_i}$; здесь $k = ${k}$.`],
+      right: String.raw`$\lambda = ${l1}, ${l2}$; ${long ? "длинная" : "короткая"} полуось — $${k}\sqrt{${long ? l1 : l2}} = ${answer}$.`,
+      wrong: String.raw`Полуоси — $k\sqrt{\lambda_i}$, не $k/\sqrt{\lambda_i}$: в квадратичной форме стоит $\Sigma^{-1}$, и корни обращаются. И не забудьте, что уровень $${k * k}$ — это $k^2$, $k = ${k}$.`,
+    };
+  },
+};
+
+/** Урок III.12: смесь двух компонент — плотность в точке или ответственность по формуле Байеса. */
+export const mixtureGen: Generator = {
+  id: "prob.mixture",
+  version: 1,
+  title: "Плотность смеси и ответственность",
+  make(seed) {
+    const r = rng(seed);
+    const phi = r.pick([0.2, 0.3, 0.4, 0.6, 0.7]);
+    const p1 = r.pick([0.05, 0.1, 0.2, 0.3]);
+    const p2 = r.pick([0.1, 0.15, 0.25, 0.4].filter((v) => v !== p1));
+    const mix = phi * p1 + (1 - phi) * p2;
+    const ctx = String.raw`Смесь двух компонент: $P(z = 1) = \phi = ${phi}$, $P(z = 2) = ${round(1 - phi)}$. В точке $x$ плотности компонент $p(x \mid z = 1) = ${p1}$, $p(x \mid z = 2) = ${p2}$.`;
+    if (seed % 2 === 0) {
+      const answer = round(mix);
+      return {
+        kind: "numeric",
+        prompt: String.raw`${ctx} Найдите плотность смеси $p(x)$.`,
+        label: String.raw`$p(x) =$`,
+        answer,
+        tol: 0.0005,
+        hints: [String.raw`$p(x) = \sum_k P(z = k)\, p(x \mid z = k)$ — маргинализация по скрытой $z$.`],
+        right: String.raw`$${phi} \cdot ${p1} + ${round(1 - phi)} \cdot ${p2} = ${answer}$.`,
+        wrong: String.raw`Плотности компонент нужно взвесить вероятностями $\phi$ и $1 - \phi$, а не сложить и не усреднить поровну.`,
+      };
+    }
+    const answer = round((phi * p1) / mix, 3);
+    return {
+      kind: "numeric",
+      prompt: String.raw`${ctx} Найдите ответственность первой компоненты $P(z = 1 \mid x)$.`,
+      label: String.raw`$P(z = 1 \mid x) =$`,
+      answer,
+      tol: 0.005,
+      hints: [String.raw`Формула Байеса: числитель $\phi\, p(x \mid z = 1)$, знаменатель — плотность смеси $p(x)$.`],
+      right: String.raw`$\dfrac{${phi} \cdot ${p1}}{${phi} \cdot ${p1} + ${round(1 - phi)} \cdot ${p2}} = \dfrac{${round(phi * p1)}}{${round(mix)}} \approx ${answer}$.`,
+      wrong: String.raw`Не забудьте априорные веса: сравнивают не $${p1}$ и $${p2}$, а $\phi\, p(x \mid z = 1) = ${round(phi * p1)}$ и $(1 - \phi)\, p(x \mid z = 2) = ${round((1 - phi) * p2)}$.`,
+    };
+  },
+};
+
+/** Урок III.12: матожидание или дисперсия смеси двух нормальных — по полному матожиданию. */
+export const mixtureMoments: Generator = {
+  id: "prob.mixture-moments",
+  version: 1,
+  title: "Моменты смеси",
+  make(seed) {
+    const r = rng(seed);
+    const phi = r.pick([0.25, 0.5, 0.75]);
+    const mu1 = r.int(-3, 0);
+    const mu2 = r.int(1, 4);
+    const v1 = r.pick([1, 2, 4]);
+    const v2 = r.pick([1, 2, 4]);
+    const mean = phi * mu1 + (1 - phi) * mu2;
+    const variance = phi * (v1 + mu1 * mu1) + (1 - phi) * (v2 + mu2 * mu2) - mean * mean;
+    const wantVar = seed % 2 === 1;
+    const answer = round(wantVar ? variance : mean, 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`$X$ — смесь: с вероятностью $${phi}$ из $\mathcal{N}(${mu1}, ${v1})$, иначе из $\mathcal{N}(${mu2}, ${v2})$ (второй параметр — дисперсия). Найдите $${wantVar ? String.raw`\operatorname{Var} X` : String.raw`\mathbb{E}X`}$.`,
+      label: wantVar ? String.raw`$\operatorname{Var} X =$` : String.raw`$\mathbb{E}X =$`,
+      answer,
+      tol: 0.005,
+      hints: [
+        String.raw`Закон полного матожидания: $\mathbb{E}X = \sum_k \phi_k\, \mathbb{E}[X \mid z = k]$.`,
+        ...(wantVar ? [String.raw`$\mathbb{E}X^2 = \sum_k \phi_k (\sigma_k^2 + \mu_k^2)$, потом $\operatorname{Var} X = \mathbb{E}X^2 - (\mathbb{E}X)^2$.`] : []),
+      ],
+      right: wantVar ? String.raw`$\mathbb{E}X^2 = ${round(phi * (v1 + mu1 * mu1) + (1 - phi) * (v2 + mu2 * mu2), 4)}$, $\mathbb{E}X = ${round(mean, 4)}$, $\operatorname{Var} X = ${answer}$ — больше обеих дисперсий компонент, если их средние далеко.` : String.raw`$${phi} \cdot ${par(mu1)} + ${1 - phi} \cdot ${mu2} = ${answer}$.`,
+      wrong: wantVar ? String.raw`Дисперсия смеси — не $\sum_k \phi_k \sigma_k^2$: к ней добавляется разброс самих средних, $\sum_k \phi_k (\mu_k - \mathbb{E}X)^2$. И это не сумма величин: $\phi^2\sigma_1^2 + (1 - \phi)^2\sigma_2^2$ — дисперсия взвешенной суммы.` : String.raw`Средние компонент нужно взвесить вероятностями: $\phi\mu_1 + (1 - \phi)\mu_2$.`,
+    };
+  },
+};
+
+/** Урок III.13: энтропия в битах для распределения с вероятностями — степенями двойки. */
+export const entropyGen: Generator = {
+  id: "prob.entropy",
+  version: 1,
+  title: "Энтропия",
+  make(seed) {
+    const r = rng(seed);
+    const p = r.pick([
+      [0.5, 0.5],
+      [0.5, 0.25, 0.25],
+      [0.25, 0.25, 0.25, 0.25],
+      [0.5, 0.25, 0.125, 0.125],
+      [0.125, 0.125, 0.125, 0.125, 0.5],
+      [0.25, 0.25, 0.5],
+    ] as const);
+    const answer = -p.reduce((s, v) => s + v * Math.log2(v), 0);
+    const terms = p.map((v) => String.raw`${v} \cdot ${-Math.log2(v)}`).join(" + ");
+    return {
+      kind: "numeric",
+      prompt: String.raw`Случайная величина принимает ${p.length} значений с вероятностями $${p.join(", ")}$. Найдите её энтропию в битах: $H = -\sum_x p(x) \log_2 p(x)$.`,
+      label: String.raw`$H =$`,
+      answer,
+      tol: 0.001,
+      hints: [String.raw`$-\log_2 p$ — «неожиданность» исхода в битах: $-\log_2 0.5 = 1$, $-\log_2 0.25 = 2$, $-\log_2 0.125 = 3$.`],
+      right: String.raw`$H = ${terms} = ${answer}$ бита: в среднем столько вопросов «да или нет» нужно, чтобы узнать исход.`,
+      wrong: String.raw`Энтропия — среднее $-\log_2 p(x)$, взвешенное вероятностями: $${terms}$.`,
+    };
+  },
+};
+
+/** Урок III.13: KL-дивергенция двух распределений Бернулли в натах — и в какую сторону. */
+export const klGen: Generator = {
+  id: "prob.kl",
+  version: 1,
+  title: "KL-дивергенция",
+  make(seed) {
+    const r = rng(seed);
+    const a = r.pick([0.5, 0.8, 0.9, 0.2]);
+    const b = r.pick([0.5, 0.6, 0.25, 0.1].filter((v) => v !== a));
+    const reverse = seed % 2 === 0;
+    const [p, q] = reverse ? [b, a] : [a, b];
+    const answer = round(p * Math.log(p / q) + (1 - p) * Math.log((1 - p) / (1 - q)), 4);
+    const other = round(q * Math.log(q / p) + (1 - q) * Math.log((1 - q) / (1 - p)), 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`$p$ — монета с вероятностью орла $${a}$, $q$ — с вероятностью $${b}$. Найдите $D_{KL}(${reverse ? "q" : "p"} \,\Vert\, ${reverse ? "p" : "q"})$ в натах (натуральный логарифм).`,
+      label: String.raw`$D_{KL} =$`,
+      answer,
+      tol: 0.001,
+      hints: [String.raw`$D_{KL}(u \,\Vert\, v) = \sum_x u(x) \log \frac{u(x)}{v(x)}$; усредняют по первому аргументу. Для монет — два слагаемых: орёл и решка.`],
+      right: String.raw`$${p} \ln \frac{${p}}{${q}} + ${round(1 - p)} \ln \frac{${round(1 - p)}}{${round(1 - q)}} \approx ${answer}$. В обратную сторону было бы $${other}$: KL несимметрична.`,
+      wrong: String.raw`Проверьте порядок: в $D_{KL}(u \,\Vert\, v)$ веса и числитель — у первого аргумента. В другую сторону получится $${other}$, а не $${answer}$.`,
+    };
+  },
+};
+
+/** Урок III.13: кросс-энтропия (log loss) по предсказанным вероятностям для нескольких объектов. */
+export const logLoss: Generator = {
+  id: "prob.log-loss",
+  version: 1,
+  title: "Кросс-энтропия как функция потерь",
+  make(seed) {
+    const r = rng(seed);
+    const n = r.pick([2, 3]);
+    const ys = Array.from({ length: n }, () => r.int(0, 1));
+    const hs = Array.from({ length: n }, () => r.pick([0.9, 0.8, 0.6, 0.3, 0.1]));
+    const terms = ys.map((y, i) => (y === 1 ? hs[i]! : round(1 - hs[i]!)));
+    const answer = round(-terms.reduce((s, t) => s + Math.log(t), 0) / n, 4);
+    const rows = ys.map((y, i) => String.raw`$y^{(${i + 1})} = ${y}$, $h^{(${i + 1})} = ${hs[i]}$`).join("; ");
+    return {
+      kind: "numeric",
+      prompt: String.raw`Классификатор выдаёт вероятность класса $1$. Объекты: ${rows}. Найдите среднюю кросс-энтропию $-\frac1n \sum_i \bigl(y^{(i)} \ln h^{(i)} + (1 - y^{(i)}) \ln (1 - h^{(i)})\bigr)$.`,
+      label: String.raw`$\text{log loss} =$`,
+      answer,
+      tol: 0.002,
+      hints: [String.raw`Для каждого объекта берут логарифм вероятности, которую модель дала **верному** классу: $h$ при $y = 1$ и $1 - h$ при $y = 0$.`],
+      right: String.raw`$-\frac{1}{${n}}\bigl(${terms.map((t) => String.raw`\ln ${t}`).join(" + ")}\bigr) \approx ${answer}$ — минус средний логарифм правдоподобия.`,
+      wrong: String.raw`Вероятности верного класса здесь — $${terms.join(", ")}$; усредните $-\ln$ от них.`,
     };
   },
 };
