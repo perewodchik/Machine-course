@@ -35,6 +35,14 @@ test("урок 1.6: конструктор GLM, итоговая проверк�
   await expectNoAxeViolations(page);
 });
 
+test("итоговая проверка модуля 1: 14 задач по шести урокам", async ({ page }) => {
+  await page.goto(url);
+  const set = page.locator(".exercise-set");
+  await expect(set.locator("[data-summary]")).toHaveAttribute("data-total", "14");
+  await expect(set.locator("[data-exercise]")).toHaveCount(14);
+  await expect(set.locator("code").filter({ hasText: "C=np.inf" })).toHaveCount(1);
+});
+
 test("урок 1.6: ячейка Python — пуассоновская регрессия", async ({ page }) => {
   test.setTimeout(150_000);
   await page.goto(url);

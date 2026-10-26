@@ -17,6 +17,13 @@
 
 ---
 
+### 2026-10-26 — S7.L1 Итоговая проверка модуля 1 — готова
+- **Сделано:** ExerciseSet из 14 задач в конце урока 1.6: 10 генераторов уроков 1.1–1.6 и 4 задачи с выбором (шаг за порогом, разделимые данные, LogisticRegression() по умолчанию, выбор модели для счётчика). Блок S7.L1 — [x].
+- **Проверка:** validate, build, e2e lesson-ml-1-6 (14 задач, код в тексте).
+- **Отклонения от плана и решения:** типы «вывод по шагам» и «код» из карточки не вошли — в ExerciseSet нет шаговых и кодовых задач; выводы проверяются формулами уроков, код — ячейками.
+- **Следующий шаг:** S7.L2 — уроки модуля 2 «Оценка и обобщение».
+- **Вопросы пользователю:** S7.02 — доступ к наборам данных и решение по California Housing (нужно для проекта P1).
+
 ### 2026-10-26 — L-ml-basics-1.6 Обобщённые линейные модели — готов
 - **Сделано:** урок (4 цикла, формулы f.glm-poisson и f.glm-gradient, 3 упражнения, итоговая ml.poisson-predict); виджет «Конструктор GLM» (src/widgets/ml/glm-builder: 4 распределения, таблица семейства, E[y|x] и p(y|x), неканонический отклик у Пуассона); набор mlf.datasets.ad_views (просмотры объявлений); генератор ml.poisson-predict; понятие ml.glm; ячейка ml_basics/glm.py со сверкой с PoissonRegressor(alpha=0)
 - **Файлы:** content/courses/ml-basics/linear-models/glm.mdx, content/formulas/ml/glm-*.yaml, src/widgets/ml/glm-builder/, code/snippets/ml_basics/glm.py, code/tests/test_glm.py, code/mlf/datasets.py
