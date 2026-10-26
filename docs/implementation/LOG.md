@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — L-III.3 L-III.3: проверка урока «Байес» по определению готовности — готов
+- **Сделано:** урок bayes (S2.08) сверен с определением готовности: цели карточки (полная вероятность, Байес, базовая частота, последовательное обновление) проверяются заданиями, формулы в реестре, термины в глоссарии, PyCode и игра «Байес-детектив»; время урока приведено к карточке (120 минут)
+- **Файлы:** content/courses/foundations/probability/bayes.mdx
+- **Проверка:** validate, e2e lesson-iii3
+- **Отклонения от плана и решения:** нет
+- **Следующий шаг:** L-III.4 — случайные величины: PMF, PDF, CDF.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — L-III.2 L-III.2: условная вероятность и независимость — готов
 - **Сделано:** урок conditional-independence (три цикла: условие сужает мир, формула умножения, независимость и условная независимость), режим «A | B» и проверка независимости в виджете «События как области», формула f.chain-rule-probability, генераторы prob.cond-dice и prob.independence-check, сниппет prob/conditional.py (две монеты) с тестом
 - **Файлы:** content/courses/foundations/probability/conditional-independence.mdx, src/widgets/prob/events/, content/formulas/prob/chain-rule-probability.yaml, src/lib/exercises/generators/prob.ts, code/snippets/prob/conditional.py
