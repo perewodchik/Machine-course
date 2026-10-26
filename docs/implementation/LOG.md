@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — S5.02 карта готовности к курсам ML — готова
+- **Сделано:** content/readiness.yaml (семь курсов ML), логика src/lib/progress/readiness.ts (диапазоны номеров, освежить, первая попытка задач V.2, согласование числительных), страница src/pages/ready.astro и клиент src/client/ready.ts; ссылка из итога V.2
+- **Файлы:** content/readiness.yaml, src/lib/progress/readiness.ts, src/pages/ready.astro, src/client/ready.ts, src/styles/layout.css
+- **Проверка:** vitest 645 (readiness.test.ts сверяет списки с README), lint, check, validate, build, e2e ready.spec.ts, раскладка и axe ready
+- **Отклонения от плана и решения:** «Практикум» без списка: отдельной математики у него нет; курсы ML, нужные до курса, — строкой текста: их уроков на сайте ещё нет
+- **Следующий шаг:** S5.03.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — L-V.2 итоговая проверка: математика в выводах ML — готов
 - **Сделано:** урок bridge/math-in-ml: четыре раздела по курсам ML, 19 задач по восьми фрагментам банка S5.01 («найди ошибку», «восстанови строку», «какое правило») и итоговая проверка по обратному проходу; номера строк во «найди ошибку» — слева текстом (\tag наезжал на формулу на 390 px)
 - **Файлы:** content/courses/foundations/bridge/math-in-ml.mdx, src/lib/content/fragments.ts, tests/e2e/lesson-bridge.spec.ts

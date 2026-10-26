@@ -378,4 +378,16 @@
   .calibration__table thead th { color: var(--ink-3); font-weight: 500; }
   .overconfident ul { padding-left: var(--space-5); }
   .overconfident li { margin: var(--space-2) 0; font-size: var(--text-sm); }
+  /* Карта готовности (S5.02): по курсу ML — итог, нужные уроки математики с галочкой «знаю»; без галочки — карандашом */
+  .ready section { max-width: var(--measure); margin-top: var(--space-7); }
+  .ready__criteria { padding-left: var(--space-5); }
+  .ready__criteria li { margin: var(--space-2) 0; }
+  .ready__note, .ready__before, .ready__v2 { color: var(--ink-2); font: var(--text-sm)/1.5 var(--font-ui); }
+  .ready__label { color: var(--ink-3); }
+  .ready__verdict { margin: var(--space-2) 0; font: 500 var(--text-base)/1.4 var(--font-ui); color: var(--ink); }
+  .ready__verdict.is-ready { color: var(--green-pen); }
+  .ready__lessons { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr)); gap: var(--space-1) var(--space-5); list-style: none; margin: var(--space-3) 0 0; padding: 0; font: var(--text-sm)/1.5 var(--font-ui); }
+  .ready__lessons li { display: flex; align-items: flex-start; gap: var(--space-2); padding: 3px 0; }
+  .ready__lessons li > .know { margin-top: 1px; }
+  .ready__num { min-width: 2.8em; color: var(--ink-3); font-variant-numeric: tabular-nums; }
 }

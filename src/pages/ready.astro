@@ -1,0 +1,82 @@
+---
+// Карта готовности к курсам ML (S5.02): выходные критерии курса математики и по каждому курсу ML — нужные уроки
+// математики с галочкой «знаю» и итог «готов / освежить N уроков». Списки — content/readiness.yaml (строки «Вход»
+// программ курсов); отметки и журнал живут в браузере, итог считает src/client/ready.ts.
+import { readFileSync } from "node:fs";
+import { parse } from "yaml";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Know from "../components/layout/Know.astro";
+import { loadRegistry } from "../lib/content/registry";
+import { loadCourse } from "../lib/content/collections";
+import { FRAGMENTS } from "../lib/content/fragments";
+import { expandNumbers, verdictText } from "../lib/progress/readiness";
+import { renderInline } from "../markdown/core/inline";
+
+const reg = await loadRegistry();
+const math = await loadCourse("foundations");
+const order = math.lessons.map((l) => l.number);
+const byNumber = new Map(math.lessons.map((l) => [l.number, l]));
+const data = parse(readFileSync("content/readiness.yaml", "utf8")) as { courses: { course: string; math: string[]; before: string }[] };
+const courses = data.courses.map((c) => {
+  const title = reg.courseTitles.get(c.course);
+  if (!title) throw new Error(`content/readiness.yaml: нет курса ${c.course}`);
+  const lessons = expandNumbers(c.math, order).map((n) => byNumber.get(n)!);
+  const fragments = FRAGMENTS.filter((f) => f.course === c.course).map((f) => f.formula);
+  return { ...c, title, lessons, fragments };
+});
+const v2 = byNumber.get("V.2")!;
+const link = (n: string) => {
+  const l = byNumber.get(n)!;
+  return `<a href="${l.href}">${n}</a>`;
+};
+const criteria = [
+  ["выводит нормальные уравнения тремя способами и решает их в NumPy без `inv`", ["V.1"]],
+  ["считает градиенты матричных выражений и проверяет их размерностями и конечными разностями", ["II.3"]],
+  ["объясняет геометрию собственных векторов, квадратичных форм и SVD и применяет её к PCA", ["I.9", "I.10", "I.11"]],
+  ["выводит MLE для Бернулли, гауссианы и многомерной гауссианы; связывает MAP с регуляризацией", ["IV.3", "IV.4", "IV.6"]],
+  ["восстанавливает пропущенные шаги и находит ошибки во фрагментах выводов из курсов ML", ["V.2"]],
+] as const;
+---
+<BaseLayout title="Готовность к курсам ML" description="Какие уроки математики нужны каждому курсу машинного обучения и какие из них стоит освежить." course={math}>
+  <main class="shell ready" id="content">
+    <h1>Готовность к курсам ML</h1>
+    <p class="lead">Каждому курсу машинного обучения нужна своя часть математики. Отметьте «знаю» у&nbsp;уроков, которые уверенно помните,&nbsp;— и&nbsp;у&nbsp;каждого курса появится итог: можно начинать или что освежить.</p>
+
+    <section aria-labelledby="exit-title">
+      <h2 id="exit-title">После курса математики вы</h2>
+      <ul class="ready__criteria">
+        {criteria.map(([text, lessons]) => (
+          <li><Fragment set:html={renderInline(text)} /> <span class="ref">(<Fragment set:html={lessons.map(link).join(", ")} />)</span></li>
+        ))}
+      </ul>
+      <p class="ready__note">Последний пункт проверяет <a href={v2.href}>урок V.2</a>: ошибки в&nbsp;его задачах по&nbsp;разделам ниже показывают, какой курс пока рано начинать.</p>
+    </section>
+
+    {courses.map((c) => (
+      <section class="ready__course" aria-labelledby={`ready-${c.course}`} data-ready data-keys={JSON.stringify(c.lessons.map((l) => l.key))} data-fragments={JSON.stringify(c.fragments)} data-lesson={v2.key}>
+        <h2 id={`ready-${c.course}`}>{c.title}</h2>
+        <p class="ready__verdict" data-ready-verdict aria-live="polite">{verdictText(c.lessons.length, c.lessons.length)}</p>
+        <p class="ready__before"><span class="ready__label">Из курсов ML.</span> <Fragment set:html={renderInline(c.before)} /></p>
+        {c.fragments.length > 0 && <p class="ready__v2" data-ready-v2>Задачи урока V.2 по&nbsp;этому курсу ещё не&nbsp;решены.</p>}
+        <ul class="ready__lessons" aria-label={`Уроки математики для курса «${c.title}»`}>
+          {c.lessons.map((l) => (
+            <li data-key={l.key}>
+              <Know lesson={l} />
+              <span class="ready__num">{l.number}</span>
+              <a href={l.href}>{l.title}</a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+
+    <section aria-labelledby="ready-project">
+      <h2 id="ready-project">Практикум</h2>
+      <p>Нужны «Основы ML» и&nbsp;ещё один курс направления&nbsp;— тот, к&nbsp;чьей области относится проект. Отдельной математики практикум не&nbsp;требует.</p>
+    </section>
+  </main>
+</BaseLayout>
+
+<script>
+  import "../client/ready";
+</script>
