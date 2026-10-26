@@ -1377,6 +1377,27 @@ describe("генераторы", () => {
     }
   });
 
+  it("ml.logistic-prob: g(θᵀx) по условию; ml.odds-factor: отношение шансов при p из модели", () => {
+    const nums = (t: string) => t.replace(/−/g, "-");
+    for (let s = 1; s <= 30; s++) {
+      const t = make("ml.logistic-prob", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const p = nums(t.prompt);
+      const th = /\\theta = \(([-\d.]+),\\ ([-\d.]+),\\ ([-\d.]+)\)/.exec(p)!.slice(1).map(Number);
+      const x1 = Number(/x_1 = ([-\d.]+)\$/.exec(p)![1]);
+      const x2 = Number(/x_2 = ([-\d.]+)\$/.exec(p)![1]);
+      expect(t.answer).toBeCloseTo(1 / (1 + Math.exp(-(th[0]! + th[1]! * x1 + th[2]! * x2))), 4);
+
+      const o = make("ml.odds-factor", s);
+      if (o.kind !== "numeric") throw new Error("ожидалось число");
+      const q = nums(o.prompt);
+      const w = Number(/theta_j = ([-\d.]+)\$/.exec(q)![1]);
+      const k = Number(/на (\d) больше/.exec(q)![1]);
+      const odds = (z: number) => { const pr = 1 / (1 + Math.exp(-z)); return pr / (1 - pr); };
+      expect(o.answer).toBeCloseTo(odds(0.3 + k * w) / odds(0.3), 3);
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

@@ -211,3 +211,55 @@ export const featureCount: Generator = {
     };
   },
 };
+
+const sigm = (z: number) => 1 / (1 + Math.exp(-z));
+
+/** Урок 1.4: вероятность класса g(θᵀx) для квартиры. */
+export const logisticProb: Generator = {
+  id: "ml.logistic-prob",
+  version: 1,
+  title: "Вероятность класса",
+  make(seed) {
+    const r = rng(seed);
+    const t0 = r.int(-6, 2) / 2;
+    const t1 = r.int(2, 8) / 2;
+    const t2 = -r.int(1, 4) / 2;
+    const z1 = r.int(-4, 4) / 2;
+    const z2 = r.int(-4, 4) / 2;
+    const z = t0 + t1 * z1 + t2 * z2;
+    const answer = round(sigm(z), 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`Модель «квартира дороже медианы»: $h_\theta(x) = g(\theta^\top x)$, $\theta = (${num(t0)},\ ${num(t1)},\ ${num(t2)})^\top$, признаки $x = (1,\ x_1,\ x_2)$ — единица, стандартизованная площадь и стандартизованный путь до метро. У квартиры $x_1 = ${num(z1)}$, $x_2 = ${num(z2)}$. Какова вероятность, что она дороже медианы?`,
+      label: "p =",
+      answer,
+      tol: 0.002,
+      hints: [String.raw`Сначала $\theta^\top x = ${num(t0)} + ${num(t1)} \cdot (${num(z1)}) + (${num(t2)}) \cdot (${num(z2)})$, потом $g(z) = 1/(1 + e^{-z})$.`],
+      right: String.raw`$\theta^\top x = ${num(round(z, 4))}$, $g(${num(round(z, 4))}) = ${num(answer)}$.`,
+      wrong: String.raw`$\theta^\top x = ${num(round(z, 4))}$; вероятность — $g(z) = 1/(1 + e^{-z}) = ${num(answer)}$, а не само $\theta^\top x$.`,
+    };
+  },
+};
+
+/** Урок 1.4: во сколько раз меняются шансы при росте признака на единицу. */
+export const oddsFactor: Generator = {
+  id: "ml.odds-factor",
+  version: 1,
+  title: "Шансы и веса",
+  make(seed) {
+    const r = rng(seed);
+    const w = r.pick([0.4, 0.7, -0.5, 1.1, -0.9, 0.25]);
+    const k = r.pick([1, 2, 3]);
+    const answer = round(Math.exp(k * w), 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`В логистической регрессии вес при числе комнат $\theta_j = ${num(w)}$, остальные признаки не меняются. Комнат стало на ${k} больше. Во сколько раз изменились шансы $\dfrac{p}{1 - p}$ класса «дороже медианы»?`,
+      label: "в раз:",
+      answer,
+      tol: 0.002,
+      hints: [String.raw`$\log \frac{p}{1 - p} = \theta^\top x$: логарифм шансов линеен по признакам.`],
+      right: String.raw`Логарифм шансов вырос на $${k} \cdot ${num(w)}$, шансы умножились на $e^{${num(round(k * w, 4))}} = ${num(answer)}$.`,
+      wrong: String.raw`Линеен по признакам логарифм шансов, а не вероятность: $\log\frac{p}{1 - p}$ меняется на $${k}\theta_j$, шансы — в $e^{${num(round(k * w, 4))}} = ${num(answer)}$ раза.`,
+    };
+  },
+};

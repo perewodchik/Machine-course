@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — L-ml-basics-1.4 Логистическая регрессия и метод Ньютона — готов
+- **Сделано:** урок (4 цикла, формулы f.logistic-gradient, f.logistic-hessian и новая f.logistic-newton-irls, 5 упражнений, итоговая ml.logistic-prob); виджеты «Сигмоида над плоскостью» (src/widgets/ml/logistic-plane) и «Подъём против Ньютона» (ascent-newton); игра «Честная вероятность» (src/games/honest-probability, 4 уровня); src/lib/math/logistic.ts; генераторы ml.logistic-prob, ml.odds-factor; понятие ml.logistic-regression; ячейка ml_basics/logistic.py со сверкой с LogisticRegression(C=np.inf)
+- **Файлы:** content/courses/ml-basics/linear-models/logistic-regression.mdx, content/formulas/ml/logistic-newton-irls.yaml, src/widgets/ml/logistic-plane/, src/widgets/ml/ascent-newton/, src/games/honest-probability/, code/snippets/ml_basics/logistic.py, code/tests/test_logistic.py
+- **Проверка:** validate, lint, check, build, vitest 695, pytest, check_consistency, e2e lesson-ml-1-4 и lesson-bridge, скриншоты 1440 и 390
+- **Отклонения от плана и решения:** границу двигают ползунки (направление, сдвиг, крутизна), а не перетаскивание концов; точки не перетаскиваются — кнопка «Выброс у метро»; игра одномерная (метки на высотах 0 и 1, сигмоида g(k(x − b))); в scikit-learn 1.9 penalty=None устарел — сверка через C=np.inf
+- **Следующий шаг:** L-ml-basics-1.5 — перцептрон и многоклассовая классификация.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — L-ml-basics-1.3 Признаки, полиномы и LWR — готов
 - **Сделано:** урок (4 цикла, формула f.lwr-solution, 5 упражнений, итоговая ml.lwr-weight); виджет «Гибкость модели» (src/widgets/ml/flexibility: полином и LWR, данные — mlf.datasets.metro_prices через export_widget_data); генераторы ml.lwr-weight, ml.feature-count; понятия ml.feature-map, ml.lwr; ячейка ml_basics/features_lwr.py со сверкой с PolynomialFeatures и LinearRegression(sample_weight)
 - **Файлы:** content/courses/ml-basics/linear-models/features-lwr.mdx, src/widgets/ml/flexibility/, code/snippets/ml_basics/features_lwr.py, code/tests/test_features_lwr.py, code/mlf/datasets.py

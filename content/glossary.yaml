@@ -420,3 +420,6 @@
 - id: features-lwr
   ru: 'признаковое отображение; полиномиальные признаки; взаимодействие; валидационная выборка; локально взвешенная регрессия; ширина окна; параметрическая и непараметрическая модель'
   en: 'feature map; polynomial features; interaction; validation set; locally weighted linear regression (LWR); bandwidth; parametric and non-parametric model'
+- id: logistic-regression
+  ru: 'сигмоида; логистическая функция; граница решений; шансы; логарифм шансов; логистические потери; линейная разделимость; метод Ньютона; IRLS; градиентный подъём'
+  en: 'sigmoid; logistic function; decision boundary; odds; log-odds (logit); log loss (binary cross-entropy); linear separability; Newton''s method; iteratively reweighted least squares (IRLS); gradient ascent'

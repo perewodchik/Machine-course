@@ -1,0 +1,14 @@
+---
+// Обёртка виджета «Подъём против Ньютона» для урока: рисунок с номером и подписью, остров React (client:visible).
+import { AscentNewton } from "../../widgets/ml/ascent-newton";
+
+interface Props {
+  /** Номер рисунка в уроке. */
+  n?: number;
+}
+const { n } = Astro.props;
+---
+<figure class="figure wide">
+  <AscentNewton client:visible />
+  <figcaption class="figure__caption">{n && <b>Рисунок {n}.</b>} <slot /></figcaption>
+</figure>

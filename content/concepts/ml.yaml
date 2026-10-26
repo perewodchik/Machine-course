@@ -93,3 +93,15 @@
   cs229:
     - edition: main-notes-2026-spring
       section: 'Linear regression / Locally weighted linear regression'
+
+- id: ml.logistic-regression
+  title:
+    ru: 'Логистическая регрессия'
+    en: 'logistic regression'
+  summary: 'Вероятность класса $h_\theta(x) = g(\theta^\top x)$, веса — максимум правдоподобия Бернулли: $\nabla_\theta \ell = X^\top(y - g(X\theta))$, гессиан $-X^\top D X \preceq 0$, поэтому максимум один; метод Ньютона (IRLS) доходит до него за несколько итераций. Граница решений — гиперплоскость $\theta^\top x = 0$.'
+  lesson: logistic-regression
+  prerequisites: [ml.lms, calc.sigmoid, stat.mle, calc.newton, calc.convexity]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Classification and logistic regression'
