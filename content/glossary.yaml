@@ -393,3 +393,12 @@
 - id: estimators
   ru: 'оценка; смещение; среднеквадратичная ошибка; состоятельность; поправка Бесселя'
   en: 'estimator; bias; mean squared error (MSE); consistency; Bessel''s correction'
+- id: multivariate-mle
+  ru: 'трюк со следом; выборочная ковариационная матрица; матрица точности'
+  en: 'trace trick; sample covariance matrix; precision matrix'
+- id: exponential-family
+  ru: 'экспоненциальное семейство; натуральный параметр; достаточная статистика; логарифм нормировки'
+  en: 'exponential family; natural parameter; sufficient statistic; log-partition function'
+- id: bayes-map
+  ru: 'априорное и апостериорное распределения; сопряжённое априорное; оценка апостериорного максимума; апостериорное предсказательное; сглаживание Лапласа'
+  en: 'prior and posterior; conjugate prior; maximum a posteriori (MAP); posterior predictive; Laplace smoothing'

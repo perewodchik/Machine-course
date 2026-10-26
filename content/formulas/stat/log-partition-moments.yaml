@@ -1,0 +1,67 @@
+id: f.log-partition-moments
+kind: formula
+title:
+  ru: 'Производные логарифма нормировки — моменты'
+  en: 'derivatives of the log-partition function are moments'
+statement: 'a''(\eta) = \mathbb{E}\, T(y), \qquad a''''(\eta) = \operatorname{Var} T(y) \ge 0, \qquad a(\eta) = \log \sum_y b(y)\, e^{\eta T(y)}'
+
+# Урок IV.5: a(η) — логарифм нормирующей суммы. Производная — среднее T(y) с весами p(y; η) ∝ b(y) e^{ηT(y)},
+# вторая — дисперсия. Проверка — дискретное семейство на k = 5 значениях: значения T(y) — вектор t,
+# базовая мера b > 0, натуральный параметр η — число.
+symbols:
+  - name: t
+    tex: 'T'
+    meaning: 'значения достаточной статистики $T(y)$ на пяти исходах'
+    shape: [k, 1]
+  - name: b
+    tex: 'b'
+    meaning: 'базовая мера $b(y) > 0$'
+    shape: [k, 1]
+    sample: positive
+  - name: eta
+    tex: '\eta'
+    meaning: 'натуральный параметр'
+    shape: []
+
+dependsOn:
+  concepts: [stat.exponential-family, calc.log-exp, prob.expectation]
+  rules: []
+
+derivation:
+  plan:
+    - 'Записать $a(\eta)$ как логарифм нормирующей суммы'
+    - 'Продифференцировать: получится среднее $T$ с весами $p(y; \eta)$'
+    - 'Продифференцировать ещё раз: получится $\mathbb{E}T^2 - (\mathbb{E}T)^2$'
+  steps:
+    - goal: 0
+      tex: 'a(\eta) = \log \sum_y b(y)\, e^{\eta T(y)}'
+      by: [stat.exponential-family]
+      note: 'Сумма вероятностей $p(y; \eta) = b(y) e^{\eta T(y) - a(\eta)}$ должна быть $1$ — это и определяет $a$.'
+      check:
+        kind: same
+        py: 'np.log(np.sum(b * np.exp(eta * t)))'
+    - goal: 1
+      tex: 'a''(\eta) = \changed{\frac{\sum_y T(y)\, b(y)\, e^{\eta T(y)}}{\sum_y b(y)\, e^{\eta T(y)}}} = \sum_y T(y)\, p(y; \eta) = \mathbb{E}\, T(y)'
+      by: [calc.log-exp]
+      note: 'Производная логарифма — производная аргумента, делённая на аргумент; дробь — это и есть веса $p(y; \eta)$.'
+      check:
+        kind: gradient
+        wrt: eta
+        py: 'np.sum(t * b * np.exp(eta * t)) / np.sum(b * np.exp(eta * t))'
+    - goal: 2
+      tex: 'a''''(\eta) = \changed{\mathbb{E}\, T(y)^2 - \bigl(\mathbb{E}\, T(y)\bigr)^2} = \operatorname{Var} T(y) \ge 0'
+      by: [prob.expectation]
+      note: 'Производная частного; дисперсия неотрицательна, поэтому $a$ выпукла. В многомерном случае $\nabla^2 a = \operatorname{Cov} T(y) \succeq 0$ — отсюда выпуклость $-\ell$ у GLM.'
+      check:
+        kind: hessian
+        wrt: eta
+        py: 'np.sum(t ** 2 * b * np.exp(eta * t)) / np.sum(b * np.exp(eta * t)) - (np.sum(t * b * np.exp(eta * t)) / np.sum(b * np.exp(eta * t))) ** 2'
+
+pitfalls:
+  - 'Путать натуральный параметр с обычным: у Бернулли $\eta = \log\frac{\phi}{1 - \phi}$, а $\phi = \sigma(\eta)$ — сигмоида.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Generalized linear models / The exponential family'
+
+usedIn: [stat.exponential-family]

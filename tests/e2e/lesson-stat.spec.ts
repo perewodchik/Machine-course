@@ -74,3 +74,66 @@ test("урок IV.3: ссылки на игру и лабораторную, и�
   await page.evaluate(() => window.scrollTo(0, 0));
   await expectNoAxeViolations(page);
 });
+
+test("урок IV.4: найди ошибку — деление на n − 1, итоговая проверка матрицей", async ({ page }) => {
+  await page.goto("/foundations/statistics/multivariate-mle/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Многомерный MLE");
+
+  const err = page.locator("[data-exercise]").filter({ hasText: "В какой строке вывода ошибка?" }).first();
+  await err.locator("[data-option]").nth(1).click();
+  await expect(err.locator("[data-feedback]")).toContainText("Строка верна");
+  await err.locator("[data-option]").nth(2).click();
+  await expect(err.locator("[data-feedback]")).toContainText("Деление на");
+
+  const final = page.locator("#final-check");
+  const spec = generator("stat.cov-mle").make(31);
+  if (spec.kind !== "matrix") throw new Error("ожидалась матрица");
+  const cells = final.locator("[data-variant]:not([hidden]) input");
+  for (const [k, v] of spec.answer.flat().entries()) await cells.nth(k).fill(String(v));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});
+
+test("урок IV.5: предсказание натурального параметра, лабораторная, итоговая проверка", async ({ page }) => {
+  await page.goto("/foundations/statistics/exponential-family/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Экспоненциальное семейство");
+  await expect(page.locator("a[href*='notebooks/stats/logistic_mle.ipynb']").first()).toBeAttached();
+
+  const final = page.locator("#final-check");
+  const spec = generator("stat.natural-param").make(31);
+  if (spec.kind !== "numeric") throw new Error("ожидалось число");
+  // seed 31 — Бернулли: типичная ошибка — ответить самим φ
+  const phi = Number(/phi = ([\d.]+)\$/.exec(spec.prompt)![1]);
+  await final.locator("[data-variant]:not([hidden]) input").first().fill(String(phi));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).not.toContainText("Урок отмечен");
+  await final.locator("[data-variant]:not([hidden]) input").first().fill(String(spec.answer));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});
+
+test("урок IV.6: ссылка на игру, разбор ridge, итоговая проверка", async ({ page }) => {
+  await page.goto("/foundations/statistics/bayes-map/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Байесовский подход и MAP");
+  await expect(page.getByRole("link", { name: "Открыть игру" })).toHaveAttribute("href", "/games/prior-vs-coin/");
+
+  const final = page.locator("#final-check");
+  const spec = generator("stat.beta-update").make(31);
+  if (spec.kind !== "numeric") throw new Error("ожидалось число");
+  // типичная ошибка — ответить долей k/n без приора
+  const [n, k] = /бросили \$(\d+)\$ раз, орлов — \$(\d+)\$/.exec(spec.prompt)!.slice(1).map(Number) as [number, number];
+  if (Math.abs(k / n - spec.answer) > 0.01) {
+    await final.locator("[data-variant]:not([hidden]) input").first().fill(String(Math.round((k / n) * 1000) / 1000));
+    await final.getByRole("button", { name: "Проверить" }).click();
+    await expect(final.locator("[data-feedback]")).not.toContainText("Урок отмечен");
+  }
+  await final.locator("[data-variant]:not([hidden]) input").first().fill(String(spec.answer));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});

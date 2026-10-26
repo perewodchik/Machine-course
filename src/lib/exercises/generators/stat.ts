@@ -224,3 +224,201 @@ export const logLik: Generator = {
     };
   },
 };
+
+const pmx = (m: number[][]) => String.raw`\begin{pmatrix} ${m.map((row) => row.join(" & ")).join(String.raw` \\ `)} \end{pmatrix}`;
+
+/** Урок IV.4: MLE ковариации по трём-четырём точкам на плоскости (матрица, деление на n). */
+export const covMle: Generator = {
+  id: "stat.cov-mle",
+  version: 1,
+  title: "Выборочная ковариационная матрица",
+  make(seed) {
+    const r = rng(seed);
+    // n = 4 точки с целым средним: последнюю подбираем так, чтобы сумма делилась на 4
+    const pts = Array.from({ length: 3 }, () => [r.int(-3, 4), r.int(-3, 4)]);
+    const want = [r.int(-1, 1) * 4, r.int(-1, 1) * 4];
+    pts.push([want[0]! - pts.reduce((a, p) => a + p[0]!, 0) + 4 * r.int(-1, 1), want[1]! - pts.reduce((a, p) => a + p[1]!, 0) + 4 * r.int(-1, 1)]);
+    const n = pts.length;
+    const mu = [0, 1].map((j) => pts.reduce((a, p) => a + p[j]!, 0) / n);
+    const S = [0, 1].map((a) => [0, 1].map((b) => round(pts.reduce((acc, p) => acc + (p[a]! - mu[a]!) * (p[b]! - mu[b]!), 0) / n, 4)));
+    return {
+      kind: "matrix",
+      prompt: String.raw`Четыре наблюдения $x^{(i)} \in \mathbb{R}^2$: $${pts.map((p) => String.raw`(${p[0]}, ${p[1]})`).join(", ")}$. Найдите оценку максимального правдоподобия ковариационной матрицы $\hat\Sigma$.`,
+      label: String.raw`$\hat\Sigma =$`,
+      answer: S,
+      tol: 0.005,
+      hints: [String.raw`$\hat\mu = (${mu[0]}, ${mu[1]})^\top$. $\hat\Sigma = \frac1n \sum_i (x^{(i)} - \hat\mu)(x^{(i)} - \hat\mu)^\top$ — делим на $n = 4$.`],
+      right: String.raw`$\hat\mu = (${mu[0]}, ${mu[1]})^\top$, $\hat\Sigma = ${pmx(S)}$ — симметрична, на диагонали дисперсии.`,
+      wrong: String.raw`Проверьте: $\hat\Sigma$ симметрична; деление — на $n = 4$, не на $3$; отклонения — от среднего $\hat\mu = (${mu[0]}, ${mu[1]})^\top$.`,
+    };
+  },
+};
+
+/** Урок IV.4: MLE параметров GDA в одном измерении — доля класса, среднее класса или общая дисперсия. */
+export const gdaMle: Generator = {
+  id: "stat.gda-mle",
+  version: 1,
+  title: "Параметры GDA",
+  make(seed) {
+    const r = rng(seed);
+    const x0 = Array.from({ length: r.pick([3, 4]) }, () => r.int(1, 5));
+    const x1 = Array.from({ length: r.pick([2, 3]) }, () => r.int(5, 10));
+    const n = x0.length + x1.length;
+    const m0 = x0.reduce((a, b) => a + b, 0) / x0.length;
+    const m1 = x1.reduce((a, b) => a + b, 0) / x1.length;
+    const pooled = (x0.reduce((a, v) => a + (v - m0) ** 2, 0) + x1.reduce((a, v) => a + (v - m1) ** 2, 0)) / n;
+    const kind = (seed - 1) % 3;
+    const [what, label, answer] = kind === 0 ? [String.raw`$\hat\phi = \hat P(y = 1)$`, String.raw`$\hat\phi =$`, x1.length / n] : kind === 1 ? [String.raw`$\hat\mu_1$`, String.raw`$\hat\mu_1 =$`, m1] : [String.raw`общую дисперсию $\hat\sigma^2$ (одна на оба класса, как $\Sigma$ в GDA)`, String.raw`$\hat\sigma^2 =$`, pooled];
+    return {
+      kind: "numeric",
+      prompt: String.raw`Обучающая выборка для GDA с одним признаком: класс $y = 0$ — $x = ${x0.join(", ")}$; класс $y = 1$ — $x = ${x1.join(", ")}$. Найдите оценку максимального правдоподобия: ${what}.`,
+      label,
+      answer: round(answer, 4),
+      tol: 0.005,
+      hints: [String.raw`MLE GDA: $\hat\phi$ — доля класса $1$, $\hat\mu_k$ — среднее $x$ в классе $k$, $\hat\sigma^2 = \frac1n \sum_i (x^{(i)} - \hat\mu_{y^{(i)}})^2$ — отклонения каждого объекта от среднего своего класса, деление на всё $n = ${n}$.`],
+      right: String.raw`$\hat\phi = ${x1.length}/${n}$, $\hat\mu_0 = ${round(m0, 4)}$, $\hat\mu_1 = ${round(m1, 4)}$, $\hat\sigma^2 = ${round(pooled, 4)}$.`,
+      wrong: kind === 2 ? String.raw`Отклонения берут от среднего **своего** класса, а делят на общее $n = ${n}$: $\hat\sigma^2 = ${round(pooled, 4)}$.` : String.raw`Оценки GDA — доли и средние по классам: $\hat\phi = ${x1.length}/${n}$, $\hat\mu_1$ — среднее только объектов класса $1$.`,
+    };
+  },
+};
+
+/** Урок IV.5: натуральный параметр и обратно — Бернулли (η = log φ/(1 − φ), φ = σ(η)) и Пуассон (η = log λ). */
+export const naturalParam: Generator = {
+  id: "stat.natural-param",
+  version: 1,
+  title: "Натуральный параметр",
+  make(seed) {
+    const r = rng(seed);
+    const kind = (seed - 1) % 3;
+    if (kind === 0) {
+      const phi = r.pick([0.2, 0.25, 0.6, 0.75, 0.9]);
+      const answer = round(Math.log(phi / (1 - phi)), 4);
+      return {
+        kind: "numeric",
+        prompt: String.raw`Распределение Бернулли с $\phi = ${phi}$ записали в форме экспоненциального семейства $p(y; \eta) = \exp(\eta y - a(\eta))$. Найдите натуральный параметр $\eta$.`,
+        label: String.raw`$\eta =$`,
+        answer,
+        tol: 0.002,
+        hints: [String.raw`$\phi^y (1 - \phi)^{1 - y} = \exp\bigl(y \log\frac{\phi}{1 - \phi} + \log(1 - \phi)\bigr)$.`],
+        right: String.raw`$\eta = \ln\frac{${phi}}{${round(1 - phi)}} \approx ${answer}$ — логарифм шансов.`,
+        wrong: String.raw`Натуральный параметр Бернулли — не $\phi$, а логарифм шансов $\log\frac{\phi}{1 - \phi}$.`,
+      };
+    }
+    if (kind === 1) {
+      const eta = r.pick([-2, -1, 0.5, 1, 2]);
+      const answer = round(1 / (1 + Math.exp(-eta)), 4);
+      return {
+        kind: "numeric",
+        prompt: String.raw`У распределения Бернулли натуральный параметр $\eta = ${eta}$. Найдите $\phi = P(y = 1)$.`,
+        label: String.raw`$\phi =$`,
+        answer,
+        tol: 0.002,
+        hints: [String.raw`Обратите $\eta = \log\frac{\phi}{1 - \phi}$: получится сигмоида.`],
+        right: String.raw`$\phi = \sigma(\eta) = 1/(1 + e^{${-eta}}) \approx ${answer}$. Поэтому в логистической регрессии $h_\theta(x) = \sigma(\theta^\top x)$.`,
+        wrong: String.raw`$\phi = \frac{1}{1 + e^{-\eta}}$, а не $e^\eta$ и не $\eta$.`,
+      };
+    }
+    const lam = r.pick([0.5, 2, 3, 5]);
+    const answer = round(Math.log(lam), 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`Распределение Пуассона с $\lambda = ${lam}$ записали как $p(y; \eta) = \frac{1}{y!} \exp(\eta y - a(\eta))$. Найдите $\eta$.`,
+      label: String.raw`$\eta =$`,
+      answer,
+      tol: 0.002,
+      hints: [String.raw`$e^{-\lambda} \lambda^y / y! = \frac{1}{y!} \exp(y \log\lambda - \lambda)$.`],
+      right: String.raw`$\eta = \ln ${lam} \approx ${answer}$, $a(\eta) = e^\eta = \lambda$.`,
+      wrong: String.raw`Множитель при $y$ в показателе — $\log\lambda$; это и есть натуральный параметр.`,
+    };
+  },
+};
+
+/** Урок IV.5: среднее или дисперсия через производные a(η) — Бернулли a = log(1 + e^η), Пуассон a = e^η. */
+export const logPartition: Generator = {
+  id: "stat.log-partition",
+  version: 1,
+  title: "Моменты через логарифм нормировки",
+  make(seed) {
+    const r = rng(seed);
+    const eta = r.pick([-1, 0, 0.5, 1, 2]);
+    const bern = seed % 2 === 1;
+    const wantVar = Math.floor((seed - 1) / 2) % 2 === 1;
+    const s = 1 / (1 + Math.exp(-eta));
+    const answer = round(bern ? (wantVar ? s * (1 - s) : s) : Math.exp(eta), 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`Логарифм нормировки ${bern ? "Бернулли" : "Пуассона"} — $a(\eta) = ${bern ? String.raw`\log(1 + e^\eta)` : String.raw`e^\eta`}$. При $\eta = ${eta}$ найдите ${wantVar ? String.raw`$\operatorname{Var} y = a''(\eta)$` : String.raw`$\mathbb{E}\, y = a'(\eta)$`}.`,
+      label: wantVar ? String.raw`$\operatorname{Var} y =$` : String.raw`$\mathbb{E}\, y =$`,
+      answer,
+      tol: 0.002,
+      hints: [bern ? String.raw`$a'(\eta) = \frac{e^\eta}{1 + e^\eta} = \sigma(\eta)$, $a''(\eta) = \sigma(\eta)(1 - \sigma(\eta))$.` : String.raw`Производные $e^\eta$ — снова $e^\eta$: у Пуассона среднее равно дисперсии.`],
+      right: bern ? String.raw`$\sigma(${eta}) \approx ${round(s, 4)}$${wantVar ? String.raw`, $\sigma(1 - \sigma) \approx ${answer}$` : ""}.` : String.raw`$e^{${eta}} \approx ${answer} = \lambda$.`,
+      wrong: String.raw`$\mathbb{E}\, T(y) = a'(\eta)$, $\operatorname{Var} T(y) = a''(\eta)$; для ${bern ? String.raw`$a = \log(1 + e^\eta)$ это $\sigma(\eta)$ и $\sigma(\eta)(1 - \sigma(\eta))$` : String.raw`$a = e^\eta$ обе — $e^\eta$`}.`,
+    };
+  },
+};
+
+/** Урок IV.6: обновление Beta по броскам — апостериорное среднее, MAP или MLE для сравнения. */
+export const betaUpdate: Generator = {
+  id: "stat.beta-update",
+  version: 1,
+  title: "Апостериорное Beta",
+  make(seed) {
+    const r = rng(seed);
+    const [a, b] = r.pick([[1, 1], [2, 2], [5, 5], [3, 1], [2, 6]] as const);
+    const n = r.pick([3, 4, 5, 10]);
+    const k = r.int(0, n);
+    const kind = (seed - 1) % 2;
+    const mean = (k + a) / (n + a + b);
+    const map = (k + a - 1) / (n + a + b - 2);
+    const answer = round(kind === 0 ? mean : map, 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`Априорное распределение вероятности орла — $\operatorname{Beta}(${a}, ${b})$. Монету бросили $${n}$ раз, орлов — $${k}$. Найдите ${kind === 0 ? "апостериорное среднее — прогноз вероятности орла в следующем броске" : String.raw`оценку апостериорного максимума $\hat\phi_{\text{MAP}}$`}.`,
+      label: kind === 0 ? String.raw`$\mathbb{E}[\phi \mid \text{данные}] =$` : String.raw`$\hat\phi_{\text{MAP}} =$`,
+      answer,
+      tol: 0.002,
+      hints: [String.raw`Апостериорное — $\operatorname{Beta}(k + \alpha, n - k + \beta) = \operatorname{Beta}(${k + a}, ${n - k + b})$. Среднее $\operatorname{Beta}(p, q)$ — $\frac{p}{p + q}$, мода — $\frac{p - 1}{p + q - 2}$.`],
+      right: String.raw`$\operatorname{Beta}(${k + a}, ${n - k + b})$: ${kind === 0 ? String.raw`среднее $${k + a}/${n + a + b} \approx ${answer}$` : String.raw`мода $${k + a - 1}/${n + a + b - 2} \approx ${answer}$`}. MLE было бы $${k}/${n} = ${round(k / n, 4)}$.`,
+      wrong: String.raw`Параметры априорного — воображаемые броски: прибавьте $\alpha = ${a}$ к орлам и $\beta = ${b}$ к решкам. ${kind === 0 ? "Среднее" : "MAP"} — не доля $k/n$.`,
+    };
+  },
+};
+
+/** Урок IV.6: гребневая регрессия как MAP — λ = σ²/τ² или одномерная оценка θ = Σxy/(Σx² + λ). */
+export const ridgeMap: Generator = {
+  id: "stat.ridge-map",
+  version: 1,
+  title: "Ridge как MAP",
+  make(seed) {
+    const r = rng(seed);
+    const s2 = r.pick([1, 2, 4]);
+    const t2 = r.pick([0.5, 1, 2, 4]);
+    const lam = s2 / t2;
+    if (seed % 2 === 1) {
+      return {
+        kind: "numeric",
+        prompt: String.raw`Шум линейной модели $\epsilon \sim \mathcal{N}(0, ${s2})$, априорное весов $\theta \sim \mathcal{N}(0, ${t2} I)$. MAP совпадает с гребневой регрессией $\min_\theta \tfrac12 \lVert X\theta - y \rVert^2 + \tfrac{\lambda}{2} \lVert\theta\rVert^2$. Найдите $\lambda$.`,
+        label: String.raw`$\lambda =$`,
+        answer: round(lam, 4),
+        tol: 0.002,
+        hints: [String.raw`$-\log p(\theta \mid \text{данные}) = \frac{1}{2\sigma^2}\lVert X\theta - y\rVert^2 + \frac{1}{2\tau^2}\lVert\theta\rVert^2$; умножьте на $\sigma^2$.`],
+        right: String.raw`$\lambda = \sigma^2/\tau^2 = ${s2}/${t2} = ${round(lam, 4)}$.`,
+        wrong: String.raw`$\lambda = \sigma^2/\tau^2$, а не $\tau^2/\sigma^2$: чем уже априорное (меньше $\tau^2$), тем сильнее штраф.`,
+      };
+    }
+    const sxy = r.pick([6, 8, 12, 20]);
+    const sxx = r.pick([4, 6, 10]);
+    const answer = round(sxy / (sxx + lam), 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`Модель с одним весом $y = \theta x + \epsilon$, $\epsilon \sim \mathcal{N}(0, ${s2})$, априорное $\theta \sim \mathcal{N}(0, ${t2})$. По данным $\sum_i x^{(i)} y^{(i)} = ${sxy}$, $\sum_i (x^{(i)})^2 = ${sxx}$. Найдите $\hat\theta_{\text{MAP}}$.`,
+      label: String.raw`$\hat\theta_{\text{MAP}} =$`,
+      answer,
+      tol: 0.002,
+      hints: [String.raw`$\hat\theta = \frac{\sum_i x^{(i)} y^{(i)}}{\sum_i (x^{(i)})^2 + \lambda}$, $\lambda = \sigma^2/\tau^2 = ${round(lam, 4)}$.`],
+      right: String.raw`$${sxy}/(${sxx} + ${round(lam, 4)}) \approx ${answer}$; МНК дал бы $${round(sxy / sxx, 4)}$ — MAP сжимает вес к нулю.`,
+      wrong: String.raw`К знаменателю МНК $\sum (x^{(i)})^2$ добавляется $\lambda = \sigma^2/\tau^2 = ${round(lam, 4)}$.`,
+    };
+  },
+};

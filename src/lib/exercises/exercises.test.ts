@@ -1162,6 +1162,84 @@ describe("генераторы", () => {
     }
   });
 
+  it("stat.cov-mle: Σ̂ = (1/n) Σ (x − x̄)(x − x̄)ᵀ, симметрична; stat.gda-mle — доли, средние, общая дисперсия", () => {
+    for (let s = 1; s <= 30; s++) {
+      const t = make("stat.cov-mle", s);
+      if (t.kind !== "matrix") throw new Error("ожидалась матрица");
+      const pts = [...t.prompt.matchAll(/\((-?\d+), (-?\d+)\)/g)].map((m) => [Number(m[1]), Number(m[2])] as [number, number]);
+      expect(pts).toHaveLength(4);
+      const mu = [0, 1].map((j) => pts.reduce((a, p) => a + p[j]!, 0) / 4);
+      for (const a of [0, 1]) for (const b of [0, 1]) expect(t.answer[a]![b]!).toBeCloseTo(pts.reduce((acc, p) => acc + (p[a]! - mu[a]!) * (p[b]! - mu[b]!), 0) / 4, 3);
+      expect(t.answer[0]![1]).toBe(t.answer[1]![0]);
+      expect(Number.isInteger(mu[0]) && Number.isInteger(mu[1])).toBe(true);
+
+      const g = make("stat.gda-mle", s);
+      if (g.kind !== "numeric") throw new Error("ожидалось число");
+      const [x0, x1] = [...g.prompt.matchAll(/— \$x = ([\d, ]+)\$/g)].map((m) => m[1]!.split(", ").map(Number)) as [number[], number[]];
+      const n = x0.length + x1.length;
+      const mean = (v: number[]) => v.reduce((a, b) => a + b, 0) / v.length;
+      const pooled = (x0.reduce((a, v) => a + (v - mean(x0)) ** 2, 0) + x1.reduce((a, v) => a + (v - mean(x1)) ** 2, 0)) / n;
+      const want = g.prompt.includes("hat\\phi") ? x1.length / n : g.prompt.includes("hat\\mu_1") ? mean(x1) : pooled;
+      expect(g.answer).toBeCloseTo(want, 3);
+    }
+  });
+
+  it("stat.natural-param и stat.log-partition: ответы через численные производные a(η)", () => {
+    const d = (f: (e: number) => number, e: number, h = 1e-4) => (f(e + h) - f(e - h)) / (2 * h);
+    for (let s = 1; s <= 30; s++) {
+      const n = make("stat.natural-param", s);
+      if (n.kind !== "numeric") throw new Error("ожидалось число");
+      if (n.prompt.includes("Бернулли с")) {
+        const phi = Number(/phi = ([\d.]+)\$/.exec(n.prompt)![1]);
+        expect(1 / (1 + Math.exp(-n.answer))).toBeCloseTo(phi, 3);
+      } else if (n.prompt.includes("Найдите $\\phi")) {
+        const eta = Number(/eta = (-?[\d.]+)\$/.exec(n.prompt)![1]);
+        expect(Math.log(n.answer / (1 - n.answer))).toBeCloseTo(eta, 2);
+      } else {
+        const lam = Number(/lambda = ([\d.]+)\$/.exec(n.prompt)![1]);
+        expect(Math.exp(n.answer)).toBeCloseTo(lam, 2);
+      }
+
+      const l = make("stat.log-partition", s);
+      if (l.kind !== "numeric") throw new Error("ожидалось число");
+      const eta = Number(/При \$\\eta = (-?[\d.]+)\$/.exec(l.prompt)![1]);
+      const a = l.prompt.includes("Бернулли") ? (e: number) => Math.log(1 + Math.exp(e)) : (e: number) => Math.exp(e);
+      const want = l.prompt.includes("Var") ? d((e) => d(a, e), eta) : d(a, eta);
+      expect(Math.abs(l.answer - want)).toBeLessThan(0.002);
+    }
+  });
+
+  it("stat.beta-update: среднее и мода апостериорного Beta; stat.ridge-map: λ = σ²/τ² и минимум одномерного ridge", () => {
+    for (let s = 1; s <= 30; s++) {
+      const t = make("stat.beta-update", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const [a, b] = /Beta\}\((\d+), (\d+)\)\$\. Монету/.exec(t.prompt)!.slice(1).map(Number) as [number, number];
+      const [n, k] = /бросили \$(\d+)\$ раз, орлов — \$(\d+)\$/.exec(t.prompt)!.slice(1).map(Number) as [number, number];
+      // плотность апостериорного на сетке: максимум — MAP, первый момент — среднее
+      const grid = Array.from({ length: 9999 }, (_, i) => (i + 1) / 10000);
+      const logp = (p: number) => (k + a - 1) * Math.log(p) + (n - k + b - 1) * Math.log(1 - p);
+      if (t.prompt.includes("среднее")) {
+        const w = grid.map((p) => Math.exp(logp(p)));
+        const z = w.reduce((u, v) => u + v, 0);
+        expect(Math.abs(t.answer - grid.reduce((u, p, i) => u + p * w[i]!, 0) / z)).toBeLessThan(0.002);
+      } else if (k + a > 1 && n - k + b > 1) {
+        const best = grid.reduce((u, p) => (logp(p) > logp(u) ? p : u), grid[0]!);
+        expect(Math.abs(t.answer - best)).toBeLessThan(0.002);
+      }
+
+      const r = make("stat.ridge-map", s);
+      if (r.kind !== "numeric") throw new Error("ожидалось число");
+      const [s2, t2] = /mathcal\{N\}\(0, (\d+)\)\$, априорное (?:весов )?\$\\theta \\sim \\mathcal\{N\}\(0, ([\d.]+)/.exec(r.prompt)!.slice(1).map(Number) as [number, number];
+      if (r.prompt.includes("Найдите $\\lambda")) expect(r.answer).toBeCloseTo(s2 / t2, 3);
+      else {
+        const sxy = Number(/y\^\{\(i\)\} = (\d+)\$/.exec(r.prompt)![1]);
+        const sxx = Number(/\^2 = (\d+)\$/.exec(r.prompt)![1]);
+        const J = (th: number) => (sxx * th * th - 2 * sxy * th) / (2 * s2) + (th * th) / (2 * t2);
+        expect(J(r.answer)).toBeLessThanOrEqual(Math.min(J(r.answer + 0.01), J(r.answer - 0.01)) + 1e-9);
+      }
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

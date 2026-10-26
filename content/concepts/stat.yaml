@@ -17,6 +17,33 @@
   prerequisites: [stat.descriptive, prob.limit-theorems]
   core: true
 
+- id: stat.multivariate-mle
+  title:
+    ru: 'Многомерный MLE'
+    en: 'multivariate maximum likelihood'
+  summary: 'MLE многомерного нормального: $\hat\mu = \bar x$, $\hat\Sigma = \frac1n \sum_i (x^{(i)} - \hat\mu)(x^{(i)} - \hat\mu)^\top$; вывод через матрицу точности, трюк со следом $x^\top A x = \operatorname{tr}(A x x^\top)$ и $\nabla \log\lvert\det A\rvert = A^{-\top}$; MLE параметров GDA — доли, средние классов и общая ковариация.'
+  lesson: multivariate-mle
+  prerequisites: [stat.mle, prob.multivariate-normal, calc.matrix-calculus]
+  core: true
+
+- id: stat.exponential-family
+  title:
+    ru: 'Экспоненциальное семейство'
+    en: 'exponential family'
+  summary: '$p(y; \eta) = b(y) \exp(\eta^\top T(y) - a(\eta))$: натуральный параметр $\eta$, достаточная статистика $T(y)$, логарифм нормировки $a(\eta)$; $\nabla a = \mathbb{E}T$, $\nabla^2 a = \operatorname{Cov} T \succeq 0$; Бернулли ($\eta = \log\frac{\phi}{1 - \phi}$), нормальное, Пуассона, категориальное; выпуклость $-\ell$ GLM.'
+  lesson: exponential-family
+  prerequisites: [stat.mle, calc.convexity]
+  core: true
+
+- id: stat.bayes-map
+  title:
+    ru: 'Байесовский подход и MAP'
+    en: 'Bayesian estimation and MAP'
+  summary: 'Апостериорное $p(\theta \mid \text{данные}) \propto p(\text{данные} \mid \theta)\, p(\theta)$; сопряжённость Beta и Бернулли, параметры — псевдонаблюдения; MAP $\arg\max_\theta p(\theta \mid \text{данные})$; сглаживание Лапласа; гауссово априорное даёт ridge с $\lambda = \sigma^2/\tau^2$, Лапласа — L1.'
+  lesson: bayes-map
+  prerequisites: [stat.mle, prob.bayes, prob.continuous-distributions]
+  core: true
+
 - id: stat.mle
   title:
     ru: 'Метод максимального правдоподобия'
