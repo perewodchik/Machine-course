@@ -779,6 +779,35 @@ describe("генераторы", () => {
     }
   });
 
+  it("prob.cond-dice: ответ — |A ∩ B| / |B| перебором; prob.independence-check: ответ — равенство P(A ∩ B) = P(A) P(B)", () => {
+    const pairs = Array.from({ length: 36 }, (_, i) => [Math.floor(i / 6) + 1, (i % 6) + 1] as const);
+    const ev: Record<string, (o: readonly [number, number]) => boolean> = {
+      "сумма очков не меньше $8$": ([a, b]) => a + b >= 8,
+      "на первом кубике чётное число": ([a]) => a % 2 === 0,
+      "выпал дубль": ([a, b]) => a === b,
+      "на втором кубике $6$": ([, b]) => b === 6,
+      "сумма очков не больше $4$": ([a, b]) => a + b <= 4,
+      "хотя бы на одном кубике $1$": ([a, b]) => a === 1 || b === 1,
+      "сумма очков чётная": ([a, b]) => (a + b) % 2 === 0,
+    };
+    for (let s = 1; s <= 24; s++) {
+      const t = make("prob.cond-dice", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const [, b, a] = /Известно, что (.*?)\. Найдите вероятность, что (.*?)\.$/.exec(t.prompt)!;
+      const nb = pairs.filter(ev[b!]!).length;
+      const nab = pairs.filter((o) => ev[a!]!(o) && ev[b!]!(o)).length;
+      expect(t.answer).toBeCloseTo(nab / nb, 3);
+
+      const c = make("prob.independence-check", s);
+      if (c.kind !== "choice") throw new Error("ожидался выбор");
+      const [, A, B] = /\$A\$ — (.*?), \$B\$ — (.*?)\. Независимы/.exec(c.prompt)!;
+      const na = pairs.filter(ev[A!]!).length;
+      const nb2 = pairs.filter(ev[B!]!).length;
+      const nab2 = pairs.filter((o) => ev[A!]!(o) && ev[B!]!(o)).length;
+      expect(c.options.find((o) => o.correct)!.text).toBe(36 * nab2 === na * nb2 ? "Независимы" : "Зависимы");
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

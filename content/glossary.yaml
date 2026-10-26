@@ -354,3 +354,6 @@
 - id: probability-space
   ru: 'пространство исходов; событие; аксиомы вероятности; формула включений-исключений'
   en: 'sample space; event; probability axioms; inclusion–exclusion'
+- id: conditional-independence
+  ru: 'условная вероятность; формула умножения; независимость; условная независимость'
+  en: 'conditional probability; chain rule of probability; independence; conditional independence'

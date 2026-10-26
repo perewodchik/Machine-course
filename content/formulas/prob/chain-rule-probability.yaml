@@ -1,0 +1,56 @@
+id: f.chain-rule-probability
+kind: formula
+title:
+  ru: 'Формула умножения вероятностей'
+  en: 'chain rule of probability'
+statement: 'P(A \cap B \cap C) = P(A)\, P(B \mid A)\, P(C \mid A \cap B)'
+
+# Урок III.2: из определения P(X | Y) = P(X ∩ Y) / P(Y), применённого дважды. Проверка — на случайном совместном
+# распределении трёх событий: p — вероятности восьми клеток «A или не A» × «B или не B» × «C или не C».
+symbols:
+  - name: p
+    tex: 'p'
+    meaning: 'совместное распределение: вероятности восьми комбинаций событий $A$, $B$, $C$ и их дополнений'
+    shape: [8]
+    sample: simplex
+
+dependsOn:
+  concepts: [prob.conditional]
+  rules: []
+
+derivation:
+  plan:
+    - 'Записать пересечение трёх событий как пересечение $A$ и $B \cap C$'
+    - 'Применить определение условной вероятности к $B \cap C$ при условии $A$'
+    - 'Применить его ещё раз внутри: к $C$ при условии $A \cap B$'
+  steps:
+    - goal: 0
+      tex: 'P(A \cap B \cap C) = P\bigl(A \cap (B \cap C)\bigr)'
+      by: [prob.conditional]
+      note: 'Пересечение ассоциативно: скобки можно расставить как удобно.'
+      check:
+        kind: same
+        py: 'p.reshape(2, 2, 2)[1, 1, 1]'
+    - goal: 1
+      tex: '= \changed{P(A)\, P(B \cap C \mid A)}'
+      by: [prob.conditional]
+      note: 'Определение $P(X \mid A) = P(X \cap A) / P(A)$, умноженное на $P(A)$.'
+      check:
+        kind: same
+        py: 'np.sum(p.reshape(2, 2, 2)[1]) * (p.reshape(2, 2, 2)[1, 1, 1] / np.sum(p.reshape(2, 2, 2)[1]))'
+    - goal: 2
+      tex: '= P(A)\, \changed{P(B \mid A)\, P(C \mid A \cap B)}'
+      by: [prob.conditional]
+      note: 'В мире «произошло $A$» снова то же правило: $P(B \cap C \mid A) = P(B \mid A)\, P(C \mid A \cap B)$. Так же раскладывается любое число событий — на этом стоит наивный Байес и языковые модели.'
+      check:
+        kind: same
+        py: 'np.sum(p.reshape(2, 2, 2)[1]) * (np.sum(p.reshape(2, 2, 2)[1, 1]) / np.sum(p.reshape(2, 2, 2)[1])) * (p.reshape(2, 2, 2)[1, 1, 1] / np.sum(p.reshape(2, 2, 2)[1, 1]))'
+
+pitfalls:
+  - 'Путать $P(B \mid A)$ и $P(A \mid B)$: в первом мир сужен до $A$, во втором — до $B$, и числа обычно разные.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Generative learning algorithms / Naive Bayes'
+
+usedIn: [prob.conditional]

@@ -166,3 +166,78 @@ export const monomials: Generator = {
     };
   },
 };
+
+const EV: readonly { tex: string; has: (o: Dice) => boolean }[] = [
+  { tex: "сумма очков не меньше $8$", has: ([a, b]) => a + b >= 8 },
+  { tex: "на первом кубике чётное число", has: ([a]) => a % 2 === 0 },
+  { tex: "выпал дубль", has: ([a, b]) => a === b },
+  { tex: "на втором кубике $6$", has: ([, b]) => b === 6 },
+  { tex: "сумма очков не больше $4$", has: ([a, b]) => a + b <= 4 },
+  { tex: "хотя бы на одном кубике $1$", has: ([a, b]) => a === 1 || b === 1 },
+  { tex: "сумма очков чётная", has: ([a, b]) => (a + b) % 2 === 0 },
+];
+
+/** Урок III.2: P(A | B) на двух кубиках — условие сужает мир до исходов B. */
+export const condDice: Generator = {
+  id: "prob.cond-dice",
+  version: 1,
+  title: "Условная вероятность на кубиках",
+  make(seed) {
+    const r = rng(seed);
+    let i: number, j: number, nab: number, nb: number;
+    for (;;) {
+      [i, j] = [r.int(0, EV.length - 1), r.int(0, EV.length - 1)];
+      nb = DICE.filter(EV[j]!.has).length;
+      nab = DICE.filter((o) => EV[i]!.has(o) && EV[j]!.has(o)).length;
+      if (i !== j && nab > 0) break;
+    }
+    const [A, B] = [EV[i]!, EV[j]!];
+    const na = DICE.filter(A.has).length;
+    const nba = nab; // |A ∩ B| = |B ∩ A|
+    const answer = Math.round((nab / nb) * 1000) / 1000;
+    return {
+      kind: "numeric",
+      prompt: `Бросаем два кубика. Известно, что ${B.tex}. Найдите вероятность, что ${A.tex}.`,
+      label: String.raw`$P(A \mid B) =$`,
+      answer,
+      tol: 0.005,
+      hints: [String.raw`Условие сужает мир: остаются $${nb}$ исходов события $B$.`, String.raw`$P(A \mid B) = \lvert A \cap B \rvert / \lvert B \rvert$.`],
+      right: String.raw`$\lvert A \cap B \rvert = ${nab}$, $\lvert B \rvert = ${nb}$: $P(A \mid B) = ${nab}/${nb} \approx ${answer}$.`,
+      wrong: String.raw`Делите на число исходов условия $B$ (их $${nb}$), а не на $36$ и не на $\lvert A \rvert = ${na}$ — это было бы $P(B \mid A) = ${nba}/${na}$.`,
+    };
+  },
+};
+
+/** Урок III.2: независимы ли события — проверка P(A ∩ B) = P(A) P(B); среди вариантов — несовместные. */
+export const independenceCheck: Generator = {
+  id: "prob.independence-check",
+  version: 1,
+  title: "Независимы ли события",
+  make(seed) {
+    // пары: первая — независимые, вторая — зависимые совместные, третья — несовместные
+    const pairs: readonly [number, number][][] = [
+      [[1, 3], [1, 2], [6, 1]],
+      [[0, 1], [0, 2], [2, 5]],
+      [[0, 4], [4, 0]],
+    ];
+    const kind = (seed - 1) % 3;
+    const list = pairs[kind]!;
+    const [i, j] = list[rng(seed).int(0, list.length - 1)]!;
+    const [A, B] = [EV[i]!, EV[j]!];
+    const na = DICE.filter(A.has).length;
+    const nb = DICE.filter(B.has).length;
+    const nab = DICE.filter((o) => A.has(o) && B.has(o)).length;
+    const indep = 36 * nab === na * nb;
+    const facts = String.raw`$P(A) = ${na}/36$, $P(B) = ${nb}/36$, $P(A \cap B) = ${nab}/36$, а $P(A)\,P(B) = ${na * nb}/1296 = ${Math.round(((na * nb) / 36) * 100) / 100}/36$`;
+    const why = indep ? `${facts}: равны — события независимы.` : nab === 0 ? `${facts}: события несовместны, и знание, что произошло $B$, исключает $A$ — сильнейшая зависимость.` : `${facts}: не равны — события зависимы.`;
+    return {
+      kind: "choice",
+      prompt: `Бросаем два кубика. $A$ — ${A.tex}, $B$ — ${B.tex}. Независимы ли $A$ и $B$?`,
+      options: [
+        { text: "Независимы", correct: indep, why },
+        { text: "Зависимы", correct: !indep, why },
+      ],
+      hints: [String.raw`Сравните $P(A \cap B)$ с $P(A)\,P(B)$ — или $P(A \mid B)$ с $P(A)$.`],
+    };
+  },
+};
