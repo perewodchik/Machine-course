@@ -93,3 +93,35 @@ test("урок III.4: площадь под плотностью равна F(t)
   await page.evaluate(() => window.scrollTo(0, 0));
   await expectNoAxeViolations(page);
 });
+
+test("урок III.5: центр масс и разрыв Йенсена, разбор Var(aX + b), итоговая проверка", async ({ page }) => {
+  await page.goto("/foundations/probability/expectation-variance/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Матожидание, дисперсия, неравенство Йенсена");
+
+  const fig = page.locator(".center-mass").first();
+  await fig.scrollIntoViewIfNeeded();
+  await expect(fig.locator("xpath=ancestor::astro-island[1]")).not.toHaveAttribute("ssr", "");
+  // веса (1, 3, 2, 0, 1): p = (1, 3, 2, 0, 1)/7, E X = 11/7 ≈ 1.57, Var = 27/7 − 121/49 = 68/49 ≈ 1.39
+  await expect(fig.locator("[aria-live]")).toContainText("E X = 1.57, Var X = 1.39");
+  // оставляем груз только в x = 1: E X = 1, Var = 0, разрыв Йенсена 0
+  for (const k of [0, 2, 4]) {
+    const s = fig.getByRole("slider", { name: `w${k}` });
+    await s.focus();
+    await s.press("Home");
+  }
+  await expect(fig.locator("[aria-live]")).toContainText("E X = 1.00, Var X = 0.00");
+
+  const vl = page.locator("[data-exercise][data-item='prob.var-linear']");
+  await vl.locator("[data-variant]:not([hidden]) input").first().fill("-1");
+  await vl.getByRole("button", { name: "Проверить" }).click();
+  await expect(vl.locator("[data-feedback]")).toContainText("не бывает отрицательной");
+
+  const final = page.locator("#final-check");
+  const spec = generator("prob.ev-var").make(31);
+  if (spec.kind !== "numeric") throw new Error("ожидалось число");
+  await final.locator("[data-variant]:not([hidden]) input").first().fill(String(spec.answer));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});

@@ -18,6 +18,7 @@ export const layoutPages = {
   iii1: "/foundations/probability/probability-space/",
   iii2: "/foundations/probability/conditional-independence/",
   iii4: "/foundations/probability/random-variables/",
+  iii5: "/foundations/probability/expectation-variance/",
   iii3: "/foundations/probability/bayes/",
   puzzle: "/games/matrix-puzzle/",
   detective: "/games/bayes-detective/",

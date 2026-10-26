@@ -344,3 +344,91 @@ export const linearDensity: Generator = {
     };
   },
 };
+
+/** Урок III.5: матожидание (нечётный seed) или дисперсия (чётный) по таблице функции вероятности. */
+export const evVar: Generator = {
+  id: "prob.ev-var",
+  version: 1,
+  title: "Матожидание и дисперсия по таблице",
+  make(seed) {
+    const r = rng(seed);
+    const xs = r.pick([
+      [0, 1, 2],
+      [1, 2, 4],
+      [-1, 0, 2],
+      [0, 2, 3],
+    ]);
+    const ps = r.pick([
+      [0.2, 0.5, 0.3],
+      [0.5, 0.25, 0.25],
+      [0.1, 0.6, 0.3],
+      [0.4, 0.4, 0.2],
+    ]);
+    const m = xs.reduce((s, x, i) => s + x * ps[i]!, 0);
+    const m2 = xs.reduce((s, x, i) => s + x * x * ps[i]!, 0);
+    const v = m2 - m * m;
+    const wantVar = seed % 2 === 0;
+    const answer = round(wantVar ? v : m);
+    const row = xs.map((x, i) => `P(X = ${x}) = ${ps[i]}`).join(",\\ ");
+    return {
+      kind: "numeric",
+      prompt: String.raw`$X$ принимает значения $${xs.join(", ")}$: $${row}$. Найдите $${wantVar ? String.raw`\operatorname{Var} X` : String.raw`\mathbb{E}X`}$.`,
+      label: wantVar ? String.raw`$\operatorname{Var} X =$` : String.raw`$\mathbb{E}X =$`,
+      answer,
+      tol: 0.005,
+      hints: wantVar ? [String.raw`$\operatorname{Var} X = \mathbb{E}X^2 - (\mathbb{E}X)^2$; $\mathbb{E}X = ${round(m)}$.`] : [String.raw`$\mathbb{E}X = \sum_x x\, P(X = x)$.`],
+      right: wantVar ? String.raw`$\mathbb{E}X^2 = ${round(m2)}$, $(\mathbb{E}X)^2 = ${round(m * m)}$, $\operatorname{Var} X = ${answer}$.` : String.raw`$\mathbb{E}X = ${xs.map((x, i) => `${par(x)} \\cdot ${ps[i]}`).join(" + ")} = ${answer}$.`,
+      wrong: wantVar ? String.raw`$\mathbb{E}X^2$ — среднее квадратов, $\sum_x x^2 P(X = x) = ${round(m2)}$; из него вычитают квадрат среднего $${round(m * m)}$.` : String.raw`Каждое значение умножьте на его вероятность и сложите; простое среднее значений $${round(xs.reduce((a, b) => a + b, 0) / 3)}$ годится, только если вероятности равны.`,
+    };
+  },
+};
+
+/** Урок III.5: Var(aX + b) = a² Var X — сдвиг не меняет разброс, множитель входит в квадрате. */
+export const varLinear: Generator = {
+  id: "prob.var-linear",
+  version: 1,
+  title: "Дисперсия линейной функции",
+  make(seed) {
+    const r = rng(seed);
+    const v = r.pick([1, 2, 4, 9]);
+    const a = r.pick([2, 3, -2, -3, 0.5]);
+    const b = r.int(-5, 5);
+    const answer = round(a * a * v);
+    return {
+      kind: "numeric",
+      prompt: String.raw`$\operatorname{Var} X = ${v}$. Найдите $\operatorname{Var}(${a}X ${b < 0 ? "-" : "+"} ${Math.abs(b)})$.`,
+      label: String.raw`$\operatorname{Var} =$`,
+      answer,
+      tol: 0.005,
+      hints: [String.raw`Сдвиг на константу не меняет отклонений от среднего, а множитель $a$ умножает каждое отклонение на $a$, его квадрат — на $a^2$.`],
+      right: String.raw`$\operatorname{Var}(aX + b) = a^2 \operatorname{Var} X = ${a * a} \cdot ${v} = ${answer}$.`,
+      wrong: String.raw`Дисперсия не бывает отрицательной и не зависит от сдвига $${b}$: $a^2 \operatorname{Var} X = ${par(a)}^2 \cdot ${v}$.`,
+    };
+  },
+};
+
+/** Урок III.5: неравенство Йенсена — сравнить f(E X) и E f(X) для выпуклой или вогнутой f. */
+export const jensen: Generator = {
+  id: "prob.jensen",
+  version: 1,
+  title: "Неравенство Йенсена",
+  make(seed) {
+    const fs = [
+      { tex: "x^2", convex: true, why: String.raw`$x^2$ выпукла ($f'' = 2 > 0$), поэтому $f(\mathbb{E}X) \le \mathbb{E}f(X)$; разница — $\operatorname{Var} X$.` },
+      { tex: String.raw`\log x`, convex: false, why: String.raw`$\log x$ вогнута ($f'' = -1/x^2 < 0$), неравенство переворачивается: $\mathbb{E}\log X \le \log \mathbb{E}X$. На этом стоит нижняя оценка в алгоритме EM (CS229).` },
+      { tex: "e^x", convex: true, why: String.raw`$e^x$ выпукла: $e^{\mathbb{E}X} \le \mathbb{E}e^X$.` },
+      { tex: String.raw`\sqrt{x}`, convex: false, why: String.raw`$\sqrt{x}$ вогнута: $\mathbb{E}\sqrt{X} \le \sqrt{\mathbb{E}X}$.` },
+    ];
+    const f = fs[(seed - 1) % fs.length]!;
+    return {
+      kind: "choice",
+      prompt: String.raw`$X$ — положительная величина, не константа. Сравните $f(\mathbb{E}X)$ и $\mathbb{E}f(X)$ для $f(x) = ${f.tex}$.`,
+      options: [
+        { text: String.raw`$f(\mathbb{E}X) < \mathbb{E}f(X)$`, correct: f.convex, why: f.why },
+        { text: String.raw`$f(\mathbb{E}X) > \mathbb{E}f(X)$`, correct: !f.convex, why: f.why },
+        { text: String.raw`$f(\mathbb{E}X) = \mathbb{E}f(X)$`, correct: false, why: String.raw`Равенство — только для линейной $f$ или постоянной $X$. ${f.why}` },
+      ],
+      hints: [String.raw`Неравенство Йенсена: для выпуклой $f$ — $f(\mathbb{E}X) \le \mathbb{E}f(X)$; для вогнутой — наоборот.`],
+    };
+  },
+};

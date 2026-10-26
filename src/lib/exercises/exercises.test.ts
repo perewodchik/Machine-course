@@ -836,6 +836,31 @@ describe("генераторы", () => {
     }
   });
 
+  it("prob.ev-var, prob.var-linear: ответ по таблице и по a² Var X; prob.jensen — знак f'' определяет ответ", () => {
+    for (let s = 1; s <= 24; s++) {
+      const t = make("prob.ev-var", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const ps = [...t.prompt.matchAll(/P\(X = (-?\d)\) = ([\d.]+)/g)].map((m) => [Number(m[1]), Number(m[2])] as const);
+      const m = ps.reduce((a, [x, p]) => a + x * p, 0);
+      const v = ps.reduce((a, [x, p]) => a + (x - m) ** 2 * p, 0);
+      expect(t.answer).toBeCloseTo(s % 2 === 0 ? v : m, 3);
+
+      const vl = make("prob.var-linear", s);
+      if (vl.kind !== "numeric") throw new Error("ожидалось число");
+      const V = Number(/Var\} X = (\d+)\$/.exec(vl.prompt)![1]);
+      const a = Number(/Var\}\((-?[\d.]+)X/.exec(vl.prompt)![1]);
+      expect(vl.answer).toBeCloseTo(a * a * V, 9);
+
+      const j = make("prob.jensen", s);
+      if (j.kind !== "choice") throw new Error("ожидался выбор");
+      // X равновероятно 1 или 4: сравниваем f(E X) с E f(X) численно
+      const f = j.prompt.includes("x^2") ? (x: number) => x * x : j.prompt.includes("log") ? Math.log : j.prompt.includes("e^x") ? Math.exp : Math.sqrt;
+      const lhs = f(2.5);
+      const rhs = (f(1) + f(4)) / 2;
+      expect(j.options.find((o) => o.correct)!.text).toBe(lhs < rhs ? String.raw`$f(\mathbb{E}X) < \mathbb{E}f(X)$` : String.raw`$f(\mathbb{E}X) > \mathbb{E}f(X)$`);
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

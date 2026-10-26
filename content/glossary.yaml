@@ -360,3 +360,6 @@
 - id: random-variable
   ru: 'случайная величина; функция вероятности; плотность; функция распределения; i.i.d.'
   en: 'random variable; probability mass function (PMF); probability density function (PDF); cumulative distribution function (CDF); i.i.d.'
+- id: expectation
+  ru: 'матожидание; дисперсия; LOTUS; неравенство Йенсена'
+  en: 'expectation; variance; law of the unconscious statistician (LOTUS); Jensen''s inequality'

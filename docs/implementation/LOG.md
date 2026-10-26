@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — L-III.5 L-III.5: матожидание, дисперсия, неравенство Йенсена — готов
+- **Сделано:** урок expectation-variance (три цикла: центр масс и LOTUS, дисперсия и Var(aX + b), Йенсен и EM), виджет «Матожидание как центр масс» (fast-check: Var-тождество, Йенсен), формула f.variance-identity, генераторы prob.ev-var, prob.var-linear, prob.jensen, сниппет prob/moments.py с тестом, понятие prob.expectation
+- **Файлы:** content/courses/foundations/probability/expectation-variance.mdx, src/widgets/prob/center-mass/, content/formulas/prob/variance-identity.yaml, src/lib/exercises/generators/prob.ts, code/snippets/prob/moments.py
+- **Проверка:** validate, lint, build, check, vitest 529, pytest, check_consistency, e2e урока и layout iii5 (axe)
+- **Отклонения от плана и решения:** выпуклость уже введена в II.5 — урок ссылается на неё, а не вводит заново
+- **Следующий шаг:** L-III.6 — дискретные распределения.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — L-III.4 L-III.4: случайные величины — PMF, PDF, CDF — готов
 - **Сделано:** урок random-variables (четыре цикла: PMF и индикатор, плотность и CDF, плотность g(X), i.i.d.), виджет «Плотность и CDF при перетаскивании порога», формула f.density-transform, генераторы prob.pmf-cdf, prob.interval-prob, prob.linear-density, сниппет prob/density.py с тестом, понятие prob.random-variable
 - **Файлы:** content/courses/foundations/probability/random-variables.mdx, src/widgets/prob/density-cdf/, content/formulas/prob/density-transform.yaml, src/lib/exercises/generators/prob.ts, code/snippets/prob/density.py

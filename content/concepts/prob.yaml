@@ -18,6 +18,15 @@
   prerequisites: [prob.probability-space, calc.integral]
   core: true
 
+- id: prob.expectation
+  title:
+    ru: 'Матожидание и дисперсия'
+    en: 'expectation and variance'
+  summary: '$\mathbb{E}X = \sum_x x\,p(x)$ — центр масс; $\mathbb{E}\,g(X) = \sum_x g(x)\,p(x)$ (LOTUS); $\operatorname{Var} X = \mathbb{E}X^2 - (\mathbb{E}X)^2$; для выпуклой $f$ — $f(\mathbb{E}X) \le \mathbb{E}f(X)$ (Йенсен).'
+  lesson: expectation-variance
+  prerequisites: [prob.random-variable, calc.convexity]
+  core: true
+
 - id: prob.independence
   title:
     ru: 'Независимость'
