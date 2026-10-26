@@ -1,0 +1,14 @@
+---
+// Обёртка виджета «Фолды» для урока: рисунок с номером и подписью, остров React (client:visible).
+import { Folds } from "../../widgets/ml/folds";
+
+interface Props {
+  /** Номер рисунка в уроке. */
+  n?: number;
+}
+const { n } = Astro.props;
+---
+<figure class="figure wide">
+  <Folds client:visible />
+  <figcaption class="figure__caption">{n && <b>Рисунок {n}.</b>} <slot /></figcaption>
+</figure>

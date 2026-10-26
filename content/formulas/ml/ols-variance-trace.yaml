@@ -1,0 +1,60 @@
+id: f.ols-variance-trace
+kind: formula
+title:
+  ru: 'Средний разброс МНК в обучающих точках — σ²d/n'
+  en: 'average OLS prediction variance at the training points'
+statement: '\frac1n \sum_{i=1}^{n} \operatorname{Var} \hat h_S(x^{(i)}) = \frac{\sigma^2 \operatorname{tr} H}{n} = \frac{\sigma^2 d}{n}, \qquad H = X (X^\top X)^{-1} X^\top'
+
+# Урок 2.2 «Основ ML»: при фиксированных x и некоррелированном шуме Cov(Xθ̂) = Cov(Hy) = σ² H Hᵀ = σ² H (H —
+# проектор, урок I.8), след проектора — его ранг d. Лишние признаки стоят разброса даже без смещения.
+symbols:
+  - name: X
+    tex: 'X'
+    meaning: 'объекты по строкам, ранг $d$'
+    shape: [n, d]
+  - name: sigma
+    tex: '\sigma'
+    meaning: 'стандартное отклонение шума'
+    shape: []
+    sample: positive
+
+dependsOn:
+  concepts: [la.projection, prob.random-vectors]
+  rules: []
+
+derivation:
+  plan:
+    - 'Записать прогнозы в обучающих точках как $Hy$'
+    - 'Найти ковариацию: $\sigma^2 H H^\top = \sigma^2 H$'
+    - 'Средняя дисперсия — след, делённый на $n$; след проектора равен $d$'
+  steps:
+    - goal: 0
+      tex: 'X\hat\theta = X (X^\top X)^{-1} X^\top y = H y, \qquad \operatorname{Cov}(Hy) = H\, (\sigma^2 I)\, H^\top = \changed{\sigma^2 H}'
+      by: [la.projection, prob.random-vectors]
+      note: '$H$ симметрична и идемпотентна: $H H^\top = H^2 = H$ — это проектор на столбцы $X$.'
+      check:
+        kind: identity
+        lhs: 'X @ np.linalg.solve(X.T @ X, X.T) @ (sigma ** 2 * np.eye(X.shape[0])) @ (X @ np.linalg.solve(X.T @ X, X.T)).T'
+        rhs: 'sigma ** 2 * X @ np.linalg.solve(X.T @ X, X.T)'
+      mutations:
+        - tex: '\operatorname{Cov}(Hy) = \sigma^2 I'
+          py: 'sigma ** 2 * np.eye(X.shape[0])'
+          why: 'Это ковариация самих ответов $y$. Прогнозы — проекция $y$, и их ковариация — $\sigma^2 H$: проекция гасит часть шума.'
+    - goal: 1
+      tex: '\frac1n \sum_i \operatorname{Var} \hat h_S(x^{(i)}) = \frac{\sigma^2 \operatorname{tr} H}{n} = \changed{\frac{\sigma^2 d}{n}}'
+      by: [la.trace]
+      note: 'След проектора равен размерности подпространства, на которое он проектирует: $\operatorname{tr} H = \operatorname{rank} X = d$. Удвоили $n$ — разброс вдвое меньше; удвоили $d$ — вдвое больше.'
+      check:
+        kind: identity
+        lhs: 'sigma ** 2 * np.trace(X @ np.linalg.solve(X.T @ X, X.T)) / X.shape[0]'
+        rhs: 'sigma ** 2 * X.shape[1] / X.shape[0]'
+      mutations:
+        - tex: '= \frac{\sigma^2}{n}'
+          py: 'sigma ** 2 / X.shape[0]'
+          why: 'Потеряно число весов $d$: каждый лишний признак добавляет $\sigma^2/n$ к среднему разбросу, даже если истина в классе модели.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Generalization'
+
+usedIn: [ml.bias-variance]

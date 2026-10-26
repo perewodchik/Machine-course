@@ -429,3 +429,15 @@
 - id: glm
   ru: 'экспоненциальное семейство; естественный параметр; достаточная статистика; логарифм нормировочной константы; обобщённая линейная модель; функция отклика; функция связи; пуассоновская регрессия'
   en: 'exponential family; natural parameter; sufficient statistic; log-partition function; generalized linear model (GLM); response function; link function; Poisson regression'
+- id: classification-metrics
+  ru: 'матрица ошибок; точность; полнота; доля ложных срабатываний; доля правильных ответов; ROC-кривая; AUC; PR-кривая; средняя точность; калибровка; кривая надёжности; оценка Брайера'
+  en: 'confusion matrix; precision; recall (TPR); false positive rate; accuracy; ROC curve; area under the curve (AUC); precision–recall curve; average precision (AP); calibration; reliability diagram; Brier score'
+- id: bias-variance
+  ru: 'средняя модель; смещение; разброс; неустранимая ошибка; недообучение; переобучение; сложность модели'
+  en: 'average model; bias; variance; irreducible error; underfitting; overfitting; model complexity'
+- id: regularization
+  ru: 'регуляризация; гребневая регрессия; лассо; путь регуляризации; мягкий порог; покоординатный спуск; тёплый старт; затухание весов'
+  en: 'regularization; ridge regression; lasso; regularization path; soft thresholding; coordinate descent; warm start; weight decay'
+- id: model-selection
+  ru: 'обучающая, валидационная и тестовая выборки; гиперпараметр; k-кратная кросс-валидация; фолд; стратификация; правило одной стандартной ошибки; вложенная кросс-валидация; «без одного»; конвейер'
+  en: 'train, validation and test sets; hyperparameter; k-fold cross-validation; fold; stratification; one-standard-error rule; nested cross-validation; leave-one-out (LOO); pipeline'

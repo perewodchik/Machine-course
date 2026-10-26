@@ -1,0 +1,58 @@
+id: f.lasso-coordinate-step
+kind: formula
+title:
+  ru: 'Шаг покоординатного спуска для лассо'
+  en: 'coordinate descent step for the lasso'
+statement: '\theta_j \leftarrow \frac{S_\lambda\bigl(\tfrac1n X_{:,j}^\top r^{(j)}\bigr)}{\tfrac1n \lVert X_{:,j} \rVert_2^2}, \qquad r^{(j)} = y - \sum_{k \ne j} X_{:,k}\, \theta_k'
+
+# Урок 2.3 «Основ ML»: потери ‖Xθ − y‖²/(2n) + λ‖θ‖₁ (как Lasso(alpha=λ)) как функция одной координаты θ_j —
+# парабола плюс λ|θ_j|; её минимум — мягкий порог из f.lasso-soft-threshold, масштабированный на ‖X_j‖²/n.
+# Проверка — для координаты j = 0: после шага потери не больше, чем до него.
+symbols:
+  - name: X
+    tex: 'X'
+    meaning: 'признаки'
+    shape: [n, d]
+  - name: y
+    tex: 'y'
+    meaning: 'ответы'
+    shape: [n, 1]
+  - name: theta
+    tex: '\theta'
+    meaning: 'текущие веса'
+    shape: [d, 1]
+  - name: lam
+    tex: '\lambda'
+    meaning: 'коэффициент регуляризации'
+    shape: []
+    sample: positive
+
+dependsOn:
+  concepts: [calc.convexity]
+  rules: []
+
+derivation:
+  plan:
+    - 'Зафиксировать все веса, кроме $\theta_j$'
+    - 'Свести задачу к $\tfrac12 a (t - z)^2 + \lambda \lvert t \rvert$ и применить мягкий порог'
+  steps:
+    - goal: 0
+      tex: 'J(\theta) = \frac{1}{2n} \lVert X\theta - y \rVert_2^2 + \lambda \lVert\theta\rVert_1'
+      by: [ml.loss]
+      check:
+        kind: same
+        py: 'np.sum((X @ theta - y) ** 2) / (2 * X.shape[0]) + lam * np.sum(np.abs(theta))'
+    - goal: 1
+      tex: 'J\bigl(\theta_0 \leftarrow \changed{S_\lambda(\tfrac1n X_{:,0}^\top r^{(0)}) / (\tfrac1n \lVert X_{:,0}\rVert^2)}\bigr) \le J(\theta)'
+      by: [calc.convexity]
+      note: 'По $\theta_j$ потери — $\tfrac{a}{2}\theta_j^2 - c\,\theta_j + \lambda\lvert\theta_j\rvert + \text{const}$ с $a = \tfrac1n\lVert X_{:,j}\rVert^2$, $c = \tfrac1n X_{:,j}^\top r^{(j)}$; минимум — $S_\lambda(c)/a$. Шаг не увеличивает потери, поэтому спуск сходится.'
+      check:
+        kind: bound
+        side: below
+        py: 'np.sum((X @ np.r_[np.sign(X[:, 0] @ (y - X[:, 1:] @ theta[1:]) / X.shape[0]) * np.maximum(abs(X[:, 0] @ (y - X[:, 1:] @ theta[1:]) / X.shape[0]) - lam, 0) / (X[:, 0] @ X[:, 0] / X.shape[0]), theta[1:]] - y) ** 2) / (2 * X.shape[0]) + lam * (abs(np.sign(X[:, 0] @ (y - X[:, 1:] @ theta[1:]) / X.shape[0]) * np.maximum(abs(X[:, 0] @ (y - X[:, 1:] @ theta[1:]) / X.shape[0]) - lam, 0) / (X[:, 0] @ X[:, 0] / X.shape[0])) + np.sum(np.abs(theta[1:])))'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Regularization and model selection'
+
+usedIn: [ml.lasso]

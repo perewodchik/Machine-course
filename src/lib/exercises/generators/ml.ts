@@ -360,3 +360,130 @@ export const poissonPredict: Generator = {
     };
   },
 };
+
+/** Урок 2.1: точность по доле положительных, TPR и FPR. */
+export const precisionPrevalence: Generator = {
+  id: "ml.precision-prevalence",
+  version: 1,
+  title: "Точность при дисбалансе",
+  make(seed) {
+    const r = rng(seed);
+    const phi = r.pick([0.01, 0.02, 0.05, 0.1, 0.2]);
+    const tpr = r.pick([0.6, 0.7, 0.8, 0.9]);
+    const fprV = r.pick([0.01, 0.02, 0.05, 0.1]);
+    const answer = round((phi * tpr) / (phi * tpr + (1 - phi) * fprV), 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`Положительных ${num(round(100 * phi, 4))} %. Классификатор при выбранном пороге находит $\mathrm{TPR} = ${num(tpr)}$ положительных и ложно срабатывает на $\mathrm{FPR} = ${num(fprV)}$ отрицательных. Какова его точность (precision)?`,
+      label: "precision =",
+      answer,
+      tol: 0.002,
+      hints: [String.raw`На $n$ объектов: $\mathrm{TP} = \phi n \cdot \mathrm{TPR}$, $\mathrm{FP} = (1 - \phi) n \cdot \mathrm{FPR}$; точность — $\mathrm{TP}/(\mathrm{TP} + \mathrm{FP})$.`],
+      right: String.raw`$\frac{${num(phi)} \cdot ${num(tpr)}}{${num(phi)} \cdot ${num(tpr)} + ${num(round(1 - phi, 4))} \cdot ${num(fprV)}} = ${num(answer)}$: на одно верное срабатывание — ${num(round((1 - answer) / answer, 1))} ложных.`,
+      wrong: String.raw`Точность — не $1 - \mathrm{FPR}$. Отрицательных в $${num(round((1 - phi) / phi, 1))}$ раз больше, поэтому даже малый FPR даёт много ложных срабатываний: precision $= ${num(answer)}$.`,
+    };
+  },
+};
+
+/** Урок 2.1: порог по цене звонка и выгоде отклика. */
+export const costThreshold: Generator = {
+  id: "ml.cost-threshold",
+  version: 1,
+  title: "Порог по цене ошибок",
+  make(seed) {
+    const r = rng(seed);
+    const call = r.pick([2, 5, 10, 20]);
+    const gain = r.pick([50, 100, 200, 400]);
+    const answer = round(call / gain, 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`Звонок клиенту стоит ${call} ₽, открытый вклад приносит банку ${gain} ₽. Вероятности отклика у модели откалиброваны. При каком наименьшем $p$ клиенту выгодно звонить?`,
+      label: "p >",
+      answer,
+      tol: 0.001,
+      hints: [String.raw`Лишний звонок — ложное срабатывание: $c_{FP} = ${call}$. Пропущенный клиент — упущенная выгода за вычетом звонка: $c_{FN} = ${gain} - ${call}$.`],
+      right: String.raw`$t^\star = \frac{c_{FP}}{c_{FP} + c_{FN}} = \frac{${call}}{${call} + ${gain - call}} = ${num(answer)}$ — звонок окупается уже при малой вероятности отклика.`,
+      wrong: String.raw`Не 0.5: $c_{FP} = ${call}$, $c_{FN} = ${gain - call}$, и $t^\star = ${call}/${gain} = ${num(answer)}$. Звонить выгодно, когда $p \cdot ${gain - call} > (1 - p) \cdot ${call}$.`,
+    };
+  },
+};
+
+/** Урок 2.2: средний разброс МНК в обучающих точках σ²d/n и ожидаемая ошибка при истине в классе. */
+export const olsVariance: Generator = {
+  id: "ml.ols-variance",
+  version: 1,
+  title: "Разброс МНК",
+  make(seed) {
+    const r = rng(seed);
+    const sigma = r.pick([0.2, 0.5, 1, 2]);
+    const d = r.int(2, 11);
+    const n = r.pick([20, 40, 50, 100, 200]);
+    const total = seed % 2 === 0;
+    const v = (sigma * sigma * d) / n;
+    const answer = round(total ? sigma * sigma + v : v, 6);
+    return {
+      kind: "numeric",
+      prompt: total
+        ? String.raw`Истина — полином степени ${d - 1}, модель — полином той же степени ($d = ${d}$ весов), $n = ${n}$ обучающих точек при фиксированных $x$, шум $\sigma = ${num(sigma)}$. Смещения нет. Какова ожидаемая ошибка $\mathbb{E}(y - \hat h_S(x))^2$ в среднем по обучающим точкам на новых ответах $y$?`
+        : String.raw`МНК с $d = ${d}$ весами на $n = ${n}$ точках при фиксированных $x$, шум $\sigma = ${num(sigma)}$. Каков средний по обучающим точкам разброс прогноза $\frac1n \sum_i \operatorname{Var} \hat h_S(x^{(i)})$?`,
+      label: total ? "ошибка =" : "разброс =",
+      answer,
+      tol: Math.max(1e-4, answer * 0.005),
+      hints: [String.raw`Средний разброс МНК в обучающих точках — $\sigma^2 d / n$: след проектора $H$ равен $d$.${total ? " К нему добавьте шум нового ответа." : ""}`],
+      right: total ? String.raw`$\sigma^2 + \sigma^2 d/n = ${num(round(sigma * sigma, 4))} + ${num(round(v, 6))} = ${num(answer)}$: шум плюс разброс, смещения нет.` : String.raw`$\sigma^2 d/n = ${num(round(sigma * sigma, 4))} \cdot ${d}/${n} = ${num(answer)}$.`,
+      wrong: total ? String.raw`Ошибка на новых ответах не меньше шума $\sigma^2 = ${num(round(sigma * sigma, 4))}$; к нему добавляется разброс $\sigma^2 d/n = ${num(round(v, 6))}$.` : String.raw`Разброс — $\sigma^2 d/n$, а не $\sigma^2/n$ и не $\sigma^2$: каждый вес добавляет $\sigma^2/n$.`,
+    };
+  },
+};
+
+/** Урок 2.3: веса гребневой и лассо при ортонормированных признаках по весу МНК. */
+export const shrinkOrth: Generator = {
+  id: "ml.shrink-orth",
+  version: 1,
+  title: "Сжатие весов",
+  make(seed) {
+    const r = rng(seed);
+    const z = (r.next() < 0.5 ? -1 : 1) * r.pick([0.3, 0.5, 0.8, 1.2, 2, 3]);
+    const lam = r.pick([0.5, 1, 2]);
+    const isLasso = seed % 2 === 1;
+    const answer = round(isLasso ? Math.sign(z) * Math.max(Math.abs(z) - lam, 0) : z / (1 + lam), 6);
+    return {
+      kind: "numeric",
+      prompt: isLasso
+        ? String.raw`Признаки ортонормированы ($X^\top X = I$), вес МНК $\hat\theta_j = ${num(z)}$. Каким станет вес у лассо $\tfrac12 \lVert X\theta - y \rVert^2 + \lambda \lVert\theta\rVert_1$ при $\lambda = ${num(lam)}$?`
+        : String.raw`Признаки ортонормированы ($X^\top X = I$), вес МНК $\hat\theta_j = ${num(z)}$. Каким станет вес у гребневой регрессии $\tfrac12 \lVert X\theta - y \rVert^2 + \tfrac{\lambda}{2} \lVert\theta\rVert^2$ при $\lambda = ${num(lam)}$?`,
+      label: "θ_j =",
+      answer,
+      tol: 0.0005,
+      hints: [isLasso ? String.raw`Мягкий порог: $S_\lambda(z) = \operatorname{sign}(z) \max(\lvert z \rvert - \lambda, 0)$.` : String.raw`При $X^\top X = I$ решение $(I + \lambda I)^{-1} X^\top y = \hat\theta / (1 + \lambda)$.`],
+      right: isLasso ? String.raw`$S_{${num(lam)}}(${num(z)}) = ${num(answer)}$${answer === 0 ? ": вес меньше порога и зануляется" : ": вес сдвинут к нулю на λ"}.` : String.raw`$${num(z)}/(1 + ${num(lam)}) = ${num(answer)}$: гребневая сжимает, но не зануляет.`,
+      wrong: isLasso ? String.raw`Лассо вычитает $\lambda$ из модуля и зануляет, если $\lvert z \rvert \le \lambda$: здесь $${num(answer)}$. Деление на $1 + \lambda$ — это гребневая.` : String.raw`Гребневая делит на $1 + \lambda$: $${num(answer)}$. Вычитание $\lambda$ с порогом — это лассо.`,
+    };
+  },
+};
+
+/** Урок 2.4: среднее и стандартная ошибка кросс-валидации по ошибкам фолдов. */
+export const cvSe: Generator = {
+  id: "ml.cv-se",
+  version: 1,
+  title: "Среднее и SE кросс-валидации",
+  make(seed) {
+    const r = rng(seed);
+    const k = r.pick([4, 5]);
+    const errs = Array.from({ length: k }, () => r.int(40, 90) / 100);
+    const mean = errs.reduce((a, b) => a + b, 0) / k;
+    const s = Math.sqrt(errs.reduce((a, e) => a + (e - mean) ** 2, 0) / (k - 1));
+    const askSe = seed % 2 === 1;
+    const answer = round(askSe ? s / Math.sqrt(k) : mean, 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`${k}-кратная кросс-валидация дала ошибки на фолдах $${errs.map(num).join(",\\ ")}$. Найдите ${askSe ? String.raw`стандартную ошибку среднего $\operatorname{SE} = s/\sqrt{k}$, где $s$ — выборочное стандартное отклонение (с делителем $k - 1$)` : String.raw`оценку $\operatorname{CV}_k$`}.`,
+      label: askSe ? "SE =" : "CV =",
+      answer,
+      tol: 0.002,
+      hints: [askSe ? String.raw`Сначала среднее $${num(round(mean, 4))}$, затем $s^2 = \frac{1}{k - 1}\sum_j (\operatorname{err}_j - \operatorname{CV})^2$ и деление на $\sqrt{k}$.` : String.raw`$\operatorname{CV}_k = \frac1k \sum_j \operatorname{err}_j$.`],
+      right: askSe ? String.raw`$s = ${num(round(s, 4))}$, $\operatorname{SE} = ${num(round(s, 4))}/\sqrt{${k}} = ${num(answer)}$. Обучающие части фолдов пересекаются, поэтому SE — грубая и заниженная оценка.` : String.raw`$\operatorname{CV}_${k} = ${num(answer)}$.`,
+      wrong: askSe ? String.raw`SE — разброс ошибок фолдов, делённый на $\sqrt{k}$: $s = ${num(round(s, 4))}$, $\operatorname{SE} = ${num(answer)}$. Делитель в $s^2$ — $k - 1$.` : String.raw`Среднее ошибок фолдов: $${num(answer)}$.`,
+    };
+  },
+};

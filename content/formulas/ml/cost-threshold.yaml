@@ -1,0 +1,62 @@
+id: f.cost-threshold
+kind: formula
+title:
+  ru: 'Порог по цене ошибок'
+  en: 'cost-optimal decision threshold'
+statement: '\hat y = 1 \iff p > t^\star = \frac{c_{FP}}{c_{FP} + c_{FN}}'
+
+# Урок 2.1 «Основ ML»: при калиброванной p = P(y = 1 | x) ожидаемая цена решения «1» — (1 − p) c_FP, решения «0» — p c_FN.
+# Сравнение даёт порог; доля положительных в нём уже учтена через p.
+symbols:
+  - name: p
+    tex: 'p'
+    meaning: 'калиброванная вероятность класса 1'
+    shape: []
+    sample: fraction
+  - name: cfp
+    tex: 'c_{FP}'
+    meaning: 'цена ложного срабатывания'
+    shape: []
+    sample: positive
+  - name: cfn
+    tex: 'c_{FN}'
+    meaning: 'цена пропуска'
+    shape: []
+    sample: positive
+
+dependsOn:
+  concepts: [prob.expectation]
+  rules: []
+
+derivation:
+  plan:
+    - 'Найти ожидаемую цену каждого решения'
+    - 'Сравнить и выразить условие через $p$'
+  steps:
+    - goal: 0
+      tex: '\mathbb{E}[\text{цена} \mid \hat y = 1] = (1 - p)\, c_{FP}, \qquad \mathbb{E}[\text{цена} \mid \hat y = 0] = p\, c_{FN}'
+      by: [prob.expectation]
+      note: 'Решение «1» ошибается, если на деле $y = 0$ (вероятность $1 - p$), решение «0» — если $y = 1$.'
+      check:
+        kind: same
+        py: 'p * cfn - (1 - p) * cfp'
+    - goal: 1
+      tex: 'p\, c_{FN} - (1 - p)\, c_{FP} = (c_{FP} + c_{FN}) \Bigl(p - \changed{\frac{c_{FP}}{c_{FP} + c_{FN}}}\Bigr)'
+      by: [ml.loss]
+      note: '«1» выгоднее, когда разность положительна, то есть при $p > t^\star$. При равных ценах $t^\star = 0.5$, при дорогом пропуске порог ниже.'
+      check:
+        kind: same
+        py: '(cfp + cfn) * (p - cfp / (cfp + cfn))'
+      mutations:
+        - tex: 'p\, c_{FN} - (1 - p)\, c_{FP} = (c_{FP} + c_{FN}) \Bigl(p - \frac{c_{FN}}{c_{FP} + c_{FN}}\Bigr)'
+          py: '(cfp + cfn) * (p - cfn / (cfp + cfn))'
+          why: 'Перепутаны цены: порог растёт с ценой ложного срабатывания. Если пропуск дорог, отмечать надо уже при малых $p$.'
+
+pitfalls:
+  - 'Применять $t^\star$ к некалиброванным оценкам: формула верна только для честных вероятностей. Иначе порог ищут перебором по кривой стоимости на валидации.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Classification and logistic regression'
+
+usedIn: [ml.classification-metrics]
