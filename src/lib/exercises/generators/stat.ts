@@ -357,3 +357,68 @@ export const logPartition: Generator = {
     };
   },
 };
+
+/** Урок IV.6: обновление Beta по броскам — апостериорное среднее, MAP или MLE для сравнения. */
+export const betaUpdate: Generator = {
+  id: "stat.beta-update",
+  version: 1,
+  title: "Апостериорное Beta",
+  make(seed) {
+    const r = rng(seed);
+    const [a, b] = r.pick([[1, 1], [2, 2], [5, 5], [3, 1], [2, 6]] as const);
+    const n = r.pick([3, 4, 5, 10]);
+    const k = r.int(0, n);
+    const kind = (seed - 1) % 2;
+    const mean = (k + a) / (n + a + b);
+    const map = (k + a - 1) / (n + a + b - 2);
+    const answer = round(kind === 0 ? mean : map, 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`Априорное распределение вероятности орла — $\operatorname{Beta}(${a}, ${b})$. Монету бросили $${n}$ раз, орлов — $${k}$. Найдите ${kind === 0 ? "апостериорное среднее — прогноз вероятности орла в следующем броске" : String.raw`оценку апостериорного максимума $\hat\phi_{\text{MAP}}$`}.`,
+      label: kind === 0 ? String.raw`$\mathbb{E}[\phi \mid \text{данные}] =$` : String.raw`$\hat\phi_{\text{MAP}} =$`,
+      answer,
+      tol: 0.002,
+      hints: [String.raw`Апостериорное — $\operatorname{Beta}(k + \alpha, n - k + \beta) = \operatorname{Beta}(${k + a}, ${n - k + b})$. Среднее $\operatorname{Beta}(p, q)$ — $\frac{p}{p + q}$, мода — $\frac{p - 1}{p + q - 2}$.`],
+      right: String.raw`$\operatorname{Beta}(${k + a}, ${n - k + b})$: ${kind === 0 ? String.raw`среднее $${k + a}/${n + a + b} \approx ${answer}$` : String.raw`мода $${k + a - 1}/${n + a + b - 2} \approx ${answer}$`}. MLE было бы $${k}/${n} = ${round(k / n, 4)}$.`,
+      wrong: String.raw`Параметры априорного — воображаемые броски: прибавьте $\alpha = ${a}$ к орлам и $\beta = ${b}$ к решкам. ${kind === 0 ? "Среднее" : "MAP"} — не доля $k/n$.`,
+    };
+  },
+};
+
+/** Урок IV.6: гребневая регрессия как MAP — λ = σ²/τ² или одномерная оценка θ = Σxy/(Σx² + λ). */
+export const ridgeMap: Generator = {
+  id: "stat.ridge-map",
+  version: 1,
+  title: "Ridge как MAP",
+  make(seed) {
+    const r = rng(seed);
+    const s2 = r.pick([1, 2, 4]);
+    const t2 = r.pick([0.5, 1, 2, 4]);
+    const lam = s2 / t2;
+    if (seed % 2 === 1) {
+      return {
+        kind: "numeric",
+        prompt: String.raw`Шум линейной модели $\epsilon \sim \mathcal{N}(0, ${s2})$, априорное весов $\theta \sim \mathcal{N}(0, ${t2} I)$. MAP совпадает с гребневой регрессией $\min_\theta \tfrac12 \lVert X\theta - y \rVert^2 + \tfrac{\lambda}{2} \lVert\theta\rVert^2$. Найдите $\lambda$.`,
+        label: String.raw`$\lambda =$`,
+        answer: round(lam, 4),
+        tol: 0.002,
+        hints: [String.raw`$-\log p(\theta \mid \text{данные}) = \frac{1}{2\sigma^2}\lVert X\theta - y\rVert^2 + \frac{1}{2\tau^2}\lVert\theta\rVert^2$; умножьте на $\sigma^2$.`],
+        right: String.raw`$\lambda = \sigma^2/\tau^2 = ${s2}/${t2} = ${round(lam, 4)}$.`,
+        wrong: String.raw`$\lambda = \sigma^2/\tau^2$, а не $\tau^2/\sigma^2$: чем уже априорное (меньше $\tau^2$), тем сильнее штраф.`,
+      };
+    }
+    const sxy = r.pick([6, 8, 12, 20]);
+    const sxx = r.pick([4, 6, 10]);
+    const answer = round(sxy / (sxx + lam), 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`Модель с одним весом $y = \theta x + \epsilon$, $\epsilon \sim \mathcal{N}(0, ${s2})$, априорное $\theta \sim \mathcal{N}(0, ${t2})$. По данным $\sum_i x^{(i)} y^{(i)} = ${sxy}$, $\sum_i (x^{(i)})^2 = ${sxx}$. Найдите $\hat\theta_{\text{MAP}}$.`,
+      label: String.raw`$\hat\theta_{\text{MAP}} =$`,
+      answer,
+      tol: 0.002,
+      hints: [String.raw`$\hat\theta = \frac{\sum_i x^{(i)} y^{(i)}}{\sum_i (x^{(i)})^2 + \lambda}$, $\lambda = \sigma^2/\tau^2 = ${round(lam, 4)}$.`],
+      right: String.raw`$${sxy}/(${sxx} + ${round(lam, 4)}) \approx ${answer}$; МНК дал бы $${round(sxy / sxx, 4)}$ — MAP сжимает вес к нулю.`,
+      wrong: String.raw`К знаменателю МНК $\sum (x^{(i)})^2$ добавляется $\lambda = \sigma^2/\tau^2 = ${round(lam, 4)}$.`,
+    };
+  },
+};

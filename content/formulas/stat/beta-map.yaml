@@ -1,0 +1,79 @@
+id: f.beta-map
+kind: formula
+title:
+  ru: 'Апостериорный максимум для монеты с Beta-априорным'
+  en: 'MAP estimate of a coin with a Beta prior'
+statement: '\hat\phi_{\text{MAP}} = \frac{k + \alpha - 1}{n + \alpha + \beta - 2}, \qquad \phi \mid \text{данные} \sim \operatorname{Beta}(k + \alpha,\ n - k + \beta)'
+
+# Урок IV.6: правдоподобие φᵏ(1 − φ)ᵐ (m = n − k решек) на априорную плотность φ^{α−1}(1 − φ)^{β−1} — снова Beta:
+# сопряжённость. Логарифм апостериорной плотности — как ℓ у Бернулли, только с k + α − 1 и m + β − 1 вместо k и m.
+# Проверка — в случайной точке φ ∈ (0, 1) при случайных положительных k, m, α, β (формулы верны и для дробных).
+symbols:
+  - name: phi
+    tex: '\phi'
+    meaning: 'вероятность орла'
+    shape: []
+    sample: fraction
+  - name: k
+    tex: 'k'
+    meaning: 'число орлов'
+    shape: []
+    sample: positive
+  - name: m
+    tex: 'm'
+    meaning: 'число решек, $m = n - k$'
+    shape: []
+    sample: positive
+  - name: a
+    tex: '\alpha'
+    meaning: 'параметр априорного: воображаемые орлы'
+    shape: []
+    sample: positive
+  - name: b
+    tex: '\beta'
+    meaning: 'параметр априорного: воображаемые решки'
+    shape: []
+    sample: positive
+
+dependsOn:
+  concepts: [stat.bayes-map, prob.bayes, prob.continuous-distributions]
+  rules: []
+
+derivation:
+  plan:
+    - 'Умножить правдоподобие на априорную плотность: по Байесу апостериорная им пропорциональна'
+    - 'Взять логарифм и продифференцировать по $\phi$'
+    - 'Приравнять к нулю'
+  steps:
+    - goal: 0
+      tex: '\log p(\phi \mid \text{данные}) = (k + \alpha - 1) \log \phi + (m + \beta - 1) \log (1 - \phi) + \text{const}'
+      by: [prob.bayes]
+      note: '$p(\phi \mid \text{данные}) \propto \phi^k (1 - \phi)^m \cdot \phi^{\alpha - 1} (1 - \phi)^{\beta - 1}$ — снова Beta, с параметрами $k + \alpha$ и $m + \beta$. Знаменатель Байеса от $\phi$ не зависит.'
+      check:
+        kind: same
+        py: '(k + a - 1) * np.log(phi) + (m + b - 1) * np.log(1 - phi)'
+    - goal: 1
+      tex: '\frac{d}{d\phi} \log p(\phi \mid \text{данные}) = \changed{\frac{k + \alpha - 1}{\phi} - \frac{m + \beta - 1}{1 - \phi}}'
+      by: [calc.derivative]
+      note: 'Тот же вид, что у производной $\ell$ Бернулли: априорное добавило $\alpha - 1$ орлов и $\beta - 1$ решек.'
+      check:
+        kind: gradient
+        wrt: phi
+        py: '(k + a - 1) / phi - (m + b - 1) / (1 - phi)'
+    - goal: 2
+      tex: '\hat\phi_{\text{MAP}} = \changed{\frac{k + \alpha - 1}{k + m + \alpha + \beta - 2}}'
+      by: [stat.mle]
+      note: 'При $\alpha = \beta = 1$ (равномерное априорное) MAP совпадает с MLE $k/n$. При $\alpha = \beta = 2$ — $(k + 1)/(n + 2)$, сглаживание Лапласа; его же даёт апостериорное **среднее** $(k + \alpha)/(n + \alpha + \beta)$ при $\operatorname{Beta}(1, 1)$.'
+      check:
+        kind: solution
+        wrt: phi
+        py: '(k + a - 1) / (k + m + a + b - 2)'
+
+pitfalls:
+  - 'Считать, что MAP при равномерном априорном отличается от MLE: при $\operatorname{Beta}(1, 1)$ они совпадают.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Generative learning algorithms / Laplace smoothing'
+
+usedIn: [stat.bayes-map]

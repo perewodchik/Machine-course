@@ -115,3 +115,25 @@ test("урок IV.5: предсказание натурального пара�
   await page.evaluate(() => window.scrollTo(0, 0));
   await expectNoAxeViolations(page);
 });
+
+test("урок IV.6: ссылка на игру, разбор ridge, итоговая проверка", async ({ page }) => {
+  await page.goto("/foundations/statistics/bayes-map/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Байесовский подход и MAP");
+  await expect(page.getByRole("link", { name: "Открыть игру" })).toHaveAttribute("href", "/games/prior-vs-coin/");
+
+  const final = page.locator("#final-check");
+  const spec = generator("stat.beta-update").make(31);
+  if (spec.kind !== "numeric") throw new Error("ожидалось число");
+  // типичная ошибка — ответить долей k/n без приора
+  const [n, k] = /бросили \$(\d+)\$ раз, орлов — \$(\d+)\$/.exec(spec.prompt)!.slice(1).map(Number) as [number, number];
+  if (Math.abs(k / n - spec.answer) > 0.01) {
+    await final.locator("[data-variant]:not([hidden]) input").first().fill(String(Math.round((k / n) * 1000) / 1000));
+    await final.getByRole("button", { name: "Проверить" }).click();
+    await expect(final.locator("[data-feedback]")).not.toContainText("Урок отмечен");
+  }
+  await final.locator("[data-variant]:not([hidden]) input").first().fill(String(spec.answer));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});

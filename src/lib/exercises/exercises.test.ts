@@ -1209,6 +1209,37 @@ describe("генераторы", () => {
     }
   });
 
+  it("stat.beta-update: среднее и мода апостериорного Beta; stat.ridge-map: λ = σ²/τ² и минимум одномерного ridge", () => {
+    for (let s = 1; s <= 30; s++) {
+      const t = make("stat.beta-update", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const [a, b] = /Beta\}\((\d+), (\d+)\)\$\. Монету/.exec(t.prompt)!.slice(1).map(Number) as [number, number];
+      const [n, k] = /бросили \$(\d+)\$ раз, орлов — \$(\d+)\$/.exec(t.prompt)!.slice(1).map(Number) as [number, number];
+      // плотность апостериорного на сетке: максимум — MAP, первый момент — среднее
+      const grid = Array.from({ length: 9999 }, (_, i) => (i + 1) / 10000);
+      const logp = (p: number) => (k + a - 1) * Math.log(p) + (n - k + b - 1) * Math.log(1 - p);
+      if (t.prompt.includes("среднее")) {
+        const w = grid.map((p) => Math.exp(logp(p)));
+        const z = w.reduce((u, v) => u + v, 0);
+        expect(Math.abs(t.answer - grid.reduce((u, p, i) => u + p * w[i]!, 0) / z)).toBeLessThan(0.002);
+      } else if (k + a > 1 && n - k + b > 1) {
+        const best = grid.reduce((u, p) => (logp(p) > logp(u) ? p : u), grid[0]!);
+        expect(Math.abs(t.answer - best)).toBeLessThan(0.002);
+      }
+
+      const r = make("stat.ridge-map", s);
+      if (r.kind !== "numeric") throw new Error("ожидалось число");
+      const [s2, t2] = /mathcal\{N\}\(0, (\d+)\)\$, априорное (?:весов )?\$\\theta \\sim \\mathcal\{N\}\(0, ([\d.]+)/.exec(r.prompt)!.slice(1).map(Number) as [number, number];
+      if (r.prompt.includes("Найдите $\\lambda")) expect(r.answer).toBeCloseTo(s2 / t2, 3);
+      else {
+        const sxy = Number(/y\^\{\(i\)\} = (\d+)\$/.exec(r.prompt)![1]);
+        const sxx = Number(/\^2 = (\d+)\$/.exec(r.prompt)![1]);
+        const J = (th: number) => (sxx * th * th - 2 * sxy * th) / (2 * s2) + (th * th) / (2 * t2);
+        expect(J(r.answer)).toBeLessThanOrEqual(Math.min(J(r.answer + 0.01), J(r.answer - 0.01)) + 1e-9);
+      }
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

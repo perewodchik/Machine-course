@@ -399,3 +399,6 @@
 - id: exponential-family
   ru: 'экспоненциальное семейство; натуральный параметр; достаточная статистика; логарифм нормировки'
   en: 'exponential family; natural parameter; sufficient statistic; log-partition function'
+- id: bayes-map
+  ru: 'априорное и апостериорное распределения; сопряжённое априорное; оценка апостериорного максимума; апостериорное предсказательное; сглаживание Лапласа'
+  en: 'prior and posterior; conjugate prior; maximum a posteriori (MAP); posterior predictive; Laplace smoothing'

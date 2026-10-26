@@ -35,6 +35,15 @@
   prerequisites: [stat.mle, calc.convexity]
   core: true
 
+- id: stat.bayes-map
+  title:
+    ru: 'Байесовский подход и MAP'
+    en: 'Bayesian estimation and MAP'
+  summary: 'Апостериорное $p(\theta \mid \text{данные}) \propto p(\text{данные} \mid \theta)\, p(\theta)$; сопряжённость Beta и Бернулли, параметры — псевдонаблюдения; MAP $\arg\max_\theta p(\theta \mid \text{данные})$; сглаживание Лапласа; гауссово априорное даёт ridge с $\lambda = \sigma^2/\tau^2$, Лапласа — L1.'
+  lesson: bayes-map
+  prerequisites: [stat.mle, prob.bayes, prob.continuous-distributions]
+  core: true
+
 - id: stat.mle
   title:
     ru: 'Метод максимального правдоподобия'

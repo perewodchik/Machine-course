@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — L-IV.6 L-IV.6 — байесовский подход и MAP — готов
+- **Сделано:** урок statistics/bayes-map (три цикла: априорное и апостериорное, MAP и сглаживание Лапласа, гауссово априорное = ridge), игра «Приор против монеты» (/games/prior-vs-coin/, уровень всегда проходим, ничья при большом n), формулы f.beta-map и f.ridge-map, генераторы stat.beta-update и stat.ridge-map, сниппет stats/bayes_map.py с тестом
+- **Файлы:** content/courses/foundations/statistics/bayes-map.mdx, src/games/prior-vs-coin/, content/formulas/stat/beta-map.yaml, content/formulas/stat/ridge-map.yaml, code/snippets/stats/bayes_map.py
+- **Проверка:** validate, lint, build, check, vitest 616, pytest, check_consistency, e2e IV.6 и игры, раскладка iv6 и priorgame (axe)
+- **Отклонения от плана и решения:** нет
+- **Следующий шаг:** L-IV.7 — риск, обобщение, кросс-валидация.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — L-IV.5 L-IV.5 — экспоненциальное семейство — готов
 - **Сделано:** урок statistics/exponential-family (четыре цикла: форма семейства и сигмоида, таблица семейств, a' = E T и a'' = Var T, GLM и выпуклость), капстоун модуля — лабораторная stats/logistic_mle (logaddexp, градиент и гессиан, вогнутость, подъём против Ньютона), формула f.log-partition-moments, генераторы stat.natural-param и stat.log-partition, сниппет stats/expfam.py с тестом; харнесс mlf: гессиан по скалярному аргументу — число (тест на сломанный гессиан)
 - **Файлы:** content/courses/foundations/statistics/exponential-family.mdx, notebooks/src/stats/logistic_mle.py, content/formulas/stat/log-partition-moments.yaml, code/mlf/formulas.py, code/snippets/stats/expfam.py

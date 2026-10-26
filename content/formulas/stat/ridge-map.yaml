@@ -1,0 +1,76 @@
+id: f.ridge-map
+kind: formula
+title:
+  ru: 'MAP с гауссовым априорным — гребневая регрессия'
+  en: 'MAP with a Gaussian prior is ridge regression'
+statement: '\hat\theta_{\text{MAP}} = \bigl(X^\top X + \lambda I\bigr)^{-1} X^\top y, \qquad \lambda = \frac{\sigma^2}{\tau^2}, \quad \theta \sim \mathcal{N}(0, \tau^2 I), \ \ y \mid X, \theta \sim \mathcal{N}(X\theta, \sigma^2 I)'
+
+# Урок IV.6: минус логарифм апостериорной плотности — сумма квадратов ошибок с весом 1/(2σ²) и квадрат нормы θ
+# с весом 1/(2τ²). Умножив на σ², получаем функцию потерь гребневой регрессии. Проверка — X размера 7 × 3,
+# σ² и τ² — случайные положительные.
+symbols:
+  - name: X
+    tex: 'X'
+    meaning: 'матрица объектов'
+    shape: [n, d]
+  - name: y
+    tex: 'y'
+    meaning: 'ответы'
+    shape: [n, 1]
+  - name: theta
+    tex: '\theta'
+    meaning: 'веса'
+    shape: [d, 1]
+  - name: s2
+    tex: '\sigma^2'
+    meaning: 'дисперсия шума'
+    shape: []
+    sample: positive
+  - name: t2
+    tex: '\tau^2'
+    meaning: 'дисперсия априорного'
+    shape: []
+    sample: positive
+
+dependsOn:
+  concepts: [stat.bayes-map, stat.mle, calc.matrix-calculus]
+  rules: [rule.grad-quadratic, rule.grad-linear]
+
+derivation:
+  plan:
+    - 'Записать минус логарифм апостериорной плотности: правдоподобие плюс априорное'
+    - 'Умножить на $\sigma^2$ — точка минимума не изменится'
+    - 'Взять градиент по $\theta$ и приравнять к нулю'
+  steps:
+    - goal: 0
+      tex: '-\log p(\theta \mid X, y) = \frac{1}{2\sigma^2} \lVert X\theta - y \rVert^2 + \frac{1}{2\tau^2} \lVert \theta \rVert^2 + \text{const}'
+      by: [stat.bayes-map]
+      note: 'Первое слагаемое — минус условный логарифм правдоподобия с нормальным шумом (урок IV.3), второе — минус логарифм плотности $\mathcal{N}(0, \tau^2 I)$.'
+      check:
+        kind: same
+        py: 'np.sum((X @ theta - y) ** 2) / (2 * s2) + theta @ theta / (2 * t2)'
+    - goal: 1
+      tex: '\propto \changed{\tfrac12 \lVert X\theta - y \rVert^2 + \tfrac{\lambda}{2} \lVert \theta \rVert^2}, \qquad \lambda = \frac{\sigma^2}{\tau^2}'
+      by: [calc.matrix-calculus]
+      note: 'Умножили на $\sigma^2 > 0$. Это функция потерь гребневой регрессии: МНК плюс штраф за квадрат нормы весов. Узкое априорное (малое $\tau^2$) — сильная регуляризация.'
+      check:
+        kind: gradient
+        wrt: theta
+        py: '(X.T @ (X @ theta - y)) / s2 + theta / t2'
+    - goal: 2
+      tex: '\hat\theta_{\text{MAP}} = \changed{\bigl(X^\top X + \lambda I\bigr)^{-1} X^\top y}'
+      by: [rule.grad-quadratic, rule.grad-linear]
+      note: 'Градиент $X^\top X\theta - X^\top y + \lambda\theta = 0$. Матрица $X^\top X + \lambda I \succ 0$ обратима при любом $\lambda > 0$ — даже когда признаки зависимы и МНК без штрафа не единственен. Априорное Лапласа вместо нормального даёт штраф $\lVert\theta\rVert_1$ — L1-регуляризацию.'
+      check:
+        kind: solution
+        wrt: theta
+        py: 'np.linalg.solve(X.T @ X + (s2 / t2) * np.eye(X.shape[1]), X.T @ y)'
+
+pitfalls:
+  - 'Путать направление: сильная регуляризация — большое $\lambda = \sigma^2/\tau^2$, то есть узкое априорное (малое $\tau^2$), а не широкое.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Regularization and model selection / Bayesian statistics and regularization'
+
+usedIn: [stat.bayes-map]
