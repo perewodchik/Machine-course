@@ -1,0 +1,75 @@
+id: f.logistic-loss-hessian
+kind: formula
+title:
+  ru: 'Гессиан логистической потери'
+  en: 'Hessian of the logistic loss'
+statement: '\nabla^2_\theta\, \ell(\theta) = g(\theta^\top \sym{x}{x})\bigl(1 - g(\theta^\top \sym{x}{x})\bigr)\, \sym{x}{x} \sym{x}{x}^\top \succeq 0'
+
+# Урок II.5: потеря одного объекта в логистической регрессии выпукла по θ. Упрощаем потерю, берём градиент,
+# затем гессиан — неотрицательное число, умноженное на xxᵀ, то есть положительно полуопределённая матрица.
+symbols:
+  - name: theta
+    tex: '\theta'
+    meaning: 'параметры модели'
+    shape: [d, 1]
+  - name: x
+    tex: 'x'
+    meaning: 'признаки объекта'
+    shape: [d, 1]
+    role: data
+  - name: y
+    tex: 'y'
+    meaning: 'метка объекта, $0$ или $1$ (проверка берёт любое число из $(0, 1)$ — вывод от этого не меняется)'
+    shape: []
+    sample: fraction
+
+dependsOn:
+  concepts: [calc.sigmoid, calc.chain-rule, calc.hessian, la.psd]
+  rules: [rule.sigmoid-symmetry]
+
+derivation:
+  plan:
+    - 'Упростить потерю: выразить оба логарифма через $\log(1 + e^{z})$, $z = \theta^\top x$'
+    - 'Взять градиент по $\theta$ правилом цепочки'
+    - 'Взять гессиан и проверить его знак'
+  steps:
+    - goal: 0
+      tex: '\ell(\theta) = -y \log g(\theta^\top \sym{x}{x}) - (1 - y) \log\bigl(1 - g(\theta^\top \sym{x}{x})\bigr)'
+      by: [calc.sigmoid]
+      note: 'Отрицательный логарифм правдоподобия одного объекта (CS229, «Logistic regression»).'
+      check:
+        kind: same
+        py: '-y * np.log(1 / (1 + np.exp(-theta @ x))) - (1 - y) * np.log(1 - 1 / (1 + np.exp(-theta @ x)))'
+    - goal: 0
+      tex: '= \changed{\log\bigl(1 + e^{\theta^\top \sym{x}{x}}\bigr) - y\, \theta^\top \sym{x}{x}}'
+      by: [calc.log-exp, rule.sigmoid-symmetry]
+      note: 'При $z = \theta^\top x$: $-\log g(z) = \log(1 + e^{-z}) = \log(1 + e^{z}) - z$ и $-\log(1 - g(z)) = \log(1 + e^{z})$. Сложите с весами $y$ и $1 - y$.'
+      check:
+        kind: same
+        py: 'np.log(1 + np.exp(theta @ x)) - y * (theta @ x)'
+    - goal: 1
+      tex: '\nabla_\theta\, \ell = \changed{\bigl(g(\theta^\top \sym{x}{x}) - y\bigr)\, \sym{x}{x}}'
+      by: [calc.chain-rule]
+      note: 'Производная $\log(1 + e^{z})$ по $z$ — $\frac{e^{z}}{1 + e^{z}} = g(z)$, а $\nabla_\theta z = x$. Ошибка предсказания, умноженная на признаки, — как в МНК.'
+      check:
+        kind: gradient
+        wrt: theta
+        py: '(1 / (1 + np.exp(-theta @ x)) - y) * x'
+    - goal: 2
+      tex: '\nabla^2_\theta\, \ell = \changed{g(\theta^\top \sym{x}{x})\bigl(1 - g(\theta^\top \sym{x}{x})\bigr)\, \sym{x}{x} \sym{x}{x}^\top}'
+      by: [calc.sigmoid, calc.hessian]
+      note: '$g''(z) = g(z)(1 - g(z))$, и снова $\nabla_\theta z = x$: столбец $x$ умножается на строку $x^\top$. Множитель лежит в $(0, 1)$, а $u^\top x x^\top u = (x^\top u)^2 \ge 0$ — гессиан $\succeq 0$ при любом $\theta$.'
+      check:
+        kind: hessian
+        wrt: theta
+        py: '(1 / (1 + np.exp(-theta @ x))) * (1 - 1 / (1 + np.exp(-theta @ x))) * np.outer(x, x)'
+
+pitfalls:
+  - 'Проверить $H \succeq 0$ в одной точке и объявить функцию выпуклой: нужна неотрицательность при всех $\theta$ — здесь она есть, потому что множитель $g(1 - g)$ положителен всегда.'
+  - 'Ждать $H \succ 0$: у одного объекта $x x^\top$ ранга $1$, гессиан вырожден. Сумма по объектам $X^\top D X$ строго положительна, только если столбцы $X$ независимы.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Classification and logistic regression / Newton''s method'
+
+usedIn: [calc.convexity]

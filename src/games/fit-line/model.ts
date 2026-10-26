@@ -127,9 +127,14 @@ export const fitLine: GameSpec<State, Action, Level> & {
 
   generate(rng: Rng, difficulty: number): Level {
     const kind: Kind = (["slope", "both", "outlier"] as const)[Math.min(Math.max(1, Math.floor(difficulty)), 3) - 1]!;
-    // 12 квартир из 16: у каждого seed — своя выборка
-    const pick = rng.shuffle(data.area.map((_, i) => i)).slice(0, 12).sort((a, b) => a - b);
-    return makeLevel(kind, pick);
+    // 12 квартир из 16: у каждого seed — своя выборка. Если лучшая прямая выходит за пределы бегунков (бывает на
+    // уровне «выброс»), выборку тянем заново: у остальных seed уровень от этого не меняется
+    for (;;) {
+      const pick = rng.shuffle(data.area.map((_, i) => i)).slice(0, 12).sort((a, b) => a - b);
+      const level = makeLevel(kind, pick);
+      const { t0, t1 } = level.best;
+      if (t0 >= RANGE.t0[0] && t0 <= RANGE.t0[1] && t1 >= RANGE.t1[0] && t1 <= RANGE.t1[1]) return level;
+    }
   },
 
   feedback(s) {

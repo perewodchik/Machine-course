@@ -49,6 +49,7 @@ export const check = z.discriminatedUnion("kind", [
 export const stepCheck = z.discriminatedUnion("kind", [
   z.strictObject({ kind: z.literal("same"), py: z.string().min(1) }),
   z.strictObject({ kind: z.literal("gradient"), py: z.string().min(1), wrt: z.string().min(1) }),
+  z.strictObject({ kind: z.literal("hessian"), py: z.string().min(1), wrt: z.string().min(1) }),
   z.strictObject({ kind: z.literal("stationary"), lhs: z.string().min(1), rhs: z.string().min(1) }),
   z.strictObject({ kind: z.literal("solution"), py: z.string().min(1), wrt: z.string().min(1) }),
 ]);

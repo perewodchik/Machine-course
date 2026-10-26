@@ -17,6 +17,46 @@
 
 ---
 
+### 2026-10-25 — L-II.8 L-II.8: множители Лагранжа; починка «Подгони прямую» — готов
+- **Сделано:** урок lagrange (три цикла: касание и лагранжиан, PCA — собственный вектор и λ, MLE категориального распределения), виджет «Касание линии уровня и ограничения», формула f.categorical-mle, генераторы calc.lagrange-line, calc.lagrange-eig, calc.categorical-mle, сниппет lagrange.py с тестом; в «Подгони прямую» уровень «выброс» иногда имел оптимум за бегунком — генератор перетягивает выборку
+- **Файлы:** content/courses/foundations/calculus/lagrange.mdx, src/widgets/calc/lagrange/, content/formulas/calc/categorical-mle.yaml, src/lib/exercises/generators/calc.ts, code/snippets/calculus/lagrange.py, src/games/fit-line/model.ts
+- **Проверка:** validate, lint, build, check, vitest 497, pytest, check_consistency, e2e урока и layout ii8 (axe), e2e «Подгони прямую»
+- **Отклонения от плана и решения:** найдена и исправлена ошибка в игре S2.07: property-тест падал на 8 seed из 10 000
+- **Следующий шаг:** L-II.9 — двойственность и KKT (★).
+- **Вопросы пользователю:** —
+
+### 2026-10-25 — L-II.7 L-II.7: метод Ньютона — готов
+- **Сделано:** урок newton (три цикла: касательная к f′, многомерный шаг и XᵀDX, сравнение с GD и контроль шага), виджет «Касательные Ньютона», формула f.newton-step, генераторы calc.newton-1d и calc.newton-logistic, сниппет newton.py с тестом (6 шагов Ньютона против 403 шагов спуска)
+- **Файлы:** content/courses/foundations/calculus/newton.mdx, src/widgets/calc/newton/, content/formulas/calc/newton-step.yaml, src/lib/exercises/generators/calc.ts, code/snippets/calculus/newton.py
+- **Проверка:** validate, lint, build, check, vitest 491, pytest, check_consistency, e2e урока и layout ii7 (axe)
+- **Отклонения от плана и решения:** нет
+- **Следующий шаг:** L-II.8 — множители Лагранжа.
+- **Вопросы пользователю:** —
+
+### 2026-10-25 — L-II.6 L-II.6: градиентный спуск и SGD, игры и лабораторная — готов
+- **Сделано:** урок gradient-descent (четыре цикла: спуск и подъём, порог 2/λ_max и обусловленность, SGD и мини-батч, покоординатный спуск), игры «Порог расходимости» и «Спуск в тумане», лабораторная calc/apartments_gd (капстоун модуля II), формула f.gd-quadratic, генераторы calc.gd-step и calc.lr-threshold, сниппет gd.py с тестами
+- **Файлы:** content/courses/foundations/calculus/gradient-descent.mdx, src/games/divergence/, src/games/foggy-descent/, notebooks/src/calc/apartments_gd.py, content/formulas/calc/gd-quadratic.yaml, code/snippets/calculus/gd.py
+- **Проверка:** validate, lint, build, check, vitest 481, pytest, nbmake 4 ноутбука, check_consistency, e2e урока, обеих игр и layout (axe)
+- **Отклонения от плана и решения:** в «Спуске в тумане» добавлен короткий шаг 0.2: с одним шагом 0.5 спуск по стрелке на вытянутой чаше зацикливался
+- **Следующий шаг:** L-II.7 — метод Ньютона.
+- **Вопросы пользователю:** —
+
+### 2026-10-25 — L-II.5 L-II.5: выпуклость — готов
+- **Сделано:** урок convexity (четыре цикла: хорда, критерии, локальный минимум глобален с планом доказательства, операции и логистическая потеря), виджет «Хорда над графиком», формула f.logistic-loss-hessian, вид проверки hessian в харнессе (с тестом на сломанный гессиан), генераторы calc.convex-form и calc.convex-ops, сниппет convexity.py с тестом
+- **Файлы:** content/courses/foundations/calculus/convexity.mdx, src/widgets/calc/chord/, content/formulas/calc/logistic-loss-hessian.yaml, code/mlf/formulas.py, src/lib/exercises/generators/calc.ts, code/snippets/calculus/convexity.py
+- **Проверка:** validate, lint, build, check, vitest 471, pytest, check_consistency, e2e урока и layout ii5 (axe)
+- **Отклонения от плана и решения:** в харнесс добавлен вид шага hessian (якобиан градиента), схема и типы обновлены
+- **Следующий шаг:** L-II.6 — градиентный спуск.
+- **Вопросы пользователю:** —
+
+### 2026-10-25 — L-II.4 L-II.4: гессиан, ряд Тейлора, критические точки — готов
+- **Сделано:** урок hessian-taylor (три цикла, предсказание, ошибка «∇f = 0 — минимум»), формула f.taylor-second-order, игра «Минимум, максимум или седло» (5 уровней), генераторы calc.hessian и calc.classify, сниппет hessian.py с тестом, понятие calc.hessian
+- **Файлы:** content/courses/foundations/calculus/hessian-taylor.mdx, content/formulas/calc/taylor-second-order.yaml, src/games/min-max-saddle/, src/lib/exercises/generators/calc.ts, code/snippets/calculus/hessian.py
+- **Проверка:** validate, lint, build, check, vitest 455, pytest, check_consistency, e2e урока, игры и layout ii4/saddlegame (axe)
+- **Отклонения от плана и решения:** нет
+- **Следующий шаг:** L-II.5 — выпуклость.
+- **Вопросы пользователю:** —
+
 ### 2026-10-25 — L-II.3 Матричное дифференцирование — готов
 - **Сделано:** Урок II.3: четыре цикла (градиент по вектору — ∇bᵀx, ∇xᵀAx = (A + Aᵀ)x; проверка размерностями и конечными разностями, ссылка на «Тетрис размерностей», ячейка Python; градиент по матрице — ∇tr(AB) = Bᵀ, ∇log|det A| = A⁻ᵀ, GDA; нормальные уравнения через градиент — формула f.normal-equations, вывод по шагам, «найди ошибку»). Правило rule.grad-trace; генератор calc.matrix-grad; ячейка calculus/matrix_grad.py закреплена тестом.
 - **Файлы:** content/courses/foundations/calculus/matrix-calculus.mdx, content/formulas/rules/grad-trace.yaml, src/lib/exercises/generators/calc.ts, code/snippets/calculus/matrix_grad.py

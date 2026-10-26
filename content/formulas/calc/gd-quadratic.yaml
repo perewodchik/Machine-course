@@ -1,0 +1,68 @@
+id: f.gd-quadratic
+kind: formula
+title:
+  ru: 'Градиентный спуск на квадратичной функции'
+  en: 'gradient descent on a quadratic'
+statement: '\sym{x}{x}_{k+1} = (I - \sym{eta}{\eta} A)\, \sym{x}{x}_k, \quad 0 < \sym{eta}{\eta} < 2 / \lambda_{\max}'
+
+# Урок II.6: один шаг спуска на f(x) = ½ xᵀAx, A ≻ 0. Шаг — линейное отображение I − ηA; в базисе собственных
+# векторов (A = QΛQᵀ, урок I.9) оно умножает каждую координату на 1 − ηλᵢ. Проверяем каждую запись шага.
+symbols:
+  - name: x
+    tex: 'x'
+    meaning: 'текущая точка; минимум $f$ — в нуле, поэтому $x_k$ — это и ошибка'
+    shape: [d, 1]
+    role: data
+  - name: A
+    tex: 'A'
+    meaning: 'симметричная положительно определённая матрица, $A = Q \Lambda Q^\top$'
+    shape: [d, d]
+    sample: spd
+  - name: eta
+    tex: '\eta'
+    meaning: 'шаг обучения'
+    shape: []
+    sample: fraction
+    role: param
+
+dependsOn:
+  concepts: [calc.gradient, la.eigen, la.quadratic-form]
+  rules: []
+
+derivation:
+  plan:
+    - 'Подставить градиент $\nabla f = Ax$ в шаг спуска'
+    - 'Записать шаг как матрицу $I - \eta A$'
+    - 'Перейти в базис собственных векторов и прочитать множители $1 - \eta\lambda_i$'
+  steps:
+    - goal: 0
+      tex: '\sym{x}{x}_{k+1} = \sym{x}{x}_k - \sym{eta}{\eta} \nabla f(\sym{x}{x}_k) = \sym{x}{x}_k - \sym{eta}{\eta} A \sym{x}{x}_k'
+      by: [calc.gradient]
+      note: 'Градиент $\tfrac12 x^\top A x$ при симметричной $A$ — $Ax$ (урок II.3).'
+      check:
+        kind: same
+        py: 'x - eta * A @ x'
+    - goal: 1
+      tex: '= \changed{(I - \sym{eta}{\eta} A)}\, \sym{x}{x}_k'
+      by: [la.linear-map]
+      note: 'Вынесли $x_k$ за скобку справа: $x_k = I x_k$.'
+      check:
+        kind: same
+        py: '(np.eye(x.shape[0]) - eta * A) @ x'
+    - goal: 2
+      tex: '= \changed{Q\, (I - \sym{eta}{\eta} \Lambda)\, Q^\top} \sym{x}{x}_k'
+      by: [la.eigen]
+      note: '$I = QQ^\top$ и $A = Q\Lambda Q^\top$. В координатах $Q^\top x$ шаг умножает $i$-ю координату на $1 - \eta\lambda_i$. Все множители по модулю меньше $1$ ровно при $0 < \eta < 2/\lambda_{\max}$.'
+      check:
+        kind: same
+        py: 'np.linalg.eigh(A)[1] @ np.diag(1 - eta * np.linalg.eigh(A)[0]) @ np.linalg.eigh(A)[1].T @ x'
+
+pitfalls:
+  - 'Искать порог по элементам матрицы: у $A$ с маленькой диагональю может быть большое собственное значение. Порог задаёт $\lambda_{\max}$.'
+  - 'Думать, что лучший шаг — чуть меньше порога: при $\eta \approx 2/\lambda_{\max}$ множитель $1 - \eta\lambda_{\max} \approx -1$, и спуск колеблется. Быстрее всего сходится $\eta = 2/(\lambda_{\max} + \lambda_{\min})$.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Linear regression / LMS algorithm'
+
+usedIn: [calc.gradient-descent]

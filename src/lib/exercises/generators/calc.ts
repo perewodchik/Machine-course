@@ -245,3 +245,367 @@ export const matrixGrad: Generator = {
     }
   },
 };
+
+/** Урок II.4: гессиан многочлена в точке — симметричная матрица вторых производных. */
+export const hessian: Generator = {
+  id: "calc.hessian",
+  version: 1,
+  title: "Гессиан в точке",
+  make(seed) {
+    const r = rng(seed);
+    const [a, b, c, d] = [r.nonzero(-2, 2), r.nonzero(-2, 2), r.int(-2, 2), r.nonzero(-3, 3)];
+    const [x, y] = [r.nonzero(-2, 2), r.nonzero(-2, 2)];
+    // f = a x³ + b x² y + c x y² + d y²
+    const hxx = 6 * a * x + 2 * b * y;
+    const hxy = 2 * b * x + 2 * c * y;
+    const hyy = 2 * c * x + 2 * d;
+    const H = [[hxx, hxy], [hxy, hyy]];
+    return {
+      kind: "matrix",
+      prompt: String.raw`$f(x, y) = ${poly([[a, "x^3"], [b, "x^2 y"], [c, "x y^2"], [d, "y^2"]])}$. Найдите гессиан $H$ в точке $(${x}, ${y})$.`,
+      label: String.raw`$H =$`,
+      answer: H,
+      tol: 0,
+      hints: [String.raw`$H = \begin{pmatrix} f_{xx} & f_{xy} \\ f_{yx} & f_{yy} \end{pmatrix}$; смешанные производные равны: $f_{xy} = f_{yx}$.`, String.raw`$f_{xx} = ${poly([[6 * a, "x"], [2 * b, "y"]])}$.`],
+      right: String.raw`$f_{xx} = ${poly([[6 * a, "x"], [2 * b, "y"]])} = ${hxx}$, $f_{xy} = ${poly([[2 * b, "x"], [2 * c, "y"]])} = ${hxy}$, $f_{yy} = ${poly([[2 * c, "x"], [2 * d, ""]])} = ${hyy}$: $H = ${pm(H)}$.`,
+      wrong: String.raw`Продифференцируйте дважды: $f_{xy}$ — сначала по $x$, потом по $y$. Гессиан симметричен, поэтому внедиагональные элементы одинаковы.`,
+    };
+  },
+};
+
+type CpKind = "min" | "max" | "saddle" | "degenerate";
+
+/** Урок II.4: тип критической точки по гессиану 2 × 2 — по знакам det H и tr H. */
+export const classifyPoint: Generator = {
+  id: "calc.classify",
+  version: 1,
+  title: "Тип критической точки",
+  make(seed) {
+    const r = rng(seed);
+    const kind = (["min", "saddle", "max", "degenerate"] as const)[(seed - 1) % 4]!;
+    let H: number[];
+    for (;;) {
+      if (kind === "degenerate") {
+        const [p, q, s] = [r.nonzero(-2, 2), r.nonzero(-2, 2), r.pick([1, -1])];
+        H = [s * p * p, s * p * q, s * q * q];
+      } else H = [r.nonzero(-4, 4), r.nonzero(-3, 3), r.nonzero(-4, 4)];
+      const d = H[0]! * H[2]! - H[1]! ** 2;
+      const t = H[0]! + H[2]!;
+      const k: CpKind = d === 0 ? "degenerate" : d < 0 ? "saddle" : t > 0 ? "min" : "max";
+      if (k === kind) break;
+    }
+    const [a, b, c] = H as [number, number, number];
+    const d = a * c - b * b;
+    const t = a + c;
+    const facts = String.raw`$\det H = ${d}$, $\operatorname{tr} H = ${t}$`;
+    const why: Record<CpKind, string> = {
+      min: String.raw`${facts}: собственные значения одного знака, сумма положительна — оба $> 0$, $H \succ 0$. Это минимум.`,
+      max: String.raw`${facts}: собственные значения одного знака, сумма отрицательна — оба $< 0$, $H \prec 0$. Это максимум.`,
+      saddle: String.raw`${facts}: произведение собственных значений отрицательно — они разных знаков. Это седло.`,
+      degenerate: String.raw`${facts}: одно собственное значение — ноль. Вдоль его направления решают члены выше второго порядка, гессиан ответа не даёт.`,
+    };
+    const names: Record<CpKind, string> = { min: "Минимум", max: "Максимум", saddle: "Седло", degenerate: "По гессиану не определить" };
+    return {
+      kind: "choice",
+      prompt: String.raw`В точке $x^\star$ градиент равен нулю, а гессиан $$H = ${pm([[a, b], [b, c]])}.$$ Что это за точка?`,
+      options: (["min", "max", "saddle", "degenerate"] as const).map((k) => ({ text: names[k], correct: k === kind, why: why[kind] })),
+      hints: [String.raw`$\lambda_1 \lambda_2 = \det H$, $\lambda_1 + \lambda_2 = \operatorname{tr} H$ (урок I.10).`],
+    };
+  },
+};
+
+type ConvexKind = "pd" | "psd" | "indefinite" | "nd";
+
+/** Урок II.5: выпукла ли f(x) = ½ xᵀAx + bᵀx — критерий второго порядка, H = A во всех точках. */
+export const convexForm: Generator = {
+  id: "calc.convex-form",
+  version: 1,
+  title: "Выпукла ли квадратичная функция",
+  make(seed) {
+    const r = rng(seed);
+    const kind = (["pd", "indefinite", "psd", "nd"] as const)[(seed - 1) % 4]!;
+    let A: [number, number, number];
+    for (;;) {
+      if (kind === "psd") {
+        const [p, q] = [r.nonzero(-2, 2), r.int(-2, 2)];
+        A = [p * p, p * q, q * q];
+      } else A = [r.nonzero(-4, 4), r.int(-3, 3), r.nonzero(-4, 4)];
+      const d = A[0] * A[2] - A[1] ** 2;
+      const t = A[0] + A[2];
+      const k: ConvexKind = d < 0 ? "indefinite" : d === 0 ? (t > 0 ? "psd" : "nd") : t > 0 ? "pd" : "nd";
+      if (k === kind) break;
+    }
+    const [a, b, c] = A;
+    const [b1, b2] = [r.int(-3, 3), r.int(-3, 3)];
+    const d = a * c - b * b;
+    const t = a + c;
+    const facts = String.raw`$H = A$ во всех точках, $\det A = ${d}$, $\operatorname{tr} A = ${t}$`;
+    const convex = kind === "pd" || kind === "psd";
+    const why: Record<ConvexKind, string> = {
+      pd: String.raw`${facts}: оба собственных значения положительны, $A \succ 0$ — функция выпукла, и даже строго.`,
+      psd: String.raw`${facts}: собственные значения $${t}$ и $0$, $A \succeq 0$ — функция выпукла. Строгой выпуклости нет: вдоль собственного вектора с $\lambda = 0$ функция линейна.`,
+      indefinite: String.raw`${facts}: собственные значения разных знаков. Вдоль собственного вектора с $\lambda < 0$ функция — перевёрнутая парабола, хорда там ниже графика.`,
+      nd: String.raw`${facts}: собственные значения не положительны, и хотя бы одно отрицательно — вдоль его вектора функция вогнута, не выпукла.`,
+    };
+    return {
+      kind: "choice",
+      prompt: String.raw`$f(x) = \tfrac12 x^\top A x + b^\top x$, где $$A = ${pm([[a, b], [b, c]])}, \quad b = ${pm([[b1], [b2]])}.$$ Выпукла ли $f$ на $\mathbb{R}^2$?`,
+      options: [
+        { text: "Выпукла", correct: convex, why: why[kind] },
+        { text: "Не выпукла", correct: !convex, why: why[kind] },
+        { text: "Зависит от точки: надо проверить гессиан в каждой", correct: false, why: String.raw`У квадратичной функции гессиан один и тот же во всех точках — $A$. ${why[kind]}` },
+      ],
+      hints: [String.raw`Гессиан $\tfrac12 x^\top A x + b^\top x$ равен $A$ (урок II.4); выпуклость — $A \succeq 0$. Для $2 \times 2$: $\det A \ge 0$ и $\operatorname{tr} A \ge 0$.`],
+    };
+  },
+};
+
+const OPS: readonly { tex: string; convex: boolean; why: string }[] = [
+  { tex: String.raw`\log\bigl(1 + e^{\theta^\top x}\bigr) - y\, \theta^\top x`, convex: true, why: String.raw`$\log(1 + e^{z})$ выпукла ($g(z)(1 - g(z)) > 0$), $z = \theta^\top x$ — аффинная функция $\theta$, а $-y\,\theta^\top x$ линейна. Это логистическая потеря.` },
+  { tex: String.raw`\lVert X\theta - y \rVert^2 + \lambda \lVert \theta \rVert^2, \ \lambda > 0`, convex: true, why: String.raw`Квадрат нормы выпукл, $X\theta - y$ — аффинная функция $\theta$; сумма выпуклых с неотрицательными весами выпукла. Это гребневая регрессия.` },
+  { tex: String.raw`\max\bigl(0,\ 1 - y\, \theta^\top x\bigr)`, convex: true, why: String.raw`Максимум двух аффинных функций $\theta$ выпукл. Это шарнирная потеря SVM.` },
+  { tex: String.raw`e^{\theta^\top x}`, convex: true, why: String.raw`$e^{z}$ выпукла, $z = \theta^\top x$ — аффинная функция $\theta$: композиция с аффинной функцией сохраняет выпуклость.` },
+  { tex: String.raw`\lVert \theta \rVert_1 + \lVert \theta \rVert^2`, convex: true, why: String.raw`Любая норма выпукла (неравенство треугольника), сумма выпуклых выпукла.` },
+  { tex: String.raw`\sin(\theta^\top x)`, convex: false, why: String.raw`$\sin z$ не выпукл: при $z \in (0, \pi)$ вторая производная $-\sin z < 0$. Аффинная подстановка выпуклости не добавляет.` },
+  { tex: String.raw`-\lVert \theta \rVert^2`, convex: false, why: String.raw`Гессиан $-2I \prec 0$: функция вогнута. Умножение на отрицательное число выпуклость не сохраняет.` },
+  { tex: String.raw`(\theta^\top x)^3`, convex: false, why: String.raw`$z^3$ не выпукла на всей прямой: $6z < 0$ при $z < 0$.` },
+  { tex: String.raw`\log(\theta^\top x), \ \theta^\top x > 0`, convex: false, why: String.raw`$\log z$ вогнута: $-1/z^2 < 0$. Выпукла $-\log z$.` },
+];
+
+/** Урок II.5: выпукла ли функция потерь — по операциям, сохраняющим выпуклость. */
+export const convexOps: Generator = {
+  id: "calc.convex-ops",
+  version: 1,
+  title: "Выпукла ли функция по θ",
+  make(seed) {
+    const r = rng(seed);
+    // чередуем выпуклые и невыпуклые, внутри — случайная заготовка
+    const pool = OPS.filter((o) => o.convex === (seed % 2 === 1));
+    const op = r.pick(pool);
+    return {
+      kind: "choice",
+      prompt: String.raw`Выпукла ли по $\theta$ функция $$${op.tex}?$$`,
+      options: [
+        { text: "Выпукла", correct: op.convex, why: op.why },
+        { text: "Не выпукла", correct: !op.convex, why: op.why },
+      ],
+      hints: [String.raw`Выпуклость сохраняют неотрицательные суммы, композиция с аффинной функцией и максимум. Начните с одномерной функции от $z = \theta^\top x$.`],
+    };
+  },
+};
+
+/** Урок II.6: один шаг градиентного спуска или подъёма. Нечётный seed — спуск к минимуму, чётный — подъём. */
+export const gdStep: Generator = {
+  id: "calc.gd-step",
+  version: 1,
+  title: "Шаг градиентного спуска",
+  make(seed) {
+    const r = rng(seed);
+    const ascent = seed % 2 === 0;
+    const s = ascent ? -1 : 1;
+    // спуск — на выпуклой чаше, подъём — на перевёрнутой: знак коэффициентов при квадратах
+    const [a, c] = [s * r.int(1, 3), s * r.int(1, 3)];
+    const [d, e] = [r.int(-4, 4), r.int(-4, 4)];
+    const [x, y] = [r.nonzero(-2, 2), r.nonzero(-2, 2)];
+    // шаг без перескока: множитель 1 − 2|a|η вдоль каждой оси не меньше нуля
+    const eta = r.pick([0.1, 0.25, 0.5].filter((h) => 2 * h * Math.max(Math.abs(a), Math.abs(c)) <= 1));
+    const g = [2 * a * x + d, 2 * c * y + e];
+    const next = [x - s * eta * g[0]!, y - s * eta * g[1]!].map((v) => Math.round(v * 1000) / 1000);
+    const tex = poly([[a, "\\theta_1^2"], [c, "\\theta_2^2"], [d, "\\theta_1"], [e, "\\theta_2"]]);
+    const goal = ascent ? "максимизируем" : "минимизируем";
+    const rule = ascent ? String.raw`\theta + \eta \nabla f` : String.raw`\theta - \eta \nabla f`;
+    return {
+      kind: "matrix",
+      prompt: String.raw`${ascent ? "Градиентный подъём" : "Градиентный спуск"}: ${goal} $f(\theta) = ${tex}$. Шаг $\eta = ${eta}$, сейчас $\theta = (${x}, ${y})$. Найдите $\theta$ после одного шага.`,
+      label: String.raw`$\theta :=$`,
+      answer: next.map((v) => [v]),
+      tol: 0.005,
+      hints: [String.raw`$\nabla f = \begin{pmatrix} ${poly([[2 * a, "\\theta_1"], [d, ""]])} \\ ${poly([[2 * c, "\\theta_2"], [e, ""]])} \end{pmatrix}$; в точке $\theta$ это $${pm(g.map((v) => [v]))}$.`, String.raw`${ascent ? "Подъём" : "Спуск"}: $\theta := ${rule}$.`],
+      right: String.raw`$\nabla f = ${pm(g.map((v) => [v]))}$, $\theta := ${rule} = ${pm(next.map((v) => [v]))}$.`,
+      wrong: ascent
+        ? String.raw`При подъёме шаг идёт по градиенту: $\theta + \eta \nabla f$. Со знаком минус $f$ уменьшилась бы.`
+        : String.raw`При спуске шаг идёт против градиента: $\theta - \eta \nabla f$. Со знаком плюс $f$ выросла бы.`,
+    };
+  },
+};
+
+// симметричные 2 × 2 с целыми собственными значениями λ_max > λ_min > 0: порог 2/λ_max считается в уме
+const SPD: readonly (readonly [number, number, number, number])[] = [
+  [2, 1, 2, 3],
+  [3, 1, 3, 4],
+  [5, 2, 2, 6],
+  [2, 2, 5, 6],
+  [3, 2, 3, 5],
+  [6, 2, 3, 7],
+  [7, 2, 4, 8],
+  [4, 0, 1, 4],
+  [1, 0, 5, 5],
+];
+
+/** Урок II.6: наибольший сходящийся шаг 2/λ_max для f = ½ θᵀAθ. */
+export const lrThreshold: Generator = {
+  id: "calc.lr-threshold",
+  version: 1,
+  title: "Порог шага",
+  make(seed) {
+    const r = rng(seed);
+    const [a, b0, c, l1] = r.pick(SPD);
+    const b = b0 * r.pick([1, -1]);
+    const l2 = a + c - l1;
+    const answer = Math.round((2 / l1) * 10000) / 10000;
+    return {
+      kind: "numeric",
+      prompt: String.raw`Градиентный спуск на $f(\theta) = \tfrac12 \theta^\top A \theta$ с $$A = ${pm([[a, b], [b, c]])}.$$ При каких $\eta$ он сходится из любой точки? Введите границу.`,
+      label: String.raw`$\eta <$`,
+      answer,
+      tol: 0.005,
+      hints: [String.raw`Шаг $\theta := (I - \eta A)\theta$ умножает координату вдоль собственного вектора на $1 - \eta\lambda$. Нужно $\lvert 1 - \eta \lambda \rvert < 1$ для обоих $\lambda$.`, String.raw`$\lambda_1 + \lambda_2 = \operatorname{tr} A = ${a + c}$, $\lambda_1 \lambda_2 = \det A = ${a * c - b * b}$.`],
+      right: String.raw`Собственные значения $${l1}$ и $${l2}$; порог задаёт большее: $\eta < 2/\lambda_{\max} = 2/${l1} \approx ${answer}$.`,
+      wrong: String.raw`Порог задаёт наибольшее собственное значение, а не элементы матрицы: $\lambda_{\max} = ${l1}$, $\eta < 2/${l1}$.`,
+    };
+  },
+};
+
+/** Урок II.7: один шаг метода Ньютона для функции одной переменной: θ := θ − f′(θ)/f″(θ). */
+export const newton1d: Generator = {
+  id: "calc.newton-1d",
+  version: 1,
+  title: "Шаг Ньютона",
+  make(seed) {
+    const r = rng(seed);
+    let p: number, q: number, s: number, t: number, d1: number, d2: number;
+    for (;;) {
+      [p, q, s, t] = [r.int(-1, 1), r.int(1, 3), r.int(-6, 6), r.nonzero(-2, 2)];
+      d1 = 3 * p * t * t + 2 * q * t + s;
+      d2 = 6 * p * t + 2 * q;
+      if (d2 > 0 && d1 !== 0) break;
+    }
+    const answer = Math.round((t - d1 / d2) * 1000) / 1000;
+    const tex = poly([[p, "\\theta^3"], [q, "\\theta^2"], [s, "\\theta"]]);
+    return {
+      kind: "numeric",
+      prompt: String.raw`Минимизируем $f(\theta) = ${tex}$ методом Ньютона. Сейчас $\theta = ${t}$. Найдите $\theta$ после одного шага.`,
+      label: String.raw`$\theta :=$`,
+      answer,
+      tol: 0.005,
+      hints: [String.raw`Ньютон ищет ноль $f'$: $\theta := \theta - f'(\theta) / f''(\theta)$.`, String.raw`$f'(\theta) = ${poly([[3 * p, "\\theta^2"], [2 * q, "\\theta"], [s, ""]])}$, $f''(\theta) = ${poly([[6 * p, "\\theta"], [2 * q, ""]])}$.`],
+      right: String.raw`$f'(${t}) = ${d1}$, $f''(${t}) = ${d2}$, $\theta := ${t} - ${d1 < 0 ? `(${d1})` : d1}/${d2} \approx ${answer}$.`,
+      wrong: String.raw`Шаг Ньютона — $\theta - f'/f''$: делим первую производную на вторую и вычитаем. Здесь $f'(${t}) = ${d1}$, $f''(${t}) = ${d2}$.`,
+    };
+  },
+};
+
+/** Урок II.7 (к V.2): первый шаг Ньютона для логистической регрессии с одним признаком из θ = 0. */
+export const newtonLogistic: Generator = {
+  id: "calc.newton-logistic",
+  version: 1,
+  title: "Шаг Ньютона для логистической регрессии",
+  make(seed) {
+    const r = rng(seed);
+    let xs: number[], ys: number[], num: number, den: number;
+    for (;;) {
+      xs = [r.nonzero(-3, 3), r.nonzero(-3, 3), r.nonzero(-3, 3), r.nonzero(-3, 3)];
+      ys = xs.map(() => r.pick([0, 1]));
+      // ℓ′(0) = Σ (½ − yᵢ) xᵢ, ℓ″(0) = ¼ Σ xᵢ²
+      num = xs.reduce((a, x, i) => a + (0.5 - ys[i]!) * x, 0);
+      den = 0.25 * xs.reduce((a, x) => a + x * x, 0);
+      if (num !== 0 && ys.some((y) => y === 0) && ys.some((y) => y === 1)) break;
+    }
+    const answer = Math.round((-num / den) * 1000) / 1000;
+    const rows = xs.map((x, i) => `(${x}, ${ys[i]})`).join(", ");
+    return {
+      kind: "numeric",
+      prompt: String.raw`Логистическая регрессия с одним признаком без свободного члена: $p(y = 1 \mid x) = g(\theta x)$. Объекты $(x^{(i)}, y^{(i)})$: ${rows}. Начинаем с $\theta = 0$. Найдите $\theta$ после одного шага Ньютона для потерь $\ell(\theta) = -\sum_i \log p(y^{(i)} \mid x^{(i)})$.`,
+      label: String.raw`$\theta :=$`,
+      answer,
+      tol: 0.005,
+      hints: [
+        String.raw`$\ell'(\theta) = \sum_i \bigl(g(\theta x^{(i)}) - y^{(i)}\bigr) x^{(i)}$, $\ell''(\theta) = \sum_i g(1 - g)\, (x^{(i)})^2$.`,
+        String.raw`При $\theta = 0$: $g(0) = \tfrac12$, $g(1 - g) = \tfrac14$.`,
+      ],
+      right: String.raw`$\ell'(0) = \sum_i (\tfrac12 - y^{(i)}) x^{(i)} = ${num}$, $\ell''(0) = \tfrac14 \sum_i (x^{(i)})^2 = ${den}$, $\theta := 0 - ${num < 0 ? `(${num})` : num}/${den} \approx ${answer}$.`,
+      wrong: String.raw`Шаг $\theta := \theta - \ell'(\theta)/\ell''(\theta)$; при $\theta = 0$ все $g = \tfrac12$, поэтому $\ell'(0) = ${num}$ и $\ell''(0) = ${den}$.`,
+    };
+  },
+};
+
+/** Урок II.8: минимум a x₁² + c x₂² на прямой p x₁ + q x₂ = r через лагранжиан. */
+export const lagrangeLine: Generator = {
+  id: "calc.lagrange-line",
+  version: 1,
+  title: "Минимум на прямой",
+  make(seed) {
+    const r = rng(seed);
+    const [a, c] = [r.int(1, 3), r.int(1, 3)];
+    const [p, q] = [r.nonzero(-2, 2), r.nonzero(-2, 2)];
+    const rhs = r.nonzero(-4, 4);
+    // 2a x₁ = λp, 2c x₂ = λq ⇒ x₁ = λp/(2a), x₂ = λq/(2c); ограничение: λ (p²/(2a) + q²/(2c)) = r
+    const lam = rhs / (p * p / (2 * a) + (q * q) / (2 * c));
+    const x = [(lam * p) / (2 * a), (lam * q) / (2 * c)].map((v) => Math.round(v * 1000) / 1000);
+    const f = poly([[a, "x_1^2"], [c, "x_2^2"]]);
+    const h = `${poly([[p, "x_1"], [q, "x_2"]])} = ${rhs}`;
+    return {
+      kind: "matrix",
+      prompt: String.raw`Найдите минимум $f(x) = ${f}$ при ограничении $${h}$.`,
+      label: String.raw`$x^\star =$`,
+      answer: x.map((v) => [v]),
+      tol: 0.005,
+      hints: [
+        String.raw`$\mathcal{L} = ${f} - \lambda (${poly([[p, "x_1"], [q, "x_2"]])} - ${par(rhs)})$. Условия: $\partial \mathcal{L}/\partial x_1 = 0$, $\partial \mathcal{L}/\partial x_2 = 0$ и само ограничение.`,
+        String.raw`$x_1 = \lambda \cdot ${p}/${2 * a}$, $x_2 = \lambda \cdot ${q}/${2 * c}$; подставьте в ограничение и найдите $\lambda$.`,
+      ],
+      right: String.raw`$\lambda = ${Math.round(lam * 1000) / 1000}$, $x^\star = ${pm(x.map((v) => [v]))}$: здесь $\nabla f = \lambda \nabla h$, и ограничение выполнено.`,
+      wrong: String.raw`Проверьте, что ответ лежит на прямой $${h}$: без уравнения ограничения $\lambda$ не найти.`,
+    };
+  },
+};
+
+/** Урок II.8: экстремум uᵀΣu при ‖u‖ = 1 — собственное значение Σ. Нечётный seed — максимум, чётный — минимум. */
+export const lagrangeEig: Generator = {
+  id: "calc.lagrange-eig",
+  version: 1,
+  title: "Экстремум uᵀΣu на сфере",
+  make(seed) {
+    const r = rng(seed);
+    const [a, b0, c, l1] = r.pick(SPD);
+    const b = b0 * r.pick([1, -1]);
+    const l2 = a + c - l1;
+    const max = seed % 2 === 1;
+    return {
+      kind: "numeric",
+      prompt: String.raw`$$\Sigma = ${pm([[a, b], [b, c]])}.$$ Найдите ${max ? "наибольшее" : "наименьшее"} значение $u^\top \Sigma u$ при $\lVert u \rVert = 1$.`,
+      label: String.raw`$${max ? "\\max" : "\\min"}\, u^\top \Sigma u =$`,
+      answer: max ? l1 : l2,
+      tol: 0.005,
+      hints: [
+        String.raw`$\mathcal{L} = u^\top \Sigma u - \lambda (u^\top u - 1)$, $\nabla_u \mathcal{L} = 2\Sigma u - 2\lambda u = 0$: $u$ — собственный вектор, а $u^\top \Sigma u = \lambda u^\top u = \lambda$.`,
+        String.raw`$\lambda_1 + \lambda_2 = ${a + c}$, $\lambda_1 \lambda_2 = ${a * c - b * b}$.`,
+      ],
+      right: String.raw`Собственные значения $${l1}$ и $${l2}$; ${max ? "наибольшее" : "наименьшее"} $u^\top \Sigma u$ равно $${max ? l1 : l2}$ — на соответствующем собственном векторе. Множитель Лагранжа здесь и есть собственное значение.`,
+      wrong: String.raw`В экстремуме $\Sigma u = \lambda u$, и значение $u^\top \Sigma u$ равно самому $\lambda$ — ответ — собственное значение, а не элемент матрицы.`,
+    };
+  },
+};
+
+/** Урок II.8: MLE категориального распределения — доли nₖ/n. */
+export const categoricalMle: Generator = {
+  id: "calc.categorical-mle",
+  version: 1,
+  title: "MLE категориального распределения",
+  make(seed) {
+    const r = rng(seed);
+    const counts = [r.int(1, 9), r.int(1, 9), r.int(1, 9)];
+    const n = counts.reduce((a, b) => a + b, 0);
+    const phi = counts.map((k) => Math.round((k / n) * 1000) / 1000);
+    return {
+      kind: "matrix",
+      prompt: String.raw`Бросаем кубик с тремя гранями. Грани выпали $${counts[0]}$, $${counts[1]}$ и $${counts[2]}$ раз. Найдите оценку максимального правдоподобия вероятностей $\phi$ при ограничении $\phi_1 + \phi_2 + \phi_3 = 1$.`,
+      label: String.raw`$\hat\phi =$`,
+      answer: phi.map((v) => [v]),
+      tol: 0.005,
+      hints: [String.raw`$\mathcal{L} = \sum_k n_k \log \phi_k - \lambda (\sum_k \phi_k - 1)$, $\partial \mathcal{L}/\partial \phi_k = n_k/\phi_k - \lambda = 0$.`, String.raw`Из ограничения $\lambda = \sum_k n_k = ${n}$.`],
+      right: String.raw`$\lambda = n = ${n}$, $\hat\phi_k = n_k/n$: $${pm(phi.map((v) => [v]))}$.`,
+      wrong: String.raw`$\phi_k = n_k/\lambda$, а $\lambda$ находят из ограничения: $\lambda = ${n}$. Сумма ответа должна быть равна $1$.`,
+    };
+  },
+};

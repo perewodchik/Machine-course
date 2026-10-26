@@ -20,6 +20,15 @@
     - edition: main-notes-2026-spring
       section: 'Linear regression / The normal equations'
 
+- id: calc.hessian
+  title:
+    ru: 'Гессиан'
+    en: 'Hessian'
+  summary: 'Симметричная матрица вторых производных $\nabla^2 f$, $H_{ij} = \partial^2 f / \partial x_i \partial x_j$; задаёт квадратичную часть $f(x + h) \approx f(x) + \nabla f^\top h + \tfrac12 h^\top H h$.'
+  lesson: hessian-taylor
+  prerequisites: [calc.gradient, la.quadratic-form]
+  core: true
+
 - id: calc.stationary-point
   title:
     ru: 'Критическая точка'
@@ -36,6 +45,33 @@
   summary: 'График лежит не выше хорды; у выпуклой функции любая критическая точка — глобальный минимум.'
   lesson: convexity
   prerequisites: [calc.stationary-point, la.psd]
+  core: true
+
+- id: calc.gradient-descent
+  title:
+    ru: 'Градиентный спуск'
+    en: 'gradient descent'
+  summary: '$\theta := \theta - \eta \nabla J(\theta)$; на квадратичной функции сходится при $0 < \eta < 2/\lambda_{\max}$, скорость решает число обусловленности.'
+  lesson: gradient-descent
+  prerequisites: [calc.gradient, calc.convexity, la.eigen]
+  core: true
+
+- id: calc.newton
+  title:
+    ru: 'Метод Ньютона'
+    en: 'Newton''s method'
+  summary: '$\theta := \theta - H^{-1} \nabla \ell(\theta)$ — шаг к минимуму квадратичного приближения; вблизи минимума число верных знаков удваивается за итерацию.'
+  lesson: newton
+  prerequisites: [calc.hessian, calc.gradient-descent]
+  core: true
+
+- id: calc.lagrange
+  title:
+    ru: 'Множители Лагранжа'
+    en: 'Lagrange multipliers'
+  summary: 'Экстремум $f$ при $h(x) = 0$: $\nabla f = \lambda \nabla h$ и само ограничение; в PCA $\lambda$ — собственное значение.'
+  lesson: lagrange
+  prerequisites: [calc.gradient, calc.convexity, la.eigen]
   core: true
 
 - id: calc.log-exp

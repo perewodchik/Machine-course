@@ -1,0 +1,72 @@
+id: f.newton-step
+kind: formula
+title:
+  ru: 'Шаг метода Ньютона'
+  en: 'Newton step'
+statement: '\theta := \theta - H^{-1} \nabla \ell(\theta), \qquad H = \nabla^2 \ell(\theta)'
+
+# Урок II.7: шаг Ньютона — минимум квадратичного приближения ℓ около θ (урок II.4). Записываем приближение
+# как функцию сдвига h, берём градиент по h и приравниваем нулю; h = −H⁻¹g. Проверка: q(h), ∇q, решение.
+symbols:
+  - name: h
+    tex: 'h'
+    meaning: 'сдвиг из текущей точки $\theta$'
+    shape: [d, 1]
+    role: param
+  - name: l0
+    tex: '\ell(\theta)'
+    meaning: 'значение потерь в текущей точке'
+    shape: []
+  - name: g
+    tex: 'g'
+    meaning: 'градиент $\nabla \ell(\theta)$ в текущей точке'
+    shape: [d, 1]
+  - name: H
+    tex: 'H'
+    meaning: 'гессиан $\nabla^2 \ell(\theta)$, положительно определённый'
+    shape: [d, d]
+    sample: spd
+
+dependsOn:
+  concepts: [calc.hessian, calc.gradient, la.inverse]
+  rules: [rule.grad-quadratic]
+
+derivation:
+  plan:
+    - 'Записать квадратичное приближение $\ell$ около $\theta$ как функцию сдвига $h$'
+    - 'Взять градиент по $h$'
+    - 'Приравнять градиент нулю и решить систему'
+  steps:
+    - goal: 0
+      tex: 'q(\sym{h}{h}) = \ell(\theta) + g^\top \sym{h}{h} + \tfrac12\, \sym{h}{h}^\top H \sym{h}{h} \approx \ell(\theta + \sym{h}{h})'
+      by: [calc.hessian]
+      note: 'Ряд Тейлора второго порядка из урока II.4 с $g = \nabla \ell(\theta)$ и $H = \nabla^2 \ell(\theta)$.'
+      check:
+        kind: same
+        py: 'l0 + g @ h + 0.5 * h @ H @ h'
+    - goal: 1
+      tex: '\nabla_{\sym{h}{h}}\, q = \changed{g + H \sym{h}{h}}'
+      by: [rule.grad-quadratic]
+      note: 'Градиент линейной части — $g$, квадратичной — $H h$ ($H$ симметрична, урок II.3).'
+      check:
+        kind: gradient
+        wrt: h
+        py: 'g + H @ h'
+    - goal: 2
+      tex: 'g + H \sym{h}{h} = 0 \ \Rightarrow\ \sym{h}{h} = \changed{-H^{-1} g}'
+      by: [la.inverse]
+      note: 'При $H \succ 0$ это минимум $q$ (урок II.5). В коде $h$ находят решением системы $Hh = -g$, а не обращением $H$.'
+      check:
+        kind: solution
+        wrt: h
+        py: '-np.linalg.solve(H, g)'
+
+pitfalls:
+  - 'Обращать гессиан: `inv(H) @ g` медленнее и менее точно, чем `solve(H, g)`, — как с нормальными уравнениями в уроке I.12.'
+  - 'Делать полный шаг вдали от минимума: если $H$ не положительно определён или приближение плохое, шаг может увести в сторону. Помогает уменьшение шага $\theta := \theta - \alpha H^{-1} g$ с $\alpha \le 1$.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Classification and logistic regression / Newton''s method'
+
+usedIn: [calc.newton]

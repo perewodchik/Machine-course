@@ -1,0 +1,26 @@
+---
+// Игра «Спуск в тумане» (S4.L2, урок II.6): остров React с оболочкой GameShell. Блок «Чему учит игра» — статичный HTML.
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { FoggyDescent, meta } from "../../games/foggy-descent";
+import { loadCourse } from "../../lib/content/collections";
+
+const course = await loadCourse("foundations");
+const lesson = course.lessons.find((l) => l.key === meta.lesson);
+if (!lesson) throw new Error(`игра ${meta.id}: нет урока ${meta.lesson}`);
+const module = course.modules.find((m) => m.id === lesson.module);
+---
+<BaseLayout title={meta.title} description="Поверхность скрыта туманом: по значению функции и стрелке градиента дойдите до минимума за наименьшее число шагов." course={course}>
+  <main class="game shell" id="content">
+    <nav class="breadcrumb" aria-label="Путь">
+      <a href={`${course.href}#m-${lesson.module}`}>{module?.title}</a><span aria-hidden="true">/</span><span>Игра к уроку {lesson.number}</span>
+    </nav>
+    <h1>{meta.title}</h1>
+    <p class="lead game__lead">Поверхность скрыта туманом: в&nbsp;текущей точке видны только значение функции и&nbsp;стрелка градиента. Дойдите до минимума&nbsp;— или, на одном уровне, до&nbsp;вершины&nbsp;— за&nbsp;наименьшее число шагов. Пять уровней, партия&nbsp;— <span class="nowrap">4–6&nbsp;минут</span>.</p>
+    <FoggyDescent client:load>
+      <div class="block block--intuition game__teaches">
+        <p><span class="block__title">Чему учит игра.</span> Градиент показывает направление быстрейшего роста, поэтому спуск идёт против него, а&nbsp;подъём&nbsp;— по&nbsp;нему. У&nbsp;вытянутой чаши стрелка смотрит не на&nbsp;минимум, и&nbsp;путь получается зигзагом. Стрелка по&nbsp;одному объекту, как в&nbsp;SGD, иногда врёт, но&nbsp;в&nbsp;среднем ведёт к&nbsp;цели.</p>
+        <p><a href={lesson.href}>Урок {lesson.number}. {lesson.title}</a></p>
+      </div>
+    </FoggyDescent>
+  </main>
+</BaseLayout>

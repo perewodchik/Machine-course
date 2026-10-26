@@ -1,0 +1,70 @@
+id: f.taylor-second-order
+kind: formula
+title:
+  ru: 'Ряд Тейлора второго порядка'
+  en: 'second-order Taylor expansion'
+statement: 'f(\sym{x}{x} + h) \approx f(\sym{x}{x}) + \nabla f(\sym{x}{x})^\top h + \tfrac12\, h^\top H(\sym{x}{x})\, h'
+
+# Урок II.4: для квадратичной функции f(x) = ½ xᵀAx + bᵀx разложение точное — проверяем каждый шаг на ней:
+# раскрыть скобки, собрать линейную и квадратичную по h части, узнать в них ∇f = Ax + b и H = A.
+symbols:
+  - name: x
+    tex: 'x'
+    meaning: 'точка разложения'
+    shape: [d, 1]
+    role: data
+  - name: h
+    tex: 'h'
+    meaning: 'сдвиг'
+    shape: [d, 1]
+  - name: A
+    tex: 'A'
+    meaning: 'симметричная матрица пробной функции $f(x) = \tfrac12 x^\top A x + b^\top x$'
+    shape: [d, d]
+    sample: spd
+  - name: b
+    tex: 'b'
+    meaning: 'вектор пробной функции'
+    shape: [d, 1]
+
+dependsOn:
+  concepts: [calc.gradient, calc.hessian, la.quadratic-form]
+  rules: [rule.scalar-transpose]
+
+derivation:
+  plan:
+    - 'Подставить $x + h$ в квадратичную функцию и раскрыть скобки'
+    - 'Собрать слагаемые по степеням $h$: нулевая, первая, вторая'
+    - 'Узнать в них $f(x)$, $\nabla f(x)^\top h$ и $\tfrac12 h^\top H h$'
+  steps:
+    - goal: 0
+      tex: 'f(\sym{x}{x} + h) = \tfrac12 (\sym{x}{x} + h)^\top A (\sym{x}{x} + h) + b^\top (\sym{x}{x} + h)'
+      by: [la.quadratic-form]
+      note: 'Для квадратичной функции разложение не приближённое, а точное — на ней удобно увидеть все три слагаемых.'
+      check:
+        kind: same
+        py: '0.5 * (x + h) @ A @ (x + h) + b @ (x + h)'
+    - goal: 1
+      tex: '= \bigl(\tfrac12 \sym{x}{x}^\top A \sym{x}{x} + b^\top \sym{x}{x}\bigr) + \changed{(A\sym{x}{x} + b)^\top h} + \tfrac12\, h^\top A h'
+      by: [rule.scalar-transpose]
+      note: 'Перекрёстные слагаемые $\tfrac12 x^\top A h$ и $\tfrac12 h^\top A x$ равны (число равно своему транспонированию, $A$ симметрична) и складываются в $(Ax)^\top h$.'
+      check:
+        kind: same
+        py: '(0.5 * x @ A @ x + b @ x) + (A @ x + b) @ h + 0.5 * h @ A @ h'
+    - goal: 2
+      tex: '= f(\sym{x}{x}) + \changed{\nabla f(\sym{x}{x})^\top h + \tfrac12\, h^\top H h}, \qquad \nabla f = A\sym{x}{x} + b, \ H = A'
+      by: [calc.gradient, calc.hessian]
+      note: 'Линейная по $h$ часть — градиент (урок II.3), квадратичная — гессиан: вторые производные $\tfrac12 x^\top A x$ равны $A_{ij}$. Для неквадратичной $f$ так получается приближение с ошибкой порядка $\lVert h \rVert^3$.'
+      check:
+        kind: same
+        py: '(0.5 * x @ A @ x + b @ x) + (A @ x + b) @ h + 0.5 * h @ A @ h'
+
+pitfalls:
+  - 'Забывать множитель $\tfrac12$ перед $h^\top H h$ — как в одномерном $f(x + h) \approx f(x) + f''(x) h + \tfrac12 f''''(x) h^2$.'
+  - 'Считать, что $\nabla f = 0$ означает минимум: в критической точке остаётся $\tfrac12 h^\top H h$, и её знак зависит от $H$.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Classification and logistic regression / Newton''s method'
+
+usedIn: [calc.hessian]

@@ -522,6 +522,179 @@ describe("генераторы", () => {
     }
   });
 
+  it("задачи урока II.4: гессиан — вторые производные, тип точки — по знакам собственных значений", () => {
+    const mats = (tex: string) => [...tex.matchAll(/\\begin\{pmatrix\}(.*?)\\end\{pmatrix\}/g)].map((m) => m[1]!.split(" \\\\ ").map((row) => row.split(" & ").map(Number)));
+    for (let s = 1; s <= 40; s++) {
+      const he = make("calc.hessian", s);
+      if (he.kind !== "matrix") throw new Error("ожидалась матрица");
+      const tex = /f\(x, y\) = (.*?)\$/.exec(he.prompt)![1]!;
+      const f = (x: number, y: number) =>
+        tex.replace(/ - /g, " + -").split(" + ").reduce((acc, u) => {
+          const m = /^(-?)(\d*)(x\^3|x\^2 y|x y\^2|y\^2)$/.exec(u.trim())!;
+          const k = (m[1] ? -1 : 1) * (m[2] ? Number(m[2]) : 1);
+          return acc + k * ({ "x^3": x ** 3, "x^2 y": x * x * y, "x y^2": x * y * y, "y^2": y * y } as Record<string, number>)[m[3]!]!;
+        }, 0);
+      const [px, py] = /точке \$\((-?\d+), (-?\d+)\)/.exec(he.prompt)!.slice(1).map(Number) as [number, number];
+      const h = 1e-3;
+      const fxx = (f(px + h, py) - 2 * f(px, py) + f(px - h, py)) / (h * h);
+      const fyy = (f(px, py + h) - 2 * f(px, py) + f(px, py - h)) / (h * h);
+      const fxy = (f(px + h, py + h) - f(px + h, py - h) - f(px - h, py + h) + f(px - h, py - h)) / (4 * h * h);
+      expect(he.answer[0]![0]).toBeCloseTo(fxx, 3);
+      expect(he.answer[1]![1]).toBeCloseTo(fyy, 3);
+      expect(he.answer[0]![1]).toBeCloseTo(fxy, 3);
+      expect(he.answer[1]![0]).toBe(he.answer[0]![1]);
+
+      const cl = make("calc.classify", s);
+      if (cl.kind !== "choice") throw new Error("ожидался выбор");
+      const H = mats(cl.prompt)[0]!;
+      const m = (H[0]![0]! + H[1]![1]!) / 2;
+      const rr = Math.hypot((H[0]![0]! - H[1]![1]!) / 2, H[0]![1]!);
+      const [l1, l2] = [m + rr, m - rr];
+      const want = Math.abs(l1 * l2) < 1e-9 ? "По гессиану не определить" : l1 * l2 < 0 ? "Седло" : l1 > 0 ? "Минимум" : "Максимум";
+      expect(cl.options.find((o) => o.correct)!.text).toBe(want);
+    }
+  });
+
+  it("calc.convex-form: ответ совпадает с A ⪰ 0 по собственным значениям; виды чередуются", () => {
+    const mats = (tex: string) => [...tex.matchAll(/\\begin\{pmatrix\}(.*?)\\end\{pmatrix\}/g)].map((m) => m[1]!.split(" \\\\ ").map((row) => row.split(" & ").map(Number)));
+    const seen = new Set<string>();
+    for (let s = 1; s <= 40; s++) {
+      const cf = make("calc.convex-form", s);
+      if (cf.kind !== "choice") throw new Error("ожидался выбор");
+      const A = mats(cf.prompt)[0]!;
+      const m = (A[0]![0]! + A[1]![1]!) / 2;
+      const rr = Math.hypot((A[0]![0]! - A[1]![1]!) / 2, A[0]![1]!);
+      const convex = m - rr > -1e-9;
+      expect(cf.options.filter((o) => o.correct).map((o) => o.text)).toEqual([convex ? "Выпукла" : "Не выпукла"]);
+      seen.add(`${convex}:${Math.abs((m - rr) * (m + rr)) < 1e-9}`);
+    }
+    // строго выпуклые, вырожденные выпуклые и невыпуклые — все встречаются
+    expect(seen).toContain("true:false");
+    expect(seen).toContain("true:true");
+    expect(seen).toContain("false:false");
+  });
+
+  it("calc.convex-ops: выпуклые и невыпуклые чередуются по seed", () => {
+    for (let s = 1; s <= 12; s++) {
+      const co = make("calc.convex-ops", s);
+      if (co.kind !== "choice") throw new Error("ожидался выбор");
+      expect(co.options.find((o) => o.correct)!.text).toBe(s % 2 === 1 ? "Выпукла" : "Не выпукла");
+    }
+  });
+
+  it("calc.gd-step: спуск уменьшает f, подъём увеличивает; ответ — θ ∓ η∇f", () => {
+    for (let s = 1; s <= 30; s++) {
+      const t = make("calc.gd-step", s);
+      if (t.kind !== "matrix") throw new Error("ожидалась матрица");
+      const ascent = s % 2 === 0;
+      expect(t.prompt).toContain(ascent ? "подъём" : "спуск");
+      const tex = /\$f\(\\theta\) = (.*?)\$/.exec(t.prompt)![1]!;
+      const k: Record<string, number> = {};
+      for (const u of tex.replace(/ - /g, " + -").split(" + ")) {
+        const m = /^(-?)(\d*)\\theta_(\d)(\^2)?$/.exec(u.trim())!;
+        k[m[3]! + (m[4] ? "²" : "")] = (m[1] ? -1 : 1) * (m[2] ? Number(m[2]) : 1);
+      }
+      const [a, c, d, e] = ["1²", "2²", "1", "2"].map((key) => k[key] ?? 0) as [number, number, number, number];
+      const f = (x: number, y: number) => a * x * x + c * y * y + d * x + e * y;
+      const [x, y] = /\\theta = \((-?\d+), (-?\d+)\)/.exec(t.prompt)!.slice(1).map(Number) as [number, number];
+      const [nx, ny] = [t.answer[0]![0]!, t.answer[1]![0]!];
+      const eta = Number(/\\eta = ([\d.]+)/.exec(t.prompt)![1]);
+      const h = 1e-6;
+      const grad = [(f(x + h, y) - f(x - h, y)) / (2 * h), (f(x, y + h) - f(x, y - h)) / (2 * h)];
+      const sg = ascent ? -1 : 1;
+      expect(nx).toBeCloseTo(x - sg * eta * grad[0]!, 3);
+      expect(ny).toBeCloseTo(y - sg * eta * grad[1]!, 3);
+      if (ascent) expect(f(nx, ny)).toBeGreaterThanOrEqual(f(x, y));
+      else expect(f(nx, ny)).toBeLessThanOrEqual(f(x, y));
+    }
+  });
+
+  it("calc.lr-threshold: ответ 2/λ_max по собственным значениям матрицы из условия", () => {
+    const mats = (tex: string) => [...tex.matchAll(/\\begin\{pmatrix\}(.*?)\\end\{pmatrix\}/g)].map((m) => m[1]!.split(" \\\\ ").map((row) => row.split(" & ").map(Number)));
+    for (let s = 1; s <= 30; s++) {
+      const t = make("calc.lr-threshold", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const A = mats(t.prompt)[0]!;
+      const m = (A[0]![0]! + A[1]![1]!) / 2;
+      const rr = Math.hypot((A[0]![0]! - A[1]![1]!) / 2, A[0]![1]!);
+      expect(m - rr).toBeGreaterThan(0);
+      expect(t.answer).toBeCloseTo(2 / (m + rr), 4);
+    }
+  });
+
+  it("calc.newton-1d: шаг из условия совпадает с θ − f′/f″ по конечным разностям", () => {
+    for (let s = 1; s <= 30; s++) {
+      const t = make("calc.newton-1d", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const tex = /\$f\(\\theta\) = (.*?)\$/.exec(t.prompt)![1]!;
+      const k: Record<string, number> = {};
+      for (const u of tex.replace(/ - /g, " + -").split(" + ")) {
+        const m = /^(-?)(\d*)\\theta(\^(\d))?$/.exec(u.trim())!;
+        k[m[4] ?? "1"] = (m[1] ? -1 : 1) * (m[2] ? Number(m[2]) : 1);
+      }
+      const f = (x: number) => (k["3"] ?? 0) * x ** 3 + (k["2"] ?? 0) * x ** 2 + (k["1"] ?? 0) * x;
+      const th = Number(/Сейчас \$\\theta = (-?\d+)\$/.exec(t.prompt)![1]);
+      const h = 1e-3;
+      const d1 = (f(th + h) - f(th - h)) / (2 * h);
+      const d2 = (f(th + h) - 2 * f(th) + f(th - h)) / (h * h);
+      expect(d2).toBeGreaterThan(0);
+      expect(t.answer).toBeCloseTo(th - d1 / d2, 2);
+    }
+  });
+
+  it("calc.newton-logistic: ответ — шаг Ньютона, посчитанный по сигмоиде напрямую", () => {
+    const sig = (z: number) => 1 / (1 + Math.exp(-z));
+    for (let s = 1; s <= 30; s++) {
+      const t = make("calc.newton-logistic", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const pts = [...t.prompt.matchAll(/\((-?\d+), ([01])\)/g)].map((m) => [Number(m[1]), Number(m[2])] as const);
+      expect(pts).toHaveLength(4);
+      const d1 = pts.reduce((a, [x, y]) => a + (sig(0) - y) * x, 0);
+      const d2 = pts.reduce((a, [x]) => a + sig(0) * (1 - sig(0)) * x * x, 0);
+      expect(t.answer).toBeCloseTo(-d1 / d2, 2);
+    }
+  });
+
+  it("calc.lagrange-line: ответ на прямой и ∇f ∥ ∇h; calc.lagrange-eig — собственное значение; calc.categorical-mle — доли", () => {
+    const mats = (tex: string) => [...tex.matchAll(/\\begin\{pmatrix\}(.*?)\\end\{pmatrix\}/g)].map((m) => m[1]!.split(" \\\\ ").map((row) => row.split(" & ").map(Number)));
+    const coefs = (tex: string, names: string[]) => {
+      const k: Record<string, number> = {};
+      for (const u of tex.replace(/ - /g, " + -").split(" + ")) {
+        const m = /^(-?)(\d*)(x_[12](?:\^2)?)$/.exec(u.trim())!;
+        k[m[3]!] = (m[1] ? -1 : 1) * (m[2] ? Number(m[2]) : 1);
+      }
+      return names.map((n) => k[n] ?? 0);
+    };
+    for (let s = 1; s <= 30; s++) {
+      const t = make("calc.lagrange-line", s);
+      if (t.kind !== "matrix") throw new Error("ожидалась матрица");
+      const [, ftex, htex, rhs] = /f\(x\) = (.*?)\$ при ограничении \$(.*?) = (-?\d+)\$/.exec(t.prompt)!;
+      const [a, c] = coefs(ftex!, ["x_1^2", "x_2^2"]) as [number, number];
+      const [p, q] = coefs(htex!, ["x_1", "x_2"]) as [number, number];
+      const [x1, x2] = [t.answer[0]![0]!, t.answer[1]![0]!];
+      expect(p * x1 + q * x2).toBeCloseTo(Number(rhs), 2);
+      // ∇f = (2a x₁, 2c x₂) параллелен ∇h = (p, q)
+      expect(2 * a * x1 * q - 2 * c * x2 * p).toBeCloseTo(0, 1);
+
+      const e = make("calc.lagrange-eig", s);
+      if (e.kind !== "numeric") throw new Error("ожидалось число");
+      const S = mats(e.prompt)[0]!;
+      const m = (S[0]![0]! + S[1]![1]!) / 2;
+      const rr = Math.hypot((S[0]![0]! - S[1]![1]!) / 2, S[0]![1]!);
+      const best = Array.from({ length: 3600 }, (_, i) => {
+        const u = [Math.cos((i * Math.PI) / 1800), Math.sin((i * Math.PI) / 1800)] as const;
+        return S[0]![0]! * u[0] ** 2 + 2 * S[0]![1]! * u[0] * u[1] + S[1]![1]! * u[1] ** 2;
+      });
+      expect(e.answer).toBeCloseTo(s % 2 === 1 ? m + rr : m - rr, 9);
+      expect(e.answer).toBeCloseTo(s % 2 === 1 ? Math.max(...best) : Math.min(...best), 4);
+
+      const c3 = make("calc.categorical-mle", s);
+      if (c3.kind !== "matrix") throw new Error("ожидалась матрица");
+      const sum = c3.answer.reduce((acc, [v]) => acc + v!, 0);
+      expect(sum).toBeCloseTo(1, 2);
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,
