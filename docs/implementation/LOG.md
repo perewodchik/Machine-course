@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — S7.03 инфраструктура проектов — готова
+- **Сделано:** code/mlf/project.py и тесты (подложенная утечка — чтение теста до финала, повторная финальная оценка — ловятся), демонстрационный проект на «Квартирах», шаблон отчёта, content/projects.yaml, src/pages/projects/[id].astro, ссылка со страницы «Основ ML»
+- **Файлы:** code/mlf/project.py, code/tests/test_project.py, notebooks/src/projects/demo_apartments.py, notebooks/templates/project-report.md, content/projects.yaml, src/pages/projects/[id].astro
+- **Проверка:** pytest (test_project), build_notebooks --solutions и nbmake всех лабораторных, vitest 654, check, lint, build, e2e project.spec.ts, раскладка и axe project
+- **Отклонения от плана и решения:** демонстрационный проект — на синтетических «Квартирах»: настоящие наборы ждут S7.02 (сеть); эталон fit_ols отклоняет вырожденные XᵀX — нормальные уравнения на них не определены
+- **Следующий шаг:** S7.04.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — S7.02 данные курса и лицензии — нужен пользователь
 - **Сделано:** лицензии проверены по открытым источникам: Bank Marketing (UCI, Moro, Rita, Cortez 2014) — CC BY 4.0, распространять можно с указанием авторства; California Housing (StatLib, Pace и Barry 1997, перепись США 1990) — явной лицензии нет, источники просят ссылку на статью
 - **Где остановился:** скачать наборы и записать контрольные суммы нельзя: сетевая политика среды отклоняет archive.ics.uci.edu, ndownloader.figshare.com, www.openml.org, lib.stat.cmu.edu (403 на CONNECT). ADR и загрузчики с суммами — после того, как домены разрешат; выдумывать суммы нельзя

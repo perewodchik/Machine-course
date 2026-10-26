@@ -37,6 +37,7 @@ const total: [number, number] = course.modules.reduce<[number, number]>(([a, b],
     <p class="course-progress course-facts__progress" data-progress-lessons={JSON.stringify(course.lessons.filter((l) => !l.optional).map((l) => l.key))}>
       Знаю <span data-known-total>0</span> из&nbsp;{course.required} {ofLessons(course.required)}
     </p>
+    {course.id === "ml-basics" && <p class="course-links">Как устроены проекты курса: <a href="/projects/demo-apartments/">демонстрационный проект</a> с&nbsp;этапами, автопроверкой и&nbsp;рубрикой.</p>}
     {course.id === "foundations" && (
       <p class="course-links"><a href="/map/">Карта курса</a> — уроки и связи между ними; <a href="/concepts/">понятия</a> — и зачем каждое в&nbsp;CS229.</p>
     )}

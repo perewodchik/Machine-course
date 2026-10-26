@@ -1,0 +1,57 @@
+---
+// Страница проекта курса ML (S7.03): этапы с автопроверкой, порог метрики, рубрика, ссылки на ноутбук и шаблон отчёта.
+// Данные — content/projects.yaml.
+import { readFileSync } from "node:fs";
+import type { GetStaticPaths } from "astro";
+import { parse } from "yaml";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { loadCourse } from "../../lib/content/collections";
+
+interface Project {
+  id: string;
+  course: string;
+  title: string;
+  summary: string;
+  notebook: string;
+  minutes: number;
+  metric: string;
+  stages: { title: string; check: string }[];
+  rubric: { passed: string; good: string; excellent: string };
+}
+
+export const getStaticPaths = (async () =>
+  (parse(readFileSync("content/projects.yaml", "utf8")) as { projects: Project[] }).projects.map((p) => ({ params: { id: p.id }, props: { p } }))) satisfies GetStaticPaths;
+
+const { p } = Astro.props as { p: Project };
+const course = await loadCourse(p.course);
+const repo = "https://github.com/perewodchik/Machine-course/blob/main";
+---
+<BaseLayout title={p.title} description={p.summary} course={course}>
+  <main class="shell project" id="content">
+    <nav class="breadcrumb" aria-label="Путь"><a href={course.href}>{course.title}</a><span aria-hidden="true">/</span><span>Проект</span></nav>
+    <h1>{p.title}</h1>
+    <p class="lead">{p.summary} Около {p.minutes}&nbsp;минут.</p>
+    <p class="project__links">
+      <a class="btn btn--sm btn--primary" href={`https://colab.research.google.com/github/perewodchik/Machine-course/blob/main/notebooks/${p.notebook}.ipynb`}>Открыть в&nbsp;Colab</a>
+      <a class="btn btn--sm" href={`${repo}/notebooks/${p.notebook}.ipynb`}>Ноутбук на&nbsp;GitHub</a>
+      <a href={`${repo}/notebooks/templates/project-report.md`}>Шаблон отчёта</a>
+    </p>
+
+    <section aria-labelledby="pr-stages">
+      <h2 id="pr-stages">Этапы</h2>
+      <ol class="project__stages">
+        {p.stages.map((s) => <li><span class="project__stage">{s.title}.</span> Проверка: {s.check}.</li>)}
+      </ol>
+      <p>Зачёт: {p.metric}. Тестовая выборка открывается один раз&nbsp;— в&nbsp;финальной оценке; обращение к&nbsp;ней раньше автопроверка считает утечкой.</p>
+    </section>
+
+    <section aria-labelledby="pr-rubric">
+      <h2 id="pr-rubric">Рубрика</h2>
+      <dl class="project__rubric">
+        <div><dt>Зачтено</dt><dd>{p.rubric.passed}</dd></div>
+        <div><dt>Хорошо</dt><dd>{p.rubric.good}</dd></div>
+        <div><dt>Отлично</dt><dd>{p.rubric.excellent}</dd></div>
+      </dl>
+    </section>
+  </main>
+</BaseLayout>

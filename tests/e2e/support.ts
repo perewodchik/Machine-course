@@ -39,6 +39,7 @@ export const layoutPages = {
   ready: "/ready/",
   cs229: "/cs229/linear-regression/",
   sheet: "/cheatsheet/statistics/",
+  project: "/projects/demo-apartments/",
   zoogame: "/games/dist-zoo/",
   corrgame: "/games/guess-correlation/",
   sigmagame: "/games/sigma-sculptor/",

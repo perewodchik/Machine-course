@@ -436,6 +436,15 @@
   @media (max-width: 900px) { .catalog__row { grid-template-columns: minmax(0, 1fr); } }
   .course-facts { margin: var(--space-4) 0 var(--space-2); }
   .course-facts__progress { margin: 0 0 var(--space-5); font: var(--text-sm)/1.4 var(--font-ui); color: var(--ink-2); }
+  /* Страница проекта (S7.03): этапы с автопроверкой и рубрика */
+  .project section { max-width: var(--measure); margin-top: var(--space-6); }
+  .project__links { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; font: var(--text-sm)/1.4 var(--font-ui); }
+  .project__stages li { margin: var(--space-2) 0; }
+  .project__stage { font-weight: 500; }
+  .project__rubric { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--space-2) var(--space-4); }
+  .project__rubric div { display: contents; }
+  .project__rubric dt { font: 500 var(--text-sm)/1.6 var(--font-ui); color: var(--ink-2); }
+  .project__rubric dd { margin: 0; }
   /* Компаньон к конспекту CS229 (S5.03): список разделов; уроки раздела — та же сетка, что у карты готовности */
   .companion section { max-width: var(--measure); margin-top: var(--space-7); }
   .companion h3 { margin-top: var(--space-5); font: 500 var(--text-base)/1.4 var(--font-ui); color: var(--ink-2); }
