@@ -95,3 +95,23 @@ test("урок IV.4: найди ошибку — деление на n − 1, и
   await page.evaluate(() => window.scrollTo(0, 0));
   await expectNoAxeViolations(page);
 });
+
+test("урок IV.5: предсказание натурального параметра, лабораторная, итоговая проверка", async ({ page }) => {
+  await page.goto("/foundations/statistics/exponential-family/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Экспоненциальное семейство");
+  await expect(page.locator("a[href*='notebooks/stats/logistic_mle.ipynb']").first()).toBeAttached();
+
+  const final = page.locator("#final-check");
+  const spec = generator("stat.natural-param").make(31);
+  if (spec.kind !== "numeric") throw new Error("ожидалось число");
+  // seed 31 — Бернулли: типичная ошибка — ответить самим φ
+  const phi = Number(/phi = ([\d.]+)\$/.exec(spec.prompt)![1]);
+  await final.locator("[data-variant]:not([hidden]) input").first().fill(String(phi));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).not.toContainText("Урок отмечен");
+  await final.locator("[data-variant]:not([hidden]) input").first().fill(String(spec.answer));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});

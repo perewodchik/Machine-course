@@ -50,3 +50,13 @@ def test_broken_hessian_is_caught():
     report = check_formula(data)
     assert not report.ok
     assert "гессиан" in report.problems[0]
+
+
+def test_broken_scalar_hessian_is_caught():
+    """По скалярному η гессиан — число: E T² без вычитания (E T)² — не дисперсия, харнесс это видит."""
+    data = yaml.safe_load((ROOT / "content/formulas/stat/log-partition-moments.yaml").read_text(encoding="utf-8"))
+    assert check_formula(data).ok
+    data["derivation"]["steps"][2]["check"]["py"] = "np.sum(t ** 2 * b * np.exp(eta * t)) / np.sum(b * np.exp(eta * t))"
+    report = check_formula(data)
+    assert not report.ok
+    assert "гессиан" in report.problems[0]

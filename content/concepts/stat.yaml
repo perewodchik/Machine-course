@@ -26,6 +26,15 @@
   prerequisites: [stat.mle, prob.multivariate-normal, calc.matrix-calculus]
   core: true
 
+- id: stat.exponential-family
+  title:
+    ru: 'Экспоненциальное семейство'
+    en: 'exponential family'
+  summary: '$p(y; \eta) = b(y) \exp(\eta^\top T(y) - a(\eta))$: натуральный параметр $\eta$, достаточная статистика $T(y)$, логарифм нормировки $a(\eta)$; $\nabla a = \mathbb{E}T$, $\nabla^2 a = \operatorname{Cov} T \succeq 0$; Бернулли ($\eta = \log\frac{\phi}{1 - \phi}$), нормальное, Пуассона, категориальное; выпуклость $-\ell$ GLM.'
+  lesson: exponential-family
+  prerequisites: [stat.mle, calc.convexity]
+  core: true
+
 - id: stat.mle
   title:
     ru: 'Метод максимального правдоподобия'

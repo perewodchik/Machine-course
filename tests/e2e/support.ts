@@ -31,6 +31,7 @@ export const layoutPages = {
   iv2: "/foundations/statistics/estimators/",
   iv3: "/foundations/statistics/mle/",
   iv4: "/foundations/statistics/multivariate-mle/",
+  iv5: "/foundations/statistics/exponential-family/",
   zoogame: "/games/dist-zoo/",
   corrgame: "/games/guess-correlation/",
   sigmagame: "/games/sigma-sculptor/",

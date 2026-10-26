@@ -281,3 +281,79 @@ export const gdaMle: Generator = {
     };
   },
 };
+
+/** Урок IV.5: натуральный параметр и обратно — Бернулли (η = log φ/(1 − φ), φ = σ(η)) и Пуассон (η = log λ). */
+export const naturalParam: Generator = {
+  id: "stat.natural-param",
+  version: 1,
+  title: "Натуральный параметр",
+  make(seed) {
+    const r = rng(seed);
+    const kind = (seed - 1) % 3;
+    if (kind === 0) {
+      const phi = r.pick([0.2, 0.25, 0.6, 0.75, 0.9]);
+      const answer = round(Math.log(phi / (1 - phi)), 4);
+      return {
+        kind: "numeric",
+        prompt: String.raw`Распределение Бернулли с $\phi = ${phi}$ записали в форме экспоненциального семейства $p(y; \eta) = \exp(\eta y - a(\eta))$. Найдите натуральный параметр $\eta$.`,
+        label: String.raw`$\eta =$`,
+        answer,
+        tol: 0.002,
+        hints: [String.raw`$\phi^y (1 - \phi)^{1 - y} = \exp\bigl(y \log\frac{\phi}{1 - \phi} + \log(1 - \phi)\bigr)$.`],
+        right: String.raw`$\eta = \ln\frac{${phi}}{${round(1 - phi)}} \approx ${answer}$ — логарифм шансов.`,
+        wrong: String.raw`Натуральный параметр Бернулли — не $\phi$, а логарифм шансов $\log\frac{\phi}{1 - \phi}$.`,
+      };
+    }
+    if (kind === 1) {
+      const eta = r.pick([-2, -1, 0.5, 1, 2]);
+      const answer = round(1 / (1 + Math.exp(-eta)), 4);
+      return {
+        kind: "numeric",
+        prompt: String.raw`У распределения Бернулли натуральный параметр $\eta = ${eta}$. Найдите $\phi = P(y = 1)$.`,
+        label: String.raw`$\phi =$`,
+        answer,
+        tol: 0.002,
+        hints: [String.raw`Обратите $\eta = \log\frac{\phi}{1 - \phi}$: получится сигмоида.`],
+        right: String.raw`$\phi = \sigma(\eta) = 1/(1 + e^{${-eta}}) \approx ${answer}$. Поэтому в логистической регрессии $h_\theta(x) = \sigma(\theta^\top x)$.`,
+        wrong: String.raw`$\phi = \frac{1}{1 + e^{-\eta}}$, а не $e^\eta$ и не $\eta$.`,
+      };
+    }
+    const lam = r.pick([0.5, 2, 3, 5]);
+    const answer = round(Math.log(lam), 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`Распределение Пуассона с $\lambda = ${lam}$ записали как $p(y; \eta) = \frac{1}{y!} \exp(\eta y - a(\eta))$. Найдите $\eta$.`,
+      label: String.raw`$\eta =$`,
+      answer,
+      tol: 0.002,
+      hints: [String.raw`$e^{-\lambda} \lambda^y / y! = \frac{1}{y!} \exp(y \log\lambda - \lambda)$.`],
+      right: String.raw`$\eta = \ln ${lam} \approx ${answer}$, $a(\eta) = e^\eta = \lambda$.`,
+      wrong: String.raw`Множитель при $y$ в показателе — $\log\lambda$; это и есть натуральный параметр.`,
+    };
+  },
+};
+
+/** Урок IV.5: среднее или дисперсия через производные a(η) — Бернулли a = log(1 + e^η), Пуассон a = e^η. */
+export const logPartition: Generator = {
+  id: "stat.log-partition",
+  version: 1,
+  title: "Моменты через логарифм нормировки",
+  make(seed) {
+    const r = rng(seed);
+    const eta = r.pick([-1, 0, 0.5, 1, 2]);
+    const bern = seed % 2 === 1;
+    const wantVar = Math.floor((seed - 1) / 2) % 2 === 1;
+    const s = 1 / (1 + Math.exp(-eta));
+    const answer = round(bern ? (wantVar ? s * (1 - s) : s) : Math.exp(eta), 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`Логарифм нормировки ${bern ? "Бернулли" : "Пуассона"} — $a(\eta) = ${bern ? String.raw`\log(1 + e^\eta)` : String.raw`e^\eta`}$. При $\eta = ${eta}$ найдите ${wantVar ? String.raw`$\operatorname{Var} y = a''(\eta)$` : String.raw`$\mathbb{E}\, y = a'(\eta)$`}.`,
+      label: wantVar ? String.raw`$\operatorname{Var} y =$` : String.raw`$\mathbb{E}\, y =$`,
+      answer,
+      tol: 0.002,
+      hints: [bern ? String.raw`$a'(\eta) = \frac{e^\eta}{1 + e^\eta} = \sigma(\eta)$, $a''(\eta) = \sigma(\eta)(1 - \sigma(\eta))$.` : String.raw`Производные $e^\eta$ — снова $e^\eta$: у Пуассона среднее равно дисперсии.`],
+      right: bern ? String.raw`$\sigma(${eta}) \approx ${round(s, 4)}$${wantVar ? String.raw`, $\sigma(1 - \sigma) \approx ${answer}$` : ""}.` : String.raw`$e^{${eta}} \approx ${answer} = \lambda$.`,
+      wrong: String.raw`$\mathbb{E}\, T(y) = a'(\eta)$, $\operatorname{Var} T(y) = a''(\eta)$; для ${bern ? String.raw`$a = \log(1 + e^\eta)$ это $\sigma(\eta)$ и $\sigma(\eta)(1 - \sigma(\eta))$` : String.raw`$a = e^\eta$ обе — $e^\eta$`}.`,
+    };
+  },
+};

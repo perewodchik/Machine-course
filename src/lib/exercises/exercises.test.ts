@@ -1184,6 +1184,31 @@ describe("генераторы", () => {
     }
   });
 
+  it("stat.natural-param и stat.log-partition: ответы через численные производные a(η)", () => {
+    const d = (f: (e: number) => number, e: number, h = 1e-4) => (f(e + h) - f(e - h)) / (2 * h);
+    for (let s = 1; s <= 30; s++) {
+      const n = make("stat.natural-param", s);
+      if (n.kind !== "numeric") throw new Error("ожидалось число");
+      if (n.prompt.includes("Бернулли с")) {
+        const phi = Number(/phi = ([\d.]+)\$/.exec(n.prompt)![1]);
+        expect(1 / (1 + Math.exp(-n.answer))).toBeCloseTo(phi, 3);
+      } else if (n.prompt.includes("Найдите $\\phi")) {
+        const eta = Number(/eta = (-?[\d.]+)\$/.exec(n.prompt)![1]);
+        expect(Math.log(n.answer / (1 - n.answer))).toBeCloseTo(eta, 2);
+      } else {
+        const lam = Number(/lambda = ([\d.]+)\$/.exec(n.prompt)![1]);
+        expect(Math.exp(n.answer)).toBeCloseTo(lam, 2);
+      }
+
+      const l = make("stat.log-partition", s);
+      if (l.kind !== "numeric") throw new Error("ожидалось число");
+      const eta = Number(/При \$\\eta = (-?[\d.]+)\$/.exec(l.prompt)![1]);
+      const a = l.prompt.includes("Бернулли") ? (e: number) => Math.log(1 + Math.exp(e)) : (e: number) => Math.exp(e);
+      const want = l.prompt.includes("Var") ? d((e) => d(a, e), eta) : d(a, eta);
+      expect(Math.abs(l.answer - want)).toBeLessThan(0.002);
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

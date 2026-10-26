@@ -396,3 +396,6 @@
 - id: multivariate-mle
   ru: 'трюк со следом; выборочная ковариационная матрица; матрица точности'
   en: 'trace trick; sample covariance matrix; precision matrix'
+- id: exponential-family
+  ru: 'экспоненциальное семейство; натуральный параметр; достаточная статистика; логарифм нормировки'
+  en: 'exponential family; natural parameter; sufficient statistic; log-partition function'

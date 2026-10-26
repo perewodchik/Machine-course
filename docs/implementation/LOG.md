@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — L-IV.5 L-IV.5 — экспоненциальное семейство — готов
+- **Сделано:** урок statistics/exponential-family (четыре цикла: форма семейства и сигмоида, таблица семейств, a' = E T и a'' = Var T, GLM и выпуклость), капстоун модуля — лабораторная stats/logistic_mle (logaddexp, градиент и гессиан, вогнутость, подъём против Ньютона), формула f.log-partition-moments, генераторы stat.natural-param и stat.log-partition, сниппет stats/expfam.py с тестом; харнесс mlf: гессиан по скалярному аргументу — число (тест на сломанный гессиан)
+- **Файлы:** content/courses/foundations/statistics/exponential-family.mdx, notebooks/src/stats/logistic_mle.py, content/formulas/stat/log-partition-moments.yaml, code/mlf/formulas.py, code/snippets/stats/expfam.py
+- **Проверка:** validate, lint, build, check, vitest 610, pytest, nbmake, check_consistency, e2e IV.5 и раскладка iv5 (axe)
+- **Отклонения от плана и решения:** нет
+- **Следующий шаг:** L-IV.6 — байесовский подход и MAP.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — L-IV.4 L-IV.4 — многомерный MLE — готов
 - **Сделано:** урок statistics/multivariate-mle (три цикла: трюк со следом и μ̂, Σ̂ рабочим примером и «найди ошибку», параметры GDA), формула f.mvn-mle (через матрицу точности, проверка gradient и solution по матрице), генераторы stat.cov-mle (матрица) и stat.gda-mle, сниппет stats/mvn_mle.py с тестом
 - **Файлы:** content/courses/foundations/statistics/multivariate-mle.mdx, content/formulas/stat/mvn-mle.yaml, code/snippets/stats/mvn_mle.py
