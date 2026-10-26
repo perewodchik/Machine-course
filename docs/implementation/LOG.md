@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — L-ml-basics-2.4 Выбор модели и кросс-валидация — готов
+- **Сделано:** урок (3 цикла, формулы f.selection-optimism и f.ridge-loo, 4 упражнения, итоговая ml.cv-se); виджет «Фолды» (src/widgets/ml/folds: k = 2, 5, 10, n, ошибки фолдов ± SE против отложенной части, стратификация звонков); генератор ml.cv-se; понятие ml.model-selection; ячейка ml_basics/cross_val.py (k фолдов, стратификация, правило одной SE, утечка при отборе признаков) со сверкой с cross_val_score и StratifiedKFold
+- **Файлы:** content/courses/ml-basics/evaluation/model-selection.mdx, content/formulas/ml/{selection-optimism,ridge-loo}.yaml, src/widgets/ml/folds/, code/snippets/ml_basics/cross_val.py, code/tests/test_cross_val.py
+- **Проверка:** validate, lint, check, build, vitest, pytest, check_consistency, e2e lesson-ml-2-4, скриншоты 1440 и 390
+- **Отклонения от плана и решения:** финальный режим игры не сделан — добавлен пунктом в S7.L2; GridSearchCV и вложенная кросс-валидация описаны в тексте, в ячейке не считаются (sklearn в браузере не грузится); стратификация — на 60 синтетических звонках вместо Bank Marketing (S7.02)
+- **Следующий шаг:** L-ml-basics-2.5 — кривые обучения, анализ ошибок и утечки.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — L-ml-basics-2.3 Регуляризация: L2 и L1 — готов
 - **Сделано:** урок (4 цикла, формулы f.ridge-closed-form, f.lasso-soft-threshold, f.lasso-coordinate-step, 3 упражнения, итоговая ml.shrink-orth); виджет «Путь регуляризации» (src/widgets/ml/reg-path: круг и ромб ограничения на плоскости двух весов, путь пяти весов и RMSE от lg λ, см² без стандартизации); генератор ml.shrink-orth; понятие ml.lasso; ячейка ml_basics/regularization.py (гребневая центрированием, лассо покоординатным спуском) со сверкой с Ridge, Lasso, lasso_path
 - **Файлы:** content/courses/ml-basics/evaluation/regularization.mdx, content/formulas/ml/{ridge-closed-form,lasso-soft-threshold,lasso-coordinate-step}.yaml, src/widgets/ml/reg-path/, code/snippets/ml_basics/regularization.py, code/tests/test_regularization.py

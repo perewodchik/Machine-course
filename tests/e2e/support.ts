@@ -51,6 +51,7 @@ export const layoutPages = {
   ml21: "/ml-basics/evaluation/classification-metrics/",
   ml22: "/ml-basics/evaluation/bias-variance/",
   ml23: "/ml-basics/evaluation/regularization/",
+  ml24: "/ml-basics/evaluation/model-selection/",
   cloudgame: "/games/overfit-cloud/",
   honestgame: "/games/honest-probability/",
   zoogame: "/games/dist-zoo/",

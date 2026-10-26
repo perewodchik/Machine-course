@@ -1501,6 +1501,18 @@ describe("генераторы", () => {
     }
   });
 
+  it("ml.cv-se: среднее и SE по ошибкам из условия", () => {
+    for (let s = 1; s <= 30; s++) {
+      const t = make("ml.cv-se", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const errs = /фолдах \$([^$]+)\$/.exec(t.prompt)![1]!.split(",\\ ").map(Number);
+      const k = errs.length;
+      const m = errs.reduce((a, b) => a + b, 0) / k;
+      const sd = Math.sqrt(errs.reduce((a, e) => a + (e - m) ** 2, 0) / (k - 1));
+      expect(t.answer).toBeCloseTo(t.prompt.includes("стандартную ошибку") ? sd / Math.sqrt(k) : m, 4);
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

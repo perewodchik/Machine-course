@@ -461,3 +461,29 @@ export const shrinkOrth: Generator = {
     };
   },
 };
+
+/** Урок 2.4: среднее и стандартная ошибка кросс-валидации по ошибкам фолдов. */
+export const cvSe: Generator = {
+  id: "ml.cv-se",
+  version: 1,
+  title: "Среднее и SE кросс-валидации",
+  make(seed) {
+    const r = rng(seed);
+    const k = r.pick([4, 5]);
+    const errs = Array.from({ length: k }, () => r.int(40, 90) / 100);
+    const mean = errs.reduce((a, b) => a + b, 0) / k;
+    const s = Math.sqrt(errs.reduce((a, e) => a + (e - mean) ** 2, 0) / (k - 1));
+    const askSe = seed % 2 === 1;
+    const answer = round(askSe ? s / Math.sqrt(k) : mean, 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`${k}-кратная кросс-валидация дала ошибки на фолдах $${errs.map(num).join(",\\ ")}$. Найдите ${askSe ? String.raw`стандартную ошибку среднего $\operatorname{SE} = s/\sqrt{k}$, где $s$ — выборочное стандартное отклонение (с делителем $k - 1$)` : String.raw`оценку $\operatorname{CV}_k$`}.`,
+      label: askSe ? "SE =" : "CV =",
+      answer,
+      tol: 0.002,
+      hints: [askSe ? String.raw`Сначала среднее $${num(round(mean, 4))}$, затем $s^2 = \frac{1}{k - 1}\sum_j (\operatorname{err}_j - \operatorname{CV})^2$ и деление на $\sqrt{k}$.` : String.raw`$\operatorname{CV}_k = \frac1k \sum_j \operatorname{err}_j$.`],
+      right: askSe ? String.raw`$s = ${num(round(s, 4))}$, $\operatorname{SE} = ${num(round(s, 4))}/\sqrt{${k}} = ${num(answer)}$. Обучающие части фолдов пересекаются, поэтому SE — грубая и заниженная оценка.` : String.raw`$\operatorname{CV}_${k} = ${num(answer)}$.`,
+      wrong: askSe ? String.raw`SE — разброс ошибок фолдов, делённый на $\sqrt{k}$: $s = ${num(round(s, 4))}$, $\operatorname{SE} = ${num(answer)}$. Делитель в $s^2$ — $k - 1$.` : String.raw`Среднее ошибок фолдов: $${num(answer)}$.`,
+    };
+  },
+};

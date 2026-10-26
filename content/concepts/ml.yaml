@@ -177,3 +177,15 @@
   cs229:
     - edition: main-notes-2026-spring
       section: 'Regularization and model selection'
+
+- id: ml.model-selection
+  title:
+    ru: 'Выбор модели и кросс-валидация'
+    en: 'model selection and cross-validation'
+  summary: 'Гиперпараметры выбирают по валидации или $k$-кратной кросс-валидации, тест открывают один раз. Минимум валидационных ошибок оптимистичен; правило одной SE берёт самую простую модель в пределах ошибки от лучшей; вся предобработка — внутри фолда, честная оценка процедуры — вложенная кросс-валидация.'
+  lesson: model-selection
+  prerequisites: [ml.bias-variance, ml.ridge, stat.risk-generalization]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Regularization and model selection'

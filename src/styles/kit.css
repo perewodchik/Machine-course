@@ -323,6 +323,16 @@
   .reg-path__check { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 44px; font: var(--text-sm)/1.4 var(--font-ui); }
   .reg-path__readouts { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-6); }
   @media (max-width: 700px) { .reg-path__plots { grid-template-columns: minmax(0, 1fr); } }
+  .folds__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-2); }
+  .folds__actions .btn[aria-pressed="true"] { border-color: var(--pen); color: var(--pen); box-shadow: inset 0 0 0 1px var(--pen); }
+  .folds__plots { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-4); align-items: center; }
+  .folds__cell { fill: var(--rule); }
+  .folds__cell.is-val { fill: var(--sym-2); }
+  .folds__legend, .folds__pos { margin: var(--space-1) 0 0; font: var(--text-sm)/1.5 var(--font-ui); color: var(--ink-2); }
+  .folds__readouts { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-6); margin-top: var(--space-3); }
+  .folds__strat { margin-top: var(--space-3); }
+  .folds__check { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 44px; font: var(--text-sm)/1.4 var(--font-ui); }
+  @media (max-width: 700px) { .folds__plots { grid-template-columns: minmax(0, 1fr); } }
   .riemann__fn { font-family: var(--font-math); font-size: 1.05em; }
   .riemann__fn sup { font-size: 0.7em; }
   @media (max-width: 900px) { .riemann__controls { grid-template-columns: minmax(0, 1fr); } }

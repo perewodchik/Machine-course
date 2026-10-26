@@ -1,0 +1,57 @@
+id: f.ridge-loo
+kind: formula
+title:
+  ru: 'Ошибка «без одного» для гребневой регрессии без n обучений'
+  en: 'leave-one-out error of ridge regression in closed form'
+statement: '\operatorname{LOO} = \frac1n \sum_{i=1}^{n} \Bigl(\frac{y^{(i)} - \hat y^{(i)}}{1 - H_{ii}}\Bigr)^2, \qquad H = X (X^\top X + \lambda D)^{-1} X^\top'
+
+# Урок 2.4 «Основ ML», углубление: у линейного сглаживателя ŷ = Hy остаток объекта, выброшенного из обучения, — его
+# обычный остаток, делённый на 1 − H_ii (формула Шермана — Моррисона). D = diag(0, 1, …, 1): столбец единиц не
+# штрафуется. Проверка — честный перебор: n обучений без одного объекта.
+symbols:
+  - name: X
+    tex: 'X'
+    meaning: 'признаки, первый столбец — единицы'
+    shape: [n, d]
+  - name: y
+    tex: 'y'
+    meaning: 'ответы'
+    shape: [n, 1]
+  - name: lam
+    tex: '\lambda'
+    meaning: 'коэффициент регуляризации'
+    shape: []
+    sample: positive
+
+dependsOn:
+  concepts: [ml.ridge, la.inverse]
+  rules: []
+
+derivation:
+  plan:
+    - 'Записать ошибку «без одного» перебором: $n$ обучений'
+    - 'Узнать в остатке выброшенного объекта обычный остаток, делённый на $1 - H_{ii}$'
+  steps:
+    - goal: 0
+      tex: '\operatorname{LOO} = \frac1n \sum_{i=1}^{n} \bigl(y^{(i)} - x^{(i)\top} \hat\theta_{-i}\bigr)^2, \qquad \hat\theta_{-i} \text{ — веса без объекта } i'
+      by: [ml.ridge]
+      check:
+        kind: same
+        py: 'np.mean(np.array([(np.r_[1.0, X[i, 1:]] @ np.linalg.solve(np.delete(np.c_[np.ones(X.shape[0]), X[:, 1:]], i, 0).T @ np.delete(np.c_[np.ones(X.shape[0]), X[:, 1:]], i, 0) + lam * np.diag(np.r_[0.0, np.ones(X.shape[1] - 1)]), np.delete(np.c_[np.ones(X.shape[0]), X[:, 1:]], i, 0).T @ np.delete(y, i)) - y[i]) ** 2 for i in np.arange(X.shape[0])]))'
+    - goal: 1
+      tex: '\operatorname{LOO} = \changed{\frac1n \sum_{i=1}^{n} \Bigl(\frac{y^{(i)} - \hat y^{(i)}}{1 - H_{ii}}\Bigr)^2}'
+      by: [la.inverse]
+      note: 'Выбросить объект — это поправка ранга 1 к $X^\top X + \lambda D$; формула Шермана — Моррисона даёт остаток $(y^{(i)} - \hat y^{(i)})/(1 - H_{ii})$. Одно обучение вместо $n$.'
+      check:
+        kind: same
+        py: 'np.mean(((y - np.c_[np.ones(X.shape[0]), X[:, 1:]] @ np.linalg.solve(np.c_[np.ones(X.shape[0]), X[:, 1:]].T @ np.c_[np.ones(X.shape[0]), X[:, 1:]] + lam * np.diag(np.r_[0.0, np.ones(X.shape[1] - 1)]), np.c_[np.ones(X.shape[0]), X[:, 1:]].T @ y)) / (1 - np.diag(np.c_[np.ones(X.shape[0]), X[:, 1:]] @ np.linalg.solve(np.c_[np.ones(X.shape[0]), X[:, 1:]].T @ np.c_[np.ones(X.shape[0]), X[:, 1:]] + lam * np.diag(np.r_[0.0, np.ones(X.shape[1] - 1)]), np.c_[np.ones(X.shape[0]), X[:, 1:]].T)))) ** 2)'
+      mutations:
+        - tex: '\operatorname{LOO} = \frac1n \sum_{i=1}^{n} \bigl(y^{(i)} - \hat y^{(i)}\bigr)^2'
+          py: 'np.mean((y - np.c_[np.ones(X.shape[0]), X[:, 1:]] @ np.linalg.solve(np.c_[np.ones(X.shape[0]), X[:, 1:]].T @ np.c_[np.ones(X.shape[0]), X[:, 1:]] + lam * np.diag(np.r_[0.0, np.ones(X.shape[1] - 1)]), np.c_[np.ones(X.shape[0]), X[:, 1:]].T @ y)) ** 2)'
+          why: 'Это ошибка на обучении: каждый объект участвовал в своём прогнозе. Деление на $1 - H_{ii}$ убирает его вклад и превращает остаток в честный.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Regularization and model selection'
+
+usedIn: [ml.model-selection]
