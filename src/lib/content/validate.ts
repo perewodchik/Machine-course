@@ -415,9 +415,8 @@ export function validateContent(root: string): ValidationResult {
     if (raw !== undefined) guard(() => validateList(s.glossaryEntry, raw, rel(gfile)));
   }
 
-  // ───────── входная диагностика ─────────
-  const dfile = join(root, "content/diagnostic.yaml");
-  if (existsSync(dfile)) {
+  // ───────── входная диагностика: content/diagnostic.yaml (урок 0.2) и diagnostic-<курс>.yaml (входные проверки курсов) ─────────
+  for (const dfile of readdirSync(join(root, "content")).filter((f) => /^diagnostic(-[a-z0-9-]+)?\.yaml$/.test(f)).map((f) => join(root, "content", f))) {
     const raw = readYamlFile(dfile);
     const diag = raw === undefined ? undefined : guard(() => validate(s.diagnostic, raw, rel(dfile)) as Diagnostic);
     const f = rel(dfile);

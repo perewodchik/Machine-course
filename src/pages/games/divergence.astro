@@ -15,7 +15,7 @@ const module = course.modules.find((m) => m.id === lesson.module);
       <a href={`${course.href}#m-${lesson.module}`}>{module?.title}</a><span aria-hidden="true">/</span><span>Игра к уроку {lesson.number}</span>
     </nav>
     <h1>{meta.title}</h1>
-    <p class="lead game__lead">Градиентный спуск на чаше ½&nbsp;<i>x</i>ᵀ<i>Ax</i>: чем больше шаг <i>η</i>, тем быстрее спуск, пока он не начнёт расходиться. Найдите наибольший шаг, при котором спуск ещё сходится. Пять уровней, партия&nbsp;— <span class="nowrap">4–6&nbsp;минут</span>.</p>
+    <p class="lead game__lead">Градиентный спуск на чаше ½&nbsp;<i>x</i>ᵀ<i>Ax</i>: чем больше шаг <i>η</i>, тем быстрее спуск, пока он не начнёт расходиться. Найдите наибольший шаг, при котором спуск ещё сходится. Семь уровней: на&nbsp;последних двух&nbsp;— матрица задачи о&nbsp;квартирах до&nbsp;и&nbsp;после стандартизации. Партия&nbsp;— <span class="nowrap">6–8&nbsp;минут</span>.</p>
     <Divergence client:load>
       <div class="block block--intuition game__teaches">
         <p><span class="block__title">Чему учит игра.</span> Шаг <i>x</i>&nbsp;:= <i>x</i>&nbsp;− <i>ηAx</i> умножает координату вдоль собственного вектора на 1&nbsp;− <i>ηλ</i>. Спуск сходится, пока все множители по модулю меньше единицы, то&nbsp;есть при <span class="nowrap">0&nbsp;&lt; <i>η</i>&nbsp;&lt; 2/<i>λ</i><sub>max</sub></span>. Порог задаёт наибольшее собственное значение, а скорость у вытянутой чаши&nbsp;— наименьшее.</p>

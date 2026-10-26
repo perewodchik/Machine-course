@@ -411,3 +411,9 @@
 - id: math-in-ml
   ru: 'обратный проход; обратное распространение ошибки; мини-батч; нижняя оценка правдоподобия; метод главных компонент'
   en: 'backward pass; backpropagation; mini-batch; evidence lower bound (ELBO); principal component analysis (PCA)'
+- id: learning-problem
+  ru: 'обучение с учителем; признак; целевая переменная; регрессия; классификация; функция потерь; эмпирический риск; обучающая и тестовая выборки; обобщение; бейзлайн'
+  en: 'supervised learning; feature; target; regression; classification; loss function; empirical risk; training and test sets; generalization; baseline'
+- id: linear-regression-lms
+  ru: 'правило LMS (Уидроу — Хоффа); пакетный спуск; стохастический спуск; мини-батч; эпоха; стандартизация; число обусловленности; убывающий шаг'
+  en: 'LMS (Widrow–Hoff) rule; batch gradient descent; stochastic gradient descent (SGD); mini-batch; epoch; standardization (feature scaling); condition number; learning rate decay'

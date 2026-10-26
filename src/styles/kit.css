@@ -204,6 +204,36 @@
   .outlier-widget__controls { display: grid; gap: var(--space-4); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule); }
   .outlier-widget__readouts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: start; gap: var(--space-3) var(--space-5); }
   @media (max-width: 900px) { .outlier-widget__readouts { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  /* «Порог классификатора» (курс «Основы ML», 2.1): полоса заявок, панель с матрицей ошибок и ROC */
+  .threshold__panel { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 0.8fr); gap: var(--space-4); align-items: start; margin-top: var(--space-3); }
+  .threshold__controls { display: grid; gap: var(--space-3); }
+  .threshold__metrics { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-1); }
+  .threshold__cm { border-collapse: collapse; font: var(--text-sm)/1.35 var(--font-ui); font-variant-numeric: tabular-nums; }
+  .threshold__cm th, .threshold__cm td { padding: var(--space-2); border: 1px solid var(--rule); text-align: left; vertical-align: top; }
+  .threshold__cm thead th, .threshold__cm tbody th { color: var(--ink-2); font-weight: 500; }
+  .threshold__cm b { display: block; font-size: var(--text-lg); color: var(--ink); }
+  .threshold__cm td.is-err { outline: 2px solid var(--red-pen); outline-offset: -2px; }
+  .threshold__auc { margin: var(--space-1) 0 0; font: var(--text-sm)/1.4 var(--font-ui); color: var(--ink-2); }
+  @media (max-width: 900px) { .threshold__panel { grid-template-columns: minmax(0, 1fr); } }
+  /* «Обучение и тест» (курс «Основы ML», 1.1): два рисунка рядом, под ними управление */
+  .train-test__plots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
+  .train-test__legend { margin: var(--space-1) 0 0; font: var(--text-sm)/1.5 var(--font-ui); color: var(--ink-2); }
+  .train-test__controls { display: grid; gap: var(--space-3); margin-top: var(--space-3); }
+  .train-test .kit-slider { grid-template-columns: 5.2em minmax(0, 1fr) 2.4em; }
+  .train-test .kit-slider__name { white-space: nowrap; }
+  .train-test__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .train-test__actions .btn[aria-pressed="true"] { border-color: var(--pen); color: var(--pen); box-shadow: inset 0 0 0 1px var(--pen); }
+  .train-test__readouts { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-6); }
+  @media (max-width: 700px) { .train-test__plots { grid-template-columns: minmax(0, 1fr); } }
+  .lms-path__legend { margin: var(--space-1) 0 0; font: var(--text-sm)/1.5 var(--font-ui); color: var(--ink-2); }
+  .lms-path__controls { display: grid; gap: var(--space-3); margin-top: var(--space-3); }
+  .lms-path .kit-slider { grid-template-columns: 5.6em minmax(0, 1fr) 2.6em; }
+  .lms-path .kit-slider__name { white-space: nowrap; }
+  .lms-path__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); }
+  .lms-path__actions .btn[aria-pressed="true"] { border-color: var(--pen); color: var(--pen); box-shadow: inset 0 0 0 1px var(--pen); }
+  .lms-path__check { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 44px; font: var(--text-sm)/1.4 var(--font-ui); }
+  .lms-path__readouts { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-3) var(--space-6); }
+  .lms-path__verdict { margin: 0; flex-basis: 100%; font: var(--text-sm)/1.5 var(--font-ui); color: var(--ink-2); }
   .riemann__fn { font-family: var(--font-math); font-size: 1.05em; }
   .riemann__fn sup { font-size: 0.7em; }
   @media (max-width: 900px) { .riemann__controls { grid-template-columns: minmax(0, 1fr); } }

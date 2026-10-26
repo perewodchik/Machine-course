@@ -52,3 +52,10 @@ def test_exported_widget_data_is_fresh():
     payload = json.loads(text.split("=", 1)[1].strip().rstrip(";"))
     s, y = make_scores()
     assert payload["scores"] == s.tolist() and payload["y"] == y.tolist()
+
+
+def test_site_widget_data_matches_generator():
+    """Данные виджета сайта (src/widgets/ml/threshold/data.json) — тот же генератор, что в уроке и прототипе."""
+    s, y = make_scores()
+    data = json.loads((ROOT / "src/widgets/ml/threshold/data.json").read_text(encoding="utf-8"))
+    assert data["scores"] == s.tolist() and data["y"] == y.tolist()

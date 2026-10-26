@@ -1,0 +1,70 @@
+id: f.standardize-inverse
+kind: formula
+title:
+  ru: 'Веса со стандартизованных признаков — на исходные'
+  en: 'mapping weights from standardized features back to the original ones'
+statement: '\theta_j = \frac{\theta''_j}{s_j}\ (j \ge 1), \qquad \theta_0 = \theta''_0 - \sum_{j \ge 1} \frac{\theta''_j \mu_j}{s_j}'
+
+# Урок 1.2 «Основ ML»: модель обучена на z_j = (x_j − μ_j)/s_j с весами θ'; те же прогнозы на исходных x дают веса θ.
+# Проверка — одинаковые прогнозы на случайном объекте; x — признаки без единицы (d штук), θ' = (θ'_0, w').
+symbols:
+  - name: x
+    tex: 'x'
+    meaning: 'признаки объекта (без единицы)'
+    shape: [d, 1]
+  - name: mu
+    tex: '\mu'
+    meaning: 'средние признаков по обучающей выборке'
+    shape: [d, 1]
+  - name: s
+    tex: 's'
+    meaning: 'стандартные отклонения признаков'
+    shape: [d, 1]
+    sample: positive
+  - name: w
+    tex: 'w'''
+    meaning: 'веса при стандартизованных признаках'
+    shape: [d, 1]
+  - name: b
+    tex: '\theta''_0'
+    meaning: 'свободный член модели на стандартизованных признаках'
+    shape: []
+
+dependsOn:
+  concepts: [ml.least-squares, stat.descriptive]
+  rules: []
+
+derivation:
+  plan:
+    - 'Записать прогноз на стандартизованных признаках'
+    - 'Раскрыть $z_j$ и собрать коэффициенты при $x_j$ и свободный член'
+  steps:
+    - goal: 0
+      tex: '\hat y = \theta''_0 + \sum_{j \ge 1} \theta''_j\, \frac{x_j - \mu_j}{s_j}'
+      by: [stat.descriptive]
+      check:
+        kind: same
+        py: 'b + np.sum(w * (x - mu) / s)'
+    - goal: 1
+      tex: '= \changed{\Bigl(\theta''_0 - \sum_{j \ge 1} \frac{\theta''_j \mu_j}{s_j}\Bigr) + \sum_{j \ge 1} \frac{\theta''_j}{s_j}\, x_j}'
+      by: [la.linear-map]
+      note: 'Прогноз тот же — значит, это и есть веса на исходных признаках: при $x_j$ стоит $\theta''_j/s_j$, остальное — свободный член.'
+      check:
+        kind: same
+        py: '(b - np.sum(w * mu / s)) + np.sum(w / s * x)'
+      mutations:
+        - tex: '= \theta''_0 + \sum_{j \ge 1} \frac{\theta''_j}{s_j}\, x_j'
+          py: 'b + np.sum(w / s * x)'
+          why: 'Потерян сдвиг: вычитание $\mu_j$ меняет свободный член на $-\sum_j \theta''_j \mu_j / s_j$.'
+        - tex: '= \Bigl(\theta''_0 - \sum_{j \ge 1} \theta''_j \mu_j\Bigr) + \sum_{j \ge 1} \theta''_j\, s_j\, x_j'
+          py: '(b - np.sum(w * mu)) + np.sum(w * s * x)'
+          why: 'Деление на $s_j$ превратилось в умножение: признак уменьшили в $s_j$ раз, значит, вес при исходном признаке в $s_j$ раз меньше.'
+
+pitfalls:
+  - 'Стандартизовать столбец единиц: у него $s_0 = 0$, деление невозможно. Свободный член не масштабируют.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Linear regression / LMS algorithm'
+
+usedIn: [ml.least-squares]

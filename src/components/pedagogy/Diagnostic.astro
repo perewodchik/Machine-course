@@ -2,14 +2,21 @@
 // Входная диагностика курса (урок 0.2, S3.01): задачи по одной, по порядку банка content/diagnostic.yaml.
 // Задачи отрисованы при сборке (KaTeX в браузер не попадает) и скрыты; какую показать, решает src/client/diagnostic.ts
 // по src/lib/diagnostic/plan.ts. Верно с первой попытки и без подсказок — урок получает «знаю» (by: diagnostic).
-import { loadCourse } from "../../lib/content/collections";
+import { loadRegistry } from "../../lib/content/registry";
 import { loadDiagnostic } from "../../lib/content/diagnostic";
 import Exercise from "./Exercise.astro";
 
-const bank = loadDiagnostic();
-const course = await loadCourse("foundations");
+interface Props {
+  /** Банк задач: файл в content/; по умолчанию — диагностика курса математики (урок 0.2). */
+  bank?: string;
+}
+const { bank: file = "diagnostic.yaml" } = Astro.props;
+const bank = loadDiagnostic(`content/${file}`);
+// ход проверки хранится отдельно для каждого банка: диагностика 0.2 и входная проверка курса ML не мешают друг другу
+const storage = file === "diagnostic.yaml" ? "mlf:diagnostic:v1" : `mlf:diagnostic:v1:${file.replace(/^diagnostic-|\.yaml$/g, "")}`;
+const reg = await loadRegistry();
 const items = bank.items.map((it) => {
-  const lesson = course.lessons.find((l) => l.key === it.lesson);
+  const lesson = reg.lessonsByKey.get(it.lesson);
   if (!lesson) throw new Error(`<Diagnostic>: нет урока ${it.lesson} (content/diagnostic.yaml)`);
   return { ...it, info: lesson };
 });
@@ -18,7 +25,7 @@ const minutes = Math.min(bank.budget, Math.ceil(total));
 // данные для плана: уроки, минуты, на что опираются
 const plan = items.map((it) => ({ lesson: it.lesson, minutes: it.minutes, requires: it.requires ?? [] }));
 ---
-<section class="diagnostic" data-diagnostic data-budget={bank.budget} aria-label="Входная диагностика">
+<section class="diagnostic" data-diagnostic data-budget={bank.budget} data-storage={storage} aria-label="Входная диагностика">
   <script type="application/json" data-diag-plan set:html={JSON.stringify(plan)} />
 
   <div class="diagnostic__intro" data-diag-intro>

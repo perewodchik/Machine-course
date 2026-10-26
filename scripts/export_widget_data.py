@@ -23,6 +23,7 @@ OUT = ROOT / "prototype" / "assets" / "data"
 SITE = {
     "fit-line": ROOT / "src" / "widgets" / "la" / "fit-line" / "data.json",
     "fit-line-game": ROOT / "src" / "games" / "fit-line" / "data.json",
+    "threshold": ROOT / "src" / "widgets" / "ml" / "threshold" / "data.json",
 }
 
 
@@ -49,7 +50,7 @@ def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "threshold.js").write_text(render("THRESHOLD_DATA", threshold_payload()))
     print("prototype/assets/data/threshold.js")
-    for name, payload in (("fit-line", fit_line_payload()), ("fit-line-game", apartments_payload())):
+    for name, payload in (("fit-line", fit_line_payload()), ("fit-line-game", apartments_payload()), ("threshold", threshold_payload())):
         path = SITE[name]
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n")

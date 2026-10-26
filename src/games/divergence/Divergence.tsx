@@ -5,9 +5,9 @@ import type { ReactNode } from "react";
 import { GameShell, type ShellView } from "../_engine/GameShell";
 import { ParamSlider, Plane, Point, Polyline } from "../../widgets/_kit";
 import { levelCurves } from "../../lib/math/conics";
-import { DEBRIEF, divergence, ETA_STEP, LEVEL_NAMES, LEVELS, STEPS, type Action, type Level, type State } from "./model";
+import { DEBRIEF, divergence, etaDigits, etaStepOf, LEVEL_NAMES, LEVELS, STEPS, type Action, type Level, type State } from "./model";
 
-const f = (x: number) => String(Math.round(x * 100) / 100).replace("-", "−");
+const f = (x: number, digits = 2) => String(Math.round(x * 10 ** digits) / 10 ** digits).replace("-", "−");
 
 /** Траектория до первой точки далеко за полем: расходящийся спуск уходит в миллиарды, рисовать их незачем. */
 function visible(path: [number, number][], far = 20): [number, number][] {
@@ -25,7 +25,7 @@ function Board({ state }: { state: State }) {
   const run = state.runs[state.runs.length - 1];
   const one = kind === "one-d";
   const path = run ? visible(run.path) : [];
-  const label = `${one ? "Парабола ½ a x²" : "Линии уровня ½ xᵀAx"} и ${run ? `траектория спуска с шагом ${f(run.eta)}` : "стартовая точка"}`;
+  const label = `${one ? "Парабола ½ a x²" : "Линии уровня ½ xᵀAx"} и ${run ? `траектория спуска с шагом ${f(run.eta, etaDigits(state.level))}` : "стартовая точка"}`;
   if (one) {
     const curve: [number, number][] = Array.from({ length: 121 }, (_, i) => {
       const x = -3 + (6 * i) / 120;
@@ -78,7 +78,7 @@ function Controls({ state, dispatch }: { state: State; dispatch: (a: Action) => 
           <i>A</i> = <span className="game-saddle__grid" aria-hidden="true"><span>{f(a)}</span><span>{f(b)}</span><span>{f(b)}</span><span>{f(c)}</span></span>
         </p>
       )}
-      <ParamSlider name="η" value={state.eta} min={ETA_STEP} max={state.level.etaMax} step={ETA_STEP} digits={2} disabled={done} onChange={(v) => dispatch({ type: "set", eta: v })} />
+      <ParamSlider name="η" value={state.eta} min={etaStepOf(state.level)} max={state.level.etaMax} step={etaStepOf(state.level)} digits={etaDigits(state.level)} disabled={done} onChange={(v) => dispatch({ type: "set", eta: v })} />
       <div className="game-eigen__actions">
         <button type="button" className="btn btn--sm" disabled={done} onClick={() => dispatch({ type: "run" })}>
           Запустить спуск
@@ -91,7 +91,7 @@ function Controls({ state, dispatch }: { state: State; dispatch: (a: Action) => 
         <ol className="game-diverge__runs" aria-label="Попытки">
           {state.runs.map((r, i) => (
             <li key={i}>
-              η = {f(r.eta)}: {r.converged ? "сходится" : "расходится"}
+              η = {f(r.eta, etaDigits(state.level))}: {r.converged ? "сходится" : "расходится"}
             </li>
           ))}
         </ol>
@@ -115,7 +115,7 @@ const view: ShellView<State, Action, Level> = {
   board: (s) => <Board state={s} />,
   controls: (s, dispatch) => <Controls state={s} dispatch={dispatch} />,
   keys: [
-    ["← → на бегунке η", "шаг 0.01; Page Up и Page Down — крупнее"],
+    ["← → на бегунке η", "шаг 0.01 (на «Квартирах» без стандартизации — 0.001); Page Up и Page Down — крупнее"],
     ["Enter на «Запустить спуск»", `${STEPS} шагов x := x − ηAx`],
     ["Подсказка", "сначала что искать, потом собственные значения и порог"],
   ],

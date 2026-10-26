@@ -11,11 +11,11 @@
 ## Сейчас
 
 - **Этап:** 7. Курс «Основы ML»
-- **Задача:** S7.04 (не начата) — Виджет «Порог классификатора» и игра «Цена ошибки»
+- **Задача:** S7.L1 — L-ml-basics-1.3 — признаки, полиномы и LWR (в работе)
 - **Ветка:** `docs/course-analysis` (ветка этой сессии: среда разрешает пуш только в неё; см. журнал)
 - **Ждёт пользователя:** S1.13 — проверить заголовки после первого деплоя в Cloudflare Workers (README, «Хостинг»); сборка «Workers Builds» в Cloudflare падает, не начавшись, — нужна панель Cloudflare; S2.14 — пилот на 6–10 участниках. Готовые срезы (уроки) вливаются в `main` через PR по просьбе пользователя
 - **Порядок:** математика (этапы 4–5) → «Основы ML» (этап 7). Этапы 8–9 запрещены до разрешения пользователя (решение 26.10.2026).
-- **Обновлено:** 2026-10-26 — S7.03 готова, дальше S7.04
+- **Обновлено:** 2026-10-26 — готов L-ml-basics-1.2, дальше L-ml-basics-1.3 — признаки, полиномы и LWR
 
 ## Этапы
 
@@ -534,19 +534,19 @@
 - **Проверка:** `python scripts/build_notebooks.py --solutions /tmp/nb && pytest --nbmake /tmp/nb` · **Итог:** mlf.project: закрытая тестовая выборка Sealed (обращение до финала — LeakError), одна финальная оценка с порогом метрики, этапы; демонстрационный проект notebooks/src/projects/demo_apartments.py проходит nbmake; шаблон отчёта notebooks/templates/project-report.md; страница /projects/<id>/ с этапами и рубрикой из content/projects.yaml.
 
 ### S7.04. Виджет «Порог классификатора» и игра «Цена ошибки»
-- **Статус:** [ ] · **Зависит от:** S2.01 · **Контекст:** `context/widgets-games.md`, `context/ml-courses.md`; эталон — `prototype/ml-lesson.html`
+- **Статус:** [x] · **Зависит от:** S2.01 · **Контекст:** `context/widgets-games.md`, `context/ml-courses.md`; эталон — `prototype/ml-lesson.html`
 - **Сделать:** модель (матрица ошибок, ROC, PR, ожидаемая стоимость) с тестами против `code/snippets/ml_basics/threshold.py` (те же числа проверяет `code/tests/test_threshold.py`); данные — `scripts/export_widget_data.py`; представление на `_kit` по эталону прототипа; игра «Цена ошибки» по `GameSpec`.
 - **Готово, когда:** числа виджета совпадают с Python (AUC, лучший порог); клавиатура; axe без ошибок.
-- **Проверка:** `npm test && npm run test:e2e && cd code && pytest` · **Итог:** —
+- **Проверка:** `npm test && npm run test:e2e && cd code && pytest` · **Итог:** Модель src/lib/math/classification.ts (матрица ошибок, точность, полнота, FPR, ROC, AUC, цена, лучший порог) сверена с Python на data.json из export_widget_data.py; виджет src/widgets/ml/threshold/ (полоса заявок, порог с клавиатуры, матрица ошибок, ROC, цена) с демо /demo/threshold/; игра /games/error-cost/ — пять уровней с разной ценой ошибок.
 
 ### S7.L1. Уроки модуля 1 «Линейные модели»
-- **Статус:** [ ] · **Зависит от:** S7.01, S7.02
+- **Статус:** [~] · **Зависит от:** S7.01, S7.02
 - **Контекст для каждого урока:** `context/ml-courses.md`, `context/content-authoring.md` + карточка `### <номер>.` в `docs/program/ml-basics/01-linear-models.md`.
 - **Готово, когда:** «Определение готовности урока» из `context/content-authoring.md`; алгоритм реализован с нуля и сверен с библиотекой в `code/tests/`.
 - **Проверка:** `npm run validate && npm run build && cd code && pytest`
 
-- [ ] L-ml-basics-1.1. Задача обучения: данные, модель, потери, обобщение — `ml-basics/linear-models/learning-problem`
-- [ ] L-ml-basics-1.2. Линейная регрессия и LMS: пакетный и стохастический спуск — `ml-basics/linear-models/linear-regression-lms`
+- [x] L-ml-basics-1.1. Задача обучения: данные, модель, потери, обобщение — `ml-basics/linear-models/learning-problem`
+- [x] L-ml-basics-1.2. Линейная регрессия и LMS: пакетный и стохастический спуск — `ml-basics/linear-models/linear-regression-lms`
 - [ ] L-ml-basics-1.3. Признаки, полиномы и локально взвешенная регрессия — `ml-basics/linear-models/features-lwr`
 - [ ] L-ml-basics-1.4. Логистическая регрессия и метод Ньютона — `ml-basics/linear-models/logistic-regression`
 - [ ] L-ml-basics-1.5. Перцептрон и многоклассовая классификация — `ml-basics/linear-models/perceptron-softmax`

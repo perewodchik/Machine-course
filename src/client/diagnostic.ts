@@ -5,14 +5,13 @@ import type { LessonKey } from "../lib/content/types";
 import { mark } from "../lib/state/marks";
 import type { ExerciseResultDetail } from "./exercise";
 
-const KEY = "mlf:diagnostic:v1";
 
 interface Saved {
   outcomes: Record<string, Outcome>;
   finished: boolean;
 }
 
-function load(): Saved {
+function load(KEY: string): Saved {
   try {
     const raw = localStorage.getItem(KEY);
     if (raw) {
@@ -25,7 +24,7 @@ function load(): Saved {
   return { outcomes: {}, finished: false };
 }
 
-function save(state: Saved): void {
+function save(KEY: string, state: Saved): void {
   try {
     localStorage.setItem(KEY, JSON.stringify(state));
   } catch {
@@ -48,13 +47,14 @@ function init(root: HTMLElement): void {
   const progress = q("[data-diag-progress]");
   const result = q("[data-diag-result]");
   const items = new Map([...root.querySelectorAll<HTMLElement>("[data-diag-item]")].map((el) => [el.dataset.diagItem!, el]));
-  let state = load();
+  const key = root.dataset.storage ?? "mlf:diagnostic:v1";
+  let state = load(key);
   let current: string | null = null;
 
   const outcomes = () => new Map(Object.entries(state.outcomes));
   const set = (lesson: string, o: Outcome) => {
     state.outcomes[lesson] = o;
-    save(state);
+    save(key, state);
   };
 
   const showProgress = () => {
@@ -68,7 +68,7 @@ function init(root: HTMLElement): void {
 
   const finish = () => {
     state.finished = true;
-    save(state);
+    save(key, state);
     current = null;
     items.forEach((el) => (el.hidden = true));
     progress.hidden = true;
@@ -133,7 +133,7 @@ function init(root: HTMLElement): void {
     } else if (t.matches("[data-diag-restart]")) {
       // отметки «знаю» остаются: снять их можно в оглавлении
       state = { outcomes: {}, finished: false };
-      save(state);
+      save(key, state);
       location.reload();
     }
   });

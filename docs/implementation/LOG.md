@@ -17,6 +17,30 @@
 
 ---
 
+### 2026-10-26 — L-ml-basics-1.2 Линейная регрессия и LMS — готов
+- **Сделано:** урок (4 цикла, 2 формулы f.lms-gradient и f.standardize-inverse, 5 упражнений, итоговая ml.step-scale); виджет «Спуск по линиям уровня» (src/widgets/ml/lms-path); уровни 6–7 «Квартиры» в игре «Порог расходимости»; генераторы ml.lms-update, ml.step-scale, ml.standardize-back; понятие ml.lms; ячейка ml_basics/lms.py со сверкой с LinearRegression и SGDRegressor
+- **Файлы:** content/courses/ml-basics/linear-models/linear-regression-lms.mdx, src/widgets/ml/lms-path/, src/games/divergence/, code/snippets/ml_basics/lms.py, code/tests/test_lms.py, tests/e2e/lesson-ml-1-2.spec.ts
+- **Проверка:** validate, lint, check, build, vitest 672, pytest, check_consistency, e2e lesson-ml-1-2/divergence/lesson-calc (32), скриншоты 1440 и 390
+- **Отклонения от плана и решения:** старт виджета — кнопка «Другой старт» вместо щелчка; график J по эпохам в ячейке не рисуется (вывод — текст); проверка градиента печатает True/False: число конечных разностей в Pyodide отличается от CPython; заодно исправлена тень в .threshold__cm (линтер стилей)
+- **Следующий шаг:** L-ml-basics-1.3 — признаки, полиномы и LWR.
+- **Вопросы пользователю:** —
+
+### 2026-10-26 — L-ml-basics-1.1 задача обучения: данные, модель, потери, обобщение — готов
+- **Сделано:** урок ml-basics/linear-models/learning-problem: входная проверка (content/diagnostic-ml-basics.yaml, 12 задач; <Diagnostic bank> с отдельным ходом на банк), три цикла: постановка, цикл «разбиение — бейзлайн — модель — метрика», обобщение; формула f.constant-baseline (оценка снизу для медианы, тождество для среднего), генераторы ml.rmse-mae и ml.best-constant, виджет «Обучение и тест» (src/widgets/ml/train-test, src/lib/math/poly.ts), mlf.datasets.apartments_full, сниппет ml_basics/learning_problem.py с тестом против sklearn
+- **Файлы:** content/courses/ml-basics/linear-models/learning-problem.mdx, content/diagnostic-ml-basics.yaml, content/formulas/ml/constant-baseline.yaml, src/widgets/ml/train-test/, src/lib/exercises/generators/ml.ts, code/snippets/ml_basics/learning_problem.py, code/tests/test_learning_problem.py
+- **Проверка:** validate, lint, check, build, vitest 664, pytest (сверка с LinearRegression и sklearn.metrics), check_consistency, e2e lesson-ml-1-1 (ячейка в Pyodide), diagnostic, раскладка и axe ml11
+- **Отклонения от плана и решения:** S7.L1 зависит от S7.02, но уроки модуля — на синтетических «Квартирах» (California Housing нужна только проекту P1), поэтому начаты; scikit-learn в браузере недоступен (CDN Pyodide закрыт сетевой политикой), сверка с sklearn — в code/tests, scikit-learn добавлен в dev-зависимости; генератор данных в ячейке урока продублирован (в браузере нет mlf), тест сверяет копию с mlf.datasets
+- **Следующий шаг:** L-ml-basics-1.2 — линейная регрессия и LMS.
+- **Вопросы пользователю:** —
+
+### 2026-10-26 — S7.04 виджет «Порог классификатора» и игра «Цена ошибки» — готова
+- **Сделано:** classification.ts и тесты против чисел урока 2.1 (34/10/50/206, точность 0.773, полнота 0.405, AUC 0.848, лучший порог 0.181 и цена 121); data.json виджета из генератора и тест в test_threshold.py; виджет на _kit, обёртка Threshold.astro, регистрация в lessonComponents; игра error-cost (кредиты, спам-фильтр, равная цена, скрининг, решите сами), бот, тесты свойств
+- **Файлы:** src/lib/math/classification.ts, src/widgets/ml/threshold/, src/components/widgets/Threshold.astro, src/games/error-cost/, src/pages/games/error-cost.astro, src/pages/demo/threshold.astro, scripts/export_widget_data.py
+- **Проверка:** vitest 660, lint, check, build, pytest (test_threshold), e2e threshold.spec.ts, раскладка и axe threshold, costgame
+- **Отклонения от плана и решения:** функции классификации — в src/lib/math, а не в модели виджета: их использует и игра (границы ESLint); лучший порог игры — на сетке бегунка (шаг 0.005), чтобы бот и игрок выбирали из одного множества
+- **Следующий шаг:** S7.L1 ждёт S7.02 (данные); без сети — уроки на синтетических данных по решению пользователя.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — S7.03 инфраструктура проектов — готова
 - **Сделано:** code/mlf/project.py и тесты (подложенная утечка — чтение теста до финала, повторная финальная оценка — ловятся), демонстрационный проект на «Квартирах», шаблон отчёта, content/projects.yaml, src/pages/projects/[id].astro, ссылка со страницы «Основ ML»
 - **Файлы:** code/mlf/project.py, code/tests/test_project.py, notebooks/src/projects/demo_apartments.py, notebooks/templates/project-report.md, content/projects.yaml, src/pages/projects/[id].astro
