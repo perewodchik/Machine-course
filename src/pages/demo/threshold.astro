@@ -1,0 +1,15 @@
+---
+// Демонстрация виджета «Порог классификатора» (S7.04) до урока 2.1 «Основ ML»: проверка вида, клавиатуры и axe.
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Threshold from "../../components/widgets/Threshold.astro";
+import { loadCourse } from "../../lib/content/collections";
+
+const course = await loadCourse("ml-basics");
+---
+<BaseLayout title="Порог классификатора" description="Демонстрация виджета «Порог классификатора»: матрица ошибок, точность, полнота и ROC при выбранном пороге." course={course}>
+  <main class="shell" id="content">
+    <h1>Порог классификатора</h1>
+    <p class="lead">Виджет урока 2.1 «Метрики классификации». Модель выдаёт вероятность дефолта, решение принимает порог.</p>
+    <Threshold n={1} cost={{ fp: 1, fn: 5 }}>300 заявок на&nbsp;оси оценки <i>p</i>. Крупные точки&nbsp;— ошибки. Цена: пропущенный дефолт&nbsp;— 5, лишний отказ&nbsp;— 1.</Threshold>
+  </main>
+</BaseLayout>

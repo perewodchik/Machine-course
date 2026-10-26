@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — S7.04 виджет «Порог классификатора» и игра «Цена ошибки» — готова
+- **Сделано:** classification.ts и тесты против чисел урока 2.1 (34/10/50/206, точность 0.773, полнота 0.405, AUC 0.848, лучший порог 0.181 и цена 121); data.json виджета из генератора и тест в test_threshold.py; виджет на _kit, обёртка Threshold.astro, регистрация в lessonComponents; игра error-cost (кредиты, спам-фильтр, равная цена, скрининг, решите сами), бот, тесты свойств
+- **Файлы:** src/lib/math/classification.ts, src/widgets/ml/threshold/, src/components/widgets/Threshold.astro, src/games/error-cost/, src/pages/games/error-cost.astro, src/pages/demo/threshold.astro, scripts/export_widget_data.py
+- **Проверка:** vitest 660, lint, check, build, pytest (test_threshold), e2e threshold.spec.ts, раскладка и axe threshold, costgame
+- **Отклонения от плана и решения:** функции классификации — в src/lib/math, а не в модели виджета: их использует и игра (границы ESLint); лучший порог игры — на сетке бегунка (шаг 0.005), чтобы бот и игрок выбирали из одного множества
+- **Следующий шаг:** S7.L1 ждёт S7.02 (данные); без сети — уроки на синтетических данных по решению пользователя.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — S7.03 инфраструктура проектов — готова
 - **Сделано:** code/mlf/project.py и тесты (подложенная утечка — чтение теста до финала, повторная финальная оценка — ловятся), демонстрационный проект на «Квартирах», шаблон отчёта, content/projects.yaml, src/pages/projects/[id].astro, ссылка со страницы «Основ ML»
 - **Файлы:** code/mlf/project.py, code/tests/test_project.py, notebooks/src/projects/demo_apartments.py, notebooks/templates/project-report.md, content/projects.yaml, src/pages/projects/[id].astro

@@ -204,6 +204,17 @@
   .outlier-widget__controls { display: grid; gap: var(--space-4); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule); }
   .outlier-widget__readouts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: start; gap: var(--space-3) var(--space-5); }
   @media (max-width: 900px) { .outlier-widget__readouts { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  /* «Порог классификатора» (курс «Основы ML», 2.1): полоса заявок, панель с матрицей ошибок и ROC */
+  .threshold__panel { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 0.8fr); gap: var(--space-4); align-items: start; margin-top: var(--space-3); }
+  .threshold__controls { display: grid; gap: var(--space-3); }
+  .threshold__metrics { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-1); }
+  .threshold__cm { border-collapse: collapse; font: var(--text-sm)/1.35 var(--font-ui); font-variant-numeric: tabular-nums; }
+  .threshold__cm th, .threshold__cm td { padding: var(--space-2); border: 1px solid var(--rule); text-align: left; vertical-align: top; }
+  .threshold__cm thead th, .threshold__cm tbody th { color: var(--ink-2); font-weight: 500; }
+  .threshold__cm b { display: block; font-size: var(--text-lg); color: var(--ink); }
+  .threshold__cm td.is-err { box-shadow: inset 0 0 0 2px var(--red-pen); }
+  .threshold__auc { margin: var(--space-1) 0 0; font: var(--text-sm)/1.4 var(--font-ui); color: var(--ink-2); }
+  @media (max-width: 900px) { .threshold__panel { grid-template-columns: minmax(0, 1fr); } }
   .riemann__fn { font-family: var(--font-math); font-size: 1.05em; }
   .riemann__fn sup { font-size: 0.7em; }
   @media (max-width: 900px) { .riemann__controls { grid-template-columns: minmax(0, 1fr); } }

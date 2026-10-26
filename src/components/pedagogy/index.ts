@@ -23,6 +23,7 @@ import Events from "../widgets/Events.astro";
 import DensityCdf from "../widgets/DensityCdf.astro";
 import CenterMass from "../widgets/CenterMass.astro";
 import DistExplorer from "../widgets/DistExplorer.astro";
+import Threshold from "../widgets/Threshold.astro";
 import RunningMean from "../widgets/RunningMean.astro";
 import ScatterCloud from "../widgets/ScatterCloud.astro";
 import CloudTransform from "../widgets/CloudTransform.astro";
@@ -47,5 +48,5 @@ import PyCell from "../python/PyCell.astro";
 import PyCode from "../python/PyCode.astro";
 
 // виджеты — обёртки .astro с островами React
-export const lessonComponents = { Block, Derivation, Diagnostic, Exercise, ExerciseSet, Formula, Note, Pilot, Prereqs, SymbolLegend, FitLine, GridMap, BayesGrid, Riemann, Span, NormBalls, Projection, MatmulViews, SystemLines, PlaneProjection, LevelSets, SvdSteps, LowRank, GradientField, CompGraph, Chord, Newton, Lagrange, Kkt, AreaStretch, Events, DensityCdf, CenterMass, DistExplorer, ContExplorer, RunningMean, SumHistogram, ScatterCloud, CloudTransform, GaussEditor, Mixture, KlExplorer, Outlier, PyCode, PyCell, OpenIn };
-export { AreaStretch, BayesGrid, Block, CenterMass, Chord, CloudTransform, CompGraph, ContExplorer, DensityCdf, Derivation, Diagnostic, DistExplorer, Events, Exercise, ExerciseSet, FitLine, Formula, GaussEditor, GradientField, GridMap, Kkt, KlExplorer, Lagrange, LevelSets, LowRank, MatmulViews, Mixture, Newton, Note, NormBalls, Pilot, PlaneProjection, OpenIn, Outlier, Prereqs, Projection, PyCell, PyCode, Riemann, RunningMean, ScatterCloud, Span, SumHistogram, SvdSteps, SymbolLegend, SystemLines };
+export const lessonComponents = { Block, Derivation, Diagnostic, Exercise, ExerciseSet, Formula, Note, Pilot, Prereqs, SymbolLegend, FitLine, GridMap, BayesGrid, Riemann, Span, NormBalls, Projection, MatmulViews, SystemLines, PlaneProjection, LevelSets, SvdSteps, LowRank, GradientField, CompGraph, Chord, Newton, Lagrange, Kkt, AreaStretch, Events, DensityCdf, CenterMass, DistExplorer, ContExplorer, RunningMean, SumHistogram, ScatterCloud, CloudTransform, GaussEditor, Mixture, KlExplorer, Outlier, Threshold, PyCode, PyCell, OpenIn };
+export { AreaStretch, BayesGrid, Block, CenterMass, Chord, CloudTransform, CompGraph, ContExplorer, DensityCdf, Derivation, Diagnostic, DistExplorer, Events, Exercise, ExerciseSet, FitLine, Formula, GaussEditor, GradientField, GridMap, Kkt, KlExplorer, Lagrange, LevelSets, LowRank, MatmulViews, Mixture, Newton, Note, NormBalls, Pilot, PlaneProjection, OpenIn, Outlier, Prereqs, Projection, PyCell, PyCode, Riemann, RunningMean, ScatterCloud, Span, SumHistogram, SvdSteps, SymbolLegend, SystemLines, Threshold };
