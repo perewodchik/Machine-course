@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — S5.01 банк фрагментов для итоговой проверки V.2 — готова
+- **Сделано:** фрагменты выводов из таблицы карточки V.2 — формулы f.logistic-gradient, f.logistic-hessian, f.glm-response, f.gda-mean, f.svm-dual, f.backprop-two-layer, f.em-jensen, f.pca-eigen с mutations у шагов; харнесс mlf проверяет, что каждая подложенная ошибка отличается от верного шага; новые виды проверки шага identity и bound (Йенсен не в ту сторону роняет тест); банк FRAGMENTS с курсом ML на фрагмент и сборщик задач fragmentTask; <Exercise fragment ask step mutation>
+- **Файлы:** content/formulas/ml/, code/mlf/formulas.py, src/lib/content/fragments.ts, src/lib/content/schemas.ts, src/components/pedagogy/Exercise.astro
+- **Проверка:** validate, lint, check, vitest 641 (fragments.test.ts), pytest (формулы фрагментов, test_step_mutation_equal_to_step_is_caught, test_reversed_jensen_is_caught)
+- **Отклонения от плана и решения:** фрагменты — отдельные формулы реестра, а не правка выводов уроков: у шагов уроков свои формулировки; курс ML для карты готовности — в FRAGMENTS, уроки для повторения выводятся из обоснований шагов (понятие → урок)
+- **Следующий шаг:** S5.L5.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — S4.L4 уроки модуля IV — готова
 - **Сделано:** все уроки модуля IV и итоговая проверка модуля
 - **Проверка:** validate, build, pytest, e2e модуля IV

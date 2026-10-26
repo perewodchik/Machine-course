@@ -1,0 +1,88 @@
+id: f.logistic-hessian
+kind: formula
+title:
+  ru: 'Гессиан логистической регрессии и вогнутость'
+  en: 'Hessian of the logistic regression log-likelihood'
+statement: '\nabla^2_\theta\, \ell(\theta) = -X^\top D X \preceq 0, \qquad D = \operatorname{diag}\bigl(g(z_i)(1 - g(z_i))\bigr),\ z = X\theta'
+
+# Фрагмент итоговой проверки V.2 (S5.01), курс «Основы ML». Гессиан — якобиан градиента X^T (y − g(Xθ)); веса D
+# положительны, поэтому −XᵀDX отрицательно полуопределена и ℓ вогнута — у метода Ньютона один максимум.
+symbols:
+  - name: X
+    tex: 'X'
+    meaning: 'матрица признаков'
+    shape: [n, d]
+  - name: y
+    tex: 'y'
+    meaning: 'метки'
+    shape: [n, 1]
+    sample: fraction
+  - name: theta
+    tex: '\theta'
+    meaning: 'параметры'
+    shape: [d, 1]
+  - name: v
+    tex: 'v'
+    meaning: 'любое направление'
+    shape: [d, 1]
+
+dependsOn:
+  concepts: [calc.hessian, calc.sigmoid, la.psd, la.quadratic-form]
+  rules: [rule.matmul-outer]
+
+derivation:
+  plan:
+    - 'Начать с упрощённого $\ell(\theta)$ и его градиента'
+    - 'Продифференцировать градиент ещё раз'
+    - 'Проверить знак квадратичной формы гессиана'
+  steps:
+    - goal: 0
+      tex: '\ell(\theta) = y^\top X\theta - \sum_{i=1}^{n} \log\bigl(1 + e^{\theta^\top x^{(i)}}\bigr)'
+      by: [calc.sigmoid]
+      check:
+        kind: same
+        py: 'y @ X @ theta - np.sum(np.log(1 + np.exp(X @ theta)))'
+    - goal: 0
+      tex: '\nabla_\theta\, \ell = X^\top \bigl(y - g(X\theta)\bigr)'
+      by: [calc.chain-rule]
+      check:
+        kind: gradient
+        wrt: theta
+        py: 'X.T @ (y - 1 / (1 + np.exp(-X @ theta)))'
+      mutations:
+        - tex: '\nabla_\theta\, \ell = X \bigl(y - g(X\theta)\bigr)'
+          py: 'X @ (y - 1 / (1 + np.exp(-X @ theta)))'
+          why: 'Потеряно транспонирование: $X$ — матрица $n \times d$, её не умножить на вектор длины $n$. Сумма $\sum_i (y^{(i)} - g_i)\, x^{(i)}$ в матричной записи — $X^\top(y - g)$.'
+    - goal: 1
+      tex: '\nabla^2_\theta\, \ell = \changed{-X^\top D X}, \qquad D_{ii} = g(z_i)\bigl(1 - g(z_i)\bigr)'
+      by: [calc.hessian, rule.matmul-outer]
+      note: '$g''(z) = g(z)(1 - g(z))$; слагаемое $i$ градиента даёт $-g''(z_i)\, x^{(i)} x^{(i)\top}$, а сумма внешних произведений с весами — $X^\top D X$.'
+      check:
+        kind: hessian
+        wrt: theta
+        py: '-X.T @ np.diag((1 / (1 + np.exp(-X @ theta))) * (1 - 1 / (1 + np.exp(-X @ theta)))) @ X'
+      mutations:
+        - tex: '\nabla^2_\theta\, \ell = X^\top D X'
+          py: 'X.T @ np.diag((1 / (1 + np.exp(-X @ theta))) * (1 - 1 / (1 + np.exp(-X @ theta)))) @ X'
+          why: 'Потерян минус из градиента $X^\top(y - g)$: так выглядит гессиан потери $-\ell$, а не $\ell$.'
+        - tex: '\nabla^2_\theta\, \ell = -X^\top X'
+          py: '-X.T @ X'
+          why: 'Потеряны веса $D$ — производная сигмоиды $g(1 - g)$. Без них получается гессиан МНК.'
+    - goal: 2
+      tex: 'v^\top \nabla^2_\theta\, \ell\; v = -\sum_{i=1}^{n} D_{ii}\, (v^\top x^{(i)})^2 \le 0'
+      by: [la.psd, la.quadratic-form]
+      note: '$D_{ii} > 0$, поэтому гессиан отрицательно полуопределён и $\ell$ вогнута: локальный максимум — глобальный.'
+      check:
+        kind: identity
+        lhs: 'v @ (-X.T @ np.diag((1 / (1 + np.exp(-X @ theta))) * (1 - 1 / (1 + np.exp(-X @ theta)))) @ X) @ v'
+        rhs: '-np.sum((1 / (1 + np.exp(-X @ theta))) * (1 - 1 / (1 + np.exp(-X @ theta))) * (X @ v) ** 2)'
+      mutations:
+        - tex: 'v^\top \nabla^2_\theta\, \ell\; v = \sum_{i=1}^{n} D_{ii}\, (v^\top x^{(i)})^2 \ge 0'
+          py: 'np.sum((1 / (1 + np.exp(-X @ theta))) * (1 - 1 / (1 + np.exp(-X @ theta))) * (X @ v) ** 2)'
+          why: 'Потерян минус гессиана: тогда $\ell$ была бы выпуклой и метод Ньютона искал бы минимум. Правдоподобие вогнуто — его максимизируют.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Classification and logistic regression / Newton''s method'
+
+usedIn: [calc.hessian]

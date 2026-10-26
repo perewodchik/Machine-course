@@ -1,0 +1,66 @@
+id: f.pca-eigen
+kind: formula
+title:
+  ru: 'Главная компонента — собственный вектор ковариации'
+  en: 'the principal component is an eigenvector of the covariance'
+statement: '\max_{\lVert u \rVert = 1} \frac1n \sum_{i=1}^{n} (u^\top x^{(i)})^2 \ \Rightarrow\ S u = \lambda u, \qquad S = \tfrac1n X^\top X'
+
+# Фрагмент итоговой проверки V.2 (S5.01), курс «Обучение без учителя». Данные центрированы. Дисперсия проекции на
+# направление u — квадратичная форма uᵀSu; условный максимум на единичной сфере (Лагранж) — собственный вектор S
+# с наибольшим собственным значением, и сама дисперсия равна λ.
+symbols:
+  - name: X
+    tex: 'X'
+    meaning: 'центрированные данные по строкам'
+    shape: [n, d]
+  - name: u
+    tex: 'u'
+    meaning: 'направление проекции'
+    shape: [d, 1]
+
+dependsOn:
+  concepts: [la.eigen, la.quadratic-form, calc.lagrange, prob.random-vectors]
+  rules: [rule.gram-sum, rule.grad-quadratic]
+
+derivation:
+  plan:
+    - 'Записать дисперсию проекций как квадратичную форму'
+    - 'Взять градиент'
+    - 'Учесть ограничение $\lVert u \rVert = 1$ множителем Лагранжа'
+  steps:
+    - goal: 0
+      tex: '\frac1n \sum_{i=1}^{n} (u^\top x^{(i)})^2 = \changed{u^\top \Bigl(\frac1n X^\top X\Bigr) u} = u^\top S u'
+      by: [rule.gram-sum]
+      note: '$\sum_i x^{(i)} x^{(i)\top} = X^\top X$; при центрированных данных $S$ — выборочная ковариация.'
+      check:
+        kind: same
+        py: 'u @ (X.T @ X / X.shape[0]) @ u'
+      mutations:
+        - tex: '\frac1n \sum_{i=1}^{n} (u^\top x^{(i)})^2 = u^\top \Bigl(\frac1n X X^\top\Bigr) u'
+          py: 'u @ (X @ X.T / X.shape[0]) @ u'
+          why: 'Перепутан порядок: $X X^\top$ — матрица $n \times n$ (скалярные произведения объектов), её не умножить на $u$ из $\mathbb{R}^d$. Ковариация признаков — $X^\top X$.'
+    - goal: 1
+      tex: '\nabla_u\, u^\top S u = \changed{2 S u}'
+      by: [rule.grad-quadratic]
+      check:
+        kind: gradient
+        wrt: u
+        py: '2 * (X.T @ X / X.shape[0]) @ u'
+      mutations:
+        - tex: '\nabla_u\, u^\top S u = S u'
+          py: '(X.T @ X / X.shape[0]) @ u'
+          why: 'Потерян множитель $2$: $\nabla_u\, u^\top A u = (A + A^\top) u = 2Au$ для симметричной $A$.'
+    - goal: 2
+      tex: '2 S u - 2 \lambda u = 0 \ \Rightarrow\ S u = \lambda u, \qquad u^\top S u = \lambda'
+      by: [calc.lagrange, la.eigen]
+      note: 'Градиент лагранжиана $u^\top S u - \lambda(u^\top u - 1)$ равен нулю: $u$ — собственный вектор, а дисперсия проекции — его собственное значение. Максимум — у наибольшего $\lambda$.'
+      check:
+        kind: identity
+        lhs: 'np.linalg.eigh(X.T @ X / X.shape[0])[1][:, -1] @ (X.T @ X / X.shape[0]) @ np.linalg.eigh(X.T @ X / X.shape[0])[1][:, -1]'
+        rhs: 'np.linalg.eigh(X.T @ X / X.shape[0])[0][-1]'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Principal components analysis'
+
+usedIn: [la.eigen]

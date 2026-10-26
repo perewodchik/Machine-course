@@ -72,3 +72,23 @@ def test_familywise_union_bound():
         fwer = 1 - np.prod(1 - a)
         assert fwer <= np.sum(a) + 1e-12
         assert m == 1 or fwer < np.sum(a)
+
+
+def test_step_mutation_equal_to_step_is_caught():
+    """Подложенная ошибка шага (S5.01), которая на самом деле верна, — ошибка в контенте: харнесс её ловит."""
+    data = yaml.safe_load((ROOT / "content/formulas/calc/normal-equations.yaml").read_text(encoding="utf-8"))
+    step = data["derivation"]["steps"][2]
+    step["mutations"] = [{"tex": "то же", "py": step["check"]["py"], "why": "—"}]
+    report = check_formula(data)
+    assert not report.ok
+    assert "совпадает с верным шагом" in report.problems[0]
+
+
+def test_reversed_jensen_is_caught():
+    """Йенсен «не в ту сторону» (типичная ошибка V.2): оценка сверху вместо снизу роняет проверку bound."""
+    data = yaml.safe_load((ROOT / "content/formulas/ml/em-jensen.yaml").read_text(encoding="utf-8"))
+    assert check_formula(data).ok
+    data["derivation"]["steps"][2]["check"]["side"] = "above"
+    report = check_formula(data)
+    assert not report.ok
+    assert "оценка сверху нарушена" in report.problems[0]

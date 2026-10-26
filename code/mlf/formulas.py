@@ -7,7 +7,11 @@
 - ``gradient``: ``grad`` совпадает с численным градиентом ``f`` по ``wrt`` (центральные разности);
 - шаги вывода: ``same`` — значение совпадает с предыдущим шагом ``same``; ``gradient`` — градиент
   последнего ``same`` по ``wrt``; ``hessian`` — якобиан последнего ``gradient`` по ``wrt`` (по скаляру — число); ``stationary`` — равенство ``lhs = rhs`` в найденном решении;
-  ``solution`` — выражение для точки минимума, в которой градиент обращается в ноль.
+  ``solution`` — выражение для точки минимума, в которой градиент обращается в ноль; ``identity`` — ``lhs = rhs``
+  на тех же случайных символах (новая величина вне цепочки ``same``); ``bound`` — значение ``py`` не больше
+  (``side: below``) или не меньше (``side: above``) последнего ``same``: неравенство Йенсена, граница.
+
+Подложенные ошибки шага (``mutations`` у шага, S5.01) обязаны отличаться от верного значения шага.
 
 Мутации правила (``mutations``) — типичные ошибки: их ``py`` обязан отличаться от верной части
 (``rhs`` или ``grad``), иначе «ошибка» на деле верна и вводила бы ученика в заблуждение.
@@ -116,37 +120,51 @@ def check_formula(data: dict, seed: int = 0) -> Report:
     for i, step in enumerate(steps, 1):
         c = step.get("check")
         if not c:
+            if step.get("mutations"):
+                report.problems.append(f"шаг {i}: у шага с mutations нужна численная проверка")
             continue
+        target = None  # верное значение шага: с ним сравниваются подложенные ошибки (S5.01)
         try:
             kind = c["kind"]
             if kind == "same":
                 value = evaluate(c["py"], env)
                 if ref is not None and not _close(value, ref):
                     report.problems.append(f"шаг {i}: значение не совпадает с предыдущим шагом")
-                ref, f_expr = value, c["py"]
+                ref, f_expr, target = value, c["py"], value
             elif kind == "gradient":
                 expected = numeric_gradient(lambda e: evaluate(f_expr, e), env, c["wrt"])
                 if not _close(evaluate(c["py"], env), expected):
                     report.problems.append(f"шаг {i}: градиент не совпадает с численным градиентом шага выше")
-                grad_expr = c["py"]
+                grad_expr, target = c["py"], expected
             elif kind == "hessian":
                 # гессиан — якобиан градиента шага выше: столбец j — производная градиента по координате j
                 x = np.asarray(env[c["wrt"]], dtype=float)
                 cols = []
                 for j in range(x.size):
-                    step = np.zeros_like(x)
-                    step.flat[j] = 1e-6
-                    plus = evaluate(grad_expr, {**env, c["wrt"]: x + step})
-                    minus = evaluate(grad_expr, {**env, c["wrt"]: x - step})
+                    dx = np.zeros_like(x)
+                    dx.flat[j] = 1e-6
+                    plus = evaluate(grad_expr, {**env, c["wrt"]: x + dx})
+                    minus = evaluate(grad_expr, {**env, c["wrt"]: x - dx})
                     cols.append((plus - minus) / 2e-6)
                 # скалярный аргумент: гессиан — число, а не массив из одного столбца
                 numeric = cols[0] if x.ndim == 0 else np.stack(cols, axis=-1)
                 if not _close(evaluate(c["py"], env), numeric):
                     report.problems.append(f"шаг {i}: гессиан не совпадает с численным якобианом градиента")
+                target = numeric
             elif kind == "stationary":
                 stationary.append((i, c))
+            elif kind == "identity":
+                target = evaluate(c["rhs"], env)
+                if not _close(evaluate(c["lhs"], env), target):
+                    report.problems.append(f"шаг {i}: левая и правая части не совпадают")
+            elif kind == "bound":
+                target = evaluate(c["py"], env)
+                below = c["side"] == "below"
+                if ref is None or (target > ref + 1e-9 if below else target < ref - 1e-9):
+                    report.problems.append(f"шаг {i}: оценка {'сверху' if not below else 'снизу'} нарушена: {target} и {ref}")
             elif kind == "solution":
-                at = {**env, c["wrt"]: evaluate(c["py"], env)}
+                target = evaluate(c["py"], env)
+                at = {**env, c["wrt"]: target}
                 if grad_expr and not _close(evaluate(grad_expr, at), np.zeros_like(at[c["wrt"]]), atol=1e-8):
                     report.problems.append(f"шаг {i}: в найденной точке градиент не равен нулю")
                 for j, s in stationary:
@@ -154,6 +172,13 @@ def check_formula(data: dict, seed: int = 0) -> Report:
                         report.problems.append(f"шаг {j}: равенство не выполняется в найденной точке")
         except Exception as exc:
             report.problems.append(f"шаг {i}: выражение не вычисляется ({exc})")
+        for j, m in enumerate(step.get("mutations", []), 1):
+            try:
+                same = target is not None and _close(evaluate(m["py"], env), target)
+            except Exception:  # размерности не сходятся — ошибка видна и так
+                same = False
+            if same:
+                report.problems.append(f"шаг {i}, ошибка {j}: «{m['tex']}» совпадает с верным шагом — это не ошибка")
     return report
 
 
