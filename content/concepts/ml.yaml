@@ -105,3 +105,27 @@
   cs229:
     - edition: main-notes-2026-spring
       section: 'Classification and logistic regression'
+
+- id: ml.perceptron
+  title:
+    ru: 'Перцептрон'
+    en: 'perceptron'
+  summary: 'Модель $h_\theta(x) = 1\{\theta^\top x \ge 0\}$ и правило $\theta := \theta + \alpha(y^{(i)} - h_\theta(x^{(i)}))\,x^{(i)}$: поправка только на ошибках. На разделимых данных останавливается за конечное число ошибок, на неразделимых зацикливается; вероятностей не даёт.'
+  lesson: perceptron-softmax
+  prerequisites: [ml.logistic-regression]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Classification and logistic regression / The perceptron learning algorithm'
+
+- id: ml.softmax
+  title:
+    ru: 'Softmax-регрессия'
+    en: 'softmax (multinomial logistic) regression'
+  summary: 'У каждого из $k$ классов свой вектор $\theta_j$; вероятности $p_j(x) = e^{\theta_j^\top x} / \sum_s e^{\theta_s^\top x}$, потери — кросс-энтропия, градиент $\frac1n X^\top(P - Y)$. Параметры определены с точностью до общего сдвига; при $k = 2$ — логистическая регрессия с $\theta_1 - \theta_2$.'
+  lesson: perceptron-softmax
+  prerequisites: [ml.logistic-regression, prob.information]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Classification and logistic regression / Multi-class classification'

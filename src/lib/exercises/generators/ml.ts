@@ -263,3 +263,59 @@ export const oddsFactor: Generator = {
     };
   },
 };
+
+/** Урок 1.5: вероятность класса по логитам softmax. */
+export const softmaxProb: Generator = {
+  id: "ml.softmax-prob",
+  version: 1,
+  title: "Softmax по логитам",
+  make(seed) {
+    const r = rng(seed);
+    const t = [r.int(-4, 6) / 2, r.int(-4, 6) / 2, r.int(-4, 6) / 2];
+    const j = r.int(0, 2);
+    const names = ["эконом", "комфорт", "бизнес"];
+    const m = Math.max(...t);
+    const e = t.map((v) => Math.exp(v - m));
+    const answer = round(e[j]! / e.reduce((a, b) => a + b, 0), 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`Softmax-регрессия выдала для квартиры логиты $t = (${t.map(num).join(",\\ ")})$ для сегментов «эконом», «комфорт», «бизнес». Какова вероятность сегмента «${names[j]}»?`,
+      label: "p =",
+      answer,
+      tol: 0.002,
+      hints: [String.raw`$p_j = e^{t_j} / \sum_s e^{t_s}$. Удобно сначала вычесть из всех логитов наибольший: вероятности от этого не меняются.`],
+      right: String.raw`$p = e^{${num(t[j]!)}} / (e^{${num(t[0]!)}} + e^{${num(t[1]!)}} + e^{${num(t[2]!)}}) = ${num(answer)}$.`,
+      wrong: String.raw`Возведите $e$ в каждый логит и поделите нужное слагаемое на сумму: $p = ${num(answer)}$. Делить сами логиты на их сумму нельзя — они бывают отрицательными.`,
+    };
+  },
+};
+
+/** Урок 1.5: одна поправка перцептрона. */
+export const perceptronUpdateGen: Generator = {
+  id: "ml.perceptron-update",
+  version: 1,
+  title: "Поправка перцептрона",
+  make(seed) {
+    const r = rng(seed);
+    for (;;) {
+      const th = [r.int(-4, 4) / 2, r.int(-4, 4) / 2, r.int(-4, 4) / 2];
+      const x = [1, r.int(-4, 4) / 2, r.int(-4, 4) / 2];
+      const z = th[0]! * x[0]! + th[1]! * x[1]! + th[2]! * x[2]!;
+      if (z === 0) continue;
+      const h = z > 0 ? 1 : 0;
+      const y = seed % 3 === 0 ? h : 1 - h; // иногда объект уже классифицирован верно
+      const j = 1 + (seed % 2);
+      const answer = round(th[j]! + (y - h) * x[j]!, 4);
+      return {
+        kind: "numeric",
+        prompt: String.raw`Перцептрон $h_\theta(x) = 1\{\theta^\top x \ge 0\}$, $\theta = (${th.map(num).join(",\\ ")})^\top$, шаг $\alpha = 1$. Пришёл объект $x = (${x.map(num).join(",\\ ")})^\top$ с меткой $y = ${y}$. Каким станет $\theta_${j}$ после обработки объекта?`,
+        label: String.raw`θ${j === 1 ? "₁" : "₂"} =`,
+        answer,
+        tol: 0.0005,
+        hints: [String.raw`Сначала посчитайте $\theta^\top x = ${num(z)}$ и предсказание $h$. Поправка $\alpha(y - h)x$ — только если $h \ne y$.`],
+        right: y === h ? String.raw`$\theta^\top x = ${num(z)}$, $h = ${h} = y$: ответ верный, поправки нет, $\theta_${j} = ${num(answer)}$.` : String.raw`$\theta^\top x = ${num(z)}$, $h = ${h} \ne y$: $\theta_${j} := ${num(th[j]!)} + (${y} - ${h}) \cdot ${num(x[j]!)} = ${num(answer)}$.`,
+        wrong: y === h ? String.raw`Предсказание $h = ${h}$ совпало с меткой: перцептрон на верных ответах веса не меняет.` : String.raw`Ошибка: $h = ${h}$, а $y = ${y}$. Поправка $(y - h)\,x_${j} = ${num((y - h) * x[j]!)}$, новое $\theta_${j} = ${num(answer)}$.`,
+      };
+    }
+  },
+};

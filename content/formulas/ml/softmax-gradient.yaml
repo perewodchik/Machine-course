@@ -1,0 +1,79 @@
+id: f.softmax-gradient
+kind: formula
+title:
+  ru: 'Градиент кросс-энтропии softmax-регрессии'
+  en: 'gradient of the softmax cross-entropy loss'
+statement: '\nabla_\Theta J = \frac1n X^\top (P - Y) \in \mathbb{R}^{d \times k}, \qquad P = \operatorname{softmax}(X\Theta)\ \text{по строкам}'
+
+# Урок 1.5 «Основ ML»: потери — средний минус логарифм вероятности верного класса; по логитам t производная
+# p_j − 1{y = j}, матрично — Xᵀ(P − Y)/n той же формы d × k, что Θ. Проверка берёт «мягкие» ответы Y — строки
+# из положительных чисел с суммой 1 (one-hot — частный случай): вывод опирается только на сумму строки.
+symbols:
+  - name: X
+    tex: 'X'
+    meaning: 'объекты по строкам'
+    shape: [n, d]
+  - name: Theta
+    tex: '\Theta'
+    meaning: 'веса классов по столбцам $\theta_1, \dots, \theta_k$'
+    shape: [d, k]
+  - name: Y
+    tex: 'Y'
+    meaning: 'ответы в кодировке one-hot (строки нормируются при проверке)'
+    shape: [n, k]
+    sample: positive
+
+dependsOn:
+  concepts: [ml.logistic-regression, calc.matrix-calculus, prob.information]
+  rules: [rule.matvec-columns]
+
+derivation:
+  plan:
+    - 'Записать потери через логиты $t = \Theta^\top x$'
+    - 'Продифференцировать по логитам: $p_j - 1\{y = j\}$'
+    - 'Собрать градиент по $\Theta$ в матрицу $d \times k$'
+  steps:
+    - goal: 0
+      tex: 'J(\Theta) = -\frac1n \sum_{i=1}^{n} \sum_{j=1}^{k} Y_{ij} \log p_j(x^{(i)}) = \changed{\frac1n \sum_{i=1}^{n} \Bigl(\log \sum_{s=1}^{k} e^{t^{(i)}_s} - \sum_{j} Y_{ij}\, t^{(i)}_j\Bigr)}'
+      by: [ml.loss]
+      note: '$\log p_j = t_j - \log \sum_s e^{t_s}$, а сумма строки $Y$ равна единице: логарифм знаменателя выносится один раз.'
+      check:
+        kind: same
+        py: 'np.mean(np.log(np.exp(X @ Theta).sum(axis=1)) - np.sum(np.abs(Y) / np.abs(Y).sum(axis=1, keepdims=True) * (X @ Theta), axis=1))'
+    - goal: 1
+      tex: '\frac{\partial J^{(i)}}{\partial t_j} = \changed{p_j(x^{(i)}) - Y_{ij}}'
+      by: [calc.chain-rule]
+      note: 'Производная $\log \sum_s e^{t_s}$ по $t_j$ — это $e^{t_j}/\sum_s e^{t_s} = p_j$. Знак: для спуска по $J$ — $p_j - Y_{ij}$, для подъёма по $\ell$ — наоборот.'
+      check:
+        kind: identity
+        lhs: 'np.exp(X @ Theta) / np.exp(X @ Theta).sum(axis=1, keepdims=True) - np.abs(Y) / np.abs(Y).sum(axis=1, keepdims=True)'
+        rhs: 'np.exp(X @ Theta - (X @ Theta).max(axis=1, keepdims=True)) / np.exp(X @ Theta - (X @ Theta).max(axis=1, keepdims=True)).sum(axis=1, keepdims=True) - np.abs(Y) / np.abs(Y).sum(axis=1, keepdims=True)'
+      mutations:
+        - tex: '\frac{\partial J^{(i)}}{\partial t_j} = Y_{ij} - p_j(x^{(i)})'
+          py: 'np.abs(Y) / np.abs(Y).sum(axis=1, keepdims=True) - np.exp(X @ Theta) / np.exp(X @ Theta).sum(axis=1, keepdims=True)'
+          why: 'Знак: это градиент правдоподобия $\ell$, для подъёма. Потери $J = -\ell/n$ спускают по $p_j - 1\{y = j\}$.'
+    - goal: 2
+      tex: '\nabla_\Theta J = \changed{\frac1n X^\top (P - Y)}'
+      by: [rule.matvec-columns]
+      note: 'Логит $t^{(i)}_j = \theta_j^\top x^{(i)}$, поэтому $\nabla_{\theta_j} J = \frac1n \sum_i (p_j - Y_{ij})\, x^{(i)}$ — столбец $j$ матрицы $X^\top(P - Y)/n$. Форма $d \times k$ совпадает с $\Theta$.'
+      check:
+        kind: gradient
+        wrt: Theta
+        py: 'X.T @ (np.exp(X @ Theta) / np.exp(X @ Theta).sum(axis=1, keepdims=True) - np.abs(Y) / np.abs(Y).sum(axis=1, keepdims=True)) / X.shape[0]'
+      mutations:
+        - tex: '\nabla_\Theta J = \frac1n (P - Y)^\top X'
+          py: '(np.exp(X @ Theta) / np.exp(X @ Theta).sum(axis=1, keepdims=True) - np.abs(Y) / np.abs(Y).sum(axis=1, keepdims=True)).T @ X / X.shape[0]'
+          why: 'Форма $k \times d$, а не $d \times k$: это транспонированный градиент. Градиент по $\Theta$ имеет форму $\Theta$.'
+        - tex: '\nabla_\Theta J = \frac1n X^\top P'
+          py: 'X.T @ (np.exp(X @ Theta) / np.exp(X @ Theta).sum(axis=1, keepdims=True)) / X.shape[0]'
+          why: 'Потерян вклад верного класса $-Y$: от слагаемого $-\sum_j Y_{ij} t_j$ в $J$ остаётся $-Y$.'
+
+pitfalls:
+  - 'Считать $e^{t}$ без вычитания максимума: при $t \approx 1000$ получится переполнение. Сдвиг всех логитов объекта на одно число вероятностей не меняет.'
+  - 'Сравнивать $\theta_j$ с весами scikit-learn напрямую: без штрафа веса определены с точностью до общего сдвига, сравнивают вероятности или разности $\theta_j - \theta_s$.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Classification and logistic regression / Multi-class classification'
+
+usedIn: [ml.softmax]

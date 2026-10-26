@@ -1,7 +1,7 @@
 """Экспорт данных виджетов из сниппетов уроков: одни и те же числа в Python, в тексте урока и в виджете.
 
 Запуск: python scripts/export_widget_data.py   (пишет prototype/assets/data/*.js и data.json виджетов сайта)
-Тесты code/tests/test_threshold.py, test_normal_equations.py, test_features_lwr.py и test_logistic.py проверяют, что экспорт не разошёлся с генератором.
+Тесты code/tests/test_threshold.py, test_normal_equations.py, test_features_lwr.py, test_logistic.py и test_softmax.py проверяют, что экспорт не разошёлся с генератором.
 """
 
 from __future__ import annotations
@@ -18,6 +18,7 @@ sys.path.insert(0, str(ROOT / "code"))
 
 from la.normal_equations import make_data  # noqa: E402
 from ml_basics.logistic import expensive  # noqa: E402
+from ml_basics.softmax import segments  # noqa: E402
 from ml_basics.threshold import make_scores  # noqa: E402
 from mlf.datasets import apartments, metro_prices  # noqa: E402
 
@@ -30,6 +31,8 @@ SITE = {
     "flexibility": ROOT / "src" / "widgets" / "ml" / "flexibility" / "data.json",
     "logistic": ROOT / "src" / "widgets" / "ml" / "logistic-plane" / "data.json",
     "ascent-newton": ROOT / "src" / "widgets" / "ml" / "ascent-newton" / "data.json",
+    "class-regions": ROOT / "src" / "widgets" / "ml" / "class-regions" / "data.json",
+    "perceptron": ROOT / "src" / "widgets" / "ml" / "perceptron" / "data.json",
 }
 
 
@@ -60,6 +63,11 @@ def logistic_payload() -> dict:
     return {"source": "code/snippets/ml_basics/logistic.py#data", "area": F[:, 0].tolist(), "metro": F[:, 1].tolist(), "y": y.astype(int).tolist()}
 
 
+def segments_payload() -> dict:
+    X, y = segments()
+    return {"source": "code/snippets/ml_basics/softmax.py#data", "z1": np.round(X[:, 1], 6).tolist(), "z2": np.round(X[:, 2], 6).tolist(), "y": y.tolist()}
+
+
 def render(name: str, payload: dict) -> str:
     return f"// Сгенерировано scripts/export_widget_data.py — не править руками\nwindow.{name} = {json.dumps(payload, ensure_ascii=False)};\n"
 
@@ -68,7 +76,7 @@ def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "threshold.js").write_text(render("THRESHOLD_DATA", threshold_payload()))
     print("prototype/assets/data/threshold.js")
-    for name, payload in (("fit-line", fit_line_payload()), ("fit-line-game", apartments_payload()), ("threshold", threshold_payload()), ("flexibility", metro_payload()), ("logistic", logistic_payload()), ("ascent-newton", logistic_payload())):
+    for name, payload in (("fit-line", fit_line_payload()), ("fit-line-game", apartments_payload()), ("threshold", threshold_payload()), ("flexibility", metro_payload()), ("logistic", logistic_payload()), ("ascent-newton", logistic_payload()), ("class-regions", segments_payload()), ("perceptron", segments_payload())):
         path = SITE[name]
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n")

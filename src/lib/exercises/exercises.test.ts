@@ -1398,6 +1398,29 @@ describe("генераторы", () => {
     }
   });
 
+  it("ml.softmax-prob: вероятность по логитам; ml.perceptron-update: поправка только на ошибке", () => {
+    const nums = (t: string) => t.replace(/−/g, "-");
+    for (let s = 1; s <= 30; s++) {
+      const t = make("ml.softmax-prob", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const p = nums(t.prompt);
+      const logits = /t = \(([^)]+)\)/.exec(p)![1]!.split(",\\ ").map(Number);
+      const j = ["эконом", "комфорт", "бизнес"].indexOf(/сегмента «([^»]+)»\?/.exec(p)![1]!);
+      const z = logits.reduce((a, v) => a + Math.exp(v), 0);
+      expect(t.answer).toBeCloseTo(Math.exp(logits[j]!) / z, 4);
+
+      const u = make("ml.perceptron-update", s);
+      if (u.kind !== "numeric") throw new Error("ожидалось число");
+      const q = nums(u.prompt);
+      const th = /theta = \(([^)]+)\)/.exec(q)![1]!.split(",\\ ").map(Number);
+      const x = /x = \(([^)]+)\)/.exec(q)![1]!.split(",\\ ").map(Number);
+      const y = Number(/y = (\d)\$/.exec(q)![1]);
+      const k = Number(/theta_(\d)\$ после/.exec(q)![1]);
+      const h = th.reduce((a, v, i) => a + v * x[i]!, 0) >= 0 ? 1 : 0;
+      expect(u.answer).toBeCloseTo(th[k]! + (y - h) * x[k]!, 6);
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

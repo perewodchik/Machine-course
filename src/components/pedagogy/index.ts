@@ -29,6 +29,8 @@ import LmsPath from "../widgets/LmsPath.astro";
 import Flexibility from "../widgets/Flexibility.astro";
 import LogisticPlane from "../widgets/LogisticPlane.astro";
 import AscentNewton from "../widgets/AscentNewton.astro";
+import ClassRegions from "../widgets/ClassRegions.astro";
+import Perceptron from "../widgets/Perceptron.astro";
 import RunningMean from "../widgets/RunningMean.astro";
 import ScatterCloud from "../widgets/ScatterCloud.astro";
 import CloudTransform from "../widgets/CloudTransform.astro";
@@ -53,5 +55,5 @@ import PyCell from "../python/PyCell.astro";
 import PyCode from "../python/PyCode.astro";
 
 // виджеты — обёртки .astro с островами React
-export const lessonComponents = { Block, Derivation, Diagnostic, Exercise, ExerciseSet, Formula, Note, Pilot, Prereqs, SymbolLegend, FitLine, GridMap, BayesGrid, Riemann, Span, NormBalls, Projection, MatmulViews, SystemLines, PlaneProjection, LevelSets, SvdSteps, LowRank, GradientField, CompGraph, Chord, Newton, Lagrange, Kkt, AreaStretch, Events, DensityCdf, CenterMass, DistExplorer, ContExplorer, RunningMean, SumHistogram, ScatterCloud, CloudTransform, GaussEditor, Mixture, KlExplorer, Outlier, Threshold, TrainTest, LmsPath, Flexibility, LogisticPlane, AscentNewton, PyCode, PyCell, OpenIn };
-export { AreaStretch, AscentNewton, BayesGrid, Block, CenterMass, Chord, CloudTransform, CompGraph, ContExplorer, DensityCdf, Derivation, Diagnostic, DistExplorer, Events, Exercise, ExerciseSet, FitLine, Flexibility, Formula, GaussEditor, GradientField, GridMap, Kkt, KlExplorer, Lagrange, LevelSets, LmsPath, LogisticPlane, LowRank, MatmulViews, Mixture, Newton, Note, NormBalls, Pilot, PlaneProjection, OpenIn, Outlier, Prereqs, Projection, PyCell, PyCode, Riemann, RunningMean, ScatterCloud, Span, SumHistogram, SvdSteps, SymbolLegend, SystemLines, Threshold, TrainTest };
+export const lessonComponents = { Block, Derivation, Diagnostic, Exercise, ExerciseSet, Formula, Note, Pilot, Prereqs, SymbolLegend, FitLine, GridMap, BayesGrid, Riemann, Span, NormBalls, Projection, MatmulViews, SystemLines, PlaneProjection, LevelSets, SvdSteps, LowRank, GradientField, CompGraph, Chord, Newton, Lagrange, Kkt, AreaStretch, Events, DensityCdf, CenterMass, DistExplorer, ContExplorer, RunningMean, SumHistogram, ScatterCloud, CloudTransform, GaussEditor, Mixture, KlExplorer, Outlier, Threshold, TrainTest, LmsPath, Flexibility, LogisticPlane, AscentNewton, ClassRegions, Perceptron, PyCode, PyCell, OpenIn };
+export { AreaStretch, AscentNewton, BayesGrid, Block, CenterMass, Chord, ClassRegions, CloudTransform, CompGraph, ContExplorer, DensityCdf, Derivation, Diagnostic, DistExplorer, Events, Exercise, ExerciseSet, FitLine, Flexibility, Formula, GaussEditor, GradientField, GridMap, Kkt, KlExplorer, Lagrange, LevelSets, LmsPath, LogisticPlane, LowRank, MatmulViews, Mixture, Newton, Note, NormBalls, Pilot, PlaneProjection, OpenIn, Outlier, Perceptron, Prereqs, Projection, PyCell, PyCode, Riemann, RunningMean, ScatterCloud, Span, SumHistogram, SvdSteps, SymbolLegend, SystemLines, Threshold, TrainTest };

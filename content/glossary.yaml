@@ -423,3 +423,6 @@
 - id: logistic-regression
   ru: 'сигмоида; логистическая функция; граница решений; шансы; логарифм шансов; логистические потери; линейная разделимость; метод Ньютона; IRLS; градиентный подъём'
   en: 'sigmoid; logistic function; decision boundary; odds; log-odds (logit); log loss (binary cross-entropy); linear separability; Newton''s method; iteratively reweighted least squares (IRLS); gradient ascent'
+- id: perceptron-softmax
+  ru: 'перцептрон; один против всех; softmax-регрессия; логиты; кросс-энтропия; кодировка one-hot'
+  en: 'perceptron; one-vs-rest; softmax (multinomial logistic) regression; logits; cross-entropy; one-hot encoding'

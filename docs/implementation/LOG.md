@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — L-ml-basics-1.5 Перцептрон и многоклассовая классификация — готов
+- **Сделано:** урок (4 цикла, формулы f.softmax-binary и f.softmax-gradient, 4 упражнения, итоговая ml.softmax-prob); виджеты «Перцептрон» (src/widgets/ml/perceptron: разделимая и неразделимая задачи, поправки по шагам и эпохам) и «Области классов» (class-regions: области argmax, сдвиг всех θ, резкость, оптимум); src/lib/math/softmax.ts; генераторы ml.softmax-prob, ml.perceptron-update; понятия ml.perceptron, ml.softmax; ячейка ml_basics/softmax.py со сверкой с Perceptron и LogisticRegression(C=np.inf)
+- **Файлы:** content/courses/ml-basics/linear-models/perceptron-softmax.mdx, content/formulas/ml/softmax-*.yaml, src/widgets/ml/perceptron/, src/widgets/ml/class-regions/, code/snippets/ml_basics/softmax.py, code/tests/test_softmax.py
+- **Проверка:** validate, lint, check, build, vitest 706, pytest, check_consistency, e2e lesson-ml-1-5, скриншоты 1440 и 390
+- **Отклонения от плана и решения:** стрелки θ_j двигают ползунки выбранного класса, а не перетаскивание; режим перцептрона — отдельный виджет; предсказание «куда повернётся граница» — вопрос в тексте перед виджетом, а не шаг в виджете; сверка весов при одинаковом L2-штрафе (перевод C в λ) не сделана — только вероятности без штрафа
+- **Следующий шаг:** L-ml-basics-1.6 — обобщённые линейные модели.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — L-ml-basics-1.4 Логистическая регрессия и метод Ньютона — готов
 - **Сделано:** урок (4 цикла, формулы f.logistic-gradient, f.logistic-hessian и новая f.logistic-newton-irls, 5 упражнений, итоговая ml.logistic-prob); виджеты «Сигмоида над плоскостью» (src/widgets/ml/logistic-plane) и «Подъём против Ньютона» (ascent-newton); игра «Честная вероятность» (src/games/honest-probability, 4 уровня); src/lib/math/logistic.ts; генераторы ml.logistic-prob, ml.odds-factor; понятие ml.logistic-regression; ячейка ml_basics/logistic.py со сверкой с LogisticRegression(C=np.inf)
 - **Файлы:** content/courses/ml-basics/linear-models/logistic-regression.mdx, content/formulas/ml/logistic-newton-irls.yaml, src/widgets/ml/logistic-plane/, src/widgets/ml/ascent-newton/, src/games/honest-probability/, code/snippets/ml_basics/logistic.py, code/tests/test_logistic.py
