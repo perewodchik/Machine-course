@@ -1,0 +1,62 @@
+id: f.normal-variance-mle
+kind: formula
+title:
+  ru: 'Оценка максимального правдоподобия дисперсии нормального'
+  en: 'maximum likelihood estimate of a Gaussian variance'
+statement: '\hat\sigma^2 = \arg\max_{v > 0} \ell(\bar x, v) = \frac1n \sum_{i=1}^{n} \bigl(x^{(i)} - \bar x\bigr)^2'
+
+# Урок IV.3: при μ̂ = x̄ логарифм правдоподобия как функция дисперсии v = σ²; производная по v обнуляется при
+# среднем квадрате отклонения с делением на n — смещённой оценке из урока IV.2. Проверка — выборка из n = 7.
+symbols:
+  - name: x
+    tex: 'x'
+    meaning: 'выборка'
+    shape: [n, 1]
+  - name: v
+    tex: 'v'
+    meaning: 'дисперсия $\sigma^2$ как параметр'
+    shape: []
+    sample: positive
+
+dependsOn:
+  concepts: [stat.mle, prob.normal, calc.log-exp]
+  rules: []
+
+derivation:
+  plan:
+    - 'Подставить $\mu = \bar x$ в логарифм нормальной плотности и сложить по объектам'
+    - 'Продифференцировать по $v = \sigma^2$'
+    - 'Приравнять к нулю и выразить $v$'
+  steps:
+    - goal: 0
+      tex: '\ell(\bar x, v) = -\frac{n}{2} \log (2\pi v) - \frac{1}{2v} \sum_{i=1}^{n} \bigl(x^{(i)} - \bar x\bigr)^2'
+      by: [prob.normal]
+      note: '$\log$ плотности $\mathcal{N}(\mu, v)$ — $-\frac12 \log(2\pi v) - (x - \mu)^2/(2v)$. Максимум по $\mu$ при любом $v$ — $\bar x$ (урок IV.1), поэтому подставляем его сразу.'
+      check:
+        kind: same
+        py: '-x.shape[0] / 2 * np.log(2 * np.pi * v) - np.sum((x - np.sum(x) / x.shape[0]) ** 2) / (2 * v)'
+    - goal: 1
+      tex: '\frac{\partial \ell}{\partial v} = \changed{-\frac{n}{2v} + \frac{1}{2v^2} \sum_{i=1}^{n} \bigl(x^{(i)} - \bar x\bigr)^2}'
+      by: [calc.derivative]
+      note: 'Дифференцируем по дисперсии $v$, а не по $\sigma$: так выкладка короче, а точка максимума та же.'
+      check:
+        kind: gradient
+        wrt: v
+        py: '-x.shape[0] / (2 * v) + np.sum((x - np.sum(x) / x.shape[0]) ** 2) / (2 * v ** 2)'
+    - goal: 2
+      tex: '\hat\sigma^2 = \changed{\frac1n \sum_{i=1}^{n} \bigl(x^{(i)} - \bar x\bigr)^2}'
+      by: [stat.mle]
+      note: 'Делим на $n$: MLE дисперсии смещена, $\mathbb{E}\hat\sigma^2 = \frac{n - 1}{n}\sigma^2$ (урок IV.2). Так же считают $\Sigma$ в GDA.'
+      check:
+        kind: solution
+        wrt: v
+        py: 'np.sum((x - np.sum(x) / x.shape[0]) ** 2) / x.shape[0]'
+
+pitfalls:
+  - 'Подставлять в MLE дисперсии деление на $n - 1$: это другая, несмещённая оценка, а не максимум правдоподобия.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Generative learning algorithms / Gaussian discriminant analysis'
+
+usedIn: [stat.mle]

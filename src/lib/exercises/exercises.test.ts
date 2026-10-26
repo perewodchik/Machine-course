@@ -1130,6 +1130,38 @@ describe("генераторы", () => {
     expect(Math.abs(acc / 20_000 - 0.8125)).toBeLessThan(0.03);
   });
 
+  it("stat.mle-family: ответ — максимум ℓ на сетке; stat.log-likelihood: k ln φ + (n − k) ln(1 − φ)", () => {
+    for (let s = 1; s <= 32; s++) {
+      const t = make("stat.mle-family", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      let ell: (th: number) => number;
+      let grid: number[];
+      if (t.prompt.includes("Монету")) {
+        const [n, k] = /бросили \$(\d+)\$ раз, орёл выпал \$(\d+)\$/.exec(t.prompt)!.slice(1).map(Number) as [number, number];
+        ell = (p) => k * Math.log(p) + (n - k) * Math.log(1 - p);
+        grid = Array.from({ length: 999 }, (_, i) => (i + 1) / 1000);
+      } else {
+        const x = /: \$([-\d, ]+)\$\./.exec(t.prompt)![1]!.split(", ").map(Number);
+        const n = x.length;
+        const sum = x.reduce((a, b) => a + b, 0);
+        if (t.prompt.includes("Пуассона")) ell = (l) => sum * Math.log(l) - n * l;
+        else if (t.prompt.includes("показательное")) ell = (l) => n * Math.log(l) - l * sum;
+        else {
+          const m = sum / n;
+          ell = (v) => -(n / 2) * Math.log(v) - x.reduce((a, xi) => a + (xi - m) ** 2, 0) / (2 * v);
+        }
+        grid = Array.from({ length: 2000 }, (_, i) => (i + 1) / 200);
+      }
+      for (const g of grid) expect(ell(g)).toBeLessThanOrEqual(ell(t.answer) + 1e-6);
+
+      const l = make("stat.log-likelihood", s);
+      if (l.kind !== "numeric") throw new Error("ожидалось число");
+      const [n2, k2] = /\$(\d+)\$ бросков монеты, орлов — \$(\d+)\$/.exec(l.prompt)!.slice(1).map(Number) as [number, number];
+      const phi = Number(/при \$\\phi = ([\d.]+)\$/.exec(l.prompt)![1]);
+      expect(l.answer).toBeCloseTo(k2 * Math.log(phi) + (n2 - k2) * Math.log(1 - phi), 3);
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

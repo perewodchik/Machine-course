@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — L-IV.3 L-IV.3 — метод максимального правдоподобия — готов
+- **Сделано:** урок statistics/mle (четыре цикла: правдоподобие, логарифм и максимум, нормальное, условное и совместное), игра «Машина правдоподобия» (/games/likelihood-machine/), лабораторная stats/mle_by_hand (перебор, подъём, нормальное, МНК как MLE), формулы f.poisson-mle и f.normal-variance-mle, генераторы stat.mle-family и stat.log-likelihood, сниппет stats/mle.py с тестом
+- **Файлы:** content/courses/foundations/statistics/mle.mdx, src/games/likelihood-machine/, notebooks/src/stats/mle_by_hand.py, content/formulas/stat/poisson-mle.yaml, content/formulas/stat/normal-variance-mle.yaml, code/snippets/stats/mle.py
+- **Проверка:** validate, lint, build, check, vitest 606, pytest, nbmake, check_consistency, e2e IV.3 и игры, раскладка iv3 и likegame (axe)
+- **Отклонения от плана и решения:** нет
+- **Следующий шаг:** L-IV.4 — многомерный MLE.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — L-IV.2 L-IV.2 — оценки: смещение, разброс, MSE — готов
 - **Сделано:** урок statistics/estimators (три цикла: оценка как случайная величина, MSE = смещение² + дисперсия и сжатие, n или n − 1), игра «Тир оценок» (/games/estimator-range/, непринятая сдача не закрывает уровень), формулы f.mse-decomposition и f.variance-bias, генераторы stat.shrink-mse и stat.bessel, сниппет stats/estimators.py с тестом
 - **Файлы:** content/courses/foundations/statistics/estimators.mdx, src/games/estimator-range/, content/formulas/stat/mse-decomposition.yaml, content/formulas/stat/variance-bias.yaml, code/snippets/stats/estimators.py

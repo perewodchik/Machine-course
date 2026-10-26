@@ -54,3 +54,23 @@ test("урок IV.2: ссылка на игру, разбор Бесселя, и
   await page.evaluate(() => window.scrollTo(0, 0));
   await expectNoAxeViolations(page);
 });
+
+test("урок IV.3: ссылки на игру и лабораторную, итоговая проверка", async ({ page }) => {
+  await page.goto("/foundations/statistics/mle/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Метод максимального правдоподобия");
+  await expect(page.getByRole("link", { name: "Открыть игру" })).toHaveAttribute("href", "/games/likelihood-machine/");
+  await expect(page.locator("a[href*='notebooks/stats/mle_by_hand.ipynb']").first()).toBeAttached();
+
+  const final = page.locator("#final-check");
+  const spec = generator("stat.mle-family").make(31);
+  if (spec.kind !== "numeric") throw new Error("ожидалось число");
+  // seed 31 — показательное: типичная ошибка — x̄ вместо 1/x̄
+  await final.locator("[data-variant]:not([hidden]) input").first().fill(String(Math.round((1 / spec.answer) * 1000) / 1000));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).not.toContainText("Урок отмечен");
+  await final.locator("[data-variant]:not([hidden]) input").first().fill(String(spec.answer));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});

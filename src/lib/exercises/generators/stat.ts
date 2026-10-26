@@ -132,3 +132,95 @@ export const besselGen: Generator = {
     };
   },
 };
+
+/** Урок IV.3: оценка максимального правдоподобия по выборке — Бернулли, Пуассон, показательное, дисперсия нормального. */
+export const mleFamily: Generator = {
+  id: "stat.mle-family",
+  version: 1,
+  title: "Оценка максимального правдоподобия",
+  make(seed) {
+    const r = rng(seed);
+    const kind = (seed - 1) % 4;
+    if (kind === 0) {
+      const n = r.pick([10, 20, 25, 40]);
+      const k = r.int(1, n - 1);
+      const answer = round(k / n, 4);
+      return {
+        kind: "numeric",
+        prompt: String.raw`Монету бросили $${n}$ раз, орёл выпал $${k}$ раз. Найдите оценку максимального правдоподобия вероятности орла $\phi$.`,
+        label: String.raw`$\hat\phi =$`,
+        answer,
+        tol: 0.001,
+        hints: [String.raw`$\ell(\phi) = k \log \phi + (n - k) \log (1 - \phi)$; приравняйте производную к нулю.`],
+        right: String.raw`$\hat\phi = k/n = ${k}/${n} = ${answer}$ — доля орлов.`,
+        wrong: String.raw`Из $\frac{k}{\phi} - \frac{n - k}{1 - \phi} = 0$ получается $\hat\phi = k/n$.`,
+      };
+    }
+    const x = Array.from({ length: 5 }, () => (kind === 3 ? r.pick([-3, -2, -1, 1, 2, 3]) : r.int(1, 6)));
+    const n = x.length;
+    const sum = x.reduce((a, b) => a + b, 0);
+    if (kind === 1) {
+      const answer = round(sum / n, 4);
+      return {
+        kind: "numeric",
+        prompt: String.raw`Число звонков за минуту в пять разных минут: $${x.join(", ")}$. Модель — распределение Пуассона. Найдите оценку максимального правдоподобия $\lambda$.`,
+        label: String.raw`$\hat\lambda =$`,
+        answer,
+        tol: 0.001,
+        hints: [String.raw`$\ell(\lambda) = \bigl(\sum_i x^{(i)}\bigr) \log \lambda - n\lambda + \text{const}$.`],
+        right: String.raw`$\hat\lambda = \bar x = ${sum}/${n} = ${answer}$.`,
+        wrong: String.raw`Производная $\sum_i x^{(i)}/\lambda - n$ равна нулю при $\lambda = \bar x$.`,
+      };
+    }
+    if (kind === 2) {
+      const answer = round(n / sum, 4);
+      return {
+        kind: "numeric",
+        prompt: String.raw`Время ожидания автобуса в пять дней, мин: $${x.join(", ")}$. Модель — показательное распределение с плотностью $\lambda e^{-\lambda x}$. Найдите оценку максимального правдоподобия $\lambda$.`,
+        label: String.raw`$\hat\lambda =$`,
+        answer,
+        tol: 0.001,
+        hints: [String.raw`$\ell(\lambda) = n \log \lambda - \lambda \sum_i x^{(i)}$.`],
+        right: String.raw`$\hat\lambda = n / \sum_i x^{(i)} = ${n}/${sum} \approx ${answer}$ — обратное к среднему времени.`,
+        wrong: String.raw`Производная $n/\lambda - \sum_i x^{(i)}$ равна нулю при $\lambda = 1/\bar x$, а не $\bar x$: $\mathbb{E}X = 1/\lambda$.`,
+      };
+    }
+    const mean = sum / n;
+    const ss = x.reduce((a, v) => a + (v - mean) ** 2, 0);
+    const answer = round(ss / n, 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`Выборка из нормального распределения: $${x.join(", ")}$. Найдите оценку максимального правдоподобия дисперсии $\hat\sigma^2$ (среднее тоже неизвестно).`,
+      label: String.raw`$\hat\sigma^2 =$`,
+      answer,
+      tol: 0.005,
+      hints: [String.raw`$\hat\mu = \bar x = ${round(mean, 4)}$, $\hat\sigma^2 = \frac1n \sum_i (x^{(i)} - \bar x)^2$ — делим на $n$.`],
+      right: String.raw`$\sum_i (x^{(i)} - \bar x)^2 = ${round(ss, 4)}$, $\hat\sigma^2 = ${round(ss, 4)}/${n} = ${answer}$.`,
+      wrong: String.raw`MLE делит на $n = ${n}$, а не на $n - 1$: $${round(ss, 4)}/${n}$.`,
+    };
+  },
+};
+
+/** Урок IV.3: логарифм правдоподобия выборки монеты при заданном φ — и почему сравнивают логарифмы. */
+export const logLik: Generator = {
+  id: "stat.log-likelihood",
+  version: 1,
+  title: "Логарифм правдоподобия",
+  make(seed) {
+    const r = rng(seed);
+    const n = r.pick([5, 8, 10]);
+    const k = r.int(1, n - 1);
+    const phi = r.pick([0.2, 0.5, 0.6, 0.8]);
+    const answer = round(k * Math.log(phi) + (n - k) * Math.log(1 - phi), 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`$${n}$ бросков монеты, орлов — $${k}$. Найдите логарифм правдоподобия $\ell(\phi) = \sum_i \log p(x^{(i)}; \phi)$ при $\phi = ${phi}$ (натуральный логарифм).`,
+      label: String.raw`$\ell(${phi}) =$`,
+      answer,
+      tol: 0.005,
+      hints: [String.raw`Орёл даёт слагаемое $\log \phi$, решка — $\log(1 - \phi)$: $\ell = k \log \phi + (n - k) \log (1 - \phi)$.`],
+      right: String.raw`$${k} \ln ${phi} + ${n - k} \ln ${round(1 - phi)} \approx ${answer}$.`,
+      wrong: String.raw`Не забудьте решки: $${n - k}$ слагаемых $\ln ${round(1 - phi)}$. Логарифм правдоподобия отрицателен — это логарифм вероятности.`,
+    };
+  },
+};
