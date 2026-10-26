@@ -72,6 +72,15 @@
   prerequisites: [prob.joint-distributions, la.psd]
   core: true
 
+- id: prob.multivariate-normal
+  title:
+    ru: 'Многомерное нормальное распределение'
+    en: 'multivariate Gaussian'
+  summary: 'Плотность $\frac{1}{(2\pi)^{d/2} \lvert \Sigma \rvert^{1/2}} \exp\bigl(-\frac12 (x - \mu)^\top \Sigma^{-1} (x - \mu)\bigr)$ при $\Sigma \succ 0$; линии уровня — эллипсы с осями вдоль собственных векторов $\Sigma$ и полуосями $k\sqrt{\lambda_i}$; расстояние Махаланобиса; выборка $\mu + Lz$, $\Sigma = LL^\top$; маргинальные и условные распределения гауссовы.'
+  lesson: multivariate-normal
+  prerequisites: [prob.random-vectors, prob.normal, la.eigen]
+  core: true
+
 - id: prob.independence
   title:
     ru: 'Независимость'

@@ -1002,6 +1002,27 @@ describe("генераторы", () => {
     }
   });
 
+  it("prob.mahalanobis и prob.gauss-axes: ответ совпадает с прямым счётом через Σ⁻¹ и собственные числа", () => {
+    const mat = (p: string) => /\\begin\{pmatrix\} (-?[\d.]+) & (-?[\d.]+) \\\\ (-?[\d.]+) & (-?[\d.]+) \\end\{pmatrix\}/.exec(p)!.slice(1).map(Number) as [number, number, number, number];
+    for (let s = 1; s <= 30; s++) {
+      const m = make("prob.mahalanobis", s);
+      if (m.kind !== "numeric") throw new Error("ожидалось число");
+      const [a, , , d] = mat(m.prompt);
+      const [mu1, mu2] = /mu = \((-?\d+), (-?\d+)\)/.exec(m.prompt)!.slice(1).map(Number) as [number, number];
+      const [x1, x2] = /x = \((-?\d+), (-?\d+)\)/.exec(m.prompt)!.slice(1).map(Number) as [number, number];
+      expect(m.answer).toBeCloseTo((x1 - mu1) ** 2 / a + (x2 - mu2) ** 2 / d, 9);
+
+      const g = make("prob.gauss-axes", s);
+      if (g.kind !== "numeric") throw new Error("ожидалось число");
+      const [p, q, , r] = mat(g.prompt);
+      const half = Math.hypot((p - r) / 2, q);
+      const lam = g.prompt.includes("длинной") ? (p + r) / 2 + half : (p + r) / 2 - half;
+      const level = Number(/= (\d+)\$\.$/.exec(g.prompt)![1]);
+      // точка μ + t·u на собственном векторе лежит на уровне t²/λ: полуось t = √(level·λ)
+      expect(g.answer).toBeCloseTo(Math.sqrt(level * lam), 9);
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — L-III.11 L-III.11 — многомерное нормальное распределение — готов
+- **Сделано:** урок multivariate-normal (три цикла: плотность по множителям, эллипсы уровня, выборка и условные), виджет «Редактор μ и Σ», игра «Скульптор Σ» (/games/sigma-sculptor/, KL между облаком и догадкой), модель src/lib/math/gauss2.ts, формула f.gaussian-axes, генераторы prob.mahalanobis и prob.gauss-axes, сниппет mvn.py с тестом
+- **Файлы:** content/courses/foundations/probability/multivariate-normal.mdx, src/widgets/prob/gauss-editor/, src/games/sigma-sculptor/, src/lib/math/gauss2.ts, content/formulas/prob/gaussian-axes.yaml, code/snippets/prob/mvn.py
+- **Проверка:** validate, lint, build, check, vitest 581, pytest, check_consistency, e2e III.11 и игры, раскладка iii11 и sigmagame (axe)
+- **Отклонения от плана и решения:** нет
+- **Следующий шаг:** L-III.12 — смеси и скрытые переменные.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — L-III.10 L-III.10 — случайные векторы и линейные преобразования — готов
 - **Сделано:** урок random-vectors (три цикла: среднее и Σ ⪰ 0, Cov(AX + b) = AΣAᵀ, плотность и |det A|), виджет «Линейное преобразование облака», формула f.covariance-linear, генераторы prob.cov-linear (матрица и aᵀΣa) и prob.density-linear, сниппет random_vectors.py с тестом; e2e: axe ждёт конца переходов (reducedMotion) — гонка на кнопке «Следующий уровень» в CI PR #27
 - **Файлы:** content/courses/foundations/probability/random-vectors.mdx, src/widgets/prob/cloud-transform/, content/formulas/prob/covariance-linear.yaml, code/snippets/prob/random_vectors.py, tests/e2e/support.ts

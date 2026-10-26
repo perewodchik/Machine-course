@@ -1,0 +1,62 @@
+id: f.gaussian-axes
+kind: formula
+title:
+  ru: 'Оси эллипса уровня многомерного нормального'
+  en: 'axes of a Gaussian level set'
+statement: '(x - \mu)^\top \Sigma^{-1} (x - \mu) = k^2 \ \text{ пересекает ось } u_i \text{ в точках } x = \mu \pm k\sqrt{\lambda_i}\, u_i, \qquad \Sigma u_i = \lambda_i u_i'
+
+# Урок III.11: подставляем точку на собственном векторе, x − μ = t uᵢ; Σ⁻¹ действует на uᵢ делением на λᵢ,
+# поэтому квадратичная форма равна t²/λᵢ, и уровень k² достигается при t = k√λᵢ. Проверка — для наибольшего
+# собственного числа случайной Σ ≻ 0 размера 2 × 2 (eigh возвращает числа по возрастанию).
+symbols:
+  - name: Sigma
+    tex: '\Sigma'
+    meaning: 'ковариационная матрица, $\Sigma \succ 0$'
+    shape: [p, p]
+    sample: spd
+  - name: k
+    tex: 'k'
+    meaning: 'уровень: расстояние Махаланобиса'
+    shape: []
+    sample: positive
+
+dependsOn:
+  concepts: [prob.random-vectors, la.eigen]
+  rules: []
+
+derivation:
+  plan:
+    - 'Подставить точку на оси, $x - \mu = t u_i$, в квадратичную форму'
+    - 'Применить $\Sigma^{-1} u_i = u_i / \lambda_i$ и $u_i^\top u_i = 1$'
+    - 'Приравнять $t^2/\lambda_i$ к $k^2$'
+  steps:
+    - goal: 0
+      tex: '(x - \mu)^\top \Sigma^{-1} (x - \mu) = t^2\, u_i^\top \Sigma^{-1} u_i, \qquad t = k\sqrt{\lambda_i}'
+      by: [prob.random-vectors]
+      note: 'Подставили $x - \mu = t u_i$; проверяем сразу в точке $t = k\sqrt{\lambda_i}$.'
+      check:
+        kind: same
+        py: '(k * np.sqrt(np.linalg.eigh(Sigma)[0][-1]) * np.linalg.eigh(Sigma)[1][:, -1]) @ np.linalg.inv(Sigma) @ (k * np.sqrt(np.linalg.eigh(Sigma)[0][-1]) * np.linalg.eigh(Sigma)[1][:, -1])'
+    - goal: 1
+      tex: '= t^2\, u_i^\top \changed{\frac{u_i}{\lambda_i}} = \changed{\frac{t^2}{\lambda_i}}'
+      by: [la.eigen]
+      note: 'Из $\Sigma u_i = \lambda_i u_i$ следует $\Sigma^{-1} u_i = u_i/\lambda_i$: у обратной матрицы те же собственные векторы и обратные числа (урок I.9).'
+      check:
+        kind: same
+        py: 'k ** 2 * np.linalg.eigh(Sigma)[0][-1] / np.linalg.eigh(Sigma)[0][-1]'
+    - goal: 2
+      tex: '= \frac{k^2 \lambda_i}{\lambda_i} = \changed{k^2}'
+      by: [la.eigen]
+      note: 'Полуось эллипса уровня $k$ вдоль $u_i$ — $k\sqrt{\lambda_i}$: длинная ось — у наибольшего $\lambda$, корень — потому что $\lambda_i$ — дисперсия вдоль $u_i$.'
+      check:
+        kind: same
+        py: 'k ** 2'
+
+pitfalls:
+  - 'Брать полуоси $\propto 1/\sqrt{\lambda_i(\Sigma)}$: так у эллипса $x^\top A x = 1$ с матрицей формы $A$ (урок I.10), а здесь матрица формы — $\Sigma^{-1}$, и корни обращаются.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Generative learning algorithms'
+
+usedIn: [prob.multivariate-normal]

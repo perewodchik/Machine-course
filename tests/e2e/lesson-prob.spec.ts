@@ -269,3 +269,29 @@ test("урок III.10: облако — поворот и вырожденная
   await page.evaluate(() => window.scrollTo(0, 0));
   await expectNoAxeViolations(page);
 });
+
+test("урок III.11: редактор μ и Σ — оси и Махаланобис, ссылка на игру, итоговая проверка", async ({ page }) => {
+  await page.goto("/foundations/probability/multivariate-normal/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Многомерное нормальное распределение");
+
+  const fig = page.locator(".gauss-editor").first();
+  await fig.scrollIntoViewIfNeeded();
+  await expect(fig.locator("xpath=ancestor::astro-island[1]")).not.toHaveAttribute("ssr", "");
+  // σ₁ = 1.5, σ₂ = 1, ρ = 0.6: Σ = [[2.25, 0.9], [0.9, 1]]
+  await expect(fig.locator("[aria-live]")).toContainText("Σ = [[2.25, 0.90], [0.90, 1.00]]");
+  const rho = fig.getByRole("slider", { name: "ρ" });
+  await rho.press("End");
+  // ρ = 0.95: точка P = (−2, 2) поперёк наклона — далеко по Махаланобису, хотя обычное расстояние 2.83
+  await expect(fig.locator("[aria-live]")).toContainText(/расстояние Махаланобиса (\d{2}|[4-9])\.\d\d/);
+
+  await expect(page.getByRole("link", { name: "Открыть игру" })).toHaveAttribute("href", "/games/sigma-sculptor/");
+
+  const final = page.locator("#final-check");
+  const spec = generator("prob.gauss-axes").make(31);
+  if (spec.kind !== "numeric") throw new Error("ожидалось число");
+  await final.locator("[data-variant]:not([hidden]) input").first().fill(String(spec.answer));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});

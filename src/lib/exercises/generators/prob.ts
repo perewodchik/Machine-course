@@ -858,3 +858,56 @@ export const densityLinear: Generator = {
     };
   },
 };
+
+/** Урок III.11: квадрат расстояния Махаланобиса при диагональной Σ — сколько «сигм» от центра. */
+export const mahalanobisGen: Generator = {
+  id: "prob.mahalanobis",
+  version: 1,
+  title: "Расстояние Махаланобиса",
+  make(seed) {
+    const r = rng(seed);
+    const s1 = r.pick([1, 2, 3, 5]);
+    const s2 = r.pick([1, 2, 4]);
+    const mu = [r.int(-2, 2), r.int(-2, 2)];
+    const x = [mu[0]! + s1 * r.nonzero(-2, 2), mu[1]! + s2 * r.int(-2, 2)];
+    const z = [(x[0]! - mu[0]!) / s1, (x[1]! - mu[1]!) / s2];
+    const answer = z[0]! ** 2 + z[1]! ** 2;
+    const eucl = (x[0]! - mu[0]!) ** 2 + (x[1]! - mu[1]!) ** 2;
+    return {
+      kind: "numeric",
+      prompt: String.raw`$X \sim \mathcal{N}(\mu, \Sigma)$, $\mu = (${mu[0]}, ${mu[1]})^\top$, $\Sigma = ${pm([[s1 * s1, 0], [0, s2 * s2]])}$. Найдите квадрат расстояния Махаланобиса от точки $x = (${x[0]}, ${x[1]})^\top$ до $\mu$.`,
+      label: String.raw`$(x - \mu)^\top \Sigma^{-1} (x - \mu) =$`,
+      answer,
+      tol: 0.001,
+      hints: [String.raw`$\Sigma$ диагональна: $\Sigma^{-1} = \operatorname{diag}(1/${s1 * s1}, 1/${s2 * s2})$, и форма — сумма квадратов отклонений в «сигмах».`],
+      right: String.raw`$\bigl(\tfrac{${x[0]! - mu[0]!}}{${s1}}\bigr)^2 + \bigl(\tfrac{${x[1]! - mu[1]!}}{${s2}}\bigr)^2 = ${answer}$.`,
+      wrong: String.raw`Отклонения делятся на $\sigma$, а в квадрате — на дисперсии $${s1 * s1}$ и $${s2 * s2}$. Обычный квадрат расстояния — $${eucl}$ — не учитывает разброс.`,
+    };
+  },
+};
+
+/** Урок III.11: полуось эллипса уровня k по собственным числам Σ = [[a, b], [b, a]] (λ = a ± b). */
+export const gaussAxes: Generator = {
+  id: "prob.gauss-axes",
+  version: 1,
+  title: "Полуоси эллипса уровня",
+  make(seed) {
+    const r = rng(seed);
+    const [l1, l2] = r.pick([[9, 1], [16, 4], [9, 4], [25, 9], [16, 1]] as const);
+    const a = (l1 + l2) / 2;
+    const b = r.pick([1, -1]) * ((l1 - l2) / 2);
+    const k = r.pick([1, 2, 3]);
+    const long = seed % 2 === 1;
+    const answer = k * Math.sqrt(long ? l1 : l2);
+    return {
+      kind: "numeric",
+      prompt: String.raw`$\Sigma = ${pm([[a, b], [b, a]])}$. Найдите длину ${long ? "длинной" : "короткой"} полуоси эллипса $(x - \mu)^\top \Sigma^{-1} (x - \mu) = ${k * k}$.`,
+      label: String.raw`полуось $=$`,
+      answer,
+      tol: 0.001,
+      hints: [String.raw`У $\begin{pmatrix} a & b \\ b & a \end{pmatrix}$ собственные векторы $(1, \pm 1)^\top$, числа $a \pm b$.`, String.raw`Полуось уровня $k$ вдоль $u_i$ — $k\sqrt{\lambda_i}$; здесь $k = ${k}$.`],
+      right: String.raw`$\lambda = ${l1}, ${l2}$; ${long ? "длинная" : "короткая"} полуось — $${k}\sqrt{${long ? l1 : l2}} = ${answer}$.`,
+      wrong: String.raw`Полуоси — $k\sqrt{\lambda_i}$, не $k/\sqrt{\lambda_i}$: в квадратичной форме стоит $\Sigma^{-1}$, и корни обращаются. И не забудьте, что уровень $${k * k}$ — это $k^2$, $k = ${k}$.`,
+    };
+  },
+};
