@@ -1,0 +1,60 @@
+id: f.total-expectation
+kind: formula
+title:
+  ru: 'Закон полного матожидания'
+  en: 'law of total expectation'
+statement: '\mathbb{E}X = \mathbb{E}\bigl[\mathbb{E}[X \mid Y]\bigr] = \sum_y p(y)\, \mathbb{E}[X \mid Y = y]'
+
+# Урок III.9: E X по совместной таблице, потом группировка по y — условное среднее, взвешенное p(y).
+# Проверка — на совместной таблице P размера 5 × 4 (сумма всех клеток 1), значения X — вектор x.
+symbols:
+  - name: P
+    tex: 'P'
+    meaning: 'совместная таблица $p(x, y)$: строки — значения $X$, столбцы — значения $Y$'
+    shape: [k, m]
+    sample: simplex
+  - name: x
+    tex: 'x'
+    meaning: 'значения $X$'
+    shape: [k, 1]
+
+dependsOn:
+  concepts: [prob.expectation, prob.conditional]
+  rules: []
+
+derivation:
+  plan:
+    - 'Записать $\mathbb{E}X$ через совместное распределение'
+    - 'Разложить $p(x, y) = p(y)\, p(x \mid y)$ и вынести $p(y)$ из внутренней суммы'
+    - 'Узнать во внутренней сумме условное матожидание'
+  steps:
+    - goal: 0
+      tex: '\mathbb{E}X = \sum_x x\, p(x) = \sum_y \sum_x x\, p(x, y)'
+      by: [prob.expectation]
+      note: 'Маргинальное $p(x) = \sum_y p(x, y)$; суммы можно переставить.'
+      check:
+        kind: same
+        py: 'x @ np.sum(P, axis=1)'
+    - goal: 1
+      tex: '= \sum_y \changed{p(y)} \sum_x x\, \changed{p(x \mid y)}'
+      by: [prob.conditional]
+      note: 'Формула умножения: $p(x, y) = p(y)\, p(x \mid y)$ при $p(y) > 0$ (урок III.2).'
+      check:
+        kind: same
+        py: 'np.sum(P, axis=0) @ ((x @ P) / np.sum(P, axis=0))'
+    - goal: 2
+      tex: '= \sum_y p(y)\, \changed{\mathbb{E}[X \mid Y = y]} = \mathbb{E}\bigl[\mathbb{E}[X \mid Y]\bigr]'
+      by: [prob.expectation]
+      note: '$\mathbb{E}[X \mid Y]$ — случайная величина: функция от $Y$, принимающая значение $\mathbb{E}[X \mid Y = y]$ с вероятностью $p(y)$.'
+      check:
+        kind: same
+        py: 'np.sum(np.sum(P, axis=0) * (x @ (P / np.sum(P, axis=0))))'
+
+pitfalls:
+  - 'Усреднять условные средние без весов: $\mathbb{E}X$ — среднее $\mathbb{E}[X \mid Y = y]$ с весами $p(y)$, а не простое.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Reinforcement learning'
+
+usedIn: [prob.joint-distributions]

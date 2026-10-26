@@ -677,3 +677,105 @@ export const unionBound: Generator = {
     };
   },
 };
+
+/** Совместная таблица X ∈ {0, 1, 2}, Y ∈ {0, 1} с вероятностями, кратными 0.05; строки — значения X. */
+function jointTable(seed: number): number[][] {
+  const r = rng(seed);
+  for (;;) {
+    const cells = Array.from({ length: 5 }, () => r.int(1, 5));
+    const last = 20 - cells.reduce((a, b) => a + b, 0);
+    if (last < 1 || last > 6) continue;
+    const c = [...cells, last].map((v) => v / 20);
+    return [
+      [c[0]!, c[1]!],
+      [c[2]!, c[3]!],
+      [c[4]!, c[5]!],
+    ];
+  }
+}
+
+const jointTex = (t: number[][]) =>
+  String.raw`$$\begin{array}{c|cc} & Y = 0 & Y = 1 \\ \hline ${t.map((row, x) => String.raw`X = ${x} & ${row[0]} & ${row[1]}`).join(String.raw` \\ `)} \end{array}$$`;
+
+/** Урок III.9: по совместной таблице — маргинальная вероятность, условное матожидание или E X через E[E[X | Y]]. */
+export const jointMarginal: Generator = {
+  id: "prob.joint-marginal",
+  version: 1,
+  title: "Маргинальное и условное по совместной таблице",
+  make(seed) {
+    const t = jointTable(seed);
+    const kind = (seed - 1) % 3;
+    const pY = [0, 1].map((y) => t.reduce((s, row) => s + row[y]!, 0));
+    if (kind === 0) {
+      const x = seed % 3;
+      const answer = round(t[x]![0]! + t[x]![1]!);
+      return {
+        kind: "numeric",
+        prompt: String.raw`Совместное распределение $X$ и $Y$ задано таблицей: ${jointTex(t)} Найдите $P(X = ${x})$.`,
+        label: String.raw`$P(X = ${x}) =$`,
+        answer,
+        tol: 0.001,
+        hints: [String.raw`Маргинальное: $p(x) = \sum_y p(x, y)$ — сумма по строке.`],
+        right: String.raw`$${t[x]![0]} + ${t[x]![1]} = ${answer}$.`,
+        wrong: String.raw`Сложите вероятности строки $X = ${x}$ по всем значениям $Y$.`,
+      };
+    }
+    const y = seed % 2;
+    const ex = (yy: number) => (t[1]![yy]! + 2 * t[2]![yy]!) / pY[yy]!;
+    if (kind === 1) {
+      const answer = round(ex(y), 3);
+      return {
+        kind: "numeric",
+        prompt: String.raw`Совместное распределение $X$ и $Y$ задано таблицей: ${jointTex(t)} Найдите $\mathbb{E}[X \mid Y = ${y}]$.`,
+        label: String.raw`$\mathbb{E}[X \mid Y = ${y}] =$`,
+        answer,
+        tol: 0.005,
+        hints: [String.raw`Сначала $P(Y = ${y}) = ${round(pY[y]!)}$ — сумма столбца. Условные вероятности $p(x \mid ${y}) = p(x, ${y}) / P(Y = ${y})$.`],
+        right: String.raw`$\dfrac{0 \cdot ${t[0]![y]} + 1 \cdot ${t[1]![y]} + 2 \cdot ${t[2]![y]}}{${round(pY[y]!)}} \approx ${answer}$.`,
+        wrong: String.raw`Не забудьте разделить на $P(Y = ${y}) = ${round(pY[y]!)}$: без этого столбец не сумма вероятностей $1$.`,
+      };
+    }
+    const answer = round(pY[0]! * ex(0) + pY[1]! * ex(1), 3);
+    return {
+      kind: "numeric",
+      prompt: String.raw`Совместное распределение $X$ и $Y$ задано таблицей: ${jointTex(t)} Известно: $\mathbb{E}[X \mid Y = 0] = ${round(ex(0), 3)}$, $\mathbb{E}[X \mid Y = 1] = ${round(ex(1), 3)}$. Найдите $\mathbb{E}X$ по закону полного матожидания.`,
+      label: String.raw`$\mathbb{E}X =$`,
+      answer,
+      tol: 0.005,
+      hints: [String.raw`$\mathbb{E}X = \mathbb{E}[\mathbb{E}[X \mid Y]] = P(Y = 0)\, \mathbb{E}[X \mid Y = 0] + P(Y = 1)\, \mathbb{E}[X \mid Y = 1]$.`],
+      right: String.raw`$${round(pY[0]!)} \cdot ${round(ex(0), 3)} + ${round(pY[1]!)} \cdot ${round(ex(1), 3)} \approx ${answer}$.`,
+      wrong: String.raw`Условные средние нужно взвесить вероятностями $P(Y = 0) = ${round(pY[0]!)}$ и $P(Y = 1) = ${round(pY[1]!)}$, а не брать их простое среднее.`,
+    };
+  },
+};
+
+/** Урок III.9: ковариация или корреляция двух индикаторов по таблице 2 × 2. */
+export const covariance: Generator = {
+  id: "prob.covariance",
+  version: 1,
+  title: "Ковариация и корреляция",
+  make(seed) {
+    const r = rng(seed);
+    let p: number[];
+    do p = [r.int(1, 4), r.int(1, 4), r.int(1, 4)];
+    while (p[0]! + p[1]! + p[2]! > 9);
+    const [p00, p01, p10, p11] = [...p, 10 - p[0]! - p[1]! - p[2]!].map((v) => v / 10) as [number, number, number, number];
+    const px = p10 + p11;
+    const py = p01 + p11;
+    const cov = p11 - px * py;
+    const wantRho = seed % 2 === 0;
+    const rho = cov / Math.sqrt(px * (1 - px) * py * (1 - py));
+    const answer = round(wantRho ? rho : cov, wantRho ? 3 : 4);
+    const tex = String.raw`$$\begin{array}{c|cc} & Y = 0 & Y = 1 \\ \hline X = 0 & ${p00} & ${p01} \\ X = 1 & ${p10} & ${p11} \end{array}$$`;
+    return {
+      kind: "numeric",
+      prompt: String.raw`$X$ и $Y$ принимают значения $0$ и $1$, совместное распределение: ${tex} Найдите ${wantRho ? String.raw`корреляцию $\rho(X, Y)$` : String.raw`$\operatorname{Cov}(X, Y)$`}.`,
+      label: wantRho ? String.raw`$\rho =$` : String.raw`$\operatorname{Cov}(X, Y) =$`,
+      answer,
+      tol: wantRho ? 0.005 : 0.0005,
+      hints: [String.raw`$\operatorname{Cov}(X, Y) = \mathbb{E}XY - \mathbb{E}X\, \mathbb{E}Y$; у индикаторов $\mathbb{E}XY = P(X = 1, Y = 1)$, $\mathbb{E}X = P(X = 1)$.`, ...(wantRho ? [String.raw`$\rho = \operatorname{Cov}/(\sigma_X \sigma_Y)$, у Бернулли $\sigma^2 = \phi(1 - \phi)$.`] : [])],
+      right: String.raw`$\operatorname{Cov} = ${p11} - ${round(px)} \cdot ${round(py)} = ${round(cov, 4)}$${wantRho ? String.raw`, $\rho = ${round(cov, 4)} / \sqrt{${round(px * (1 - px), 4)} \cdot ${round(py * (1 - py), 4)}} \approx ${answer}$` : ""}.`,
+      wrong: String.raw`$\mathbb{E}X = ${round(px)}$, $\mathbb{E}Y = ${round(py)}$, $\mathbb{E}XY = ${p11}$; ковариация — $\mathbb{E}XY - \mathbb{E}X\, \mathbb{E}Y$.`,
+    };
+  },
+};

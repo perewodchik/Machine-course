@@ -372,3 +372,6 @@
 - id: limit-theorems
   ru: 'закон больших чисел; центральная предельная теорема; оценка объединения; неравенство Хёффдинга'
   en: 'law of large numbers; central limit theorem; union bound; Hoeffding''s inequality'
+- id: joint-distributions
+  ru: 'совместное, маргинальное, условное распределение; ковариация; корреляция; условное матожидание'
+  en: 'joint, marginal, conditional distribution; covariance; correlation; conditional expectation'

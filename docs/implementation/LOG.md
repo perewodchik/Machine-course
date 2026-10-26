@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — L-III.9 L-III.9 — совместные распределения и ковариация — готов
+- **Сделано:** урок joint-distributions (три цикла: совместное/маргинальное/условное, ковариация и корреляция, условное матожидание), виджет «Облако точек», игра «Угадай корреляцию» (/games/guess-correlation/), модель src/lib/math/correlation.ts, формула f.total-expectation, генераторы prob.joint-marginal и prob.covariance, сниппет covariance.py с тестом
+- **Файлы:** content/courses/foundations/probability/joint-distributions.mdx, src/widgets/prob/scatter-cloud/, src/games/guess-correlation/, src/lib/math/correlation.ts, content/formulas/prob/total-expectation.yaml, code/snippets/prob/covariance.py
+- **Проверка:** validate, lint, build, check, vitest 568, pytest, check_consistency, e2e III.9 и игры, раскладка iii9 и corrgame (axe)
+- **Отклонения от плана и решения:** «перетаскивание» точки в виджете сделано бегунками x₀, y₀ выброса: доступно с клавиатуры, в наборе виджетов нет перетаскивания точек
+- **Следующий шаг:** L-III.10 — случайные векторы и линейные преобразования.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — L-III.8 L-III.8 — предельные теоремы и метод Монте-Карло — готов
 - **Сделано:** урок limit-theorems (четыре цикла: ЗБЧ, Монте-Карло, ЦПТ, оценка объединения и ★ Хёффдинг), виджеты «Бегущее среднее» и «Гистограмма суммы», лабораторная prob/clt_simulations, формула f.sample-mean-variance, генераторы prob.mc-error и prob.union-bound, сниппет limits.py с тестом
 - **Файлы:** content/courses/foundations/probability/limit-theorems.mdx, src/widgets/prob/limit-theorems/, notebooks/src/prob/clt_simulations.py, content/formulas/prob/sample-mean-variance.yaml, code/snippets/prob/limits.py

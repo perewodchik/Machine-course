@@ -949,6 +949,34 @@ describe("генераторы", () => {
     }
   });
 
+  it("prob.joint-marginal и prob.covariance: ответ совпадает с прямым счётом по таблице из условия", () => {
+    const table = (prompt: string) => [...prompt.matchAll(/X = \d & ([\d.]+) & ([\d.]+)/g)].map((m) => [Number(m[1]), Number(m[2])] as [number, number]);
+    for (let s = 1; s <= 30; s++) {
+      const t = make("prob.joint-marginal", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const rows = table(t.prompt);
+      expect(rows).toHaveLength(3);
+      expect(rows.flat().reduce((a, b) => a + b, 0)).toBeCloseTo(1, 9);
+      const ex = rows.reduce((acc, [a, b], x) => acc + x * (a + b), 0);
+      const cond = (y: 0 | 1) => rows.reduce((acc, row, x) => acc + x * row[y], 0) / rows.reduce((acc, row) => acc + row[y], 0);
+      if (t.prompt.includes("Найдите $P(X")) {
+        const x = Number(/Найдите \$P\(X = (\d)\)/.exec(t.prompt)![1]);
+        expect(t.answer).toBeCloseTo(rows[x]![0] + rows[x]![1], 6);
+      } else if (t.prompt.includes("полного")) expect(Math.abs(t.answer - ex)).toBeLessThan(0.002);
+      else expect(Math.abs(t.answer - cond(Number(/Y = (\d)\]\$\.$/.exec(t.prompt)![1]) as 0 | 1))).toBeLessThan(0.001);
+
+      const c = make("prob.covariance", s);
+      if (c.kind !== "numeric") throw new Error("ожидалось число");
+      const [[p00, p01], [p10, p11]] = table(c.prompt) as [[number, number], [number, number]];
+      expect(p00 + p01 + p10 + p11).toBeCloseTo(1, 9);
+      const pts: [number, number, number][] = [[0, 0, p00], [0, 1, p01], [1, 0, p10], [1, 1, p11]];
+      const E = (g: (x: number, y: number) => number) => pts.reduce((acc, [x, y, p]) => acc + p * g(x, y), 0);
+      const cov = E((x, y) => (x - E((a) => a)) * (y - E((_, b) => b)));
+      const want = c.prompt.includes("rho") ? cov / Math.sqrt(E((x) => (x - E((a) => a)) ** 2) * E((_, y) => (y - E((_, b) => b)) ** 2)) : cov;
+      expect(Math.abs(c.answer - want)).toBeLessThan(0.001);
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

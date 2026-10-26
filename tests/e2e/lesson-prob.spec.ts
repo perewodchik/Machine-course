@@ -211,3 +211,35 @@ test("урок III.8: бегущее среднее, гистограмма су
   await page.evaluate(() => window.scrollTo(0, 0));
   await expectNoAxeViolations(page);
 });
+
+test("урок III.9: облако — парабола и выброс, разбор Cov, ссылка на игру, итоговая проверка", async ({ page }) => {
+  await page.goto("/foundations/probability/joint-distributions/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Совместные распределения и ковариация");
+
+  const fig = page.locator(".scatter-cloud").first();
+  await fig.scrollIntoViewIfNeeded();
+  await expect(fig.locator("xpath=ancestor::astro-island[1]")).not.toHaveAttribute("ssr", "");
+  await expect(fig.locator("[aria-live]")).toContainText("линейное, ρ = 0.60");
+  await fig.getByRole("button", { name: "парабола" }).press("Enter");
+  // у параболы корреляция около нуля
+  await expect(fig.locator("[aria-live]")).toContainText(/корреляция −?0\.[01]\d/);
+  await fig.getByRole("button", { name: "выброс" }).press("Enter");
+  await expect(fig.getByRole("slider", { name: "x0" })).toBeVisible();
+  await expect(fig.locator("[aria-live]")).toContainText("выброс в (3.5, −3.5)");
+
+  await expect(page.getByRole("link", { name: "Открыть игру" })).toHaveAttribute("href", "/games/guess-correlation/");
+
+  const cov = page.locator("[data-exercise][data-item='prob.covariance']").first();
+  await cov.locator("[data-variant]:not([hidden]) input").first().fill("0.9");
+  await cov.getByRole("button", { name: "Проверить" }).click();
+  await expect(cov.locator("[data-feedback]")).not.toContainText("Верно");
+
+  const final = page.locator("#final-check");
+  const spec = generator("prob.covariance").make(31);
+  if (spec.kind !== "numeric") throw new Error("ожидалось число");
+  await final.locator("[data-variant]:not([hidden]) input").first().fill(String(spec.answer));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});

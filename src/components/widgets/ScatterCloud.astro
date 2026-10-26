@@ -1,0 +1,14 @@
+---
+// Обёртка виджета «Облако точек» для урока: рисунок с номером и подписью, остров React (client:visible).
+import { ScatterCloud, type ScatterCloudProps } from "../../widgets/prob/scatter-cloud";
+
+interface Props extends ScatterCloudProps {
+  /** Номер рисунка в уроке. */
+  n?: number;
+}
+const { n, ...props } = Astro.props;
+---
+<figure class="figure wide">
+  <ScatterCloud client:visible {...props} />
+  <figcaption class="figure__caption">{n && <b>Рисунок {n}.</b>} <slot /></figcaption>
+</figure>

@@ -54,6 +54,15 @@
   prerequisites: [prob.discrete-distributions, prob.continuous-distributions]
   core: true
 
+- id: prob.joint-distributions
+  title:
+    ru: 'Совместные распределения и ковариация'
+    en: 'joint distributions and covariance'
+  summary: 'Совместное $p(x, y)$, маргинальное $p(x) = \sum_y p(x, y)$, условное $p(x \mid y)$; ковариация $\operatorname{Cov}(X, Y) = \mathbb{E}XY - \mathbb{E}X\, \mathbb{E}Y$, корреляция $\lvert \rho \rvert \le 1$; некоррелированность не означает независимость; закон полного матожидания $\mathbb{E}X = \mathbb{E}[\mathbb{E}[X \mid Y]]$.'
+  lesson: joint-distributions
+  prerequisites: [prob.expectation, prob.limit-theorems]
+  core: true
+
 - id: prob.independence
   title:
     ru: 'Независимость'

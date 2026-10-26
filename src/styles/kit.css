@@ -181,6 +181,11 @@
   .running-mean__group, .sum-histogram__group { display: flex; flex-wrap: wrap; gap: var(--space-2); }
   .running-mean__group .btn[aria-pressed="true"], .sum-histogram__group .btn[aria-pressed="true"] { border-color: var(--pen); color: var(--pen); box-shadow: inset 0 0 0 1px var(--pen); }
   @media (max-width: 900px) { .running-mean__controls, .sum-histogram__controls { grid-template-columns: minmax(0, 1fr); } .sum-histogram__controls .kit-slider { grid-column: 1 / -1; } }
+  .scatter-cloud__controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; gap: var(--space-3) var(--space-5); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule); }
+  .scatter-cloud__controls .kit-slider, .scatter-cloud__group { grid-column: 1 / -1; }
+  .scatter-cloud__group { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .scatter-cloud__group .btn[aria-pressed="true"] { border-color: var(--pen); color: var(--pen); box-shadow: inset 0 0 0 1px var(--pen); }
+  @media (max-width: 900px) { .scatter-cloud__controls { grid-template-columns: minmax(0, 1fr); } }
   .riemann__fn { font-family: var(--font-math); font-size: 1.05em; }
   .riemann__fn sup { font-size: 0.7em; }
   @media (max-width: 900px) { .riemann__controls { grid-template-columns: minmax(0, 1fr); } }
