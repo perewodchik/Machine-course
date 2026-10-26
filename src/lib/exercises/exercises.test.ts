@@ -1101,6 +1101,35 @@ describe("генераторы", () => {
     }
   });
 
+  it("stat.shrink-mse: MSE = смещение² + дисперсия по симуляции; stat.bessel: деление на n − 1 или n", () => {
+    for (let s = 1; s <= 30; s++) {
+      const t = make("stat.shrink-mse", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const [theta, sigma, n] = /theta = (\d+)\$, \$\\sigma = (\d+)\$, \$n = (\d+)\$/.exec(t.prompt)!.slice(1).map(Number) as [number, number, number];
+      const c = Number(/hat\\theta = ([\d.]+)/.exec(t.prompt)![1]);
+      const b2 = (c - 1) ** 2 * theta ** 2;
+      const v = (c * c * sigma * sigma) / n;
+      const want = t.prompt.includes("квадрат смещения") ? b2 : t.prompt.includes("дисперсию") ? v : b2 + v;
+      expect(t.answer).toBeCloseTo(want, 3);
+
+      const b = make("stat.bessel", s);
+      if (b.kind !== "numeric") throw new Error("ожидалось число");
+      const m = Number(/n = (\d+)\$ наблюдений/.exec(b.prompt)![1]);
+      const ss = Number(/= (\d+)\$\. Найдите/.exec(b.prompt)![1]);
+      expect(b.answer).toBeCloseTo(b.prompt.includes("несмещённую") ? ss / (m - 1) : ss / m, 3);
+    }
+    // симуляция: эмпирическая MSE сжатой оценки 0.5·x̄ при θ = 1, σ = 3, n = 4 — около 0.25 + 0.5625 = 0.8125
+    const r = rng(7);
+    const gauss = () => Math.sqrt(-2 * Math.log(1 - r.next())) * Math.cos(2 * Math.PI * r.next());
+    let acc = 0;
+    for (let k = 0; k < 20_000; k++) {
+      let sum = 0;
+      for (let i = 0; i < 4; i++) sum += 1 + 3 * gauss();
+      acc += (0.5 * (sum / 4) - 1) ** 2;
+    }
+    expect(Math.abs(acc / 20_000 - 0.8125)).toBeLessThan(0.03);
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

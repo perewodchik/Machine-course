@@ -30,3 +30,27 @@ test("урок IV.1: выброс уводит среднее, медиана с
   await page.evaluate(() => window.scrollTo(0, 0));
   await expectNoAxeViolations(page);
 });
+
+test("урок IV.2: ссылка на игру, разбор Бесселя, итоговая проверка", async ({ page }) => {
+  await page.goto("/foundations/statistics/estimators/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Оценки: смещение, разброс, MSE");
+  await expect(page.getByRole("link", { name: "Открыть игру" })).toHaveAttribute("href", "/games/estimator-range/");
+
+  const bessel = page.locator("[data-exercise][data-item='stat.bessel']").first();
+  const task = generator("stat.bessel").make(1);
+  if (task.kind !== "numeric") throw new Error("ожидалось число");
+  // seed 1 — несмещённая оценка; ответ с делением на n — типичная ошибка
+  const n = Number(/n = (\d+)\$/.exec(task.prompt)![1]);
+  await bessel.locator("[data-variant]:not([hidden]) input").first().fill(String((task.answer * (n - 1)) / n));
+  await bessel.getByRole("button", { name: "Проверить" }).click();
+  await expect(bessel.locator("[data-feedback]")).not.toContainText("Верно");
+
+  const final = page.locator("#final-check");
+  const spec = generator("stat.shrink-mse").make(31);
+  if (spec.kind !== "numeric") throw new Error("ожидалось число");
+  await final.locator("[data-variant]:not([hidden]) input").first().fill(String(spec.answer));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});

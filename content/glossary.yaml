@@ -390,3 +390,6 @@
 - id: descriptive
   ru: 'выборка; статистика; медиана; квантиль; межквартильный размах; робастность'
   en: 'sample; statistic; median; quantile; interquartile range (IQR); robustness'
+- id: estimators
+  ru: 'оценка; смещение; среднеквадратичная ошибка; состоятельность; поправка Бесселя'
+  en: 'estimator; bias; mean squared error (MSE); consistency; Bessel''s correction'

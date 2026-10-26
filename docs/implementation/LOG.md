@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — L-IV.2 L-IV.2 — оценки: смещение, разброс, MSE — готов
+- **Сделано:** урок statistics/estimators (три цикла: оценка как случайная величина, MSE = смещение² + дисперсия и сжатие, n или n − 1), игра «Тир оценок» (/games/estimator-range/, непринятая сдача не закрывает уровень), формулы f.mse-decomposition и f.variance-bias, генераторы stat.shrink-mse и stat.bessel, сниппет stats/estimators.py с тестом
+- **Файлы:** content/courses/foundations/statistics/estimators.mdx, src/games/estimator-range/, content/formulas/stat/mse-decomposition.yaml, content/formulas/stat/variance-bias.yaml, code/snippets/stats/estimators.py
+- **Проверка:** validate, lint, build, check, vitest 601, pytest, check_consistency, e2e IV.2 и игры, раскладка iv2 и rangegame (axe)
+- **Отклонения от плана и решения:** нет
+- **Следующий шаг:** L-IV.3 — метод максимального правдоподобия.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — L-IV.1 L-IV.1 — выборка и описательная статистика — готов
 - **Сделано:** урок statistics/descriptive (три цикла: выборка и статистика, центр — среднее и медиана, разброс — s, квантили, IQR), виджет «Перетащи выброс», формула f.mean-least-squares, генераторы stat.mean-median, stat.iqr, stat.outlier-shift (новый файл generators/stat.ts), сниппет stats/descriptive.py с тестом (каталог stats, а не stat: stat — модуль стандартной библиотеки)
 - **Файлы:** content/courses/foundations/statistics/descriptive.mdx, src/widgets/stat/outlier/, content/formulas/stat/mean-least-squares.yaml, src/lib/exercises/generators/stat.ts, code/snippets/stats/descriptive.py, tests/e2e/lesson-stat.spec.ts

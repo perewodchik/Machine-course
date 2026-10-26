@@ -80,3 +80,55 @@ export const outlierShift: Generator = {
     };
   },
 };
+
+/** Урок IV.2: смещение², дисперсия или MSE оценки c·x̄ среднего θ по n наблюдениям с разбросом σ. */
+export const shrinkMse: Generator = {
+  id: "stat.shrink-mse",
+  version: 1,
+  title: "Смещение и дисперсия оценки",
+  make(seed) {
+    const r = rng(seed);
+    const theta = r.pick([1, 2, 3]);
+    const sigma = r.pick([2, 3, 4]);
+    const n = r.pick([4, 9, 16]);
+    const c = r.pick([0.5, 0.8, 0.9]);
+    const bias2 = (c - 1) ** 2 * theta ** 2;
+    const variance = (c * c * sigma * sigma) / n;
+    const kind = (seed - 1) % 3;
+    const [what, label, answer] = kind === 0 ? ["квадрат смещения", String.raw`$(\mathbb{E}\hat\theta - \theta)^2 =$`, bias2] : kind === 1 ? ["дисперсию", String.raw`$\operatorname{Var}\hat\theta =$`, variance] : ["среднеквадратичную ошибку", String.raw`$\mathrm{MSE} =$`, bias2 + variance];
+    return {
+      kind: "numeric",
+      prompt: String.raw`Наблюдения независимы, $\mathbb{E}X = \theta = ${theta}$, $\sigma = ${sigma}$, $n = ${n}$. Оценка $\hat\theta = ${c}\, \bar x$. Найдите ${what} оценки.`,
+      label,
+      answer: round(answer, 4),
+      tol: 0.005,
+      hints: [String.raw`$\mathbb{E}\hat\theta = c\theta$, $\operatorname{Var}\hat\theta = c^2 \sigma^2/n$; MSE — смещение² плюс дисперсия.`],
+      right: String.raw`Смещение² $(${c} - 1)^2 \cdot ${theta}^2 = ${round(bias2, 4)}$, дисперсия $${c}^2 \cdot ${sigma * sigma}/${n} = ${round(variance, 4)}$, MSE $= ${round(bias2 + variance, 4)}$. У $\bar x$ было бы $${round((sigma * sigma) / n, 4)}$.`,
+      wrong: String.raw`Множитель $c$ входит в дисперсию в квадрате: $c^2\sigma^2/n$; смещение — $(c - 1)\theta$.`,
+    };
+  },
+};
+
+/** Урок IV.2: по сумме квадратов отклонений — несмещённая s² или MLE дисперсии с делением на n. */
+export const besselGen: Generator = {
+  id: "stat.bessel",
+  version: 1,
+  title: "Поправка Бесселя",
+  make(seed) {
+    const r = rng(seed);
+    const n = r.pick([4, 5, 6, 9, 11]);
+    const ss = r.pick([12, 20, 30, 40, 60]);
+    const unbiased = seed % 2 === 1;
+    const answer = round(unbiased ? ss / (n - 1) : ss / n, 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`По выборке из $n = ${n}$ наблюдений посчитали $\sum_i (x^{(i)} - \bar x)^2 = ${ss}$. Найдите ${unbiased ? String.raw`несмещённую оценку дисперсии $s^2$` : String.raw`оценку максимального правдоподобия дисперсии $\hat\sigma^2_{\text{MLE}}$ нормального распределения`}.`,
+      label: unbiased ? String.raw`$s^2 =$` : String.raw`$\hat\sigma^2_{\text{MLE}} =$`,
+      answer,
+      tol: 0.005,
+      hints: [unbiased ? String.raw`Несмещённая оценка делит на $n - 1$ (поправка Бесселя).` : String.raw`MLE делит на $n$: так получается из условия максимума правдоподобия (урок IV.3).`],
+      right: String.raw`$${ss}/${unbiased ? n - 1 : n} = ${answer}$.`,
+      wrong: unbiased ? String.raw`Деление на $n = ${n}$ даёт смещённую вниз оценку; несмещённая — $${ss}/${n - 1}$.` : String.raw`MLE не исправляет смещение: делите на $n = ${n}$, а не на $n - 1$.`,
+    };
+  },
+};

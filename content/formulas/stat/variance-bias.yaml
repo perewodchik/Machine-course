@@ -1,0 +1,56 @@
+id: f.variance-bias
+kind: formula
+title:
+  ru: 'Смещение выборочной дисперсии с делением на n'
+  en: 'bias of the 1/n sample variance'
+statement: '\mathbb{E}\Bigl[\frac1n \sum_{i=1}^{n} \bigl(x^{(i)} - \bar x\bigr)^2\Bigr] = \frac{n - 1}{n}\, \sigma^2'
+
+# Урок IV.2: сумма квадратов отклонений от x̄ — сумма отклонений от μ минус n(x̄ − μ)²; матожидания — nσ² и σ²
+# (формула f.sample-mean-variance). Проверка — при n = 7 через σ: каждое равенство — число, тождественно верное.
+symbols:
+  - name: sigma
+    tex: '\sigma'
+    meaning: 'стандартное отклонение одного наблюдения'
+    shape: []
+    sample: positive
+
+dependsOn:
+  concepts: [stat.estimators, prob.limit-theorems]
+  rules: []
+
+derivation:
+  plan:
+    - 'Разложить отклонение от $\bar x$ на отклонение от $\mu$ и сдвиг $\bar x - \mu$'
+    - 'Сложить квадраты: перекрёстное слагаемое даёт $-2n(\bar x - \mu)^2$'
+    - 'Взять матожидание: $\mathbb{E}(x^{(i)} - \mu)^2 = \sigma^2$, $\mathbb{E}(\bar x - \mu)^2 = \sigma^2/n$'
+  steps:
+    - goal: 1
+      tex: '\sum_{i=1}^{n} (x^{(i)} - \bar x)^2 = \sum_{i=1}^{n} (x^{(i)} - \mu)^2 - n(\bar x - \mu)^2'
+      by: [stat.estimators]
+      note: '$x^{(i)} - \bar x = (x^{(i)} - \mu) - (\bar x - \mu)$; при сложении квадратов перекрёстные слагаемые дают $-2(\bar x - \mu) \cdot n(\bar x - \mu)$. Проверяем матожидания при $n = 7$.'
+      check:
+        kind: same
+        py: '7 * sigma ** 2 - 7 * (sigma ** 2 / 7)'
+    - goal: 2
+      tex: '\mathbb{E} \sum_{i=1}^{n} (x^{(i)} - \bar x)^2 = n\sigma^2 - n \cdot \frac{\sigma^2}{n} = \changed{(n - 1)\, \sigma^2}'
+      by: [prob.limit-theorems]
+      note: '$\operatorname{Var}\bar x = \sigma^2/n$ (урок III.8). Отклонения от $\bar x$ в сумме меньше отклонений от $\mu$: $\bar x$ подстроено под выборку.'
+      check:
+        kind: same
+        py: '6 * sigma ** 2'
+    - goal: 2
+      tex: '\mathbb{E}\Bigl[\frac1n \sum (x^{(i)} - \bar x)^2\Bigr] = \changed{\frac{n - 1}{n}\, \sigma^2}, \qquad \mathbb{E} s^2 = \mathbb{E}\Bigl[\frac{1}{n - 1} \sum (x^{(i)} - \bar x)^2\Bigr] = \sigma^2'
+      by: [stat.estimators]
+      note: 'Деление на $n$ — оценка максимального правдоподобия (урок IV.3) — занижает дисперсию в среднем в $(n - 1)/n$ раз. Поправка Бесселя — деление на $n - 1$ — убирает смещение.'
+      check:
+        kind: same
+        py: '7 * (6 / 7) * sigma ** 2'
+
+pitfalls:
+  - 'Делить на $n - 1$ «потому что так правильнее» и в MLE: оценка максимального правдоподобия дисперсии (и ковариации в GDA и PCA) делит на $n$ и смещена.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Generative learning algorithms / Gaussian discriminant analysis'
+
+usedIn: [stat.estimators]
