@@ -41,7 +41,7 @@ const mapDesc = `Карта курсов. ${map.edges
         {map.routes.map((r) => <label><input type="radio" name="route" value={r.id} />{r.title}</label>)}
       </fieldset>
       <div class="map-scroll" role="region" aria-label="Карта курсов: прокручивается по горизонтали" tabindex="0">
-        <svg class="course-map" viewBox={`0 0 ${size.w} ${size.h}`} role="img" aria-labelledby="map-desc" data-map>
+        <svg class="catalog-graph" viewBox={`0 0 ${size.w} ${size.h}`} role="img" aria-labelledby="map-desc" data-map>
           <desc id="map-desc">{mapDesc}</desc>
           <defs>
             <pattern id="map-cells" width="20" height="20" patternUnits="userSpaceOnUse"><path class="grid-line" d="M20 0H0V20" fill="none" /></pattern>
