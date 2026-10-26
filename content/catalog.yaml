@@ -1,0 +1,31 @@
+# Каталог курсов на главной (S7.01, эталон prototype/courses.html): граф курсов, маршруты, проекты и «нужно до начала».
+# Источник — docs/program/catalog.md (таблица курсов, «Граф и маршруты»); тест src/lib/content/catalog-map.test.ts
+# сверяет маршруты и рёбра с ним. Положение узла на карте — столбец и строка сетки.
+nodes:
+  - { course: foundations, short: 'Математика', col: 0, row: 2, before: 'школьная алгебра, Python', practice: 'лабораторные и игры' }
+  - { course: ml-basics, short: 'Основы ML', col: 1, row: 2, before: 'математика', projects: ['«Цена квартиры»', '«Отклик на предложение банка»'] }
+  - { course: ml-classic, short: 'Классические методы', col: 2, row: 0, before: 'основы ML', projects: ['«Фильтр сообщений»'] }
+  - { course: ml-tabular, short: 'Табличные данные', col: 2, row: 1, before: 'основы ML', projects: ['«Кредитный скоринг»'] }
+  - { course: deep-learning, short: 'Глубокое обучение', col: 2, row: 2, before: 'основы ML', projects: ['«Цифры с нуля»'] }
+  - { course: unsupervised, short: 'Без учителя', col: 2, row: 3, before: 'основы ML', projects: ['«Сегменты клиентов»'] }
+  - { course: rl, short: 'С подкреплением', col: 2, row: 4, before: 'основы ML', projects: ['«Агент»'] }
+  - { course: llm, short: 'LLM', col: 3, row: 2, before: 'глубокое обучение', projects: ['«Умный поиск по курсу»'] }
+  - { course: ml-project, short: 'Практикум', col: 0, row: 4, before: 'основы ML и ещё один курс', projects: ['своя задача'] }
+# Сплошная стрелка — курс нужен до начала, soft — рекомендуется.
+edges:
+  - [foundations, ml-basics]
+  - [ml-basics, ml-classic]
+  - [ml-basics, ml-tabular]
+  - [ml-basics, deep-learning]
+  - [ml-basics, unsupervised]
+  - [ml-basics, rl]
+  - [deep-learning, llm]
+  - [ml-basics, ml-project]
+  - [deep-learning, unsupervised, soft]
+  - [deep-learning, rl, soft]
+  - [rl, llm, soft]
+# Маршруты — подсказка на главной, не ограничение.
+routes:
+  - { id: cs229, title: 'Пройти CS229 целиком', courses: [foundations, ml-basics, ml-classic, deep-learning, unsupervised, llm, rl] }
+  - { id: tabular, title: 'ML-инженер на табличных данных', courses: [foundations, ml-basics, ml-tabular, ml-project] }
+  - { id: nn, title: 'Нейросети и LLM', courses: [foundations, ml-basics, deep-learning, llm, ml-project] }

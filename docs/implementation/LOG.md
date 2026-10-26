@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — S7.01 каталог курсов на сайте — готова
+- **Сделано:** content/catalog.yaml (узлы, рёбра сплошные и рекомендуемые, маршруты, проекты), геометрия src/lib/content/catalog-map.ts с тестом согласованности, src/pages/index.astro и src/client/catalog.ts, прогресс и пререквизиты на src/pages/[course]/index.astro, Prereqs на странице-заглушке урока
+- **Файлы:** content/catalog.yaml, src/lib/content/catalog-map.ts, src/pages/index.astro, src/client/catalog.ts, src/pages/[course]/index.astro, src/pages/[course]/[module]/[lesson].astro, src/styles/layout.css
+- **Проверка:** vitest 654, lint, check, validate, build, e2e catalog.spec.ts и know.spec.ts, раскладка и axe home, course, уроков
+- **Отклонения от плана и решения:** стор отметок по LessonKey, общий для курсов, миграция ключей v1, курс в шапке и название курса у «Опирается на» уже были (S2.04, S3.02) — проверены e2e; вне маршрута узлы и строки приглушаются цветом, а не прозрачностью (контраст)
+- **Следующий шаг:** S7.02.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — S5.04 шпаргалки — готова
 - **Сделано:** логика src/lib/content/cheatsheet.ts (формулы и блоки pitfall из MDX), данные cheatsheet-data.ts (по модулям и разделам CS229 через компаньон), страницы src/pages/cheatsheet/, клиент src/client/cheatsheet.ts, стили @media print
 - **Файлы:** src/lib/content/cheatsheet.ts, src/lib/content/cheatsheet-data.ts, src/pages/cheatsheet/, src/client/cheatsheet.ts, src/styles/layout.css

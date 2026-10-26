@@ -7,6 +7,7 @@ import LessonLayout from "../../../layouts/LessonLayout.astro";
 import { lessonComponents, Note } from "../../../components/pedagogy";
 import LessonSurvey from "../../../components/pedagogy/LessonSurvey.astro";
 import PrereqHelp from "../../../components/pedagogy/PrereqHelp.astro";
+import Prereqs from "../../../components/pedagogy/Prereqs.astro";
 import { lessonText, loadCatalog } from "../../../lib/content/collections";
 import type { CourseTree, LessonEntry } from "../../../lib/content/catalog";
 import { plural } from "../../../i18n/ru";
@@ -38,6 +39,8 @@ const lead = entry?.data.lead ? renderInline(entry.data.lead, entry.data.symbols
   {cs229 && <Note label="В CS229" slot="intro">{cs229}</Note>}
   {lead && <p class="lead" slot="intro" set:html={lead} />}
   {!rendered && <p class="lead" slot="intro">Текст этого урока ещё пишется. Соседние уроки&nbsp;— ниже и&nbsp;в&nbsp;оглавлении.</p>}
+  {/* у заглушки — «Опирается на» из module.yaml: уроки других курсов можно отметить «знаю» уже сейчас (S7.01) */}
+  {!rendered && lesson.requires?.length ? <Prereqs lessons={lesson.requires as LessonEntry["key"][]} course={course.id} /> : null}
   {/* отдельным выражением: в одном выражении с slot="intro" Astro отправил бы текст урока тоже в intro */}
   {rendered && <rendered.Content components={lessonComponents} />}
   {rendered && <PrereqHelp lesson={lesson} />}

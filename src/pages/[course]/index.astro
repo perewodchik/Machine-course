@@ -1,12 +1,16 @@
 ---
-// Страница курса: модули и уроки с галочками «знаю». Прогресс, проекты и пререквизиты курса — S7.01.
+// Страница курса: прогресс, проекты и курсы «нужно до начала» (S7.01, content/catalog.yaml), затем модули и уроки
+// с галочками «знаю». Счётчик «Знаю N из M» обновляет src/client/know.ts.
+import { readFileSync } from "node:fs";
 import type { GetStaticPaths } from "astro";
+import { parse } from "yaml";
+import type { CatalogMap } from "../../lib/content/catalog-map";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Know from "../../components/layout/Know.astro";
 import ProgressFile from "../../components/layout/ProgressFile.astro";
 import { loadCatalog } from "../../lib/content/collections";
 import type { CourseTree } from "../../lib/content/catalog";
-import { hoursRange, plural } from "../../i18n/ru";
+import { hoursRange, ofLessons, plural } from "../../i18n/ru";
 
 export const getStaticPaths = (async () =>
   (await loadCatalog()).map((course) => ({ params: { course: course.id }, props: { course } }))) satisfies GetStaticPaths;
@@ -15,11 +19,24 @@ interface Props {
   course: CourseTree;
 }
 const { course } = Astro.props;
+const map = parse(readFileSync("content/catalog.yaml", "utf8")) as CatalogMap;
+const node = map.nodes.find((n) => n.course === course.id);
+const titles = new Map((await loadCatalog()).map((c) => [c.id, { title: c.title, href: c.href }]));
+const need = map.edges.filter((e) => e[1] === course.id).map(([a, , soft]) => ({ ...titles.get(a)!, soft: !!soft }));
+const total: [number, number] = course.modules.reduce<[number, number]>(([a, b], m) => [a + m.hours[0], b + m.hours[1]], [0, 0]);
 ---
 <BaseLayout title={course.title} description={course.summary} course={course}>
   <main class="shell" id="content">
     <h1>{course.title}</h1>
     <p class="lead">{course.summary}</p>
+    <dl class="catalog__facts course-facts">
+      <div><dt>Уроков</dt><dd>{course.lessons.length}{course.required < course.lessons.length && `, из них ${course.lessons.length - course.required} ★ по желанию`}; <span class="nowrap">{hoursRange(total)}</span></dd></div>
+      {node?.projects && <div><dt>{node.projects.length > 1 ? "Проекты" : "Проект"}</dt><dd>{node.projects.join(", ")}</dd></div>}
+      <div><dt>Нужно до&nbsp;начала</dt><dd>{need.length ? need.map((c, i) => <>{i > 0 && ", "}<a href={c.href}>{c.title}</a>{c.soft && " (рекомендуется)"}</>) : node?.before}</dd></div>
+    </dl>
+    <p class="course-progress course-facts__progress" data-progress-lessons={JSON.stringify(course.lessons.filter((l) => !l.optional).map((l) => l.key))}>
+      Знаю <span data-known-total>0</span> из&nbsp;{course.required} {ofLessons(course.required)}
+    </p>
     {course.id === "foundations" && (
       <p class="course-links"><a href="/map/">Карта курса</a> — уроки и связи между ними; <a href="/concepts/">понятия</a> — и зачем каждое в&nbsp;CS229.</p>
     )}
