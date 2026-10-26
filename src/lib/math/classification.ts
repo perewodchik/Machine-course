@@ -70,3 +70,61 @@ export function bestThreshold(scores: readonly number[], y: readonly number[], c
 
 /** Для калиброванных вероятностей: отмечать, если p · c_fn > (1 − p) · c_fp, то есть p > c_fp / (c_fp + c_fn). */
 export const bayesThreshold = (cFp: number, cFn: number) => cFp / (cFp + cFn);
+
+export const f1 = (c: Confusion) => (2 * c.tp + c.fp + c.fn ? (2 * c.tp) / (2 * c.tp + c.fp + c.fn) : 0);
+
+/** AUC через ранги за O(n log n): доля правильно упорядоченных пар, ничьи — за ½ (средний ранг группы). */
+export function aucRanks(scores: readonly number[], y: readonly number[]): number {
+  const idx = scores.map((_, i) => i).sort((a, b) => scores[a]! - scores[b]!);
+  const rank = new Array<number>(scores.length);
+  for (let k = 0; k < idx.length; ) {
+    let j = k;
+    while (j + 1 < idx.length && scores[idx[j + 1]!] === scores[idx[k]!]) j++;
+    for (let m = k; m <= j; m++) rank[idx[m]!] = (k + j) / 2 + 1;
+    k = j + 1;
+  }
+  const P = y.reduce((a, v) => a + v, 0);
+  const N = y.length - P;
+  const sumPos = rank.reduce((a, r, i) => a + (y[i] ? r : 0), 0);
+  return (sumPos - (P * (P + 1)) / 2) / (P * N);
+}
+
+/** Точки PR (recall, precision) при пороге от большего к меньшему; ничьи — одной точкой. */
+export function prPoints(scores: readonly number[], y: readonly number[]): [number, number][] {
+  const idx = scores.map((_, i) => i).sort((a, b) => scores[b]! - scores[a]!);
+  const P = y.reduce((a, v) => a + v, 0);
+  const pts: [number, number][] = [];
+  let tp = 0;
+  let fp = 0;
+  idx.forEach((i, k) => {
+    if (y[i]) tp++;
+    else fp++;
+    if (k === idx.length - 1 || scores[idx[k + 1]!] !== scores[i]) pts.push([tp / P, tp / (tp + fp)]);
+  });
+  return pts;
+}
+
+/** AP = Σ (R_k − R_{k−1}) P_k — ступеньками, как average_precision_score. */
+export function averagePrecision(scores: readonly number[], y: readonly number[]): number {
+  let prev = 0;
+  let ap = 0;
+  for (const [r, p] of prPoints(scores, y)) {
+    ap += (r - prev) * p;
+    prev = r;
+  }
+  return ap;
+}
+
+export const brier = (scores: readonly number[], y: readonly number[]) => scores.reduce((a, s, i) => a + (s - y[i]!) ** 2, 0) / scores.length;
+
+/** Кривая надёжности: по равным корзинам [0, 1] — средняя оценка и доля положительных (пустые корзины пропускаются). */
+export function reliability(scores: readonly number[], y: readonly number[], bins = 10): { mean: number; frac: number; n: number }[] {
+  const acc = Array.from({ length: bins }, () => ({ s: 0, pos: 0, n: 0 }));
+  scores.forEach((s, i) => {
+    const b = Math.min(bins - 1, Math.floor(s * bins));
+    acc[b]!.s += s;
+    acc[b]!.pos += y[i]!;
+    acc[b]!.n++;
+  });
+  return acc.filter((a) => a.n > 0).map((a) => ({ mean: a.s / a.n, frac: a.pos / a.n, n: a.n }));
+}

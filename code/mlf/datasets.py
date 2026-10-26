@@ -84,3 +84,20 @@ def ad_views(n: int = 2000, seed: int = 2030) -> tuple[np.ndarray, np.ndarray]:
     area = np.round(rng.uniform(25, 120, size=n))
     eta = 0.4 + 0.12 * (photos - 5) - 2.5 * (rel - 1) + 0.01 * (area - 70)
     return np.column_stack([photos, rel, area]), rng.poisson(np.exp(eta)).astype(float)
+
+
+# Звонки банка с предложением вклада (урок 2.1 «Основ ML»): синтетическая замена Bank Marketing, пока набор не скачан
+# (S7.02). Отклик редкий — около 11 %, как в Bank Marketing; порождён логистической моделью.
+CALL_FEATURES = ("возраст", "прошлых контактов", "длительность разговора, мин", "час звонка")
+
+
+def bank_calls(n: int = 10_000, seed: int = 2031) -> tuple[np.ndarray, np.ndarray]:
+    """X — n × 4 (``CALL_FEATURES``), y — открыл ли клиент вклад: y ~ Bernoulli(g(η)),
+    η = −4 + 0.02 · (возраст − 45) + 0.5 · контактов + 0.25 · длительность − 0.05 · (час − 15)."""
+    rng = np.random.default_rng(seed)
+    age = np.round(rng.uniform(18, 80, size=n))
+    prev = rng.poisson(0.6, size=n).astype(float)
+    dur = np.round(rng.exponential(4, size=n), 1)
+    hour = rng.integers(9, 21, size=n).astype(float)
+    eta = -4 + 0.02 * (age - 45) + 0.5 * prev + 0.25 * dur - 0.05 * (hour - 15)
+    return np.column_stack([age, prev, dur, hour]), (rng.random(n) < 1 / (1 + np.exp(-eta))).astype(float)

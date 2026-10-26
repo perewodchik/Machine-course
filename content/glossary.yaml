@@ -429,3 +429,6 @@
 - id: glm
   ru: 'экспоненциальное семейство; естественный параметр; достаточная статистика; логарифм нормировочной константы; обобщённая линейная модель; функция отклика; функция связи; пуассоновская регрессия'
   en: 'exponential family; natural parameter; sufficient statistic; log-partition function; generalized linear model (GLM); response function; link function; Poisson regression'
+- id: classification-metrics
+  ru: 'матрица ошибок; точность; полнота; доля ложных срабатываний; доля правильных ответов; ROC-кривая; AUC; PR-кривая; средняя точность; калибровка; кривая надёжности; оценка Брайера'
+  en: 'confusion matrix; precision; recall (TPR); false positive rate; accuracy; ROC curve; area under the curve (AUC); precision–recall curve; average precision (AP); calibration; reliability diagram; Brier score'

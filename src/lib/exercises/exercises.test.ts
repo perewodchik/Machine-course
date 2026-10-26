@@ -1440,6 +1440,26 @@ describe("генераторы", () => {
     }
   });
 
+  it("ml.precision-prevalence: точность по Байесу на счётчиках; ml.cost-threshold: порог — перебором цены", () => {
+    for (let s = 1; s <= 30; s++) {
+      const t = make("ml.precision-prevalence", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const phi = Number(/Положительных ([\d.]+) %/.exec(t.prompt)![1]) / 100;
+      const tpr = Number(/TPR\} = ([\d.]+)\$/.exec(t.prompt)![1]);
+      const f = Number(/FPR\} = ([\d.]+)\$/.exec(t.prompt)![1]);
+      const n = 1e6;
+      expect(t.answer).toBeCloseTo((phi * n * tpr) / (phi * n * tpr + (1 - phi) * n * f), 4);
+
+      const c = make("ml.cost-threshold", s);
+      if (c.kind !== "numeric") throw new Error("ожидалось число");
+      const call = Number(/стоит (\d+) ₽/.exec(c.prompt)![1]);
+      const gain = Number(/приносит банку (\d+) ₽/.exec(c.prompt)![1]);
+      // наименьшая p на сетке, при которой ожидаемая выгода звонка p · gain − call неотрицательна
+      const grid = Array.from({ length: 100001 }, (_, k) => k / 100000);
+      expect(Math.abs(grid.find((p) => p * gain - call >= -1e-12)! - c.answer)).toBeLessThan(1e-4);
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

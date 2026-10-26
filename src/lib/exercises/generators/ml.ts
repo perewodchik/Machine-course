@@ -360,3 +360,50 @@ export const poissonPredict: Generator = {
     };
   },
 };
+
+/** Урок 2.1: точность по доле положительных, TPR и FPR. */
+export const precisionPrevalence: Generator = {
+  id: "ml.precision-prevalence",
+  version: 1,
+  title: "Точность при дисбалансе",
+  make(seed) {
+    const r = rng(seed);
+    const phi = r.pick([0.01, 0.02, 0.05, 0.1, 0.2]);
+    const tpr = r.pick([0.6, 0.7, 0.8, 0.9]);
+    const fprV = r.pick([0.01, 0.02, 0.05, 0.1]);
+    const answer = round((phi * tpr) / (phi * tpr + (1 - phi) * fprV), 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`Положительных ${num(round(100 * phi, 4))} %. Классификатор при выбранном пороге находит $\mathrm{TPR} = ${num(tpr)}$ положительных и ложно срабатывает на $\mathrm{FPR} = ${num(fprV)}$ отрицательных. Какова его точность (precision)?`,
+      label: "precision =",
+      answer,
+      tol: 0.002,
+      hints: [String.raw`На $n$ объектов: $\mathrm{TP} = \phi n \cdot \mathrm{TPR}$, $\mathrm{FP} = (1 - \phi) n \cdot \mathrm{FPR}$; точность — $\mathrm{TP}/(\mathrm{TP} + \mathrm{FP})$.`],
+      right: String.raw`$\frac{${num(phi)} \cdot ${num(tpr)}}{${num(phi)} \cdot ${num(tpr)} + ${num(round(1 - phi, 4))} \cdot ${num(fprV)}} = ${num(answer)}$: на одно верное срабатывание — ${num(round((1 - answer) / answer, 1))} ложных.`,
+      wrong: String.raw`Точность — не $1 - \mathrm{FPR}$. Отрицательных в $${num(round((1 - phi) / phi, 1))}$ раз больше, поэтому даже малый FPR даёт много ложных срабатываний: precision $= ${num(answer)}$.`,
+    };
+  },
+};
+
+/** Урок 2.1: порог по цене звонка и выгоде отклика. */
+export const costThreshold: Generator = {
+  id: "ml.cost-threshold",
+  version: 1,
+  title: "Порог по цене ошибок",
+  make(seed) {
+    const r = rng(seed);
+    const call = r.pick([2, 5, 10, 20]);
+    const gain = r.pick([50, 100, 200, 400]);
+    const answer = round(call / gain, 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`Звонок клиенту стоит ${call} ₽, открытый вклад приносит банку ${gain} ₽. Вероятности отклика у модели откалиброваны. При каком наименьшем $p$ клиенту выгодно звонить?`,
+      label: "p >",
+      answer,
+      tol: 0.001,
+      hints: [String.raw`Лишний звонок — ложное срабатывание: $c_{FP} = ${call}$. Пропущенный клиент — упущенная выгода за вычетом звонка: $c_{FN} = ${gain} - ${call}$.`],
+      right: String.raw`$t^\star = \frac{c_{FP}}{c_{FP} + c_{FN}} = \frac{${call}}{${call} + ${gain - call}} = ${num(answer)}$ — звонок окупается уже при малой вероятности отклика.`,
+      wrong: String.raw`Не 0.5: $c_{FP} = ${call}$, $c_{FN} = ${gain - call}$, и $t^\star = ${call}/${gain} = ${num(answer)}$. Звонить выгодно, когда $p \cdot ${gain - call} > (1 - p) \cdot ${call}$.`,
+    };
+  },
+};

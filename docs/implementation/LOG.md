@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — L-ml-basics-2.1 Метрики классификации — готов
+- **Сделано:** урок (4 цикла, формулы f.f1-counts, f.auc-pairs, f.precision-prevalence, f.cost-threshold, f.brier-proper, 4 упражнения, итоговая ml.precision-prevalence); виджет «Порог: кривые и цена» (src/widgets/ml/threshold-lab: гистограммы, ROC, PR, стоимость, надёжность, φ, цены, искажение s³); метрики в src/lib/math/classification.ts (aucRanks, prPoints, averagePrecision, brier, reliability, f1); набор mlf.datasets.bank_calls; генераторы ml.precision-prevalence, ml.cost-threshold; понятие ml.classification-metrics; ячейка ml_basics/metrics.py со сверкой с sklearn.metrics до 1e-12
+- **Файлы:** content/courses/ml-basics/evaluation/classification-metrics.mdx, content/formulas/ml/{f1-counts,auc-pairs,precision-prevalence,cost-threshold,brier-proper}.yaml, src/widgets/ml/threshold-lab/, code/snippets/ml_basics/metrics.py, code/tests/test_classification_metrics.py
+- **Проверка:** validate, lint, check, build, vitest 724, pytest, check_consistency, e2e lesson-ml-2-1, error-cost, threshold, скриншоты 1440 и 390
+- **Отклонения от плана и решения:** Bank Marketing недоступен (S7.02): ячейка — на синтетических «звонках банка» mlf.datasets.bank_calls с ~11 % откликов; новый виджет threshold-lab рядом со старым threshold (тот остаётся на /demo/threshold/); кривая надёжности видна всегда, а не только после искажения
+- **Следующий шаг:** L-ml-basics-2.2 — смещение и разброс.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — S7.L1 Итоговая проверка модуля 1 — готова
 - **Сделано:** ExerciseSet из 14 задач в конце урока 1.6: 10 генераторов уроков 1.1–1.6 и 4 задачи с выбором (шаг за порогом, разделимые данные, LogisticRegression() по умолчанию, выбор модели для счётчика). Блок S7.L1 — [x].
 - **Проверка:** validate, build, e2e lesson-ml-1-6 (14 задач, код в тексте).

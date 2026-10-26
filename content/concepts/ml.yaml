@@ -141,3 +141,15 @@
   cs229:
     - edition: main-notes-2026-spring
       section: 'Generalized linear models'
+
+- id: ml.classification-metrics
+  title:
+    ru: 'Метрики классификации и калибровка'
+    en: 'classification metrics and calibration'
+  summary: 'При пороге $t$ — матрица ошибок, точность, полнота, FPR и $F_1$; ROC- и PR-кривые — все пороги сразу, AUC — доля правильно упорядоченных пар. Порог по цене ошибок $t^\star = c_{FP}/(c_{FP} + c_{FN})$ верен для калиброванных вероятностей; калибровку проверяют кривой надёжности и оценкой Брайера.'
+  lesson: classification-metrics
+  prerequisites: [ml.logistic-regression, prob.bayes]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Classification and logistic regression'
