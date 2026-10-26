@@ -1074,6 +1074,33 @@ describe("генераторы", () => {
     }
   });
 
+  it("stat.mean-median, stat.iqr, stat.outlier-shift: ответы совпадают с прямым счётом", () => {
+    const q = (x: number[], p: number) => {
+      const s = [...x].sort((a, b) => a - b);
+      const pos = p * (s.length - 1);
+      const lo = Math.floor(pos);
+      return s[lo]! + (pos - lo) * (s[Math.ceil(pos)]! - s[lo]!);
+    };
+    for (let s = 1; s <= 30; s++) {
+      const a = make("stat.mean-median", s);
+      if (a.kind !== "numeric") throw new Error("ожидалось число");
+      const x = /Выборка: \$([\d, ]+)\$/.exec(a.prompt)![1]!.split(", ").map(Number);
+      expect(a.answer).toBeCloseTo(a.prompt.includes("медиану") ? q(x, 0.5) : x.reduce((u, v) => u + v, 0) / x.length, 3);
+
+      const b = make("stat.iqr", s);
+      if (b.kind !== "numeric") throw new Error("ожидалось число");
+      const y = /чисел: \$([\d, ]+)\$/.exec(b.prompt)![1]!.split(", ").map(Number);
+      expect(y).toHaveLength(9);
+      expect(b.answer).toBeCloseTo(q(y, 0.75) - q(y, 0.25), 9);
+
+      const c = make("stat.outlier-shift", s);
+      if (c.kind !== "numeric") throw new Error("ожидалось число");
+      const [n, m] = /Среднее \$(\d+)\$ цен — \$(\d+)\$/.exec(c.prompt)!.slice(1).map(Number) as [number, number];
+      const wrongVal = Number(/записали \$(\d+)\$/.exec(c.prompt)![1]);
+      expect(c.answer).toBeCloseTo((m * n - 10 + wrongVal) / n, 3);
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

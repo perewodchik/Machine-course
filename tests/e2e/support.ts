@@ -27,6 +27,7 @@ export const layoutPages = {
   iii11: "/foundations/probability/multivariate-normal/",
   iii12: "/foundations/probability/mixtures-latent/",
   iii13: "/foundations/probability/information/",
+  iv1: "/foundations/statistics/descriptive/",
   zoogame: "/games/dist-zoo/",
   corrgame: "/games/guess-correlation/",
   sigmagame: "/games/sigma-sculptor/",

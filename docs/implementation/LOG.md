@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — L-IV.1 L-IV.1 — выборка и описательная статистика — готов
+- **Сделано:** урок statistics/descriptive (три цикла: выборка и статистика, центр — среднее и медиана, разброс — s, квантили, IQR), виджет «Перетащи выброс», формула f.mean-least-squares, генераторы stat.mean-median, stat.iqr, stat.outlier-shift (новый файл generators/stat.ts), сниппет stats/descriptive.py с тестом (каталог stats, а не stat: stat — модуль стандартной библиотеки)
+- **Файлы:** content/courses/foundations/statistics/descriptive.mdx, src/widgets/stat/outlier/, content/formulas/stat/mean-least-squares.yaml, src/lib/exercises/generators/stat.ts, code/snippets/stats/descriptive.py, tests/e2e/lesson-stat.spec.ts
+- **Проверка:** validate, lint, build, check, vitest 594, pytest, check_consistency, e2e IV.1 и раскладка iv1 (axe)
+- **Отклонения от плана и решения:** нет
+- **Следующий шаг:** L-IV.2 — оценки: смещение, разброс, MSE.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — S4.L3 None — готова
 - **Сделано:** None
 - **Следующий шаг:** S4.L4 — L-IV.1 — выборка, статистики, оценки.

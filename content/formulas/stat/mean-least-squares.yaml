@@ -1,0 +1,62 @@
+id: f.mean-least-squares
+kind: formula
+title:
+  ru: 'Среднее — минимум суммы квадратов отклонений'
+  en: 'the mean minimizes the sum of squared deviations'
+statement: '\bar x = \frac1n \sum_{i=1}^{n} x^{(i)} = \arg\min_{c} \sum_{i=1}^{n} \bigl(x^{(i)} - c\bigr)^2'
+
+# Урок IV.1: J(c) — парабола по c, производная −Σ(xᵢ − c) обращается в ноль в среднем. Для суммы модулей
+# минимум — медиана (в тексте урока, без вывода): поэтому среднее чувствительно к выбросам, а медиана нет.
+# Проверка — на выборке из n = 7 случайных чисел.
+symbols:
+  - name: x
+    tex: 'x'
+    meaning: 'выборка $x^{(1)}, \ldots, x^{(n)}$'
+    shape: [n, 1]
+  - name: c
+    tex: 'c'
+    meaning: 'кандидат в «центр» выборки'
+    shape: []
+
+dependsOn:
+  concepts: [stat.descriptive, calc.derivative]
+  rules: []
+
+derivation:
+  plan:
+    - 'Записать сумму квадратов отклонений как функцию от $c$'
+    - 'Продифференцировать по $c$'
+    - 'Приравнять производную к нулю и решить'
+  steps:
+    - goal: 0
+      tex: 'J(c) = \tfrac12 \sum_{i=1}^{n} \bigl(x^{(i)} - c\bigr)^2'
+      by: [stat.descriptive]
+      note: 'Множитель $\tfrac12$ не меняет точку минимума и сокращает двойку при дифференцировании.'
+      check:
+        kind: same
+        py: '0.5 * np.sum((x - c) ** 2)'
+    - goal: 1
+      tex: 'J''(c) = \changed{-\sum_{i=1}^{n} \bigl(x^{(i)} - c\bigr)} = n c - \sum_{i=1}^{n} x^{(i)}'
+      by: [calc.derivative]
+      note: 'Производная каждого слагаемого $\tfrac12 (x^{(i)} - c)^2$ по $c$ — $-(x^{(i)} - c)$. $J'''' = n > 0$: это минимум.'
+      check:
+        kind: gradient
+        wrt: c
+        py: 'c * x.shape[0] - np.sum(x)'
+    - goal: 2
+      tex: 'c^{\star} = \changed{\frac1n \sum_{i=1}^{n} x^{(i)}} = \bar x'
+      by: [calc.derivative]
+      note: 'В точке минимума сумма отклонений от среднего равна нулю: $\sum_i (x^{(i)} - \bar x) = 0$ — среднее уравновешивает выборку, как центр масс (урок III.5).'
+      check:
+        kind: solution
+        wrt: c
+        py: 'np.sum(x) / x.shape[0]'
+
+pitfalls:
+  - 'Путать выборочное среднее $\bar x$ и матожидание $\mathbb{E}X$: первое — число, посчитанное по данным, и меняется от выборки к выборке; второе — параметр распределения.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Linear regression'
+
+usedIn: [stat.descriptive]

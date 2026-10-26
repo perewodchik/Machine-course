@@ -1,4 +1,13 @@
 # Понятия статистики. Формат — content/concepts/la.yaml; программа — docs/program/04-statistics.md.
+- id: stat.descriptive
+  title:
+    ru: 'Выборка и описательная статистика'
+    en: 'samples and descriptive statistics'
+  summary: 'Выборка $x^{(1)}, \ldots, x^{(n)}$ и статистики — функции от неё: среднее (минимум суммы квадратов), медиана (минимум суммы модулей), выборочная дисперсия, квантили и межквартильный размах; медиана и квантили устойчивы к выбросам, среднее и дисперсия — нет.'
+  lesson: descriptive
+  prerequisites: [prob.expectation]
+  core: true
+
 - id: stat.mle
   title:
     ru: 'Метод максимального правдоподобия'

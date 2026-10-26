@@ -387,3 +387,6 @@
 - id: information
   ru: 'энтропия; кросс-энтропия; дивергенция Кульбака — Лейблера; нижняя оценка правдоподобия (ELBO)'
   en: 'entropy; cross-entropy; Kullback–Leibler divergence; evidence lower bound (ELBO)'
+- id: descriptive
+  ru: 'выборка; статистика; медиана; квантиль; межквартильный размах; робастность'
+  en: 'sample; statistic; median; quantile; interquartile range (IQR); robustness'
