@@ -1,0 +1,42 @@
+---
+// Шпаргалка (S5.04): формулы и типичные ошибки уроков модуля или раздела CS229. По умолчанию — только уроки с галочкой
+// «знаю» (src/client/cheatsheet.ts); переключатель показывает все. Печать — стили @media print в layout.css.
+import type { GetStaticPaths } from "astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { loadCourse } from "../../lib/content/collections";
+import { sheets, type Sheet } from "../../lib/content/cheatsheet-data";
+import { renderInline } from "../../markdown/core/inline";
+
+export const getStaticPaths = (async () => (await sheets()).map((s) => ({ params: { sheet: s.id }, props: { s } }))) satisfies GetStaticPaths;
+
+const { s } = Astro.props as { s: Sheet };
+const math = await loadCourse("foundations");
+---
+<BaseLayout title={`Шпаргалка: ${s.title}`} description={`Формулы и типичные ошибки: ${s.title}.`} course={math}>
+  <main class="shell sheet" id="content" data-sheet>
+    <nav class="breadcrumb" aria-label="Путь"><a href="/cheatsheet/">Шпаргалки</a></nav>
+    <h1>{s.title}</h1>
+    <div class="sheet__controls">
+      <label class="sheet__filter"><input type="checkbox" data-sheet-known checked /> Только уроки с&nbsp;галочкой «знаю»</label>
+      <button type="button" class="btn btn--sm" data-sheet-print>Распечатать</button>
+    </div>
+    <p class="sheet__empty" data-sheet-empty hidden>Ни один урок этой шпаргалки пока не&nbsp;отмечен «знаю». Снимите флажок выше, чтобы увидеть все, или отметьте уроки в&nbsp;оглавлении.</p>
+    {s.lessons.map((l) => (
+      <section class="sheet__lesson" data-sheet-lesson={l.key} aria-labelledby={`sh-${l.key.replace(/\W+/g, "-")}`}>
+        <h2 id={`sh-${l.key.replace(/\W+/g, "-")}`}><span class="ready__num">{l.number}</span> <a href={l.href}>{l.title}</a></h2>
+        {l.formulas.map((f) => (
+          <div class="sheet__formula">
+            <p class="sheet__name">{f.title}</p>
+            <Fragment set:html={renderInline(`$$${f.statement}$$`)} />
+            {f.pitfalls.map((p) => <p class="sheet__pitfall"><span class="sheet__mark">Ошибка:</span> <Fragment set:html={renderInline(p)} /></p>)}
+          </div>
+        ))}
+        {l.pitfalls.map((p) => <p class="sheet__pitfall"><span class="sheet__mark">Ошибка:</span> <Fragment set:html={renderInline(p)} /></p>)}
+      </section>
+    ))}
+  </main>
+</BaseLayout>
+
+<script>
+  import "../../client/cheatsheet";
+</script>
