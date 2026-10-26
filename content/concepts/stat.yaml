@@ -1,4 +1,22 @@
 # Понятия статистики. Формат — content/concepts/la.yaml; программа — docs/program/04-statistics.md.
+- id: stat.descriptive
+  title:
+    ru: 'Выборка и описательная статистика'
+    en: 'samples and descriptive statistics'
+  summary: 'Выборка $x^{(1)}, \ldots, x^{(n)}$ и статистики — функции от неё: среднее (минимум суммы квадратов), медиана (минимум суммы модулей), выборочная дисперсия, квантили и межквартильный размах; медиана и квантили устойчивы к выбросам, среднее и дисперсия — нет.'
+  lesson: descriptive
+  prerequisites: [prob.expectation]
+  core: true
+
+- id: stat.estimators
+  title:
+    ru: 'Оценки: смещение, разброс, MSE'
+    en: 'estimators: bias, variance, MSE'
+  summary: 'Оценка $\hat\theta$ — случайная величина; смещение $\mathbb{E}\hat\theta - \theta$, дисперсия, $\mathrm{MSE} = \text{смещение}^2 + \operatorname{Var}$; состоятельность; $s^2$ с делением на $n - 1$ несмещена, MLE дисперсии делит на $n$; сжатие может уменьшить MSE.'
+  lesson: estimators
+  prerequisites: [stat.descriptive, prob.limit-theorems]
+  core: true
+
 - id: stat.mle
   title:
     ru: 'Метод максимального правдоподобия'

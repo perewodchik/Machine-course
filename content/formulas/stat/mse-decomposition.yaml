@@ -1,0 +1,64 @@
+id: f.mse-decomposition
+kind: formula
+title:
+  ru: 'Разложение среднеквадратичной ошибки'
+  en: 'bias–variance decomposition of the MSE'
+statement: '\mathbb{E}\bigl(\hat\theta - \theta\bigr)^2 = \underbrace{\bigl(\mathbb{E}\hat\theta - \theta\bigr)^2}_{\text{смещение}^2} + \underbrace{\operatorname{Var} \hat\theta}_{\text{дисперсия}}'
+
+# Урок IV.2: добавить и вычесть E θ̂ под квадратом; перекрёстное слагаемое — матожидание отклонения от среднего,
+# оно равно нулю. Проверка — на дискретной «оценке»: значения v с вероятностями p и истинный параметр θ.
+symbols:
+  - name: v
+    tex: 'v'
+    meaning: 'значения оценки $\hat\theta$ на разных выборках'
+    shape: [k, 1]
+  - name: p
+    tex: 'p'
+    meaning: 'их вероятности'
+    shape: [k, 1]
+    sample: simplex
+  - name: theta
+    tex: '\theta'
+    meaning: 'истинное значение параметра'
+    shape: []
+
+dependsOn:
+  concepts: [stat.estimators, prob.expectation]
+  rules: []
+
+derivation:
+  plan:
+    - 'Обозначить $m = \mathbb{E}\hat\theta$ и добавить-вычесть $m$ под квадратом'
+    - 'Раскрыть квадрат суммы и разнести матожидание'
+    - 'Заметить, что перекрёстное слагаемое равно нулю'
+  steps:
+    - goal: 0
+      tex: '\mathbb{E}(\hat\theta - \theta)^2 = \mathbb{E}\bigl((\hat\theta - m) + (m - \theta)\bigr)^2, \qquad m = \mathbb{E}\hat\theta'
+      by: [prob.expectation]
+      note: 'Ничего не изменилось: $-m + m = 0$. Зато теперь видно отклонение оценки от своего среднего и от истины.'
+      check:
+        kind: same
+        py: 'p @ ((v - p @ v) + (p @ v - theta)) ** 2'
+    - goal: 1
+      tex: '= \mathbb{E}(\hat\theta - m)^2 + \changed{2(m - \theta)\, \mathbb{E}(\hat\theta - m)} + (m - \theta)^2'
+      by: [prob.expectation]
+      note: '$m - \theta$ — число, его выносят из матожидания.'
+      check:
+        kind: same
+        py: 'p @ (v - p @ v) ** 2 + 2 * (p @ v - theta) * (p @ (v - p @ v)) + (p @ v - theta) ** 2'
+    - goal: 2
+      tex: '= \changed{\operatorname{Var}\hat\theta + (\mathbb{E}\hat\theta - \theta)^2}'
+      by: [prob.expectation]
+      note: '$\mathbb{E}(\hat\theta - m) = m - m = 0$. Несмещённая оценка ($m = \theta$) не обязательно лучшая: можно выиграть в дисперсии больше, чем проиграть в смещении.'
+      check:
+        kind: same
+        py: 'p @ (v - p @ v) ** 2 + (p @ v - theta) ** 2'
+
+pitfalls:
+  - 'Считать несмещённую оценку всегда лучшей: у сжатой оценки $c\bar x$ при $c < 1$ MSE может быть меньше, чем у $\bar x$.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Generalization / Bias-variance tradeoff'
+
+usedIn: [stat.estimators]

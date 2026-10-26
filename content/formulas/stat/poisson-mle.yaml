@@ -1,0 +1,63 @@
+id: f.poisson-mle
+kind: formula
+title:
+  ru: 'Оценка максимального правдоподобия для Пуассона'
+  en: 'maximum likelihood estimate of the Poisson rate'
+statement: '\hat\lambda = \arg\max_{\lambda > 0} \sum_{i=1}^{n} \log p\bigl(x^{(i)}; \lambda\bigr) = \bar x, \qquad p(x; \lambda) = e^{-\lambda} \frac{\lambda^x}{x!}'
+
+# Урок IV.3: логарифм произведения — сумма логарифмов; слагаемые log xᵢ! от λ не зависят. Производная Σxᵢ/λ − n
+# обращается в ноль при λ = x̄. Проверка — на положительной выборке из n = 7 чисел (формула верна для любых x ≥ 0).
+symbols:
+  - name: x
+    tex: 'x'
+    meaning: 'выборка счётчиков $x^{(1)}, \ldots, x^{(n)}$'
+    shape: [n, 1]
+    sample: positive
+  - name: lam
+    tex: '\lambda'
+    meaning: 'интенсивность'
+    shape: []
+    sample: positive
+
+dependsOn:
+  concepts: [stat.mle, prob.discrete-distributions, calc.log-exp]
+  rules: []
+
+derivation:
+  plan:
+    - 'Записать логарифм правдоподобия как сумму логарифмов функции вероятности'
+    - 'Отбросить слагаемые, не зависящие от $\lambda$, и продифференцировать'
+    - 'Приравнять производную к нулю'
+  steps:
+    - goal: 0
+      tex: '\ell(\lambda) = \sum_{i=1}^{n} \bigl(x^{(i)} \log \lambda - \lambda - \log x^{(i)}!\bigr) = \Bigl(\sum_i x^{(i)}\Bigr) \log \lambda - n\lambda + \text{const}'
+      by: [calc.log-exp]
+      note: 'Логарифм превращает произведение по объектам в сумму — и не даёт произведению уйти в машинный ноль. Константа не меняет точку максимума; в проверке её нет.'
+      check:
+        kind: same
+        py: 'np.sum(x) * np.log(lam) - x.shape[0] * lam'
+    - goal: 1
+      tex: '\ell''(\lambda) = \changed{\frac{\sum_i x^{(i)}}{\lambda} - n}'
+      by: [calc.derivative]
+      note: 'Вторая производная $-\sum_i x^{(i)}/\lambda^2 < 0$: $\ell$ вогнута, и точка с нулевой производной — максимум.'
+      check:
+        kind: gradient
+        wrt: lam
+        py: 'np.sum(x) / lam - x.shape[0]'
+    - goal: 2
+      tex: '\hat\lambda = \changed{\frac1n \sum_{i=1}^{n} x^{(i)}} = \bar x'
+      by: [stat.mle]
+      note: 'Совпадает с тем, что подсказывает $\mathbb{E}X = \lambda$ (урок III.6): оценка — среднее число событий.'
+      check:
+        kind: solution
+        wrt: lam
+        py: 'np.sum(x) / x.shape[0]'
+
+pitfalls:
+  - 'Считать правдоподобие вероятностью параметра: $L(\lambda)$ — вероятность данных при данном $\lambda$, и по $\lambda$ она не обязана интегрироваться в $1$.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Generalized linear models'
+
+usedIn: [stat.mle]
