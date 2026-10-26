@@ -435,3 +435,29 @@ export const olsVariance: Generator = {
     };
   },
 };
+
+/** Урок 2.3: веса гребневой и лассо при ортонормированных признаках по весу МНК. */
+export const shrinkOrth: Generator = {
+  id: "ml.shrink-orth",
+  version: 1,
+  title: "Сжатие весов",
+  make(seed) {
+    const r = rng(seed);
+    const z = (r.next() < 0.5 ? -1 : 1) * r.pick([0.3, 0.5, 0.8, 1.2, 2, 3]);
+    const lam = r.pick([0.5, 1, 2]);
+    const isLasso = seed % 2 === 1;
+    const answer = round(isLasso ? Math.sign(z) * Math.max(Math.abs(z) - lam, 0) : z / (1 + lam), 6);
+    return {
+      kind: "numeric",
+      prompt: isLasso
+        ? String.raw`Признаки ортонормированы ($X^\top X = I$), вес МНК $\hat\theta_j = ${num(z)}$. Каким станет вес у лассо $\tfrac12 \lVert X\theta - y \rVert^2 + \lambda \lVert\theta\rVert_1$ при $\lambda = ${num(lam)}$?`
+        : String.raw`Признаки ортонормированы ($X^\top X = I$), вес МНК $\hat\theta_j = ${num(z)}$. Каким станет вес у гребневой регрессии $\tfrac12 \lVert X\theta - y \rVert^2 + \tfrac{\lambda}{2} \lVert\theta\rVert^2$ при $\lambda = ${num(lam)}$?`,
+      label: "θ_j =",
+      answer,
+      tol: 0.0005,
+      hints: [isLasso ? String.raw`Мягкий порог: $S_\lambda(z) = \operatorname{sign}(z) \max(\lvert z \rvert - \lambda, 0)$.` : String.raw`При $X^\top X = I$ решение $(I + \lambda I)^{-1} X^\top y = \hat\theta / (1 + \lambda)$.`],
+      right: isLasso ? String.raw`$S_{${num(lam)}}(${num(z)}) = ${num(answer)}$${answer === 0 ? ": вес меньше порога и зануляется" : ": вес сдвинут к нулю на λ"}.` : String.raw`$${num(z)}/(1 + ${num(lam)}) = ${num(answer)}$: гребневая сжимает, но не зануляет.`,
+      wrong: isLasso ? String.raw`Лассо вычитает $\lambda$ из модуля и зануляет, если $\lvert z \rvert \le \lambda$: здесь $${num(answer)}$. Деление на $1 + \lambda$ — это гребневая.` : String.raw`Гребневая делит на $1 + \lambda$: $${num(answer)}$. Вычитание $\lambda$ с порогом — это лассо.`,
+    };
+  },
+};

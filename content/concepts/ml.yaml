@@ -165,3 +165,15 @@
   cs229:
     - edition: main-notes-2026-spring
       section: 'Generalization'
+
+- id: ml.lasso
+  title:
+    ru: 'Лассо и путь регуляризации'
+    en: 'lasso and the regularization path'
+  summary: 'Штраф $\lambda\lVert\theta\rVert_1$ зануляет часть весов и отбирает признаки: при ортонормированных признаках решение — мягкий порог $S_\lambda(\hat\theta_j)$, в общем случае — покоординатный спуск. Путь $\theta_j(\lambda)$ показывает, в каком порядке признаки входят в модель; признаки стандартизуют по обучающей части, свободный член не штрафуют.'
+  lesson: regularization
+  prerequisites: [ml.ridge, ml.bias-variance, calc.convexity]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Regularization and model selection'

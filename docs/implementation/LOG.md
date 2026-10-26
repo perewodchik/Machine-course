@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — L-ml-basics-2.3 Регуляризация: L2 и L1 — готов
+- **Сделано:** урок (4 цикла, формулы f.ridge-closed-form, f.lasso-soft-threshold, f.lasso-coordinate-step, 3 упражнения, итоговая ml.shrink-orth); виджет «Путь регуляризации» (src/widgets/ml/reg-path: круг и ромб ограничения на плоскости двух весов, путь пяти весов и RMSE от lg λ, см² без стандартизации); генератор ml.shrink-orth; понятие ml.lasso; ячейка ml_basics/regularization.py (гребневая центрированием, лассо покоординатным спуском) со сверкой с Ridge, Lasso, lasso_path
+- **Файлы:** content/courses/ml-basics/evaluation/regularization.mdx, content/formulas/ml/{ridge-closed-form,lasso-soft-threshold,lasso-coordinate-step}.yaml, src/widgets/ml/reg-path/, code/snippets/ml_basics/regularization.py, code/tests/test_regularization.py
+- **Проверка:** validate, lint, check, build, vitest, pytest, check_consistency, e2e lesson-ml-2-3, скриншоты 1440 и 390
+- **Отклонения от плана и решения:** f.penalty-constraint не заведена: эквивалентность штрафа и ограничения показана виджетом и сослана на II.8; режим «λ» игры не сделан — урок ссылается на ручку λ в базовой игре IV.7 (нужна задача: уровни с L1 и разреженной истиной); ограничение — ползунок, а не перетаскивание
+- **Следующий шаг:** L-ml-basics-2.4 — выбор модели и кросс-валидация.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — L-ml-basics-2.2 Смещение и разброс — готов
 - **Сделано:** урок (4 цикла, формулы f.prediction-error-decomposition (из IV.7), f.ols-variance-trace, f.mc-bias-inflation, 4 упражнения, итоговая ml.ols-variance); виджет «Облако моделей» (src/widgets/ml/model-cloud: 100 полиномов, h̄, гистограмма ĥ(x₀), столбик разложения, U по степени); игра «Переобучи, если сможешь: облако» (src/games/overfit-cloud, 4 уровня); polyFitMoments в src/lib/math/poly.ts (O(n·d)); генератор ml.ols-variance; понятие ml.bias-variance; ячейка ml_basics/bias_variance.py со сверкой с make_pipeline(PolynomialFeatures, LinearRegression)
 - **Файлы:** content/courses/ml-basics/evaluation/bias-variance.mdx, content/formulas/ml/{ols-variance-trace,mc-bias-inflation}.yaml, src/widgets/ml/model-cloud/, src/games/overfit-cloud/, code/snippets/ml_basics/bias_variance.py, code/tests/test_bias_variance.py

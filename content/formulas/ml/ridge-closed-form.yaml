@@ -1,0 +1,83 @@
+id: f.ridge-closed-form
+kind: formula
+title:
+  ru: 'Гребневая регрессия: решение в замкнутом виде'
+  en: 'ridge regression closed form'
+statement: '\theta = (X^\top X + \lambda I)^{-1} X^\top y, \qquad \lambda_i(X^\top X) + \lambda > 0'
+
+# Урок 2.3 «Основ ML»: столбцы X и y центрированы (свободный член θ₀ = ȳ − x̄ᵀθ не штрафуется, как в Ridge(alpha=λ)).
+# Градиент штрафованных потерь, нормальные уравнения со сдвигом на λI, решение. Если J — среднее, в формуле nλ.
+symbols:
+  - name: X
+    tex: 'X'
+    meaning: 'центрированные признаки'
+    shape: [n, d]
+  - name: y
+    tex: 'y'
+    meaning: 'центрированные ответы'
+    shape: [n, 1]
+  - name: theta
+    tex: '\theta'
+    meaning: 'веса'
+    shape: [d, 1]
+  - name: lam
+    tex: '\lambda'
+    meaning: 'коэффициент регуляризации'
+    shape: []
+    sample: positive
+
+dependsOn:
+  concepts: [ml.least-squares, la.psd]
+  rules: [rule.grad-quadratic]
+
+derivation:
+  plan:
+    - 'Записать потери со штрафом'
+    - 'Приравнять градиент к нулю'
+    - 'Решить систему: матрица $X^\top X + \lambda I$ положительно определена'
+  steps:
+    - goal: 0
+      tex: 'J_\lambda(\theta) = \tfrac12 \lVert X\theta - y \rVert_2^2 + \tfrac{\lambda}{2} \lVert\theta\rVert_2^2'
+      by: [ml.loss]
+      check:
+        kind: same
+        py: '0.5 * np.sum((X @ theta - y) ** 2) + 0.5 * lam * theta @ theta'
+    - goal: 1
+      tex: '\nabla_\theta J_\lambda = X^\top (X\theta - y) + \changed{\lambda\theta}'
+      by: [rule.grad-quadratic]
+      check:
+        kind: gradient
+        wrt: theta
+        py: 'X.T @ (X @ theta - y) + lam * theta'
+      mutations:
+        - tex: '\nabla_\theta J_\lambda = X^\top (X\theta - y) + 2\lambda\theta'
+          py: 'X.T @ (X @ theta - y) + 2 * lam * theta'
+          why: 'Лишняя двойка: штраф записан с множителем $\tfrac12$, и производная $\tfrac{\lambda}{2}\lVert\theta\rVert^2$ — это $\lambda\theta$.'
+    - goal: 1
+      tex: '(X^\top X + \lambda I)\, \theta = X^\top y'
+      by: [la.matmul]
+      check:
+        kind: stationary
+        lhs: '(X.T @ X + lam * np.eye(X.shape[1])) @ theta'
+        rhs: 'X.T @ y'
+    - goal: 2
+      tex: '\theta = \changed{(X^\top X + \lambda I)^{-1} X^\top y}'
+      by: [la.inverse, la.psd]
+      note: '$v^\top (X^\top X + \lambda I) v = \lVert Xv \rVert^2 + \lambda \lVert v \rVert^2 > 0$ при $v \ne 0$: все собственные значения не меньше $\lambda$, и матрица обратима даже при $d > n$.'
+      check:
+        kind: solution
+        wrt: theta
+        py: 'np.linalg.solve(X.T @ X + lam * np.eye(X.shape[1]), X.T @ y)'
+      mutations:
+        - tex: '\theta = (X^\top X)^{-1} X^\top y + \lambda'
+          py: 'np.linalg.solve(X.T @ X, X.T @ y) + lam'
+          why: 'Штраф не прибавляется к весам: он сдвигает диагональ матрицы системы, и веса сжимаются к нулю.'
+
+pitfalls:
+  - 'Штрафовать свободный член: тогда решение зависит от сдвига $y$. Его исключают центрированием, как `Ridge`.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Regularization and model selection'
+
+usedIn: [ml.ridge]

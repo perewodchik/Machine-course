@@ -435,3 +435,6 @@
 - id: bias-variance
   ru: 'средняя модель; смещение; разброс; неустранимая ошибка; недообучение; переобучение; сложность модели'
   en: 'average model; bias; variance; irreducible error; underfitting; overfitting; model complexity'
+- id: regularization
+  ru: 'регуляризация; гребневая регрессия; лассо; путь регуляризации; мягкий порог; покоординатный спуск; тёплый старт; затухание весов'
+  en: 'regularization; ridge regression; lasso; regularization path; soft thresholding; coordinate descent; warm start; weight decay'

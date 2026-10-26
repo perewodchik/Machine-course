@@ -1485,6 +1485,22 @@ describe("генераторы", () => {
     }
   });
 
+  it("ml.shrink-orth: ответ — минимум штрафованной функции одной переменной (перебор по сетке)", () => {
+    for (let s = 1; s <= 30; s++) {
+      const t = make("ml.shrink-orth", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const p = t.prompt.replace(/−/g, "-");
+      const z = Number(/hat\\theta_j = ([-\d.]+)\$/.exec(p)![1]);
+      const lam = Number(/lambda = ([\d.]+)\$\?/.exec(p)![1]);
+      const l1 = p.includes("лассо");
+      // при XᵀX = I задача распадается: ½(θ − z)² + штраф
+      const f = (th: number) => 0.5 * (th - z) ** 2 + (l1 ? lam * Math.abs(th) : 0.5 * lam * th * th);
+      let best = 0;
+      for (let k = -40000; k <= 40000; k++) if (f(k / 10000) < f(best)) best = k / 10000;
+      expect(Math.abs(t.answer - best)).toBeLessThan(2e-4);
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,
