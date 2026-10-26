@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — L-ml-basics-1.6 Обобщённые линейные модели — готов
+- **Сделано:** урок (4 цикла, формулы f.glm-poisson и f.glm-gradient, 3 упражнения, итоговая ml.poisson-predict); виджет «Конструктор GLM» (src/widgets/ml/glm-builder: 4 распределения, таблица семейства, E[y|x] и p(y|x), неканонический отклик у Пуассона); набор mlf.datasets.ad_views (просмотры объявлений); генератор ml.poisson-predict; понятие ml.glm; ячейка ml_basics/glm.py со сверкой с PoissonRegressor(alpha=0)
+- **Файлы:** content/courses/ml-basics/linear-models/glm.mdx, content/formulas/ml/glm-*.yaml, src/widgets/ml/glm-builder/, code/snippets/ml_basics/glm.py, code/tests/test_glm.py, code/mlf/datasets.py
+- **Проверка:** validate, lint, check, build, vitest 712, pytest, check_consistency, e2e lesson-ml-1-6, скриншоты 1440 и 390
+- **Отклонения от плана и решения:** наведение на x заменено ползунком «запрос x»; у категориального веса оптимальные, без ползунков (шести весов слишком много); в ячейке нет графика — текстовый вывод
+- **Следующий шаг:** итоговая проверка модуля 1 (ExerciseSet).
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — L-ml-basics-1.5 Перцептрон и многоклассовая классификация — готов
 - **Сделано:** урок (4 цикла, формулы f.softmax-binary и f.softmax-gradient, 4 упражнения, итоговая ml.softmax-prob); виджеты «Перцептрон» (src/widgets/ml/perceptron: разделимая и неразделимая задачи, поправки по шагам и эпохам) и «Области классов» (class-regions: области argmax, сдвиг всех θ, резкость, оптимум); src/lib/math/softmax.ts; генераторы ml.softmax-prob, ml.perceptron-update; понятия ml.perceptron, ml.softmax; ячейка ml_basics/softmax.py со сверкой с Perceptron и LogisticRegression(C=np.inf)
 - **Файлы:** content/courses/ml-basics/linear-models/perceptron-softmax.mdx, content/formulas/ml/softmax-*.yaml, src/widgets/ml/perceptron/, src/widgets/ml/class-regions/, code/snippets/ml_basics/softmax.py, code/tests/test_softmax.py

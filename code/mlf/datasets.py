@@ -69,3 +69,18 @@ def metro_prices(n: int = 80, seed: int = 2029) -> tuple[np.ndarray, np.ndarray]
     x = np.round(rng.uniform(1, 40, size=n) * 2) / 2
     y = 200 + 150 * np.exp(-x / 6) + 25 * np.exp(-(((x - 28) / 4) ** 2)) + rng.normal(0, 10, size=n)
     return x, np.round(y)
+
+
+# Просмотры объявлений «Квартир» за неделю (урок 1.6 «Основ ML»): счётчик, порождённый пуассоновской моделью.
+AD_FEATURES = ("фото", "цена к медиане района", "площадь, м²")
+
+
+def ad_views(n: int = 2000, seed: int = 2030) -> tuple[np.ndarray, np.ndarray]:
+    """X — n × 3 (``AD_FEATURES``), y — просмотры за неделю: y ~ Poisson(λ),
+    log λ = 0.4 + 0.12 · (фото − 5) − 2.5 · (цена к медиане − 1) + 0.01 · (площадь − 70)."""
+    rng = np.random.default_rng(seed)
+    photos = rng.integers(0, 16, size=n).astype(float)
+    rel = np.round(np.clip(rng.normal(1, 0.15, size=n), 0.6, 1.5), 2)
+    area = np.round(rng.uniform(25, 120, size=n))
+    eta = 0.4 + 0.12 * (photos - 5) - 2.5 * (rel - 1) + 0.01 * (area - 70)
+    return np.column_stack([photos, rel, area]), rng.poisson(np.exp(eta)).astype(float)

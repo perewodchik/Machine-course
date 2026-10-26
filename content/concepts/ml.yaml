@@ -129,3 +129,15 @@
   cs229:
     - edition: main-notes-2026-spring
       section: 'Classification and logistic regression / Multi-class classification'
+
+- id: ml.glm
+  title:
+    ru: 'Обобщённые линейные модели'
+    en: 'generalized linear models (GLM)'
+  summary: 'Три допущения: $y \mid x$ из экспоненциального семейства, прогноз — $\mathbb{E}[T(y) \mid x]$, $\eta = \theta^\top x$. Отсюда линейная, логистическая, пуассоновская и softmax-регрессия; у канонической GLM $\nabla_\theta \ell = X^\top(y - h_\theta(X))$, а $\ell$ вогнута.'
+  lesson: glm
+  prerequisites: [stat.exponential-family, ml.logistic-regression, ml.softmax]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Generalized linear models'

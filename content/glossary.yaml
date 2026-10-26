@@ -426,3 +426,6 @@
 - id: perceptron-softmax
   ru: 'перцептрон; один против всех; softmax-регрессия; логиты; кросс-энтропия; кодировка one-hot'
   en: 'perceptron; one-vs-rest; softmax (multinomial logistic) regression; logits; cross-entropy; one-hot encoding'
+- id: glm
+  ru: 'экспоненциальное семейство; естественный параметр; достаточная статистика; логарифм нормировочной константы; обобщённая линейная модель; функция отклика; функция связи; пуассоновская регрессия'
+  en: 'exponential family; natural parameter; sufficient statistic; log-partition function; generalized linear model (GLM); response function; link function; Poisson regression'

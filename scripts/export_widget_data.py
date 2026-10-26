@@ -1,7 +1,7 @@
 """Экспорт данных виджетов из сниппетов уроков: одни и те же числа в Python, в тексте урока и в виджете.
 
 Запуск: python scripts/export_widget_data.py   (пишет prototype/assets/data/*.js и data.json виджетов сайта)
-Тесты code/tests/test_threshold.py, test_normal_equations.py, test_features_lwr.py, test_logistic.py и test_softmax.py проверяют, что экспорт не разошёлся с генератором.
+Тесты code/tests/test_threshold.py, test_normal_equations.py, test_features_lwr.py, test_logistic.py, test_softmax.py и test_glm.py проверяют, что экспорт не разошёлся с генератором.
 """
 
 from __future__ import annotations
@@ -20,7 +20,7 @@ from la.normal_equations import make_data  # noqa: E402
 from ml_basics.logistic import expensive  # noqa: E402
 from ml_basics.softmax import segments  # noqa: E402
 from ml_basics.threshold import make_scores  # noqa: E402
-from mlf.datasets import apartments, metro_prices  # noqa: E402
+from mlf.datasets import ad_views, apartments, apartments_full, metro_prices  # noqa: E402
 
 OUT = ROOT / "prototype" / "assets" / "data"
 # данные виджетов сайта: лежат рядом с виджетом, импортируются как JSON
@@ -33,6 +33,7 @@ SITE = {
     "ascent-newton": ROOT / "src" / "widgets" / "ml" / "ascent-newton" / "data.json",
     "class-regions": ROOT / "src" / "widgets" / "ml" / "class-regions" / "data.json",
     "perceptron": ROOT / "src" / "widgets" / "ml" / "perceptron" / "data.json",
+    "glm-builder": ROOT / "src" / "widgets" / "ml" / "glm-builder" / "data.json",
 }
 
 
@@ -68,6 +69,22 @@ def segments_payload() -> dict:
     return {"source": "code/snippets/ml_basics/softmax.py#data", "z1": np.round(X[:, 1], 6).tolist(), "z2": np.round(X[:, 2], 6).tolist(), "y": y.tolist()}
 
 
+def glm_payload() -> dict:
+    """Четыре набора для «Конструктора GLM» (урок 1.6): цена, «дороже медианы» и сегмент от площади — первые
+    200 «Квартир»; просмотры от числа фото — первые 200 объявлений."""
+    X, price = apartments_full()
+    area, p200 = X[:200, 0], price[:200]
+    seg = np.digitize(price, np.quantile(price, [1 / 3, 2 / 3]))[:200]
+    F, views = ad_views()
+    return {
+        "source": "code/mlf/datasets.py#apartments_full, ad_views",
+        "normal": {"x": area.tolist(), "y": p200.tolist()},
+        "bernoulli": {"x": area.tolist(), "y": (p200 > np.median(price)).astype(int).tolist()},
+        "poisson": {"x": F[:200, 0].tolist(), "y": views[:200].astype(int).tolist()},
+        "categorical": {"x": area.tolist(), "y": seg.tolist()},
+    }
+
+
 def render(name: str, payload: dict) -> str:
     return f"// Сгенерировано scripts/export_widget_data.py — не править руками\nwindow.{name} = {json.dumps(payload, ensure_ascii=False)};\n"
 
@@ -76,7 +93,7 @@ def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "threshold.js").write_text(render("THRESHOLD_DATA", threshold_payload()))
     print("prototype/assets/data/threshold.js")
-    for name, payload in (("fit-line", fit_line_payload()), ("fit-line-game", apartments_payload()), ("threshold", threshold_payload()), ("flexibility", metro_payload()), ("logistic", logistic_payload()), ("ascent-newton", logistic_payload()), ("class-regions", segments_payload()), ("perceptron", segments_payload())):
+    for name, payload in (("fit-line", fit_line_payload()), ("fit-line-game", apartments_payload()), ("threshold", threshold_payload()), ("flexibility", metro_payload()), ("logistic", logistic_payload()), ("ascent-newton", logistic_payload()), ("class-regions", segments_payload()), ("perceptron", segments_payload()), ("glm-builder", glm_payload())):
         path = SITE[name]
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n")

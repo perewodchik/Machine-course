@@ -47,6 +47,7 @@ export const layoutPages = {
   ml13: "/ml-basics/linear-models/features-lwr/",
   ml14: "/ml-basics/linear-models/logistic-regression/",
   ml15: "/ml-basics/linear-models/perceptron-softmax/",
+  ml16: "/ml-basics/linear-models/glm/",
   honestgame: "/games/honest-probability/",
   zoogame: "/games/dist-zoo/",
   corrgame: "/games/guess-correlation/",

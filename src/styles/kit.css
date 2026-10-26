@@ -271,6 +271,22 @@
   .class-regions__readouts, .perceptron__readouts { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-6); }
   .perceptron__dot { fill: var(--paper); stroke: var(--sym-1); stroke-width: 1.5; }
   .perceptron__dot.is-pos { fill: var(--sym-3); stroke: var(--paper); stroke-width: 1; }
+  .glm-builder__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); }
+  .glm-builder__actions .btn[aria-pressed="true"] { border-color: var(--pen); color: var(--pen); box-shadow: inset 0 0 0 1px var(--pen); }
+  .glm-builder__table { width: 100%; margin: var(--space-3) 0; border-collapse: collapse; font: var(--text-sm)/1.5 var(--font-ui); }
+  .glm-builder__table th { width: 13em; padding: var(--space-1) var(--space-3) var(--space-1) 0; color: var(--ink-2); font-weight: 500; text-align: left; vertical-align: top; }
+  .glm-builder__table td { padding: var(--space-1) 0; overflow-wrap: anywhere; }
+  .glm-builder__table tr + tr { border-top: 1px solid var(--rule); }
+  .glm-builder__plots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
+  .glm-builder__bar { fill: var(--sym-2); opacity: 0.75; }
+  .glm-builder__legend, .glm-builder__note { margin: var(--space-1) 0 0; font: var(--text-sm)/1.5 var(--font-ui); color: var(--ink-2); }
+  .glm-builder__warn { margin: 0; flex-basis: 100%; font: var(--text-sm)/1.5 var(--font-ui); color: var(--ink); }
+  .glm-builder__controls { display: grid; gap: var(--space-3); margin-top: var(--space-3); }
+  .glm-builder .kit-slider { grid-template-columns: 6em minmax(0, 1fr) 3.2em; }
+  .glm-builder .kit-slider__name { white-space: nowrap; }
+  .glm-builder__check { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 44px; font: var(--text-sm)/1.4 var(--font-ui); }
+  .glm-builder__readouts { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-3) var(--space-6); }
+  @media (max-width: 700px) { .glm-builder__plots { grid-template-columns: minmax(0, 1fr); } .glm-builder__table th { width: auto; } }
   .riemann__fn { font-family: var(--font-math); font-size: 1.05em; }
   .riemann__fn sup { font-size: 0.7em; }
   @media (max-width: 900px) { .riemann__controls { grid-template-columns: minmax(0, 1fr); } }

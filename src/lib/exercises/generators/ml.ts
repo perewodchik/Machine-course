@@ -319,3 +319,44 @@ export const perceptronUpdateGen: Generator = {
     }
   },
 };
+
+/** Урок 1.6: прогноз пуассоновской регрессии или во сколько раз он меняется при росте признака. */
+export const poissonPredict: Generator = {
+  id: "ml.poisson-predict",
+  version: 1,
+  title: "Прогноз пуассоновской регрессии",
+  make(seed) {
+    const r = rng(seed);
+    const t0 = r.int(-2, 4) / 4;
+    const t1 = r.pick([0.08, 0.1, 0.12, 0.15]);
+    const t2 = -r.pick([1.5, 2, 2.5]);
+    if (seed % 2 === 0) {
+      const k = r.int(2, 5);
+      const answer = round(Math.exp(k * t1), 4);
+      return {
+        kind: "numeric",
+        prompt: String.raw`Пуассоновская регрессия просмотров объявления: $\lambda = \exp(\theta_0 + \theta_1 x_1 + \theta_2 x_2)$, $x_1$ — число фото, $\theta_1 = ${num(t1)}$. В объявление добавили ${k} фото, остальное не менялось. Во сколько раз изменится ожидаемое число просмотров?`,
+        label: "в раз:",
+        answer,
+        tol: 0.002,
+        hints: [String.raw`$\log\lambda$ линеен по признакам: он вырос на $${k}\theta_1$.`],
+        right: String.raw`$\lambda$ умножается на $e^{${k} \cdot ${num(t1)}} = ${num(answer)}$ — независимо от остальных признаков.`,
+        wrong: String.raw`Признаки действуют на $\log\lambda$, а не на $\lambda$: прогноз умножается на $e^{${num(round(k * t1, 4))}} = ${num(answer)}$, а не растёт на $${num(round(k * t1, 4))}$.`,
+      };
+    }
+    const x1 = r.int(0, 15);
+    const x2 = r.pick([0.8, 0.9, 1, 1.1, 1.2]);
+    const eta = t0 + t1 * x1 + t2 * (x2 - 1);
+    const answer = round(Math.exp(eta), 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`Пуассоновская регрессия просмотров: $\lambda = \exp\bigl(\theta_0 + \theta_1 x_1 + \theta_2 (x_2 - 1)\bigr)$, $\theta = (${num(t0)},\ ${num(t1)},\ ${num(t2)})$, где $x_1$ — число фото, $x_2$ — цена к медиане района. У объявления $x_1 = ${x1}$, $x_2 = ${num(x2)}$. Сколько просмотров за неделю ожидает модель?`,
+      label: "λ =",
+      answer,
+      tol: 0.005,
+      hints: [String.raw`Сначала $\eta = \theta^\top x$, потом отклик Пуассона — экспонента: $\lambda = e^{\eta}$.`],
+      right: String.raw`$\eta = ${num(round(eta, 4))}$, $\lambda = e^{\eta} = ${num(answer)}$.`,
+      wrong: String.raw`$\eta = ${num(round(eta, 4))}$ — это $\log\lambda$, а не прогноз. Ожидаемое число просмотров — $e^{\eta} = ${num(answer)}$.`,
+    };
+  },
+};

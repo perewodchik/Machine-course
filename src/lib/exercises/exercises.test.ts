@@ -1421,6 +1421,25 @@ describe("генераторы", () => {
     }
   });
 
+  it("ml.poisson-predict: λ = exp(θᵀx) и множитель e^(kθ₁) по условию", () => {
+    for (let s = 1; s <= 30; s++) {
+      const t = make("ml.poisson-predict", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const p = t.prompt.replace(/−/g, "-");
+      const add = /добавили (\d) фото/.exec(p);
+      if (add) {
+        const t1 = Number(/theta_1 = ([\d.]+)\$/.exec(p)![1]);
+        const lam = (photos: number) => Math.exp(0.3 + t1 * photos - 2 * 0.1);
+        expect(t.answer).toBeCloseTo(lam(4 + Number(add[1])) / lam(4), 3);
+      } else {
+        const th = /theta = \(([-\d.]+),\\ ([-\d.]+),\\ ([-\d.]+)\)/.exec(p)!.slice(1).map(Number);
+        const x1 = Number(/x_1 = (\d+)\$/.exec(p)![1]);
+        const x2 = Number(/x_2 = ([\d.]+)\$/.exec(p)![1]);
+        expect(t.answer).toBeCloseTo(Math.exp(th[0]! + th[1]! * x1 + th[2]! * (x2 - 1)), 3);
+      }
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,
