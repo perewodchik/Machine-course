@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — L-III.1 L-III.1: вероятностное пространство — готов
+- **Сделано:** урок probability-space (три цикла: исходы и события, аксиомы и включения-исключения, ★ подсчёт и число мономов), виджет «События как области», формула f.inclusion-exclusion, генераторы prob.dice-event и prob.monomials, сниппет prob/events.py с тестом
+- **Файлы:** content/courses/foundations/probability/probability-space.mdx, src/widgets/prob/events/, content/formulas/prob/inclusion-exclusion.yaml, src/lib/exercises/generators/prob.ts, code/snippets/prob/events.py
+- **Проверка:** validate, lint, build, vitest, pytest, e2e урока и layout iii1 (axe)
+- **Отклонения от плана и решения:** нет
+- **Следующий шаг:** L-III.2 — условная вероятность и независимость.
+- **Вопросы пользователю:** —
+
 ### 2026-10-25 — S4.L2 уроки модуля II и итоговая проверка — готова
 - **Сделано:** итоговая проверка модуля II: ExerciseSet из девяти задач (II.1–II.8, II.10) в конце урока II.10, e2e проверяет 9 из 9
 - **Файлы:** content/courses/foundations/calculus/multiple-integrals.mdx, tests/e2e/lesson-calc.spec.ts

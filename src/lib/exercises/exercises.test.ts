@@ -754,6 +754,31 @@ describe("генераторы", () => {
     }
   });
 
+  it("prob.dice-event: ответ — доля перебором 36 исходов; prob.monomials — перечисление мономов", () => {
+    for (let s = 1; s <= 24; s++) {
+      const t = make("prob.dice-event", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const num = (re: RegExp) => Number(re.exec(t.prompt)![1]);
+      const pairs = Array.from({ length: 36 }, (_, i) => [Math.floor(i / 6) + 1, (i % 6) + 1] as const);
+      const has = t.prompt.includes("равна")
+        ? ([a, b]: readonly [number, number]) => a + b === num(/равна \$(\d+)\$/)
+        : t.prompt.includes("не меньше")
+          ? ([a, b]: readonly [number, number]) => a + b >= num(/не меньше \$(\d+)\$/)
+          : t.prompt.includes("шестёрка")
+            ? ([a, b]: readonly [number, number]) => a === 6 || b === 6
+            : ([a, b]: readonly [number, number]) => Math.max(a, b) <= num(/не больше \$(\d+)\$/);
+      expect(t.answer).toBeCloseTo(pairs.filter(has).length / 36, 3);
+
+      const m = make("prob.monomials", s);
+      if (m.kind !== "numeric") throw new Error("ожидалось число");
+      const d = Number(/из \$(\d+)\$ переменных/.exec(m.prompt)![1]);
+      const k = Number(/не выше \$(\d+)\$/.exec(m.prompt)![1]);
+      // перечисляем показатели (a₁, …, a_d) с суммой ≤ k
+      const enumerate = (vars: number, left: number): number => (vars === 0 ? 1 : Array.from({ length: left + 1 }, (_, a) => enumerate(vars - 1, left - a)).reduce((x, y) => x + y, 0));
+      expect(m.answer).toBe(enumerate(d, k));
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

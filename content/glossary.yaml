@@ -351,3 +351,6 @@
 - id: multiple-integral
   ru: 'кратный интеграл; теорема Фубини; замена переменных'
   en: 'multiple integral; Fubini''s theorem; change of variables'
+- id: probability-space
+  ru: 'пространство исходов; событие; аксиомы вероятности; формула включений-исключений'
+  en: 'sample space; event; probability axioms; inclusion–exclusion'

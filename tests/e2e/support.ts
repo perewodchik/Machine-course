@@ -15,6 +15,7 @@ export const layoutPages = {
   lab: "/lab/",
   // срез этапа 2 (S2.11): ещё два урока и обе игры
   i4: "/foundations/linear-algebra/matrix-as-map/",
+  iii1: "/foundations/probability/probability-space/",
   iii3: "/foundations/probability/bayes/",
   puzzle: "/games/matrix-puzzle/",
   detective: "/games/bayes-detective/",
