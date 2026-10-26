@@ -808,6 +808,34 @@ describe("генераторы", () => {
     }
   });
 
+  it("prob.pmf-cdf, prob.interval-prob, prob.linear-density: ответы сверены суммой, интегралом и гистограммой", () => {
+    for (let s = 1; s <= 24; s++) {
+      const t = make("prob.pmf-cdf", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const ps = [...t.prompt.matchAll(/P\(X = (\d)\) = ([\d.]+)/g)].map((m) => [Number(m[1]), Number(m[2])] as const);
+      expect(ps.reduce((a, [, p]) => a + p, 0)).toBeCloseTo(1, 12);
+      const tt = Number(/F\(([\d.]+)\) = P/.exec(t.prompt)![1]);
+      expect(t.answer).toBeCloseTo(ps.filter(([x]) => x <= tt).reduce((a, [, p]) => a + p, 0), 9);
+
+      const ip = make("prob.interval-prob", s);
+      if (ip.kind !== "numeric") throw new Error("ожидалось число");
+      const [a, b] = /P\(([\d.]+) \\le X \\le ([\d.]+)\)/.exec(ip.prompt)!.slice(1).map(Number) as [number, number];
+      const pdf = ip.prompt.includes("равномерна")
+        ? ((L) => (x: number) => (x >= 0 && x <= L ? 1 / L : 0))(Number(/\[0, (\d+)\]/.exec(ip.prompt)![1]))
+        : ((lam) => (x: number) => (x >= 0 ? lam * Math.exp(-lam * x) : 0))(Number(/p\(x\) = ([\d.]*)e/.exec(ip.prompt)![1] || 1));
+      let integral = 0;
+      const N = 4000;
+      for (let i = 0; i < N; i++) integral += pdf(a + ((i + 0.5) * (b - a)) / N) * ((b - a) / N);
+      expect(ip.answer).toBeCloseTo(integral, 3);
+
+      const ld = make("prob.linear-density", s);
+      if (ld.kind !== "numeric") throw new Error("ожидалось число");
+      const [lo, hi] = /отрезка \$\[(-?[\d.]+), (-?[\d.]+)\]\$/.exec(ld.prompt)!.slice(1).map(Number) as [number, number];
+      // плотность равномерной на образе отрезка — 1 / длина
+      expect(ld.answer).toBeCloseTo(1 / (hi - lo), 4);
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

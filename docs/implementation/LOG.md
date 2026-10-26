@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — L-III.4 L-III.4: случайные величины — PMF, PDF, CDF — готов
+- **Сделано:** урок random-variables (четыре цикла: PMF и индикатор, плотность и CDF, плотность g(X), i.i.d.), виджет «Плотность и CDF при перетаскивании порога», формула f.density-transform, генераторы prob.pmf-cdf, prob.interval-prob, prob.linear-density, сниппет prob/density.py с тестом, понятие prob.random-variable
+- **Файлы:** content/courses/foundations/probability/random-variables.mdx, src/widgets/prob/density-cdf/, content/formulas/prob/density-transform.yaml, src/lib/exercises/generators/prob.ts, code/snippets/prob/density.py
+- **Проверка:** validate, lint, build, check, vitest 525, pytest, check_consistency, e2e урока и layout iii4 (axe)
+- **Отклонения от плана и решения:** нет
+- **Следующий шаг:** L-III.5 — матожидание, дисперсия, неравенство Йенсена.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — L-III.3 L-III.3: проверка урока «Байес» по определению готовности — готов
 - **Сделано:** урок bayes (S2.08) сверен с определением готовности: цели карточки (полная вероятность, Байес, базовая частота, последовательное обновление) проверяются заданиями, формулы в реестре, термины в глоссарии, PyCode и игра «Байес-детектив»; время урока приведено к карточке (120 минут)
 - **Файлы:** content/courses/foundations/probability/bayes.mdx

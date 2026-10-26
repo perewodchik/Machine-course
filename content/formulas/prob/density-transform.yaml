@@ -1,0 +1,46 @@
+id: f.density-transform
+kind: formula
+title:
+  ru: 'Плотность функции от случайной величины'
+  en: 'density of a transformed random variable'
+statement: 'p_Y(y) = p_X\bigl(g^{-1}(y)\bigr) \left\lvert \frac{d}{dy}\, g^{-1}(y) \right\rvert, \qquad Y = g(X)'
+
+# Урок III.4: вывод через функцию распределения для возрастающей g, проверка — на примере X ~ Exp(1), Y = √X:
+# F_Y(y) = P(X ≤ y²) = 1 − e^{−y²}, и производная — плотность 2y e^{−y²}. Для убывающей g знак производной
+# меняется, отсюда модуль.
+symbols:
+  - name: y
+    tex: 'y'
+    meaning: 'значение величины $Y = \sqrt{X}$, $X$ — показательная с $\lambda = 1$'
+    shape: []
+    sample: positive
+
+dependsOn:
+  concepts: [prob.random-variable, calc.chain-rule]
+  rules: []
+
+derivation:
+  plan:
+    - 'Записать функцию распределения $Y$ через функцию распределения $X$'
+    - 'Продифференцировать по $y$ правилом цепочки — получится плотность'
+  steps:
+    - goal: 0
+      tex: 'F_Y(y) = P(g(X) \le y) = P\bigl(X \le g^{-1}(y)\bigr) = F_X\bigl(g^{-1}(y)\bigr) = \changed{1 - e^{-y^2}}'
+      by: [prob.random-variable]
+      note: 'Для возрастающей $g$ неравенство $g(X) \le y$ равносильно $X \le g^{-1}(y)$. Пример: $g(x) = \sqrt{x}$, $g^{-1}(y) = y^2$, $F_X(x) = 1 - e^{-x}$.'
+      check:
+        kind: same
+        py: '1 - np.exp(-y ** 2)'
+    - goal: 1
+      tex: 'p_Y(y) = F_Y''(y) = p_X\bigl(g^{-1}(y)\bigr) \cdot \frac{d}{dy} g^{-1}(y) = \changed{e^{-y^2} \cdot 2y}'
+      by: [calc.chain-rule]
+      note: 'Плотность — производная функции распределения; внешняя функция $F_X$ даёт $p_X$, внутренняя $g^{-1}(y) = y^2$ — множитель $2y$. Для убывающей $g$ неравенство переворачивается, $F_Y = 1 - F_X(g^{-1}(y))$, и производная $g^{-1}$ отрицательна — поэтому в общей формуле модуль.'
+      check:
+        kind: gradient
+        wrt: y
+        py: 'np.exp(-y ** 2) * 2 * y'
+
+pitfalls:
+  - 'Подставить $g^{-1}(y)$ в плотность и забыть множитель $\lvert (g^{-1})'' \rvert$: тогда $p_Y$ не интегрируется в единицу. Это одномерный якобиан из урока II.10.'
+
+usedIn: [prob.random-variable]

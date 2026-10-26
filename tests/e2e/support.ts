@@ -17,6 +17,7 @@ export const layoutPages = {
   i4: "/foundations/linear-algebra/matrix-as-map/",
   iii1: "/foundations/probability/probability-space/",
   iii2: "/foundations/probability/conditional-independence/",
+  iii4: "/foundations/probability/random-variables/",
   iii3: "/foundations/probability/bayes/",
   puzzle: "/games/matrix-puzzle/",
   detective: "/games/bayes-detective/",

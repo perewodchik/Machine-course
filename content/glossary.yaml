@@ -357,3 +357,6 @@
 - id: conditional-independence
   ru: 'условная вероятность; формула умножения; независимость; условная независимость'
   en: 'conditional probability; chain rule of probability; independence; conditional independence'
+- id: random-variable
+  ru: 'случайная величина; функция вероятности; плотность; функция распределения; i.i.d.'
+  en: 'random variable; probability mass function (PMF); probability density function (PDF); cumulative distribution function (CDF); i.i.d.'

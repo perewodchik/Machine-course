@@ -155,6 +155,11 @@
   .events__label { font: 500 var(--text-sm) var(--font-ui); color: var(--ink-2); min-inline-size: 1.5em; }
   .events__facts { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); margin: 0; font: var(--text-sm) var(--font-ui); color: var(--ink-2); }
   .events__facts b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; }
+  .density-cdf__controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: var(--space-3) var(--space-5); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule); }
+  .density-cdf__controls .kit-slider, .density-cdf__group { grid-column: 1 / -1; }
+  .density-cdf__group { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .density-cdf__group .btn[aria-pressed="true"] { border-color: var(--pen); color: var(--pen); box-shadow: inset 0 0 0 1px var(--pen); }
+  @media (max-width: 900px) { .density-cdf__controls { grid-template-columns: minmax(0, 1fr); } }
   .riemann__fn { font-family: var(--font-math); font-size: 1.05em; }
   .riemann__fn sup { font-size: 0.7em; }
   @media (max-width: 900px) { .riemann__controls { grid-template-columns: minmax(0, 1fr); } }

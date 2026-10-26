@@ -9,6 +9,15 @@
   prerequisites: []
   core: true
 
+- id: prob.random-variable
+  title:
+    ru: 'Случайная величина и её распределение'
+    en: 'random variable; PMF, PDF, CDF'
+  summary: 'Функция из $\Omega$ в $\mathbb{R}$; распределение задают функция вероятности $p(x) = P(X = x)$, плотность $p(x)$ с $P(a \le X \le b) = \int_a^b p(x)\,dx$ или функция распределения $F(x) = P(X \le x)$.'
+  lesson: random-variables
+  prerequisites: [prob.probability-space, calc.integral]
+  core: true
+
 - id: prob.independence
   title:
     ru: 'Независимость'

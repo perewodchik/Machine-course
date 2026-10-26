@@ -68,3 +68,28 @@ test("урок III.2: условие сужает мир, независимос
   await page.evaluate(() => window.scrollTo(0, 0));
   await expectNoAxeViolations(page);
 });
+
+test("урок III.4: площадь под плотностью равна F(t), плотность больше 1, итоговая проверка", async ({ page }) => {
+  await page.goto("/foundations/probability/random-variables/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Случайные величины: PMF, PDF, CDF");
+
+  const fig = page.locator(".density-cdf").first();
+  await fig.scrollIntoViewIfNeeded();
+  await expect(fig.locator("xpath=ancestor::astro-island[1]")).not.toHaveAttribute("ssr", "");
+  // нормальное, t = 0.5: F ≈ 0.691; равномерное на [0, 0.5], t = 0.25: плотность 2, F = 0.5 — как в model.test.ts
+  await expect(fig.locator("[aria-live]")).toContainText("F(t) = P(X ≤ t) = 0.691");
+  await fig.getByRole("button", { name: "равномерное на [0, 0.5]" }).press("Enter");
+  await expect(fig.locator("[aria-live]")).toContainText("плотность в t равна 2.000 — это не вероятность");
+  await fig.getByRole("button", { name: "орлы в 4 бросках" }).press("Enter");
+  // t = 2: F(2) = 11/16 = 0.6875
+  await expect(fig.locator("[aria-live]")).toContainText("F(t) = P(X ≤ t) = 0.688");
+
+  const final = page.locator("#final-check");
+  const spec = generator("prob.interval-prob").make(31);
+  if (spec.kind !== "numeric") throw new Error("ожидалось число");
+  await final.locator("[data-variant]:not([hidden]) input").first().fill(String(spec.answer));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});

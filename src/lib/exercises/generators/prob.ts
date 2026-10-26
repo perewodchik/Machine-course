@@ -3,6 +3,7 @@
 import { rng } from "../../math/rng";
 import type { Generator } from "../types";
 
+const par = (x: number) => (x < 0 ? `(${x})` : String(x));
 const round = (v: number, k = 4) => Math.round(v * 10 ** k) / 10 ** k;
 const perc = (v: number) => `${round(v * 100, 2)}\u00a0%`; // в тексте, не в формуле: без обратной косой; пробел — как в уроках
 
@@ -238,6 +239,108 @@ export const independenceCheck: Generator = {
         { text: "Зависимы", correct: !indep, why },
       ],
       hints: [String.raw`Сравните $P(A \cap B)$ с $P(A)\,P(B)$ — или $P(A \mid B)$ с $P(A)$.`],
+    };
+  },
+};
+
+/** Урок III.4: F(t) = P(X ≤ t) по таблице функции вероятности. */
+export const pmfCdf: Generator = {
+  id: "prob.pmf-cdf",
+  version: 1,
+  title: "Функция распределения по таблице",
+  make(seed) {
+    const r = rng(seed);
+    const xs = [0, 1, 2, 3];
+    // вероятности — десятые, в сумме 1
+    const w = r.pick([
+      [1, 2, 3, 4],
+      [4, 3, 2, 1],
+      [2, 2, 5, 1],
+      [1, 5, 1, 3],
+      [3, 1, 4, 2],
+    ]);
+    const ps = w.map((v) => v / 10);
+    const t = r.pick([0.5, 1, 1.5, 2, 2.7]);
+    const answer = round(ps.filter((_, i) => xs[i]! <= t).reduce((a, b) => a + b, 0));
+    const row = xs.map((x, i) => `P(X = ${x}) = ${ps[i]}`).join(",\\ ");
+    return {
+      kind: "numeric",
+      prompt: String.raw`$X$ принимает значения $0, 1, 2, 3$: $${row}$. Найдите $F(${t}) = P(X \le ${t})$.`,
+      label: String.raw`$F(${t}) =$`,
+      answer,
+      tol: 0.005,
+      hints: [String.raw`$F(t)$ — сумма вероятностей всех значений, не больших $t$.`],
+      right: String.raw`Значения не больше $${t}$: ${xs.filter((x) => x <= t).map((x) => `$${x}$`).join(", ")}; $F(${t}) = ${answer}$.`,
+      wrong: String.raw`$F(t)$ накапливает вероятности: не $P(X = t)$, а сумма $P(X = x)$ по всем $x \le ${t}$.`,
+    };
+  },
+};
+
+/** Урок III.4: P(a ≤ X ≤ b) — интеграл плотности; чётный seed — равномерное, нечётный — показательное. */
+export const intervalProb: Generator = {
+  id: "prob.interval-prob",
+  version: 1,
+  title: "Вероятность интервала по плотности",
+  make(seed) {
+    const r = rng(seed);
+    if (seed % 2 === 0) {
+      const L = r.pick([2, 4, 5, 10]);
+      const a = r.int(0, L - 2);
+      const bb = r.int(a + 1, L);
+      const answer = round((bb - a) / L);
+      return {
+        kind: "numeric",
+        prompt: String.raw`$X$ равномерна на $[0, ${L}]$: плотность $p(x) = 1/${L}$ на отрезке и ноль вне его. Найдите $P(${a} \le X \le ${bb})$.`,
+        label: String.raw`$P =$`,
+        answer,
+        tol: 0.005,
+        hints: [String.raw`$P(a \le X \le b) = \int_a^b p(x)\, dx$ — площадь прямоугольника.`],
+        right: String.raw`$\int_{${a}}^{${bb}} \frac{1}{${L}}\, dx = \frac{${bb - a}}{${L}} = ${answer}$.`,
+        wrong: String.raw`Вероятность — площадь под плотностью, а не её значение: ширина $${bb - a}$ на высоту $1/${L}$.`,
+      };
+    }
+    const lam = r.pick([1, 2, 0.5]);
+    const [a, bb] = r.pick([
+      [0, 1],
+      [1, 2],
+      [0, 2],
+      [0.5, 1.5],
+    ] as const);
+    const answer = round(Math.exp(-lam * a) - Math.exp(-lam * bb));
+    return {
+      kind: "numeric",
+      prompt: String.raw`$X$ — показательная: $p(x) = ${lam === 1 ? "" : lam}e^{-${lam === 1 ? "" : lam}x}$ при $x \ge 0$. Найдите $P(${a} \le X \le ${bb})$.`,
+      label: String.raw`$P =$`,
+      answer,
+      tol: 0.005,
+      hints: [String.raw`Первообразная $\lambda e^{-\lambda x}$ — это $-e^{-\lambda x}$; $F(x) = 1 - e^{-\lambda x}$.`],
+      right: String.raw`$F(${bb}) - F(${a}) = e^{-${lam * a}} - e^{-${lam * bb}} \approx ${answer}$.`,
+      wrong: String.raw`$P(a \le X \le b) = F(b) - F(a) = e^{-\lambda a} - e^{-\lambda b}$; значение плотности в точке — не вероятность.`,
+    };
+  },
+};
+
+/** Урок III.4: плотность Y = aX + c при X равномерной на [0, 1] — 1/|a| на образе отрезка (с модулем). */
+export const linearDensity: Generator = {
+  id: "prob.linear-density",
+  version: 1,
+  title: "Плотность линейной функции",
+  make(seed) {
+    const r = rng(seed);
+    const a = r.pick([2, 3, 4, 0.5, -2, -4]);
+    const c = r.int(-2, 2);
+    const answer = round(1 / Math.abs(a));
+    const lo = Math.min(c, a + c);
+    const hi = Math.max(c, a + c);
+    return {
+      kind: "numeric",
+      prompt: String.raw`$X$ равномерна на $[0, 1]$, $Y = ${a}X ${c < 0 ? "-" : "+"} ${Math.abs(c)}$. Какова плотность $Y$ внутри отрезка $[${lo}, ${hi}]$?`,
+      label: String.raw`$p_Y(y) =$`,
+      answer,
+      tol: 0.005,
+      hints: [String.raw`$p_Y(y) = p_X(g^{-1}(y))\, \lvert (g^{-1})'(y) \rvert$, $g^{-1}(y) = (y - ${par(c)})/${par(a)}$.`],
+      right: String.raw`$p_X = 1$ на $[0, 1]$, $\lvert (g^{-1})' \rvert = 1/${Math.abs(a)}$: $p_Y = ${answer}$ на отрезке длины $${Math.abs(a)}$ — площадь снова $1$.`,
+      wrong: a < 0 ? String.raw`Плотность не бывает отрицательной: нужен модуль, $1/\lvert ${a} \rvert$.` : String.raw`Отрезок растянулся в $${a}$ раз, поэтому плотность во столько же раз меньше: площадь под ней должна остаться $1$.`,
     };
   },
 };
