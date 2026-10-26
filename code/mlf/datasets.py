@@ -57,3 +57,15 @@ def apartments_full(n: int = 2000, seed: int = 2028) -> tuple[np.ndarray, np.nda
     X = np.column_stack([area, rooms, floor, metro, age])
     price = 1.5 + 0.11 * area + 0.4 * rooms + 0.03 * floor - 0.06 * metro - 0.02 * age + rng.normal(0, 0.8, size=n)
     return X, np.round(price, 2)
+
+
+def metro_prices(n: int = 80, seed: int = 2029) -> tuple[np.ndarray, np.ndarray]:
+    """Цена квадратного метра (тыс. ₽, целые) от пешего пути до метро (мин, с точностью 0.5) — урок 1.3 «Основ ML».
+
+    Зависимость нелинейная: у самого метро цена падает быстро, дальше — медленно, а около 28 минут — горб
+    у нового транспортного узла. Цена ≈ 200 + 150 · exp(−x/6) + 25 · exp(−((x − 28)/4)²) + шум (σ = 10).
+    """
+    rng = np.random.default_rng(seed)
+    x = np.round(rng.uniform(1, 40, size=n) * 2) / 2
+    y = 200 + 150 * np.exp(-x / 6) + 25 * np.exp(-(((x - 28) / 4) ** 2)) + rng.normal(0, 10, size=n)
+    return x, np.round(y)

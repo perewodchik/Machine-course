@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — L-ml-basics-1.3 Признаки, полиномы и LWR — готов
+- **Сделано:** урок (4 цикла, формула f.lwr-solution, 5 упражнений, итоговая ml.lwr-weight); виджет «Гибкость модели» (src/widgets/ml/flexibility: полином и LWR, данные — mlf.datasets.metro_prices через export_widget_data); генераторы ml.lwr-weight, ml.feature-count; понятия ml.feature-map, ml.lwr; ячейка ml_basics/features_lwr.py со сверкой с PolynomialFeatures и LinearRegression(sample_weight)
+- **Файлы:** content/courses/ml-basics/linear-models/features-lwr.mdx, src/widgets/ml/flexibility/, code/snippets/ml_basics/features_lwr.py, code/tests/test_features_lwr.py, code/mlf/datasets.py
+- **Проверка:** validate, lint, check, build, vitest 678, pytest, check_consistency, e2e lesson-ml-1-3, скриншоты 1440 и 390
+- **Отклонения от плана и решения:** данные — новый синтетический набор «цена м² от пути до метро» (у «Квартир» зависимость линейна); точка запроса — ползунок, а не перетаскивание; предел LWR проверяется при τ = 10⁵ мин на исходном признаке, а не 10³ на стандартизованном
+- **Следующий шаг:** L-ml-basics-1.4 — логистическая регрессия и метод Ньютона.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — L-ml-basics-1.2 Линейная регрессия и LMS — готов
 - **Сделано:** урок (4 цикла, 2 формулы f.lms-gradient и f.standardize-inverse, 5 упражнений, итоговая ml.step-scale); виджет «Спуск по линиям уровня» (src/widgets/ml/lms-path); уровни 6–7 «Квартиры» в игре «Порог расходимости»; генераторы ml.lms-update, ml.step-scale, ml.standardize-back; понятие ml.lms; ячейка ml_basics/lms.py со сверкой с LinearRegression и SGDRegressor
 - **Файлы:** content/courses/ml-basics/linear-models/linear-regression-lms.mdx, src/widgets/ml/lms-path/, src/games/divergence/, code/snippets/ml_basics/lms.py, code/tests/test_lms.py, tests/e2e/lesson-ml-1-2.spec.ts

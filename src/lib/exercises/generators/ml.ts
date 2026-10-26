@@ -151,3 +151,63 @@ export const standardizeBack: Generator = {
     };
   },
 };
+
+/** Урок 1.3: вес объекта в LWR. */
+export const lwrWeight: Generator = {
+  id: "ml.lwr-weight",
+  version: 1,
+  title: "Вес в LWR",
+  make(seed) {
+    const r = rng(seed);
+    const tau = r.pick([1, 2, 3, 5]);
+    const q = r.int(4, 30);
+    const k = r.pick([0.5, 1, 1.5, 2]);
+    const xi = q - k * tau >= 1 && r.next() < 0.5 ? q - k * tau : q + k * tau; // путь до метро не бывает отрицательным
+    const answer = round(Math.exp(-((xi - q) ** 2) / (2 * tau * tau)), 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`Локально взвешенная регрессия по пути до метро, ширина окна $\tau = ${tau}$ мин. Прогноз нужен для квартиры в $x = ${q}$ мин от метро. Какой вес $w^{(i)}$ получит обучающая квартира с $x^{(i)} = ${num(xi)}$ мин?`,
+      label: "w =",
+      answer,
+      tol: 0.001,
+      hints: [String.raw`$w^{(i)} = \exp\bigl(-(x^{(i)} - x)^2/(2\tau^2)\bigr)$. Расстояние здесь — ${num(k)} ширины окна.`],
+      right: String.raw`$w = \exp(-${num(k)}^2/2) = ${num(answer)}$: вес зависит только от расстояния в единицах $\tau$.`,
+      wrong: String.raw`Расстояние $\lvert x^{(i)} - x\rvert = ${num(k * tau)}$, это ${num(k)}$\tau$; $w = \exp(-${num(k * k)}/2) = ${num(answer)}$. Делить на $2\tau^2$, а не на $\tau$.`,
+    };
+  },
+};
+
+/** Урок 1.3: сколько столбцов у Φ для полинома второй степени с взаимодействиями или полинома одного признака. */
+export const featureCount: Generator = {
+  id: "ml.feature-count",
+  version: 1,
+  title: "Число признаков",
+  make(seed) {
+    const r = rng(seed);
+    if (seed % 2 === 0) {
+      const p = r.int(3, 12);
+      return {
+        kind: "numeric",
+        prompt: String.raw`Признак один — путь до метро. Полином степени $p = ${p}$: $\phi(x) = (1, x, x^2, \dots, x^{${p}})$. Сколько весов $\theta$ у модели $\theta^\top\phi(x)$?`,
+        label: "весов:",
+        answer: p + 1,
+        tol: 0,
+        hints: ["Посчитайте все степени от нулевой до p включительно."],
+        right: String.raw`$${p + 1}$: степени $0, 1, \dots, ${p}$; свободный член — вес при $x^0 = 1$.`,
+        wrong: String.raw`Не забудьте столбец единиц $x^0$: весов $p + 1 = ${p + 1}$.`,
+      };
+    }
+    const d = r.int(3, 8);
+    const answer = 1 + d + (d * (d + 1)) / 2;
+    return {
+      kind: "numeric",
+      prompt: String.raw`У квартиры $d = ${d}$ признаков. В $\phi(x)$ вошли единица, все признаки, их квадраты и все попарные произведения $x_j x_k$, $j < k$. Сколько столбцов у матрицы $\Phi$?`,
+      label: "столбцов:",
+      answer,
+      tol: 0,
+      hints: [String.raw`Единица — 1, признаки — $d$, квадраты — $d$, попарные произведения — $\binom{d}{2} = d(d - 1)/2$.`],
+      right: String.raw`$1 + ${d} + ${d} + ${(d * (d - 1)) / 2} = ${answer}$. Число признаков второй степени растёт как $d^2/2$: при сотне исходных их больше пяти тысяч.`,
+      wrong: String.raw`Сложите: единица, ${d} признаков, ${d} квадратов и $\binom{${d}}{2} = ${(d * (d - 1)) / 2}$ произведений — всего $${answer}$.`,
+    };
+  },
+};

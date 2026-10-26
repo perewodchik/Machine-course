@@ -417,3 +417,6 @@
 - id: linear-regression-lms
   ru: 'правило LMS (Уидроу — Хоффа); пакетный спуск; стохастический спуск; мини-батч; эпоха; стандартизация; число обусловленности; убывающий шаг'
   en: 'LMS (Widrow–Hoff) rule; batch gradient descent; stochastic gradient descent (SGD); mini-batch; epoch; standardization (feature scaling); condition number; learning rate decay'
+- id: features-lwr
+  ru: 'признаковое отображение; полиномиальные признаки; взаимодействие; валидационная выборка; локально взвешенная регрессия; ширина окна; параметрическая и непараметрическая модель'
+  en: 'feature map; polynomial features; interaction; validation set; locally weighted linear regression (LWR); bandwidth; parametric and non-parametric model'

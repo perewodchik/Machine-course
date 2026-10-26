@@ -69,3 +69,27 @@
   cs229:
     - edition: main-notes-2026-spring
       section: 'Linear regression / LMS algorithm'
+
+- id: ml.feature-map
+  title:
+    ru: 'Признаковое отображение'
+    en: 'feature map'
+  summary: 'Модель $h_\theta(x) = \theta^\top \phi(x)$ линейна по $\theta$, а не по $x$: степени, логарифмы и произведения признаков обучаются теми же нормальными уравнениями с матрицей $\Phi$ вместо $X$.'
+  lesson: features-lwr
+  prerequisites: [ml.least-squares, ml.supervised-learning]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Linear regression'
+
+- id: ml.lwr
+  title:
+    ru: 'Локально взвешенная регрессия'
+    en: 'locally weighted linear regression'
+  summary: 'Для каждой точки запроса — свой взвешенный МНК с весами $w^{(i)} = \exp\bigl(-(x^{(i)} - x)^2/(2\tau^2)\bigr)$: $\theta(x) = (X^\top W X)^{-1} X^\top W y$. Непараметрическая модель: для прогноза хранится вся выборка; ширина окна $\tau$ задаёт гибкость.'
+  lesson: features-lwr
+  prerequisites: [ml.least-squares, ml.feature-map, stat.risk-generalization]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Linear regression / Locally weighted linear regression'

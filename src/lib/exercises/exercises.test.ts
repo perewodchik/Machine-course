@@ -1355,6 +1355,28 @@ describe("генераторы", () => {
     }
   });
 
+  it("ml.lwr-weight: вес по расстоянию и τ из условия; ml.feature-count: перебор столбцов", () => {
+    for (let s = 1; s <= 30; s++) {
+      const t = make("ml.lwr-weight", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const tau = Number(/tau = (\d+)\$/.exec(t.prompt)![1]);
+      const q = Number(/\$x = (\d+)\$/.exec(t.prompt)![1]);
+      const xi = Number(/x\^\{\(i\)\} = ([\d.]+)\$/.exec(t.prompt)![1]);
+      expect(t.answer).toBeCloseTo(Math.exp(-((xi - q) ** 2) / (2 * tau * tau)), 4);
+
+      const c = make("ml.feature-count", s);
+      if (c.kind !== "numeric") throw new Error("ожидалось число");
+      const p = /p = (\d+)\$/.exec(c.prompt);
+      if (p) expect(c.answer).toBe(Number(p[1]) + 1);
+      else {
+        const d = Number(/d = (\d+)\$/.exec(c.prompt)![1]);
+        const cols = new Set<string>(["1"]);
+        for (let j = 0; j < d; j++) for (let k = j - 1; k < d; k++) cols.add(k < j ? `x${j}` : `x${j}x${k}`);
+        expect(c.answer).toBe(cols.size);
+      }
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,
