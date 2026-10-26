@@ -1,0 +1,30 @@
+---
+// Шпаргалки (S5.04, идея B7): по модулю курса математики и по разделу конспекта CS229 — печатная страница с формулами
+// и типичными ошибками уроков, отмеченных «знаю».
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { loadCourse } from "../../lib/content/collections";
+import { sheets } from "../../lib/content/cheatsheet-data";
+
+const math = await loadCourse("foundations");
+const all = await sheets();
+const groups = [
+  { title: "По модулям курса математики", items: all.filter((s) => s.kind === "module") },
+  { title: "По разделам конспекта CS229", items: all.filter((s) => s.kind === "cs229") },
+];
+---
+<BaseLayout title="Шпаргалки" description="Печатные шпаргалки по модулям курса математики и разделам конспекта CS229: формулы и типичные ошибки уроков, отмеченных «знаю»." course={math}>
+  <main class="shell sheet-index" id="content">
+    <h1>Шпаргалки</h1>
+    <p class="lead">Одна страница на&nbsp;модуль или раздел конспекта: формулы и&nbsp;типичные ошибки из&nbsp;уроков, которые вы отметили «знаю». Её&nbsp;можно распечатать или сохранить в&nbsp;PDF.</p>
+    {groups.map((g) => (
+      <section>
+        <h2>{g.title}</h2>
+        <ul class="companion__sections">
+          {g.items.map((s) => (
+            <li><a href={`/cheatsheet/${s.id}/`}>{s.kind === "cs229" ? s.title.replace(/^CS229: /, "") : s.title}</a><span class="ref">уроков: {s.lessons.length}</span></li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </main>
+</BaseLayout>

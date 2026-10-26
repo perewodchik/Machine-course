@@ -12,8 +12,10 @@ interface Props {
   items: Item[];
   seed?: number;
   title?: string;
+  /** Пояснение под заголовком; по умолчанию — для итоговой проверки модуля. */
+  intro?: string;
 }
-const { items, seed = 1, title = "Итоговая проверка" } = Astro.props;
+const { items, seed = 1, title = "Итоговая проверка", intro = "Задачи по\u00a0всем урокам модуля вперемешку. Проверка ничего не\u00a0блокирует: она показывает, что стоит повторить." } = Astro.props;
 const reg = await loadRegistry();
 const order = rng(seed).shuffle(items.map((_, i) => i));
 const lessons = [...new Set(items.map((it) => it.lesson))].map((key) => {
@@ -25,7 +27,7 @@ const headingId = `set-${seed}`;
 ---
 <section class="exercise-set" data-exercise-set aria-labelledby={headingId}>
   <h3 id={headingId}>{title}</h3>
-  <p class="exercise-set__intro">Задачи по&nbsp;всем урокам модуля вперемешку. Проверка ничего не&nbsp;блокирует: она показывает, что стоит повторить.</p>
+  <p class="exercise-set__intro">{intro}</p>
   {order.map((i, k) => {
     const it = items[i]!;
     return "gen" in it ? (

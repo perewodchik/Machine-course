@@ -390,4 +390,28 @@
   .ready__lessons li { display: flex; align-items: flex-start; gap: var(--space-2); padding: 3px 0; }
   .ready__lessons li > .know { margin-top: 1px; }
   .ready__num { min-width: 2.8em; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  /* Компаньон к конспекту CS229 (S5.03): список разделов; уроки раздела — та же сетка, что у карты готовности */
+  .companion section { max-width: var(--measure); margin-top: var(--space-7); }
+  .companion h3 { margin-top: var(--space-5); font: 500 var(--text-base)/1.4 var(--font-ui); color: var(--ink-2); }
+  .companion__sections { list-style: none; padding: 0; max-width: var(--measure); font-family: var(--font-ui); }
+  .companion__sections li { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-3); align-items: baseline; padding: var(--space-2) 0; border-bottom: 1px solid var(--rule); }
+  /* Шпаргалка (S5.04): урок — заголовок, формулы реестра и типичные ошибки; при печати — без шапки и кнопок */
+  .sheet-index section { max-width: var(--measure); margin-top: var(--space-6); }
+  .sheet { max-width: var(--measure); }
+  .sheet__controls { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-5); align-items: center; margin: var(--space-4) 0 var(--space-5); font: var(--text-sm)/1.5 var(--font-ui); }
+  .sheet__filter { display: inline-flex; gap: var(--space-2); align-items: center; }
+  .sheet__empty { color: var(--ink-2); font: var(--text-sm)/1.5 var(--font-ui); }
+  .sheet__lesson { margin-top: var(--space-6); break-inside: avoid-page; }
+  .sheet__lesson h2 { font-size: var(--text-lg); margin-bottom: var(--space-2); }
+  .sheet__formula { margin: var(--space-3) 0; }
+  .sheet__formula .katex-display { margin: var(--space-2) 0; }
+  .sheet__name { margin: 0; color: var(--ink-2); font: var(--text-sm)/1.5 var(--font-ui); }
+  .sheet__pitfall { margin: var(--space-2) 0; font-size: var(--text-sm); }
+  .sheet__mark { color: var(--red-pen); font-family: var(--font-ui); font-weight: 500; }
+  @media print {
+    .site-header, .skip-link, .sheet__controls, .breadcrumb, .toc { display: none !important; }
+    .sheet { max-width: none; }
+    .sheet__lesson { margin-top: var(--space-4); }
+    .sheet a { color: inherit; text-decoration: none; }
+  }
 }
