@@ -148,3 +148,30 @@ test("урок III.6: обозреватель распределений, сс�
   await page.evaluate(() => window.scrollTo(0, 0));
   await expectNoAxeViolations(page);
 });
+
+test("урок III.7: нормальное и 68 %, бета, разбор σ против σ², итоговая проверка", async ({ page }) => {
+  await page.goto("/foundations/probability/continuous-distributions/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Непрерывные распределения");
+
+  const fig = page.locator(".cont-explorer").first();
+  await fig.scrollIntoViewIfNeeded();
+  await expect(fig.locator("xpath=ancestor::astro-island[1]")).not.toHaveAttribute("ssr", "");
+  // N(0.5, 1): внутри μ ± σ — 68.3 %; Beta(2, 5): E = 2/7 ≈ 0.29
+  await expect(fig.locator("[aria-live]")).toContainText("Внутри μ ± σ — 68.3 %");
+  await fig.getByRole("button", { name: "бета" }).press("Enter");
+  await expect(fig.locator("[aria-live]")).toContainText("E X = 0.29");
+
+  const nr = page.locator("[data-exercise][data-item='prob.normal-rule']").first();
+  await nr.locator("[data-variant]:not([hidden]) input").first().fill("0.5");
+  await nr.getByRole("button", { name: "Проверить" }).click();
+  await expect(nr.locator("[data-feedback]")).not.toContainText("Верно");
+
+  const final = page.locator("#final-check");
+  const spec = generator("prob.normal-rule").make(31);
+  if (spec.kind !== "numeric") throw new Error("ожидалось число");
+  await final.locator("[data-variant]:not([hidden]) input").first().fill(String(spec.answer));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});

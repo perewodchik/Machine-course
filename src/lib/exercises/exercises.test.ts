@@ -2,6 +2,7 @@
 import { describe, expect, it } from "vitest";
 import { rng } from "../math/rng";
 import { checkMatrix, checkNumeric, checkOrder, closeEnough, scrambled } from "./check";
+import { cdf as contCdf, contMoments } from "../math/continuous";
 import { moments, pmf } from "../math/distributions";
 import { generator, generators } from "./generators";
 import { formatNumber, parseNumber } from "./parse";
@@ -884,6 +885,38 @@ describe("генераторы", () => {
         ? pmf("poisson", { lambda: Number(/lambda = (\d)/.exec(pp.prompt)![1]) }, k)
         : pmf("binomial", { n: Number(/бросают \$(\d)\$/.exec(pp.prompt)![1]), phi: Number(/орла \$([\d.]+)\$/.exec(pp.prompt)![1]) }, k);
       expect(pp.answer).toBeCloseTo(want, 3);
+    }
+  });
+
+  it("prob.normal-rule: ответ близок к точной вероятности нормального; prob.cont-moments — к моментам из continuous.ts", () => {
+    for (let s = 1; s <= 32; s++) {
+      const t = make("prob.normal-rule", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const tail = t.prompt.includes("больше");
+      const [mu, sigma] = tail
+        ? [Number(/средним \$(\d+)\$/.exec(t.prompt)![1]), Number(/отклонением \$(\d+)\$/.exec(t.prompt)![1])]
+        : [Number(/mathcal\{N\}\((\d+), (\d+)\)/.exec(t.prompt)![1]), Math.sqrt(Number(/mathcal\{N\}\((\d+), (\d+)\)/.exec(t.prompt)![2]))];
+      const P = (x: number) => contCdf("normal", { mu, sigma }, x);
+      if (tail) {
+        const hi = Number(/больше \$(\d+)\$/.exec(t.prompt)![1]);
+        expect(Math.abs(t.answer - (1 - P(hi)))).toBeLessThan(0.006);
+      } else {
+        const [lo, hi] = /P\((-?\d+) \\le X \\le (\d+)\)/.exec(t.prompt)!.slice(1).map(Number) as [number, number];
+        expect(Math.abs(t.answer - (P(hi) - P(lo)))).toBeLessThan(0.006);
+      }
+
+      const c = make("prob.cont-moments", s);
+      if (c.kind !== "numeric") throw new Error("ожидалось число");
+      const want = c.prompt.includes("Var");
+      const num = (re: RegExp) => Number(re.exec(c.prompt)![1]);
+      const m = c.prompt.includes("равномерна")
+        ? contMoments("uniform", { a: num(/\[(-?\d+), /), b: num(/, (-?\d+)\]/) })
+        : c.prompt.includes("показательная")
+          ? contMoments("exponential", { lambda: num(/lambda = ([\d.]+)/) })
+          : c.prompt.includes("Лапласа")
+            ? contMoments("laplace", { mu: num(/mu = (-?\d+)/), b: num(/b = ([\d.]+)/) })
+            : contMoments("beta", { alpha: num(/Beta\}\((\d)/), beta: num(/Beta\}\(\d, (\d)\)/) });
+      expect(c.answer).toBeCloseTo(want ? m.variance : m.mean, 3);
     }
   });
 

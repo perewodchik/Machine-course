@@ -366,3 +366,6 @@
 - id: discrete-distributions
   ru: 'распределения Бернулли, биномиальное, геометрическое, Пуассона, категориальное, мультиномиальное'
   en: 'Bernoulli, binomial, geometric, Poisson, categorical, multinomial distributions'
+- id: continuous-distributions
+  ru: 'равномерное, показательное, нормальное, Лапласа, логистическое, бета-распределение; распределение Дирихле'
+  en: 'uniform, exponential, Gaussian (normal), Laplace, logistic, Beta distributions; Dirichlet distribution'

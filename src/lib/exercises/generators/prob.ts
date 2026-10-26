@@ -515,3 +515,74 @@ export const pointProb: Generator = {
     };
   },
 };
+
+/** Урок III.7: правило 68–95–99.7 — доля нормальной величины в интервале или за ним. */
+export const normalRule: Generator = {
+  id: "prob.normal-rule",
+  version: 1,
+  title: "Правило 68–95–99.7",
+  make(seed) {
+    const r = rng(seed);
+    const mu = r.pick([0, 10, 100, 170]);
+    const sigma = r.pick([2, 5, 10]);
+    const k = r.pick([1, 2, 3]);
+    const inside = { 1: 0.68, 2: 0.95, 3: 0.997 }[k]!;
+    const tail = seed % 2 === 0;
+    const answer = round(tail ? (1 - inside) / 2 : inside);
+    const lo = mu - k * sigma;
+    const hi = mu + k * sigma;
+    return {
+      kind: "numeric",
+      prompt: tail
+        ? String.raw`Рост — нормальная величина со средним $${mu}$ и стандартным отклонением $${sigma}$. Какая доля значений больше $${hi}$? Пользуйтесь правилом 68–95–99.7.`
+        : String.raw`$X \sim \mathcal{N}(${mu}, ${sigma * sigma})$. Найдите $P(${lo} \le X \le ${hi})$ по правилу 68–95–99.7.`,
+      label: String.raw`$P \approx$`,
+      answer,
+      tol: 0.006,
+      hints: [String.raw`Стандартизуйте: $z = (x - \mu)/\sigma$${tail ? "" : String.raw`; второй параметр $\mathcal{N}(\mu, \sigma^2)$ — дисперсия, $\sigma = ${sigma}$`}.`, String.raw`В пределах $\pm 1\sigma$ — $68\,\%$, $\pm 2\sigma$ — $95\,\%$, $\pm 3\sigma$ — $99.7\,\%$; хвосты симметричны.`],
+      right: tail ? String.raw`$${hi}$ — это $\mu + ${k}\sigma$; снаружи $\pm ${k}\sigma$ остаётся $${round(1 - inside)}$, справа — половина: $${answer}$.` : String.raw`$[${lo}, ${hi}] = \mu \pm ${k}\sigma$: доля $${answer}$.`,
+      wrong: tail ? String.raw`Снаружи интервала два хвоста, справа — только половина: $(1 - ${inside})/2$.` : String.raw`Во втором параметре $\mathcal{N}(${mu}, ${sigma * sigma})$ стоит дисперсия: $\sigma = ${sigma}$, а интервал — $\mu \pm ${k}\sigma$.`,
+    };
+  },
+};
+
+/** Урок III.7: матожидание или дисперсия непрерывного семейства. */
+export const contMomentsGen: Generator = {
+  id: "prob.cont-moments",
+  version: 1,
+  title: "Моменты непрерывного распределения",
+  make(seed) {
+    const r = rng(seed);
+    const fams = [
+      () => {
+        const [a, b] = r.pick([[0, 6], [2, 8], [-3, 3], [1, 4]] as const);
+        return { tex: String.raw`$X$ равномерна на $[${a}, ${b}]$`, mean: (a + b) / 2, variance: (b - a) ** 2 / 12, fm: "(a + b)/2", fv: "(b - a)^2/12" };
+      },
+      () => {
+        const lam = r.pick([0.5, 2, 4]);
+        return { tex: String.raw`$X$ — показательная с $\lambda = ${lam}$`, mean: 1 / lam, variance: 1 / (lam * lam), fm: String.raw`1/\lambda`, fv: String.raw`1/\lambda^2` };
+      },
+      () => {
+        const [mu, b] = [r.int(-2, 2), r.pick([0.5, 1, 2])];
+        return { tex: String.raw`$X$ — распределение Лапласа с $\mu = ${mu}$, $b = ${b}$`, mean: mu, variance: 2 * b * b, fm: String.raw`\mu`, fv: "2b^2" };
+      },
+      () => {
+        const [al, be] = r.pick([[2, 2], [2, 3], [1, 4], [3, 1]] as const);
+        return { tex: String.raw`$X \sim \operatorname{Beta}(${al}, ${be})$`, mean: al / (al + be), variance: (al * be) / ((al + be) ** 2 * (al + be + 1)), fm: String.raw`\alpha/(\alpha + \beta)`, fv: String.raw`\alpha\beta / \bigl((\alpha + \beta)^2(\alpha + \beta + 1)\bigr)` };
+      },
+    ];
+    const f = fams[(seed - 1) % fams.length]!();
+    const wantVar = Math.floor((seed - 1) / fams.length) % 2 === 1;
+    const answer = round(wantVar ? f.variance : f.mean);
+    return {
+      kind: "numeric",
+      prompt: String.raw`${f.tex}. Найдите $${wantVar ? String.raw`\operatorname{Var} X` : String.raw`\mathbb{E}X`}$.`,
+      label: wantVar ? String.raw`$\operatorname{Var} X =$` : String.raw`$\mathbb{E}X =$`,
+      answer,
+      tol: 0.005,
+      hints: [String.raw`$\mathbb{E}X = ${f.fm}$, $\operatorname{Var} X = ${f.fv}$.`],
+      right: String.raw`$${wantVar ? f.fv : f.fm} = ${answer}$.`,
+      wrong: String.raw`Формулы семейства: $\mathbb{E}X = ${f.fm}$, $\operatorname{Var} X = ${f.fv}$.`,
+    };
+  },
+};

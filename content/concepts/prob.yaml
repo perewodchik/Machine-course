@@ -36,6 +36,15 @@
   prerequisites: [prob.expectation, prob.independence]
   core: true
 
+- id: prob.continuous-distributions
+  title:
+    ru: 'Непрерывные распределения'
+    en: 'continuous distributions'
+  summary: 'Равномерное, показательное (без памяти), нормальное $\mathcal{N}(\mu, \sigma^2)$, Лапласа (L1), логистическое (CDF — сигмоида), бета на $[0, 1]$; стандартизация $Z = (X - \mu)/\sigma$ и правило 68–95–99.7.'
+  lesson: continuous-distributions
+  prerequisites: [prob.random-variable, prob.expectation]
+  core: true
+
 - id: prob.independence
   title:
     ru: 'Независимость'

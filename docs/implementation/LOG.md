@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — L-III.7 L-III.7: непрерывные распределения — готов
+- **Сделано:** урок continuous-distributions (четыре цикла: равномерное и показательное, нормальное и стандартизация, Лапласа и логистическое, бета и ★ Дирихле), виджет «Обозреватель непрерывных распределений», модель src/lib/math/continuous.ts (erf, lgamma), формула f.standardization, генераторы prob.normal-rule и prob.cont-moments, сниппет prob/continuous.py с тестом
+- **Файлы:** content/courses/foundations/probability/continuous-distributions.mdx, src/widgets/prob/cont-explorer/, src/lib/math/continuous.ts, content/formulas/prob/standardization.yaml, code/snippets/prob/continuous.py
+- **Проверка:** validate, lint, build, check, vitest 551, pytest, check_consistency, e2e урока и layout iii7 (axe)
+- **Отклонения от плана и решения:** нет
+- **Следующий шаг:** L-III.8 — предельные теоремы и метод Монте-Карло.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — L-III.6 L-III.6: дискретные распределения и игра «Зоопарк распределений» — готов
 - **Сделано:** урок discrete-distributions (три цикла: Бернулли, биномиальное, геометрическое; Пуассон; категориальное и мультиномиальное), виджет «Обозреватель распределений», игра «Зоопарк распределений» (5 уровней), общая модель src/lib/math/distributions.ts, формула f.binomial-mean, генераторы prob.family-moments и prob.point-prob, сниппет prob/discrete.py с тестом
 - **Файлы:** content/courses/foundations/probability/discrete-distributions.mdx, src/widgets/prob/dist-explorer/, src/games/dist-zoo/, src/lib/math/distributions.ts, content/formulas/prob/binomial-mean.yaml, code/snippets/prob/discrete.py
