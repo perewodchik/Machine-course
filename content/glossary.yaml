@@ -384,3 +384,6 @@
 - id: mixtures
   ru: 'смесь распределений; скрытая переменная; ответственность'
   en: 'mixture model; latent variable; responsibility'
+- id: information
+  ru: 'энтропия; кросс-энтропия; дивергенция Кульбака — Лейблера; нижняя оценка правдоподобия (ELBO)'
+  en: 'entropy; cross-entropy; Kullback–Leibler divergence; evidence lower bound (ELBO)'

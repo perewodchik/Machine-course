@@ -39,7 +39,7 @@ export const RANGES: Record<Param, { min: number; max: number; step: number }> =
   m2: { min: -3, max: 3, step: 0.1 },
   s1: { min: 0.3, max: 3, step: 0.05 },
   s2: { min: 0.3, max: 3, step: 0.05 },
-  rho: { min: -0.95, max: 0.95, step: 0.05 },
+  rho: { min: -0.95, max: 0.95, step: 0.01 },
 };
 
 export const LEVEL_NAMES: Record<LevelKind, string> = {

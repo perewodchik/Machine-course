@@ -17,6 +17,19 @@
 
 ---
 
+### 2026-10-26 — S4.L3 None — готова
+- **Сделано:** None
+- **Следующий шаг:** S4.L4 — L-IV.1 — выборка, статистики, оценки.
+- **Вопросы пользователю:** —
+
+### 2026-10-26 — L-III.13 L-III.13 — энтропия, кросс-энтропия, KL; итоговая проверка модуля III — готов
+- **Сделано:** урок information (три цикла: энтропия, кросс-энтропия и KL ≥ 0 через Йенсена, кросс-энтропия = правдоподобие и ★ ELBO), виджет «KL между двумя распределениями», капстоун модуля — лабораторная prob/naive_bayes_apartments (данные mlf.datasets.apartment_ads), формула f.cross-entropy-kl, генераторы prob.entropy, prob.kl, prob.log-loss, сниппеты information.py и naive_bayes.py с тестами, итоговая проверка модуля III (ExerciseSet из 13 задач); fmt показывает ∞; в «Скульпторе Σ» шаг ρ 0.01 — при |ρ| ≈ 0.9 шаг 0.05 не давал пройти порог
+- **Файлы:** content/courses/foundations/probability/information.mdx, src/widgets/prob/kl-explorer/, notebooks/src/prob/naive_bayes_apartments.py, code/mlf/datasets.py, content/formulas/prob/cross-entropy-kl.yaml, code/snippets/prob/information.py
+- **Проверка:** validate, lint, build, check, vitest 590, pytest, nbmake обеих лабораторных модуля, check_consistency, e2e III.13 и итоговой проверки модуля, раскладка iii13 (axe)
+- **Отклонения от плана и решения:** нет
+- **Следующий шаг:** L-IV.1 — выборка, статистики, оценки.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — L-III.12 L-III.12 — смеси и скрытые переменные — готов
 - **Сделано:** урок mixtures-latent (три цикла: порождение через z и смесь ≠ сумма, ответственность и log-sum-exp, моменты смеси и EM), виджет «Смесь двух гауссиан и ответственности», формула f.responsibility, генераторы prob.mixture и prob.mixture-moments, сниппет mixture.py с тестом; исправлен eig2 в gauss2.ts: при ρ ≈ 0 и σ₁ < σ₂ собственный вектор терял точность (тест свойств падал на случайном seed)
 - **Файлы:** content/courses/foundations/probability/mixtures-latent.mdx, src/widgets/prob/mixture/, content/formulas/prob/responsibility.yaml, code/snippets/prob/mixture.py, src/lib/math/gauss2.ts

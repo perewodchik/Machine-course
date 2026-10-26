@@ -90,6 +90,15 @@
   prerequisites: [prob.multivariate-normal, prob.bayes]
   core: true
 
+- id: prob.information
+  title:
+    ru: 'Энтропия, кросс-энтропия, KL'
+    en: 'entropy, cross-entropy, KL divergence'
+  summary: 'Энтропия $H(p) = -\sum p \log p$ — средняя неожиданность; кросс-энтропия $H(p, q) = -\sum p \log q = H(p) + D_{KL}(p \,\Vert\, q)$; $D_{KL} \ge 0$ по Йенсену и не симметрична; минимизация кросс-энтропии — максимизация правдоподобия; ★ ELBO.'
+  lesson: information
+  prerequisites: [prob.expectation, prob.discrete-distributions]
+  core: true
+
 - id: prob.independence
   title:
     ru: 'Независимость'

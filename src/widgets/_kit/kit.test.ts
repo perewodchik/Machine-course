@@ -107,6 +107,8 @@ describe("числа и подписи", () => {
     expect(fmt(0.5)).toBe("0.50");
     expect(fmt(-1.234, 1)).toBe("−1.2");
     expect(fmt(-0.0001)).toBe("0.00");
+    expect(fmt(Infinity)).toBe("∞");
+    expect(fmt(-Infinity, 1)).toBe("−∞");
   });
 
   it("индексы в подписях", () => {

@@ -780,6 +780,9 @@ export const covariance: Generator = {
   },
 };
 
+/** Коэффициент перед переменной: 1 и −1 не пишут. */
+const coef = (c: number) => (c === 1 ? "" : c === -1 ? "-" : String(c));
+
 const pm = (m: number[][]) => String.raw`\begin{pmatrix} ${m.map((row) => row.join(" & ")).join(String.raw` \\ `)} \end{pmatrix}`;
 
 /** Урок III.10: ковариация линейного преобразования — матрица AΣAᵀ или дисперсия aᵀX = aᵀΣa. */
@@ -819,7 +822,7 @@ export const covLinearGen: Generator = {
     const answer = a[0]! ** 2 * s1 + 2 * a[0]! * a[1]! * c + a[1]! ** 2 * s2;
     return {
       kind: "numeric",
-      prompt: String.raw`$\operatorname{Cov} X = \Sigma = ${pm(S)}$. Найдите $\operatorname{Var}(${a[0]}X_1 ${a[1]! < 0 ? "-" : "+"} ${Math.abs(a[1]!)}X_2)$.`,
+      prompt: String.raw`$\operatorname{Cov} X = \Sigma = ${pm(S)}$. Найдите $\operatorname{Var}(${coef(a[0]!)}X_1 ${a[1]! < 0 ? "-" : "+"} ${coef(Math.abs(a[1]!))}X_2)$.`,
       label: String.raw`$\operatorname{Var} =$`,
       answer,
       tol: 0.001,
@@ -979,6 +982,88 @@ export const mixtureMoments: Generator = {
       ],
       right: wantVar ? String.raw`$\mathbb{E}X^2 = ${round(phi * (v1 + mu1 * mu1) + (1 - phi) * (v2 + mu2 * mu2), 4)}$, $\mathbb{E}X = ${round(mean, 4)}$, $\operatorname{Var} X = ${answer}$ — больше обеих дисперсий компонент, если их средние далеко.` : String.raw`$${phi} \cdot ${par(mu1)} + ${1 - phi} \cdot ${mu2} = ${answer}$.`,
       wrong: wantVar ? String.raw`Дисперсия смеси — не $\sum_k \phi_k \sigma_k^2$: к ней добавляется разброс самих средних, $\sum_k \phi_k (\mu_k - \mathbb{E}X)^2$. И это не сумма величин: $\phi^2\sigma_1^2 + (1 - \phi)^2\sigma_2^2$ — дисперсия взвешенной суммы.` : String.raw`Средние компонент нужно взвесить вероятностями: $\phi\mu_1 + (1 - \phi)\mu_2$.`,
+    };
+  },
+};
+
+/** Урок III.13: энтропия в битах для распределения с вероятностями — степенями двойки. */
+export const entropyGen: Generator = {
+  id: "prob.entropy",
+  version: 1,
+  title: "Энтропия",
+  make(seed) {
+    const r = rng(seed);
+    const p = r.pick([
+      [0.5, 0.5],
+      [0.5, 0.25, 0.25],
+      [0.25, 0.25, 0.25, 0.25],
+      [0.5, 0.25, 0.125, 0.125],
+      [0.125, 0.125, 0.125, 0.125, 0.5],
+      [0.25, 0.25, 0.5],
+    ] as const);
+    const answer = -p.reduce((s, v) => s + v * Math.log2(v), 0);
+    const terms = p.map((v) => String.raw`${v} \cdot ${-Math.log2(v)}`).join(" + ");
+    return {
+      kind: "numeric",
+      prompt: String.raw`Случайная величина принимает ${p.length} значений с вероятностями $${p.join(", ")}$. Найдите её энтропию в битах: $H = -\sum_x p(x) \log_2 p(x)$.`,
+      label: String.raw`$H =$`,
+      answer,
+      tol: 0.001,
+      hints: [String.raw`$-\log_2 p$ — «неожиданность» исхода в битах: $-\log_2 0.5 = 1$, $-\log_2 0.25 = 2$, $-\log_2 0.125 = 3$.`],
+      right: String.raw`$H = ${terms} = ${answer}$ бита: в среднем столько вопросов «да или нет» нужно, чтобы узнать исход.`,
+      wrong: String.raw`Энтропия — среднее $-\log_2 p(x)$, взвешенное вероятностями: $${terms}$.`,
+    };
+  },
+};
+
+/** Урок III.13: KL-дивергенция двух распределений Бернулли в натах — и в какую сторону. */
+export const klGen: Generator = {
+  id: "prob.kl",
+  version: 1,
+  title: "KL-дивергенция",
+  make(seed) {
+    const r = rng(seed);
+    const a = r.pick([0.5, 0.8, 0.9, 0.2]);
+    const b = r.pick([0.5, 0.6, 0.25, 0.1].filter((v) => v !== a));
+    const reverse = seed % 2 === 0;
+    const [p, q] = reverse ? [b, a] : [a, b];
+    const answer = round(p * Math.log(p / q) + (1 - p) * Math.log((1 - p) / (1 - q)), 4);
+    const other = round(q * Math.log(q / p) + (1 - q) * Math.log((1 - q) / (1 - p)), 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`$p$ — монета с вероятностью орла $${a}$, $q$ — с вероятностью $${b}$. Найдите $D_{KL}(${reverse ? "q" : "p"} \,\Vert\, ${reverse ? "p" : "q"})$ в натах (натуральный логарифм).`,
+      label: String.raw`$D_{KL} =$`,
+      answer,
+      tol: 0.001,
+      hints: [String.raw`$D_{KL}(u \,\Vert\, v) = \sum_x u(x) \log \frac{u(x)}{v(x)}$; усредняют по первому аргументу. Для монет — два слагаемых: орёл и решка.`],
+      right: String.raw`$${p} \ln \frac{${p}}{${q}} + ${round(1 - p)} \ln \frac{${round(1 - p)}}{${round(1 - q)}} \approx ${answer}$. В обратную сторону было бы $${other}$: KL несимметрична.`,
+      wrong: String.raw`Проверьте порядок: в $D_{KL}(u \,\Vert\, v)$ веса и числитель — у первого аргумента. В другую сторону получится $${other}$, а не $${answer}$.`,
+    };
+  },
+};
+
+/** Урок III.13: кросс-энтропия (log loss) по предсказанным вероятностям для нескольких объектов. */
+export const logLoss: Generator = {
+  id: "prob.log-loss",
+  version: 1,
+  title: "Кросс-энтропия как функция потерь",
+  make(seed) {
+    const r = rng(seed);
+    const n = r.pick([2, 3]);
+    const ys = Array.from({ length: n }, () => r.int(0, 1));
+    const hs = Array.from({ length: n }, () => r.pick([0.9, 0.8, 0.6, 0.3, 0.1]));
+    const terms = ys.map((y, i) => (y === 1 ? hs[i]! : round(1 - hs[i]!)));
+    const answer = round(-terms.reduce((s, t) => s + Math.log(t), 0) / n, 4);
+    const rows = ys.map((y, i) => String.raw`$y^{(${i + 1})} = ${y}$, $h^{(${i + 1})} = ${hs[i]}$`).join("; ");
+    return {
+      kind: "numeric",
+      prompt: String.raw`Классификатор выдаёт вероятность класса $1$. Объекты: ${rows}. Найдите среднюю кросс-энтропию $-\frac1n \sum_i \bigl(y^{(i)} \ln h^{(i)} + (1 - y^{(i)}) \ln (1 - h^{(i)})\bigr)$.`,
+      label: String.raw`$\text{log loss} =$`,
+      answer,
+      tol: 0.002,
+      hints: [String.raw`Для каждого объекта берут логарифм вероятности, которую модель дала **верному** классу: $h$ при $y = 1$ и $1 - h$ при $y = 0$.`],
+      right: String.raw`$-\frac{1}{${n}}\bigl(${terms.map((t) => String.raw`\ln ${t}`).join(" + ")}\bigr) \approx ${answer}$ — минус средний логарифм правдоподобия.`,
+      wrong: String.raw`Вероятности верного класса здесь — $${terms.join(", ")}$; усредните $-\ln$ от них.`,
     };
   },
 };

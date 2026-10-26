@@ -989,8 +989,9 @@ describe("генераторы", () => {
         expect(t.answer[0]![1]).toBe(t.answer[1]![0]);
         expect(t.answer[0]![0]).toBeGreaterThanOrEqual(0);
       } else if (t.kind === "numeric") {
-        const m = /Var\}\((-?\d+)X_1 ([+-]) (\d+)X_2\)/.exec(t.prompt)!;
-        const a = [Number(m[1]), (m[2] === "-" ? -1 : 1) * Number(m[3])];
+        const m = /Var\}\((-?\d*)X_1 ([+-]) (\d*)X_2\)/.exec(t.prompt)!;
+        const c = (v: string) => (v === "" ? 1 : v === "-" ? -1 : Number(v));
+        const a = [c(m[1]!), (m[2] === "-" ? -1 : 1) * c(m[3]!)];
         expect(t.answer).toBeCloseTo(a[0]! ** 2 * S![0]![0]! + 2 * a[0]! * a[1]! * S![0]![1]! + a[1]! ** 2 * S![1]![1]!, 9);
         expect(t.answer).toBeGreaterThanOrEqual(0);
       } else throw new Error("ожидалась матрица или число");
@@ -1045,6 +1046,31 @@ describe("генераторы", () => {
         e2 += x * x * dens(x) * 0.005;
       }
       expect(Math.abs(m.answer - (m.prompt.includes("Var") ? e2 - e * e : e))).toBeLessThan(0.01);
+    }
+  });
+
+  it("prob.entropy, prob.kl, prob.log-loss: ответ совпадает с прямым счётом по условию; KL ≥ 0", () => {
+    for (let s = 1; s <= 30; s++) {
+      const e = make("prob.entropy", s);
+      if (e.kind !== "numeric") throw new Error("ожидалось число");
+      const p = /вероятностями \$([\d., ]+)\$/.exec(e.prompt)![1]!.split(", ").map(Number);
+      expect(p.reduce((a, b) => a + b, 0)).toBeCloseTo(1, 12);
+      expect(e.answer).toBeCloseTo(-p.reduce((a, v) => a + v * Math.log2(v), 0), 9);
+      expect(e.answer).toBeLessThanOrEqual(Math.log2(p.length) + 1e-12);
+
+      const k = make("prob.kl", s);
+      if (k.kind !== "numeric") throw new Error("ожидалось число");
+      const [a, b] = [...k.prompt.matchAll(/вероятностью(?: орла)? \$([\d.]+)\$/g)].map((m) => Number(m[1])) as [number, number];
+      const [u, v] = k.prompt.includes("D_{KL}(q") ? [b, a] : [a, b];
+      expect(k.answer).toBeCloseTo(u * Math.log(u / v) + (1 - u) * Math.log((1 - u) / (1 - v)), 3);
+      expect(k.answer).toBeGreaterThan(0);
+
+      const l = make("prob.log-loss", s);
+      if (l.kind !== "numeric") throw new Error("ожидалось число");
+      const ys = [...l.prompt.matchAll(/y\^\{\(\d\)\} = (\d)/g)].map((m) => Number(m[1]));
+      const hs = [...l.prompt.matchAll(/h\^\{\(\d\)\} = ([\d.]+)/g)].map((m) => Number(m[1]));
+      const want = -ys.reduce((acc, y, i) => acc + y * Math.log(hs[i]!) + (1 - y) * Math.log(1 - hs[i]!), 0) / ys.length;
+      expect(l.answer).toBeCloseTo(want, 3);
     }
   });
 

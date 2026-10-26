@@ -1,0 +1,139 @@
+---
+id: information
+title: 'Энтропия, кросс-энтропия, KL'
+number: 'III.13'
+concepts: [prob.information]
+minutes: 120
+lead: 'Функция потерь классификатора называется кросс-энтропией, сравнение распределений в EM и вариационных моделях — KL-дивергенцией. Разберём, что они измеряют, почему KL не бывает отрицательной и почему минимизировать кросс-энтропию — то же самое, что максимизировать правдоподобие. Урок завершает модуль: капстоун — наивный Байес на «Квартирах».'
+---
+
+{/*
+  План урока (docs/program/03-probability.md, карточка III.13) — три цикла:
+  1. Энтропия: неожиданность −log p, биты и наты, максимум у равномерного; упражнение 1 (prob.entropy).
+  2. Кросс-энтропия и KL: предсказание (симметрична ли KL), формула 1 (f.cross-entropy-kl), рисунок 1 (KlExplorer),
+     KL ≥ 0 через Йенсена; ошибка — KL как расстояние; упражнение 2 (prob.kl).
+  3. Кросс-энтропия = правдоподобие: log loss, ячейка Python и капстоун-лабораторная (наивный Байес), ★ ELBO;
+     упражнение 3 (prob.log-loss).
+  Итог, итоговая проверка (prob.kl, ставит «знаю»), итоговая проверка модуля III (ExerciseSet).
+*/}
+
+<Prereqs lessons={["foundations/probability/expectation-variance", "foundations/probability/discrete-distributions"]} />
+
+## Энтропия
+
+Насколько неожиданно событие с вероятностью $p$? Хочется меры, которая равна нулю для достоверного события, растёт с редкостью и складывается для независимых событий: неожиданность двух независимых исходов — сумма неожиданностей. Этим требованиям отвечает $-\log p$: вероятности перемножаются, логарифмы складываются (урок 0.5).
+
+**Энтропия** распределения — средняя неожиданность исхода:
+
+$$
+H(p) = \mathbb{E}\bigl[-\log p(X)\bigr] = -\sum_x p(x) \log p(x), \qquad 0 \cdot \log 0 = 0 .
+$$
+
+С логарифмом по основанию $2$ она измеряется в **битах**: у честной монеты $H = 1$ бит — один вопрос «да или нет», чтобы узнать исход. В ML берут натуральный логарифм, и единица — **нат**. Энтропия не меньше нуля и равна нулю только у вырожденного распределения; среди распределений на $K$ исходах она наибольшая у равномерного: $H = \log K$.
+
+<Note label="По-английски">Энтропия — *entropy*, неожиданность — *surprisal* или *self-information*.</Note>
+
+<Exercise gen="prob.entropy" n={1} variants={6} />
+
+## Кросс-энтропия и KL-дивергенция
+
+Пусть исходы выпадают по $p$, а мы описываем их моделью $q$. Средняя неожиданность в глазах модели — **кросс-энтропия** $H(p, q) = -\sum_x p(x) \log q(x)$. Она не меньше $H(p)$, и разницу называют **KL-дивергенцией** (Кульбака — Лейблера):
+
+$$
+D_{KL}(p \,\Vert\, q) = \sum_x p(x) \log \frac{p(x)}{q(x)} .
+$$
+
+<Exercise
+  title="Предскажите"
+  id="iii13.predict-kl"
+  spec={{
+    kind: "predict",
+    prompt: "$p = (0.9, 0.1)$, $q = (0.5, 0.5)$. Как соотносятся $D_{KL}(p \\,\\Vert\\, q)$ и $D_{KL}(q \\,\\Vert\\, p)$?",
+    options: [
+      { text: "$D_{KL}(q \\,\\Vert\\, p)$ больше", correct: true, why: "$D_{KL}(p \\,\\Vert\\, q) \\approx 0.368$, $D_{KL}(q \\,\\Vert\\, p) \\approx 0.511$. Во второй усредняют по $q$, а она часто выдаёт исход, редкий для $p$: $\\log(0.5/0.1)$ — большое слагаемое с весом $0.5$." },
+      { text: "Они равны: это расстояние между $p$ и $q$", why: "KL несимметрична: веса в сумме — у первого аргумента. Расстояние было бы симметричным, а KL — нет." },
+      { text: "$D_{KL}(p \\,\\Vert\\, q)$ больше: $p$ дальше от равномерного", why: "Отклонение $p$ от равномерного измеряют энтропией. Здесь решает, по какому распределению усредняют: по $q$ редкий для $p$ исход выпадает часто." },
+    ],
+    reveal: "$D_{KL}(p \\,\\Vert\\, q) \\approx 0.368 < D_{KL}(q \\,\\Vert\\, p) \\approx 0.511$.",
+  }}
+/>
+
+<Formula formula="f.cross-entropy-kl" n={1} />
+
+**KL не отрицательна.** Применим неравенство Йенсена (урок III.5) к вогнутому логарифму: $\mathbb{E}\log Z \le \log \mathbb{E}Z$. С $Z = q(X)/p(X)$ при $X \sim p$:
+
+$$
+-D_{KL}(p \,\Vert\, q) = \sum_x p(x) \log \frac{q(x)}{p(x)} \le \log \sum_x p(x)\, \frac{q(x)}{p(x)} = \log \sum_x q(x) \le \log 1 = 0 .
+$$
+
+Равенство — только при $q = p$: Йенсен для строго вогнутой функции точен, лишь когда $Z$ постоянна. Отсюда $H(p, q) \ge H(p)$: никакая модель не предскажет исходы лучше их истинного распределения.
+
+<KlExplorer n={1} initial={{ p: [4, 3, 2, 1], q: [1, 1, 1, 1] }}>Столбики $p$ (данные) и $q$ (модель) на четырёх исходах и показания в натах. Сделайте $q$ равным $p$: чему стали равны обе KL? Обнулите вес $q$ у исхода, где $p > 0$: что случилось с $D_{KL}(p \,\Vert\, q)$ и почему $D_{KL}(q \,\Vert\, p)$ осталась конечной?</KlExplorer>
+
+<Block kind="pitfall">
+
+Считать KL расстоянием. Она не отрицательна и равна нулю при $p = q$, но несимметрична, и для неё не выполняется неравенство треугольника. Порядок аргументов — содержательный выбор: $D_{KL}(p \,\Vert\, q)$ бесконечна, если модель $q$ даёт ноль событию, которое на самом деле случается, а $D_{KL}(q \,\Vert\, p)$ в той же ситуации конечна.
+
+</Block>
+
+<Note label="По-английски">Кросс-энтропия — *cross-entropy*, KL-дивергенция — *Kullback–Leibler divergence*, неравенство Гиббса — *Gibbs' inequality*.</Note>
+
+<Exercise gen="prob.kl" n={2} variants={8} />
+
+## Кросс-энтропия как правдоподобие
+
+Пусть $x^{(1)}, \ldots, x^{(n)}$ — выборка, $\hat p$ — эмпирическое распределение (доли исходов). Средний минус логарифм правдоподобия модели $q$ — это кросс-энтропия:
+
+$$
+-\frac1n \sum_{i=1}^{n} \log q(x^{(i)}) = -\sum_x \hat p(x) \log q(x) = H(\hat p, q) = H(\hat p) + D_{KL}(\hat p \,\Vert\, q) .
+$$
+
+$H(\hat p)$ от модели не зависит, поэтому **максимизировать правдоподобие — то же, что минимизировать кросс-энтропию и $D_{KL}(\hat p \,\Vert\, q)$**. Для метки $y \in \{0, 1\}$ и предсказанной вероятности $h = h_\theta(x)$ получается log loss логистической регрессии $-\bigl(y \log h + (1 - y) \log(1 - h)\bigr)$ (CS229, «Classification and logistic regression»), а для $K$ классов — функция потерь softmax в нейросетях («Deep learning»). Проверим на выборке; перед запуском предскажите, у какой модели средний $-\log q$ на выборке окажется наименьшим — у истинного $p$ или у частот.
+
+<PyCode src="prob/information.py#demo" run lab="prob/naive_bayes_apartments" />
+
+$H(p) = 1.2799$, кросс-энтропия с равномерным $q$ — $1.3863 = \log 4$, их разность $0.1064$ — это $D_{KL}(p \,\Vert\, q)$, а в обратную сторону $0.1218$. На выборке наименьшая кросс-энтропия, $1.2911$, у эмпирических частот — оценки максимального правдоподобия: она подстроена под эту выборку и обходит даже истинное $p$ ($1.2938$).
+
+<Note label="Лабораторная">Капстоун модуля — «Наивный Байес на „Квартирах“»: оценить модель максимумом правдоподобия, предсказать через логарифмы, увидеть бесконечную кросс-энтропию без сглаживания Лапласа и найти информативные слова через KL. Около 60 минут; ссылка — у ячейки Python выше.</Note>
+
+★ **ELBO.** Если у модели есть скрытая $z$, как в смеси (урок III.12), то $\log p(x) = \log \sum_z p(x, z)$ — логарифм суммы, и максимизировать его трудно. Для любого распределения $Q(z)$ по Йенсену
+
+$$
+\log p(x) = \log \sum_z Q(z)\, \frac{p(x, z)}{Q(z)} \ \ge\ \sum_z Q(z) \log \frac{p(x, z)}{Q(z)} ,
+$$
+
+и разность между левой и правой частями — ровно $D_{KL}\bigl(Q \,\Vert\, p(z \mid x)\bigr)$. Правая часть — **нижняя оценка правдоподобия** (ELBO). E-шаг алгоритма EM обнуляет зазор, выбирая $Q(z) = p(z \mid x)$ — ответственности; M-шаг максимизирует ELBO по параметрам (CS229, «The EM algorithm»; вариационные автокодировщики там же).
+
+<Note label="По-английски">Отрицательный логарифм правдоподобия — *negative log-likelihood*, нижняя оценка правдоподобия — *evidence lower bound (ELBO)*.</Note>
+
+<Exercise gen="prob.log-loss" n={3} variants={6} />
+
+## Итог
+
+- $H(p) = -\sum p \log p$ — средняя неожиданность; $0 \le H(p) \le \log K$.
+- $H(p, q) = -\sum p \log q = H(p) + D_{KL}(p \,\Vert\, q)$; $D_{KL} \ge 0$ по Йенсену, равна нулю только при $q = p$, несимметрична.
+- Средний $-\log q$ на выборке — кросс-энтропия эмпирического распределения: максимум правдоподобия = минимум кросс-энтропии = минимум $D_{KL}(\hat p \,\Vert\, q)$. Log loss классификатора — частный случай.
+
+<Exercise gen="prob.kl" seed={31} id="post.iii13" title="Итоговая проверка" final />
+
+## Итоговая проверка модуля «Вероятность»
+
+<ExerciseSet
+  seed={13}
+  title="Модуль «Вероятность»"
+  items={[
+    { lesson: "foundations/probability/probability-space", gen: "prob.dice-event", seed: 41 },
+    { lesson: "foundations/probability/conditional-independence", gen: "prob.cond-dice", seed: 41 },
+    { lesson: "foundations/probability/bayes", gen: "prob.bayes-test", seed: 41 },
+    { lesson: "foundations/probability/random-variables", gen: "prob.interval-prob", seed: 41 },
+    { lesson: "foundations/probability/expectation-variance", gen: "prob.var-linear", seed: 41 },
+    { lesson: "foundations/probability/discrete-distributions", gen: "prob.family-moments", seed: 41 },
+    { lesson: "foundations/probability/continuous-distributions", gen: "prob.normal-rule", seed: 41 },
+    { lesson: "foundations/probability/limit-theorems", gen: "prob.mc-error", seed: 41 },
+    { lesson: "foundations/probability/joint-distributions", gen: "prob.covariance", seed: 41 },
+    { lesson: "foundations/probability/random-vectors", gen: "prob.cov-linear", seed: 42 },
+    { lesson: "foundations/probability/multivariate-normal", gen: "prob.gauss-axes", seed: 41 },
+    { lesson: "foundations/probability/mixtures-latent", gen: "prob.mixture", seed: 41 },
+    { lesson: "foundations/probability/information", gen: "prob.log-loss", seed: 41 },
+  ]}
+/>

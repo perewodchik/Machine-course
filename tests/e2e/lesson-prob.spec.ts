@@ -319,3 +319,48 @@ test("урок III.12: смесь — ответственность в x₀ к�
   await page.evaluate(() => window.scrollTo(0, 0));
   await expectNoAxeViolations(page);
 });
+
+test("урок III.13: KL несимметрична и бесконечна при q = 0, итоговая проверка", async ({ page }) => {
+  await page.goto("/foundations/probability/information/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Энтропия, кросс-энтропия, KL");
+
+  const fig = page.locator(".kl-explorer").first();
+  await fig.scrollIntoViewIfNeeded();
+  await expect(fig.locator("xpath=ancestor::astro-island[1]")).not.toHaveAttribute("ssr", "");
+  // p = (0.4, 0.3, 0.2, 0.1), q равномерное: те же числа, что в ячейке Python
+  await expect(fig.locator("[aria-live]")).toContainText("H(p) = 1.280, H(p, q) = 1.386, KL(p ‖ q) = 0.106, KL(q ‖ p) = 0.122");
+  await fig.getByRole("slider", { name: "q0" }).press("Home");
+  await expect(fig.locator("[aria-live]")).toContainText("KL(p ‖ q) = ∞");
+
+  const final = page.locator("#final-check");
+  const spec = generator("prob.kl").make(31);
+  if (spec.kind !== "numeric") throw new Error("ожидалось число");
+  await final.locator("[data-variant]:not([hidden]) input").first().fill(String(spec.answer));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});
+
+test("итоговая проверка модуля III: тринадцать задач по урокам III.1–III.13", async ({ page }) => {
+  await page.goto("/foundations/probability/information/");
+  const set = page.locator("[data-exercise-set]");
+  await set.scrollIntoViewIfNeeded();
+  const summary = set.locator("[data-summary]");
+  await expect(summary).toHaveText(/Решено верно: 0 из\s13\./);
+  for (const ex of await set.locator("[data-exercise]").all()) {
+    const gen = (await ex.getAttribute("data-item"))!;
+    const seed = Number(await ex.locator("[data-variant]").getAttribute("data-seed"));
+    const task = generator(gen).make(seed);
+    if (task.kind === "numeric") {
+      await ex.locator("input[data-input]").fill(String(task.answer));
+      await ex.getByRole("button", { name: "Проверить" }).click();
+    } else if (task.kind === "choice") {
+      await ex.locator("[data-option]").nth(task.options.findIndex((o) => o.correct)).click();
+    } else if (task.kind === "matrix") {
+      for (const [i, row] of task.answer.entries()) for (const [j, v] of row.entries()) await ex.locator(`[data-cell="${i},${j}"]`).fill(String(v));
+      await ex.getByRole("button", { name: "Проверить" }).click();
+    } else throw new Error(`задача ${gen}: вид ${task.kind}`);
+  }
+  await expect(summary).toHaveText(/Решено верно: 13 из\s13\./);
+});
