@@ -49,6 +49,8 @@ export const layoutPages = {
   ml15: "/ml-basics/linear-models/perceptron-softmax/",
   ml16: "/ml-basics/linear-models/glm/",
   ml21: "/ml-basics/evaluation/classification-metrics/",
+  ml22: "/ml-basics/evaluation/bias-variance/",
+  cloudgame: "/games/overfit-cloud/",
   honestgame: "/games/honest-probability/",
   zoogame: "/games/dist-zoo/",
   corrgame: "/games/guess-correlation/",

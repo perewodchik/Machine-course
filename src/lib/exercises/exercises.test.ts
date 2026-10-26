@@ -1460,6 +1460,31 @@ describe("генераторы", () => {
     }
   });
 
+  it("ml.ols-variance: σ²·tr H / n по настоящей матрице проектора (и плюс σ², если спрашивают ошибку)", () => {
+    for (let s = 1; s <= 30; s++) {
+      const t = make("ml.ols-variance", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const d = Number(/d = (\d+)\$/.exec(t.prompt)![1]);
+      const n = Number(/n = (\d+)\$/.exec(t.prompt)![1]);
+      const sigma = Number(/sigma = ([\d.]+)\$/.exec(t.prompt)![1]);
+      // след проектора на столбцы d первых степеней через Грама–Шмидта: число ненулевых направлений
+      const xs = Array.from({ length: n }, (_, i) => -1 + (2 * i) / (n - 1));
+      const basis: number[][] = [];
+      for (let k = 0; k < d; k++) {
+        let v = xs.map((x) => x ** k);
+        for (const b of basis) {
+          const c = v.reduce((a, vi, i) => a + vi * b[i]!, 0);
+          v = v.map((vi, i) => vi - c * b[i]!);
+        }
+        const nv = Math.hypot(...v);
+        basis.push(v.map((vi) => vi / nv));
+      }
+      const trace = xs.reduce((a, _, i) => a + basis.reduce((s2, b) => s2 + b[i]! ** 2, 0), 0);
+      const v = (sigma * sigma * trace) / n;
+      expect(t.answer).toBeCloseTo(t.prompt.includes("ожидаемая ошибка") ? sigma * sigma + v : v, 5);
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

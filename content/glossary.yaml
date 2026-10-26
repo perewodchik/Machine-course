@@ -432,3 +432,6 @@
 - id: classification-metrics
   ru: 'матрица ошибок; точность; полнота; доля ложных срабатываний; доля правильных ответов; ROC-кривая; AUC; PR-кривая; средняя точность; калибровка; кривая надёжности; оценка Брайера'
   en: 'confusion matrix; precision; recall (TPR); false positive rate; accuracy; ROC curve; area under the curve (AUC); precision–recall curve; average precision (AP); calibration; reliability diagram; Brier score'
+- id: bias-variance
+  ru: 'средняя модель; смещение; разброс; неустранимая ошибка; недообучение; переобучение; сложность модели'
+  en: 'average model; bias; variance; irreducible error; underfitting; overfitting; model complexity'

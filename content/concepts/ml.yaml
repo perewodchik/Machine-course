@@ -153,3 +153,15 @@
   cs229:
     - edition: main-notes-2026-spring
       section: 'Classification and logistic regression'
+
+- id: ml.bias-variance
+  title:
+    ru: 'Смещение и разброс'
+    en: 'bias–variance tradeoff'
+  summary: 'Модель, обученная на случайной выборке, случайна: ожидаемая ошибка в точке — шум $\sigma^2$, плюс квадрат промаха средней модели (смещение²), плюс её разброс по выборкам. Сложность модели уменьшает смещение и раздувает разброс, рост $n$ только сжимает разброс; у МНК средний разброс в обучающих точках — $\sigma^2 d/n$.'
+  lesson: bias-variance
+  prerequisites: [stat.risk-generalization, ml.feature-map]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Generalization'

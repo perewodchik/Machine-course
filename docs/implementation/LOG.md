@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — L-ml-basics-2.2 Смещение и разброс — готов
+- **Сделано:** урок (4 цикла, формулы f.prediction-error-decomposition (из IV.7), f.ols-variance-trace, f.mc-bias-inflation, 4 упражнения, итоговая ml.ols-variance); виджет «Облако моделей» (src/widgets/ml/model-cloud: 100 полиномов, h̄, гистограмма ĥ(x₀), столбик разложения, U по степени); игра «Переобучи, если сможешь: облако» (src/games/overfit-cloud, 4 уровня); polyFitMoments в src/lib/math/poly.ts (O(n·d)); генератор ml.ols-variance; понятие ml.bias-variance; ячейка ml_basics/bias_variance.py со сверкой с make_pipeline(PolynomialFeatures, LinearRegression)
+- **Файлы:** content/courses/ml-basics/evaluation/bias-variance.mdx, content/formulas/ml/{ols-variance-trace,mc-bias-inflation}.yaml, src/widgets/ml/model-cloud/, src/games/overfit-cloud/, code/snippets/ml_basics/bias_variance.py, code/tests/test_bias_variance.py
+- **Проверка:** validate, lint, check, build, vitest 733, pytest, check_consistency, e2e lesson-ml-2-2 и overfit, скриншоты 1440 и 390
+- **Отклонения от плана и решения:** f.bias-variance-point не заведена — переиспользована f.prediction-error-decomposition из IV.7 (тот же вывод); режим «Облако» — отдельная игра /games/overfit-cloud/ с общим движком, а не режим старой; x₀ — ползунок, а не перетаскивание
+- **Следующий шаг:** L-ml-basics-2.3 — регуляризация: L2 и L1.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — L-ml-basics-2.1 Метрики классификации — готов
 - **Сделано:** урок (4 цикла, формулы f.f1-counts, f.auc-pairs, f.precision-prevalence, f.cost-threshold, f.brier-proper, 4 упражнения, итоговая ml.precision-prevalence); виджет «Порог: кривые и цена» (src/widgets/ml/threshold-lab: гистограммы, ROC, PR, стоимость, надёжность, φ, цены, искажение s³); метрики в src/lib/math/classification.ts (aucRanks, prPoints, averagePrecision, brier, reliability, f1); набор mlf.datasets.bank_calls; генераторы ml.precision-prevalence, ml.cost-threshold; понятие ml.classification-metrics; ячейка ml_basics/metrics.py со сверкой с sklearn.metrics до 1e-12
 - **Файлы:** content/courses/ml-basics/evaluation/classification-metrics.mdx, content/formulas/ml/{f1-counts,auc-pairs,precision-prevalence,cost-threshold,brier-proper}.yaml, src/widgets/ml/threshold-lab/, code/snippets/ml_basics/metrics.py, code/tests/test_classification_metrics.py

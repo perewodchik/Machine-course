@@ -407,3 +407,31 @@ export const costThreshold: Generator = {
     };
   },
 };
+
+/** Урок 2.2: средний разброс МНК в обучающих точках σ²d/n и ожидаемая ошибка при истине в классе. */
+export const olsVariance: Generator = {
+  id: "ml.ols-variance",
+  version: 1,
+  title: "Разброс МНК",
+  make(seed) {
+    const r = rng(seed);
+    const sigma = r.pick([0.2, 0.5, 1, 2]);
+    const d = r.int(2, 11);
+    const n = r.pick([20, 40, 50, 100, 200]);
+    const total = seed % 2 === 0;
+    const v = (sigma * sigma * d) / n;
+    const answer = round(total ? sigma * sigma + v : v, 6);
+    return {
+      kind: "numeric",
+      prompt: total
+        ? String.raw`Истина — полином степени ${d - 1}, модель — полином той же степени ($d = ${d}$ весов), $n = ${n}$ обучающих точек при фиксированных $x$, шум $\sigma = ${num(sigma)}$. Смещения нет. Какова ожидаемая ошибка $\mathbb{E}(y - \hat h_S(x))^2$ в среднем по обучающим точкам на новых ответах $y$?`
+        : String.raw`МНК с $d = ${d}$ весами на $n = ${n}$ точках при фиксированных $x$, шум $\sigma = ${num(sigma)}$. Каков средний по обучающим точкам разброс прогноза $\frac1n \sum_i \operatorname{Var} \hat h_S(x^{(i)})$?`,
+      label: total ? "ошибка =" : "разброс =",
+      answer,
+      tol: Math.max(1e-4, answer * 0.005),
+      hints: [String.raw`Средний разброс МНК в обучающих точках — $\sigma^2 d / n$: след проектора $H$ равен $d$.${total ? " К нему добавьте шум нового ответа." : ""}`],
+      right: total ? String.raw`$\sigma^2 + \sigma^2 d/n = ${num(round(sigma * sigma, 4))} + ${num(round(v, 6))} = ${num(answer)}$: шум плюс разброс, смещения нет.` : String.raw`$\sigma^2 d/n = ${num(round(sigma * sigma, 4))} \cdot ${d}/${n} = ${num(answer)}$.`,
+      wrong: total ? String.raw`Ошибка на новых ответах не меньше шума $\sigma^2 = ${num(round(sigma * sigma, 4))}$; к нему добавляется разброс $\sigma^2 d/n = ${num(round(v, 6))}$.` : String.raw`Разброс — $\sigma^2 d/n$, а не $\sigma^2/n$ и не $\sigma^2$: каждый вес добавляет $\sigma^2/n$.`,
+    };
+  },
+};

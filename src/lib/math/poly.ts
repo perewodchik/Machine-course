@@ -33,6 +33,22 @@ export function polyFit(pts: readonly Pt[], d: number, lambda = 1e-10): number[]
   return solve(A, b);
 }
 
+/** То же решение, что polyFit, но через моменты Σxᵖ и Σxᵖy за O(n·d): для облаков из сотен моделей (урок 2.2). */
+export function polyFitMoments(pts: readonly Pt[], d: number, lambda = 1e-10): number[] {
+  const m = new Array<number>(2 * d + 1).fill(0);
+  const b = new Array<number>(d + 1).fill(0);
+  for (const [x, y] of pts) {
+    let p = 1;
+    for (let k = 0; k <= 2 * d; k++) {
+      m[k]! += p;
+      if (k <= d) b[k]! += p * y;
+      p *= x;
+    }
+  }
+  const A = Array.from({ length: d + 1 }, (_, i) => Array.from({ length: d + 1 }, (_, j) => m[i + j]! + (i === j ? lambda : 0)));
+  return solve(A, b);
+}
+
 export const polyEval = (theta: readonly number[], x: number) => theta.reduceRight((s, t) => s * x + t, 0);
 export const rmse = (theta: readonly number[], pts: readonly Pt[]) => Math.sqrt(pts.reduce((s, [x, y]) => s + (polyEval(theta, x) - y) ** 2, 0) / pts.length);
 
