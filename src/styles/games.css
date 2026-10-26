@@ -181,6 +181,9 @@
   .game-prior__table thead th { color: var(--ink-2); font-weight: 500; }
   .game-prior__table .game-prior__tosses { text-align: left; letter-spacing: 0.08em; }
   .game-prior { overflow-x: auto; }
+  /* «Переобучи»: имена бегунков — слова, им нужна колонка шире, чем у одной буквы */
+  .game-overfit .kit-slider { grid-template-columns: 5.2em minmax(0, 1fr) 2.4em; }
+  .game-overfit .kit-slider__name { white-space: nowrap; }
   .game-range__readouts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); }
   @media (max-width: 900px) { .game-range__readouts { grid-template-columns: minmax(0, 1fr); } }
   .game-fog__pad { display: grid; grid-template-columns: repeat(3, 48px); gap: var(--space-2); }

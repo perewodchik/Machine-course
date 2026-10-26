@@ -49,6 +49,8 @@ export type StepCheck =
   | { kind: "gradient"; py: string; wrt: string }
   | { kind: "hessian"; py: string; wrt: string }
   | { kind: "stationary"; lhs: string; rhs: string }
+  | { kind: "identity"; lhs: string; rhs: string }
+  | { kind: "bound"; py: string; side: "below" | "above" }
   | { kind: "solution"; py: string; wrt: string };
 
 export interface DerivationStep {
@@ -58,6 +60,7 @@ export interface DerivationStep {
   note?: Localized; // короткое пояснение на полях
   why?: Localized; // развёрнутое «почему», раскрывается по клику
   check?: StepCheck;
+  mutations?: Mutation[]; // подложенные ошибки шага (S5.01): «найди ошибку», «восстанови строку»
 }
 
 interface FormulaBase {

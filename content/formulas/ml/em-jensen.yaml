@@ -1,0 +1,74 @@
+id: f.em-jensen
+kind: formula
+title:
+  ru: 'Нижняя оценка EM через неравенство Йенсена'
+  en: 'the EM lower bound via Jensen''s inequality'
+statement: '\log p(x; \theta) \ge \sum_{z} q(z) \log \frac{p(x, z; \theta)}{q(z)}, \quad \text{равенство при } q(z) = p(z \mid x; \theta)'
+
+# Фрагмент итоговой проверки V.2 (S5.01), курс «Обучение без учителя». Скрытая z принимает k значений; s — значения
+# p(x, z; θ) при фиксированном x. Логарифм суммы переписывается как логарифм матожидания по q, Йенсен для вогнутого
+# логарифма даёт нижнюю оценку (ELBO), E-шаг выбирает q = апостериорное — оценка становится точной.
+symbols:
+  - name: s
+    tex: 'p(x, z; \theta)'
+    meaning: 'совместная вероятность при каждом из $k$ значений $z$'
+    shape: [k, 1]
+    sample: positive
+  - name: q
+    tex: 'q(z)'
+    meaning: 'любое распределение на значениях $z$'
+    shape: [k, 1]
+    sample: simplex
+
+dependsOn:
+  concepts: [prob.mixtures, prob.expectation, calc.convexity]
+  rules: []
+
+derivation:
+  plan:
+    - 'Записать правдоподобие как сумму по скрытой переменной'
+    - 'Умножить и разделить на $q(z)$ — получится логарифм матожидания'
+    - 'Применить неравенство Йенсена к вогнутому логарифму'
+    - 'Выбрать $q$, при котором оценка точна (E-шаг)'
+  steps:
+    - goal: 0
+      tex: '\log p(x; \theta) = \log \sum_{z} p(x, z; \theta)'
+      by: [prob.total-probability]
+      check:
+        kind: same
+        py: 'np.log(np.sum(s))'
+    - goal: 1
+      tex: '= \log \sum_{z} \changed{q(z)\, \frac{p(x, z; \theta)}{q(z)}} = \log \mathbb{E}_{z \sim q} \frac{p(x, z; \theta)}{q(z)}'
+      by: [prob.expectation]
+      check:
+        kind: same
+        py: 'np.log(np.sum(q * (s / q)))'
+      mutations:
+        - tex: '= \log \sum_{z} q(z)\, p(x, z; \theta)'
+          py: 'np.log(np.sum(q * s))'
+          why: 'Умножили на $q(z)$, но не разделили: значение изменилось. Нужно $q(z) \cdot \frac{p(x, z; \theta)}{q(z)}$.'
+    - goal: 2
+      tex: '\ge \changed{\sum_{z} q(z) \log \frac{p(x, z; \theta)}{q(z)}}'
+      by: [calc.convexity]
+      note: 'Логарифм вогнут: $\log \mathbb{E}\, U \ge \mathbb{E} \log U$. Для выпуклой функции знак был бы обратным — путать направление нельзя.'
+      check:
+        kind: bound
+        side: below
+        py: 'np.sum(q * np.log(s / q))'
+    - goal: 3
+      tex: 'q(z) = \frac{p(x, z; \theta)}{\sum_{z''} p(x, z''; \theta)} = p(z \mid x; \theta):\quad \sum_{z} q(z) \log \frac{p(x, z; \theta)}{q(z)} = \changed{\log p(x; \theta)}'
+      by: [prob.bayes]
+      note: 'При $q = $ апостериорному отношение $p(x, z; \theta)/q(z) = p(x; \theta)$ не зависит от $z$, и Йенсен становится равенством. Это E-шаг; M-шаг максимизирует оценку по $\theta$.'
+      check:
+        kind: same
+        py: 'np.sum((s / np.sum(s)) * np.log(s / (s / np.sum(s))))'
+      mutations:
+        - tex: 'q(z) = \tfrac1k:\quad \sum_{z} q(z) \log \frac{p(x, z; \theta)}{q(z)} = \log p(x; \theta)'
+          py: 'np.mean(np.log(s * s.shape[0]))'
+          why: 'Равномерное $q$ даёт лишь нижнюю оценку: равенство в Йенсене — когда отношение под логарифмом постоянно, а это только при $q = p(z \mid x; \theta)$.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'The EM algorithm / Jensen''s inequality'
+
+usedIn: [prob.mixtures]

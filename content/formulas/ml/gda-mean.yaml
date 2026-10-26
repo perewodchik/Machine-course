@@ -1,0 +1,83 @@
+id: f.gda-mean
+kind: formula
+title:
+  ru: 'MLE среднего класса в GDA'
+  en: 'MLE of a class mean in Gaussian discriminant analysis'
+statement: '\hat\mu_1 = \frac{\sum_{i} 1\{y^{(i)} = 1\}\, x^{(i)}}{\sum_{i} 1\{y^{(i)} = 1\}}'
+
+# Фрагмент итоговой проверки V.2 (S5.01), курс «Классические методы». От μ₁ в логарифме совместного правдоподобия
+# GDA зависят только слагаемые объектов класса 1: −½ (x − μ₁)ᵀ Σ⁻¹ (x − μ₁). Проверка берёт веса w_i вместо
+# индикаторов 1{y = 1}: вывод тот же, ответ — взвешенное среднее. Λ = Σ⁻¹.
+symbols:
+  - name: X
+    tex: 'X'
+    meaning: 'объекты по строкам'
+    shape: [n, d]
+  - name: w
+    tex: '1\{y^{(i)} = 1\}'
+    meaning: 'индикаторы класса 1 (проверка берёт веса из $(0, 1)$)'
+    shape: [n, 1]
+    sample: fraction
+  - name: mu
+    tex: '\mu_1'
+    meaning: 'среднее класса 1'
+    shape: [d, 1]
+  - name: Lam
+    tex: '\Sigma^{-1}'
+    meaning: 'обратная ковариационная матрица'
+    shape: [d, d]
+    sample: spd
+
+dependsOn:
+  concepts: [stat.multivariate-mle, prob.multivariate-normal, calc.matrix-calculus]
+  rules: [rule.grad-quadratic]
+
+derivation:
+  plan:
+    - 'Оставить в $\ell$ слагаемые, зависящие от $\mu_1$'
+    - 'Взять градиент по $\mu_1$'
+    - 'Приравнять к нулю и выразить $\mu_1$'
+  steps:
+    - goal: 0
+      tex: '\ell(\mu_1) = -\frac12 \sum_{i} 1\{y^{(i)} = 1\}\, (x^{(i)} - \mu_1)^\top \Sigma^{-1} (x^{(i)} - \mu_1) + \text{const}'
+      by: [prob.multivariate-normal]
+      note: 'Остальные слагаемые — $\log\phi$, плотности класса $0$ и $\log\det$ — от $\mu_1$ не зависят.'
+      check:
+        kind: same
+        py: '-0.5 * np.sum(w * np.einsum("ij,jk,ik->i", X - mu, Lam, X - mu))'
+    - goal: 1
+      tex: '\nabla_{\mu_1} \ell = \changed{\Sigma^{-1} \sum_{i} 1\{y^{(i)} = 1\}\, (x^{(i)} - \mu_1)}'
+      by: [rule.grad-quadratic]
+      note: 'Градиент $-\tfrac12 (x - \mu)^\top A (x - \mu)$ по $\mu$ при симметричной $A$ — $A(x - \mu)$.'
+      check:
+        kind: gradient
+        wrt: mu
+        py: 'Lam @ ((X - mu).T @ w)'
+      mutations:
+        - tex: '\nabla_{\mu_1} \ell = -\Sigma^{-1} \sum_{i} 1\{y^{(i)} = 1\}\, (x^{(i)} - \mu_1)'
+          py: '-Lam @ ((X - mu).T @ w)'
+          why: 'Знак: производная $(x - \mu)$ по $\mu$ — минус единица, она сокращается с минусом перед $\tfrac12$.'
+        - tex: '\nabla_{\mu_1} \ell = \tfrac12\, \Sigma^{-1} \sum_{i} 1\{y^{(i)} = 1\}\, (x^{(i)} - \mu_1)'
+          py: '0.5 * Lam @ ((X - mu).T @ w)'
+          why: 'Потерян множитель $2$ из градиента квадратичной формы: $\nabla_z\, z^\top A z = 2Az$, он сокращает $\tfrac12$.'
+    - goal: 2
+      tex: '\mu_1 = \changed{\frac{\sum_{i} 1\{y^{(i)} = 1\}\, x^{(i)}}{\sum_{i} 1\{y^{(i)} = 1\}}}'
+      by: [calc.stationary-point]
+      note: '$\Sigma^{-1}$ обратима, поэтому градиент равен нулю, только когда сумма $\sum_i 1\{y^{(i)} = 1\}(x^{(i)} - \mu_1)$ равна нулю. Ответ — среднее объектов класса 1, и $\Sigma$ в него не входит.'
+      check:
+        kind: solution
+        wrt: mu
+        py: 'X.T @ w / np.sum(w)'
+      mutations:
+        - tex: '\mu_1 = \frac1n \sum_{i} x^{(i)}'
+          py: 'X.T @ np.ones(X.shape[0]) / X.shape[0]'
+          why: 'Это среднее всех объектов. В слагаемых для $\mu_1$ участвуют только объекты класса 1.'
+        - tex: '\mu_1 = \frac1n \sum_{i} 1\{y^{(i)} = 1\}\, x^{(i)}'
+          py: 'X.T @ w / X.shape[0]'
+          why: 'Делить нужно на число объектов класса 1, а не на $n$: иначе среднее занижено в $1/\hat\phi$ раз.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Generative learning algorithms / Gaussian discriminant analysis'
+
+usedIn: [stat.multivariate-mle]

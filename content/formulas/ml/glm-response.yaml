@@ -1,0 +1,66 @@
+id: f.glm-response
+kind: formula
+title:
+  ru: 'Отклик GLM — производная логарифма нормировки'
+  en: 'GLM response function as the derivative of the log-partition'
+statement: 'a''(\eta) = \mathbb{E}_{\eta}\, T(y)'
+
+# Фрагмент итоговой проверки V.2 (S5.01), курс «Основы ML». y принимает k значений с «весами» b(y) и значениями
+# достаточной статистики t = T(y); нормировка задаёт a(η), её производная — среднее T(y). В GLM η = θᵀx, и отклик
+# модели E[T(y) | x] = a'(θᵀx): у Бернулли это сигмоида, у Пуассона — экспонента.
+symbols:
+  - name: t
+    tex: 'T(y)'
+    meaning: 'значения достаточной статистики на $k$ значениях $y$'
+    shape: [k, 1]
+  - name: b
+    tex: 'b(y)'
+    meaning: 'базовая мера, положительна'
+    shape: [k, 1]
+    sample: positive
+  - name: eta
+    tex: '\eta'
+    meaning: 'натуральный параметр'
+    shape: []
+
+dependsOn:
+  concepts: [stat.exponential-family, calc.chain-rule, prob.expectation]
+  rules: []
+
+derivation:
+  plan:
+    - 'Из нормировки выразить $a(\eta)$'
+    - 'Продифференцировать по $\eta$ и узнать матожидание'
+  steps:
+    - goal: 0
+      tex: 'a(\eta) = \log \sum_{y} b(y)\, e^{\eta T(y)}'
+      by: [stat.exponential-family]
+      note: 'Сумма $p(y; \eta) = b(y) e^{\eta T(y) - a(\eta)}$ по всем $y$ равна единице.'
+      check:
+        kind: same
+        py: 'np.log(np.sum(b * np.exp(eta * t)))'
+      mutations:
+        - tex: 'a(\eta) = \sum_{y} b(y)\, e^{\eta T(y)}'
+          py: 'np.sum(b * np.exp(eta * t))'
+          why: 'Нормировка — логарифм суммы: $e^{a(\eta)} = \sum_y b(y) e^{\eta T(y)}$, а не сама сумма.'
+    - goal: 1
+      tex: 'a''(\eta) = \changed{\frac{\sum_y T(y)\, b(y)\, e^{\eta T(y)}}{\sum_y b(y)\, e^{\eta T(y)}} = \mathbb{E}_\eta\, T(y)}'
+      by: [calc.chain-rule, prob.expectation]
+      note: 'Производная логарифма — производная аргумента, делённая на аргумент; дробь — среднее $T(y)$ с вероятностями $p(y; \eta)$.'
+      check:
+        kind: gradient
+        wrt: eta
+        py: 'np.sum(t * b * np.exp(eta * t)) / np.sum(b * np.exp(eta * t))'
+      mutations:
+        - tex: 'a''(\eta) = \sum_y T(y)\, b(y)\, e^{\eta T(y)}'
+          py: 'np.sum(t * b * np.exp(eta * t))'
+          why: 'Потерян знаменатель: при дифференцировании логарифма нужно разделить на его аргумент. Без него веса не складываются в единицу.'
+        - tex: 'a''(\eta) = \mathbb{E}_\eta\, T(y)^2'
+          py: 'np.sum(t ** 2 * b * np.exp(eta * t)) / np.sum(b * np.exp(eta * t))'
+          why: 'Это второй момент; с ним связана вторая производная: $a''''(\eta) = \mathbb{E}\, T^2 - (\mathbb{E}\, T)^2 = \operatorname{Var} T$.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Generalized linear models / The exponential family'
+
+usedIn: [stat.exponential-family]

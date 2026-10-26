@@ -52,6 +52,8 @@ export const stepCheck = z.discriminatedUnion("kind", [
   z.strictObject({ kind: z.literal("hessian"), py: z.string().min(1), wrt: z.string().min(1) }),
   z.strictObject({ kind: z.literal("stationary"), lhs: z.string().min(1), rhs: z.string().min(1) }),
   z.strictObject({ kind: z.literal("solution"), py: z.string().min(1), wrt: z.string().min(1) }),
+  z.strictObject({ kind: z.literal("identity"), lhs: z.string().min(1), rhs: z.string().min(1) }),
+  z.strictObject({ kind: z.literal("bound"), py: z.string().min(1), side: z.enum(["below", "above"]) }),
 ]);
 
 export const derivationStep = z.strictObject({
@@ -61,6 +63,8 @@ export const derivationStep = z.strictObject({
   note: localized.optional(),
   why: localized.optional(),
   check: stepCheck.optional(),
+  /** Подложенные ошибки шага (S5.01): «найди ошибку» и «восстанови строку»; харнесс проверяет, что каждая отличается от верного шага. */
+  mutations: z.array(z.strictObject({ tex, py: z.string().min(1), why: localized })).optional(),
 });
 
 const formulaBase = {

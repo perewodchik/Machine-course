@@ -1,0 +1,49 @@
+id: f.familywise-error
+kind: formula
+title:
+  ru: 'Вероятность хотя бы одной ложной тревоги'
+  en: 'family-wise error rate'
+statement: 'P(\text{хотя бы одна ложная тревога}) = 1 - \prod_{j=1}^{m} (1 - \alpha_j) \le \sum_{j=1}^{m} \alpha_j'
+
+# Урок IV.8★: m независимых проверок, все нулевые гипотезы верны, j-я отвергается ошибочно с вероятностью α_j.
+# Проверка — на векторе уровней α (k проверок). Численно проверяются равенства; неравенство — граница объединения,
+# его проверяет тест test_familywise_union_bound.
+symbols:
+  - name: a
+    tex: '\alpha_j'
+    meaning: 'уровни значимости $m$ проверок'
+    shape: [k, 1]
+    sample: fraction
+
+dependsOn:
+  concepts: [stat.intervals-tests, prob.independence]
+  rules: []
+
+derivation:
+  plan:
+    - 'Перейти к дополнению: «ни одной ложной тревоги»'
+    - 'По независимости перемножить вероятности «не ошибиться» в каждой проверке'
+  steps:
+    - goal: 0
+      tex: 'P(\text{хотя бы одна}) = 1 - P(\text{ни одной})'
+      by: [prob.probability-space]
+      note: 'Событие и его дополнение: вероятности в сумме дают единицу.'
+      check:
+        kind: same
+        py: '1 - np.prod(1 - a)'
+    - goal: 1
+      tex: '= 1 - \changed{\prod_{j=1}^{m} (1 - \alpha_j)}'
+      by: [prob.independence]
+      note: 'Проверки независимы: вероятность пересечения — произведение вероятностей. Неравенство $\le \sum_j \alpha_j$ — граница объединения $P(\bigcup_j A_j) \le \sum_j P(A_j)$, для неё независимость не нужна. При $\alpha_j = \alpha/m$ вероятность хотя бы одной ложной тревоги не больше $\alpha$ — это поправка Бонферрони.'
+      check:
+        kind: same
+        py: '1 - np.prod(1 - a)'
+
+pitfalls:
+  - 'Проверить $20$ гипотез на уровне $0.05$ и удивиться одной «значимой»: при всех верных $H_0$ вероятность хотя бы одной ложной тревоги $1 - 0.95^{20} \approx 0.64$.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Regularization and model selection'
+
+usedIn: [stat.intervals-tests]

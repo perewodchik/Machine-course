@@ -17,6 +17,36 @@
 
 ---
 
+### 2026-10-26 — S5.01 банк фрагментов для итоговой проверки V.2 — готова
+- **Сделано:** фрагменты выводов из таблицы карточки V.2 — формулы f.logistic-gradient, f.logistic-hessian, f.glm-response, f.gda-mean, f.svm-dual, f.backprop-two-layer, f.em-jensen, f.pca-eigen с mutations у шагов; харнесс mlf проверяет, что каждая подложенная ошибка отличается от верного шага; новые виды проверки шага identity и bound (Йенсен не в ту сторону роняет тест); банк FRAGMENTS с курсом ML на фрагмент и сборщик задач fragmentTask; <Exercise fragment ask step mutation>
+- **Файлы:** content/formulas/ml/, code/mlf/formulas.py, src/lib/content/fragments.ts, src/lib/content/schemas.ts, src/components/pedagogy/Exercise.astro
+- **Проверка:** validate, lint, check, vitest 641 (fragments.test.ts), pytest (формулы фрагментов, test_step_mutation_equal_to_step_is_caught, test_reversed_jensen_is_caught)
+- **Отклонения от плана и решения:** фрагменты — отдельные формулы реестра, а не правка выводов уроков: у шагов уроков свои формулировки; курс ML для карты готовности — в FRAGMENTS, уроки для повторения выводятся из обоснований шагов (понятие → урок)
+- **Следующий шаг:** S5.L5.
+- **Вопросы пользователю:** —
+
+### 2026-10-26 — S4.L4 уроки модуля IV — готова
+- **Сделано:** все уроки модуля IV и итоговая проверка модуля
+- **Проверка:** validate, build, pytest, e2e модуля IV
+- **Следующий шаг:** S5.01.
+- **Вопросы пользователю:** —
+
+### 2026-10-26 — L-IV.8 доверительные интервалы и проверка гипотез ★ — готов
+- **Сделано:** урок statistics/intervals-tests (три цикла: интервал по ЦПТ и бутстрэп, p-значение и ошибки I и II рода, множественные сравнения), игра «Покрой истину» (/games/cover-truth/: множитель z, 100 интервалов в залпе, покрытие по 4000 скрытым выборкам), формула f.familywise-error, генераторы stat.ci-mean, stat.p-value, stat.fwer, сниппет stats/intervals.py с тестом; итоговая проверка модуля IV (ExerciseSet из семи задач) — в конце урока IV.7
+- **Файлы:** content/courses/foundations/statistics/intervals-tests.mdx, src/games/cover-truth/, content/formulas/stat/familywise-error.yaml, code/snippets/stats/intervals.py
+- **Проверка:** validate, lint, build, check, vitest 628, pytest, check_consistency, e2e IV.7, IV.8, модульной проверки и обеих игр, раскладка iv8 и covergame (axe)
+- **Отклонения от плана и решения:** итоговая проверка модуля стоит в IV.7, а не в ★ IV.8 — как в модуле II; граница объединения из f.familywise-error проверяется отдельным тестом, в выводе — только равенства
+- **Следующий шаг:** S5.01 — банк фрагментов для итоговой проверки V.2.
+- **Вопросы пользователю:** —
+
+### 2026-10-26 — L-IV.7 риск, обобщение, кросс-валидация — готов
+- **Сделано:** урок statistics/risk-generalization (три цикла: риск и эмпирический риск, валидация и k-кратная кросс-валидация, шум + смещение² + разброс), игра «Переобучи, если сможешь» (/games/overfit/: степень и λ по валидации, скрытый тест), формула f.prediction-error-decomposition, генераторы stat.pred-error и stat.kfold, сниппет stats/cross_validation.py с тестом
+- **Файлы:** content/courses/foundations/statistics/risk-generalization.mdx, src/games/overfit/, content/formulas/stat/prediction-error-decomposition.yaml, code/snippets/stats/cross_validation.py
+- **Проверка:** validate, lint, build, check, vitest 624, pytest, check_consistency, e2e IV.7 и игры, раскладка iv7 и overfitgame (axe)
+- **Отклонения от плана и решения:** обучающие x в игре — почти равномерная сетка, а степень ограничена 10: иначе выбор по валидации изредка давал модель, улетающую на краях
+- **Следующий шаг:** L-IV.8★ — доверительные интервалы и проверка гипотез..
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — L-IV.6 L-IV.6 — байесовский подход и MAP — готов
 - **Сделано:** урок statistics/bayes-map (три цикла: априорное и апостериорное, MAP и сглаживание Лапласа, гауссово априорное = ridge), игра «Приор против монеты» (/games/prior-vs-coin/, уровень всегда проходим, ничья при большом n), формулы f.beta-map и f.ridge-map, генераторы stat.beta-update и stat.ridge-map, сниппет stats/bayes_map.py с тестом
 - **Файлы:** content/courses/foundations/statistics/bayes-map.mdx, src/games/prior-vs-coin/, content/formulas/stat/beta-map.yaml, content/formulas/stat/ridge-map.yaml, code/snippets/stats/bayes_map.py

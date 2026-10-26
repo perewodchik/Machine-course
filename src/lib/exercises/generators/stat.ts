@@ -1,4 +1,5 @@
 // Генераторы задач по статистике (модуль IV). Ответ — десятичная дробь, ввод с точкой или запятой.
+import { erf } from "../../math/continuous";
 import { rng } from "../../math/rng";
 import type { Generator } from "../types";
 
@@ -419,6 +420,171 @@ export const ridgeMap: Generator = {
       hints: [String.raw`$\hat\theta = \frac{\sum_i x^{(i)} y^{(i)}}{\sum_i (x^{(i)})^2 + \lambda}$, $\lambda = \sigma^2/\tau^2 = ${round(lam, 4)}$.`],
       right: String.raw`$${sxy}/(${sxx} + ${round(lam, 4)}) \approx ${answer}$; МНК дал бы $${round(sxy / sxx, 4)}$ — MAP сжимает вес к нулю.`,
       wrong: String.raw`К знаменателю МНК $\sum (x^{(i)})^2$ добавляется $\lambda = \sigma^2/\tau^2 = ${round(lam, 4)}$.`,
+    };
+  },
+};
+
+export const predError: Generator = {
+  id: "stat.pred-error",
+  version: 1,
+  title: "Шум, смещение², разброс",
+  make(seed) {
+    const r = rng(seed);
+    const s2 = r.pick([0.04, 0.09, 0.25]);
+    const b2 = r.pick([0.01, 0.05, 0.16]);
+    const v = r.pick([0.02, 0.08, 0.2]);
+    const total = round(s2 + b2 + v, 4);
+    if (seed % 2 === 1) {
+      return {
+        kind: "numeric",
+        prompt: String.raw`Данные $y = h^*(x) + \epsilon$, $\operatorname{Var}\epsilon = ${s2}$. Для модели, обученной на случайной выборке $S$, в точке $x$: $\bigl(h^*(x) - \bar h(x)\bigr)^2 = ${b2}$, $\operatorname{Var} h_S(x) = ${v}$. Найдите ожидаемую ошибку предсказания $\mathbb{E}\bigl(y - h_S(x)\bigr)^2$.`,
+        label: String.raw`$\mathbb{E}(y - h_S)^2 =$`,
+        answer: total,
+        tol: 0.0005,
+        hints: [String.raw`Три слагаемых: шум $\sigma^2$, смещение² и разброс.`],
+        right: String.raw`$${s2} + ${b2} + ${v} = ${total}$.`,
+        wrong: String.raw`Не забудьте шум: $\sigma^2 + \text{смещение}^2 + \text{разброс} = ${s2} + ${b2} + ${v}$.`,
+      };
+    }
+    return {
+      kind: "numeric",
+      prompt: String.raw`Шум данных $\sigma^2 = ${s2}$. Модель в точке $x$ имеет ожидаемую ошибку предсказания $\mathbb{E}\bigl(y - h_S(x)\bigr)^2 = ${total}$ и разброс $\operatorname{Var} h_S(x) = ${v}$. Найдите смещение² $\bigl(h^*(x) - \bar h(x)\bigr)^2$.`,
+      label: String.raw`смещение² $=$`,
+      answer: b2,
+      tol: 0.0005,
+      hints: [String.raw`$\mathbb{E}(y - h_S)^2 = \sigma^2 + \text{смещение}^2 + \operatorname{Var} h_S$.`],
+      right: String.raw`$${total} - ${s2} - ${v} = ${b2}$.`,
+      wrong: String.raw`Вычтите из ошибки и шум, и разброс: $${total} - ${s2} - ${v}$. Без шума получилось бы двухчленное разложение — оно для оценки параметра, а не для предсказания.`,
+    };
+  },
+};
+
+export const kfoldGen: Generator = {
+  id: "stat.kfold",
+  version: 1,
+  title: "k-кратная кросс-валидация",
+  make(seed) {
+    const r = rng(seed);
+    const k = r.pick([3, 4, 5]);
+    if (seed % 2 === 1) {
+      const errs = Array.from({ length: k }, () => r.int(10, 40) / 100);
+      const answer = round(errs.reduce((a, b) => a + b, 0) / k, 4);
+      return {
+        kind: "numeric",
+        prompt: String.raw`При ${k}-кратной кросс-валидации модель ${k} раз обучили на всех частях, кроме одной, и измерили ошибку на отложенной: $${errs.join(", ")}$. Найдите оценку ошибки кросс-валидацией.`,
+        label: String.raw`$\text{CV} =$`,
+        answer,
+        tol: 0.0005,
+        hints: [String.raw`Оценка — среднее ошибок по отложенным частям.`],
+        right: String.raw`Среднее ${k} чисел: $${answer}$.`,
+        wrong: String.raw`Сложите ошибки и разделите на $k = ${k}$.`,
+      };
+    }
+    const models = r.pick([3, 4, 6, 8]);
+    const answer = models * k + 1;
+    return {
+      kind: "numeric",
+      prompt: String.raw`Сравниваем ${models} моделей ${k}-кратной кросс-валидацией, затем лучшую обучаем заново на всех данных. Сколько всего раз запускается обучение?`,
+      label: "обучений:",
+      answer,
+      tol: 0,
+      hints: [String.raw`Каждая модель обучается $k$ раз — по разу на каждую отложенную часть.`],
+      right: String.raw`$${models} \cdot ${k} + 1 = ${answer}$.`,
+      wrong: String.raw`$${models}$ моделей по $${k}$ обучений и ещё одно финальное: $${answer}$.`,
+    };
+  },
+};
+
+const Phi = (z: number) => 0.5 * (1 + erf(z / Math.SQRT2));
+
+/** Урок IV.8★: граница 95-процентного интервала для среднего при известной σ. */
+export const ciMean: Generator = {
+  id: "stat.ci-mean",
+  version: 1,
+  title: "Доверительный интервал для среднего",
+  make(seed) {
+    const r = rng(seed);
+    const n = r.pick([16, 25, 36, 64, 100]);
+    const sigma = r.pick([2, 3, 4, 5]);
+    const mean = r.int(20, 80) / 2;
+    const conf = seed % 3 === 0 ? 90 : 95;
+    const z = conf === 95 ? 1.96 : 1.645;
+    const se = sigma / Math.sqrt(n);
+    const upper = seed % 2 === 1;
+    const answer = round(mean + (upper ? 1 : -1) * z * se, 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`По выборке из $n = ${n}$ наблюдений $\bar x = ${mean}$, стандартное отклонение известно: $\sigma = ${sigma}$. Найдите ${upper ? "верхнюю" : "нижнюю"} границу ${conf}-процентного доверительного интервала для $\mu$ (множитель $z = ${z}$).`,
+      label: `${upper ? "верхняя" : "нижняя"} граница:`,
+      answer,
+      tol: 0.002,
+      hints: [String.raw`$\bar x \pm z\,\sigma/\sqrt n$, стандартная ошибка $\sigma/\sqrt n = ${sigma}/${Math.sqrt(n)} = ${round(se, 4)}$.`],
+      right: String.raw`$${mean} ${upper ? "+" : "-"} ${z} \cdot ${round(se, 4)} = ${answer}$.`,
+      wrong: String.raw`Делите $\sigma$ на $\sqrt n = ${Math.sqrt(n)}$, а не на $n$: разброс среднего — $\sigma/\sqrt n$.`,
+    };
+  },
+};
+
+/** Урок IV.8★: двустороннее p-значение z-теста. */
+export const pValue: Generator = {
+  id: "stat.p-value",
+  version: 1,
+  title: "p-значение",
+  make(seed) {
+    const r = rng(seed);
+    const n = r.pick([25, 36, 49, 64]);
+    const sigma = r.pick([4, 6, 8]);
+    const z = r.pick([1.2, 1.5, 1.8, 2.1, 2.4, 2.7]) * (r.next() < 0.5 ? -1 : 1);
+    const mu0 = r.pick([50, 100]);
+    const se = sigma / Math.sqrt(n);
+    const mean = round(mu0 + z * se, 4);
+    const zz = (mean - mu0) / se;
+    const answer = round(2 * (1 - Phi(Math.abs(zz))), 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`Нулевая гипотеза $H_0\colon \mu = ${mu0}$, $\sigma = ${sigma}$ известна. По $n = ${n}$ наблюдениям $\bar x = ${mean}$. Найдите двустороннее p-значение: вероятность при $H_0$ получить $\lvert Z\rvert$ не меньше наблюдаемого, $Z = (\bar x - \mu_0)/(\sigma/\sqrt n)$. Используйте $P(\lvert Z\rvert \ge t) = 2\bigl(1 - \Phi(t)\bigr)$, $\Phi$ — функция распределения $\mathcal{N}(0, 1)$.`,
+      label: "p =",
+      answer,
+      tol: 0.003,
+      hints: [String.raw`$Z = (${mean} - ${mu0})/(${sigma}/${Math.sqrt(n)}) = ${round(zz, 3)}$; $\Phi(${round(Math.abs(zz), 3)}) \approx ${round(Phi(Math.abs(zz)), 4)}$.`],
+      right: String.raw`$p = 2\bigl(1 - \Phi(${round(Math.abs(zz), 3)})\bigr) \approx ${answer}$: ${answer < 0.05 ? "на уровне $0.05$ гипотезу отвергают" : "на уровне $0.05$ оснований отвергнуть $H_0$ нет"}. Это не вероятность того, что $H_0$ верна.`,
+      wrong: String.raw`Двустороннее p-значение учитывает оба хвоста: $2\bigl(1 - \Phi(\lvert Z\rvert)\bigr)$, $\lvert Z\rvert = ${round(Math.abs(zz), 3)}$.`,
+    };
+  },
+};
+
+/** Урок IV.8★: вероятность хотя бы одной ложной тревоги и поправка Бонферрони. */
+export const fwerGen: Generator = {
+  id: "stat.fwer",
+  version: 1,
+  title: "Множественные сравнения",
+  make(seed) {
+    const r = rng(seed);
+    const m = r.pick([5, 10, 20, 40]);
+    const alpha = r.pick([0.05, 0.01]);
+    if (seed % 2 === 1) {
+      const answer = round(1 - (1 - alpha) ** m, 4);
+      return {
+        kind: "numeric",
+        prompt: String.raw`Проверяют ${m} независимых гипотез на уровне $\alpha = ${alpha}$, и все нулевые гипотезы верны. С какой вероятностью хотя бы одна проверка даст ложную тревогу?`,
+        label: "вероятность:",
+        answer,
+        tol: 0.002,
+        hints: [String.raw`Перейдите к дополнению: ни одной ложной тревоги — $(1 - \alpha)^m$.`],
+        right: String.raw`$1 - (1 - ${alpha})^{${m}} \approx ${answer}$.`,
+        wrong: String.raw`Не $\alpha$ и не $m\alpha$: $1 - (1 - ${alpha})^{${m}}$. Сумма $m\alpha = ${round(m * alpha, 4)}$ — только верхняя граница.`,
+      };
+    }
+    const answer = round(alpha / m, 6);
+    return {
+      kind: "numeric",
+      prompt: String.raw`Сравнивают ${m} признаков с откликом. Чтобы вероятность хотя бы одной ложной тревоги была не больше $${alpha}$, каждую проверку делают на уровне $\alpha/m$ (поправка Бонферрони). Найдите этот уровень.`,
+      label: String.raw`$\alpha/m =$`,
+      answer,
+      tol: answer / 100,
+      hints: [String.raw`Граница объединения: $P(\text{хотя бы одна}) \le m \cdot \alpha_j$.`],
+      right: String.raw`$${alpha}/${m} = ${answer}$.`,
+      wrong: String.raw`Разделите общий уровень на число проверок: $${alpha}/${m}$.`,
     };
   },
 };

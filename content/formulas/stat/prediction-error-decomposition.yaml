@@ -1,0 +1,82 @@
+id: f.prediction-error-decomposition
+kind: formula
+title:
+  ru: 'Разложение ошибки предсказания: шум, смещение², разброс'
+  en: 'bias–variance decomposition of the prediction error'
+statement: '\mathbb{E}\bigl(y - h_S(x)\bigr)^2 = \underbrace{\sigma^2}_{\text{шум}} + \underbrace{\bigl(h^*(x) - \bar h(x)\bigr)^2}_{\text{смещение}^2} + \underbrace{\operatorname{Var} h_S(x)}_{\text{разброс}}'
+
+# Урок IV.7: точка x фиксирована, y = h*(x) + ε, шум ε не зависит от обучающей выборки S, E ε = 0, Var ε = σ².
+# Матожидание — по S и по ε. Проверка — на дискретных распределениях: предсказания h на k выборках S с вероятностями p
+# и значения шума e с вероятностями q (центрируются: e − q·e). h̄ = E_S h_S(x).
+symbols:
+  - name: h
+    tex: 'h_S(x)'
+    meaning: 'предсказания модели в точке $x$, обученной на разных выборках $S$'
+    shape: [k, 1]
+  - name: p
+    tex: 'p'
+    meaning: 'вероятности выборок'
+    shape: [k, 1]
+    sample: simplex
+  - name: e
+    tex: '\varepsilon'
+    meaning: 'значения шума (до центрирования)'
+    shape: [m, 1]
+  - name: q
+    tex: 'q'
+    meaning: 'вероятности значений шума'
+    shape: [m, 1]
+    sample: simplex
+  - name: hstar
+    tex: 'h^*(x)'
+    meaning: 'истинная зависимость в точке $x$'
+    shape: []
+
+dependsOn:
+  concepts: [stat.risk-generalization, stat.estimators, prob.expectation]
+  rules: []
+
+derivation:
+  plan:
+    - 'Записать $y - h_S = \varepsilon + (h^* - h_S)$ и раскрыть квадрат'
+    - 'Перекрёстное слагаемое обнулить: $\varepsilon$ не зависит от $S$ и $\mathbb{E}\varepsilon = 0$'
+    - 'К $\mathbb{E}(h^* - h_S)^2$ применить разложение MSE из урока IV.2: $h_S$ — «оценка» числа $h^*$'
+  steps:
+    - goal: 0
+      tex: '\mathbb{E}\bigl(y - h_S\bigr)^2 = \mathbb{E}\bigl(\varepsilon + (h^* - h_S)\bigr)^2'
+      by: [prob.expectation]
+      note: 'Точка $x$ фиксирована, аргумент опущен: $y = h^* + \varepsilon$.'
+      check:
+        kind: same
+        py: 'np.sum(p[:, None] * q[None, :] * ((e - q @ e)[None, :] + (hstar - h)[:, None]) ** 2)'
+    - goal: 0
+      tex: '= \mathbb{E}\varepsilon^2 + \changed{2\,\mathbb{E}\varepsilon\; \mathbb{E}(h^* - h_S)} + \mathbb{E}(h^* - h_S)^2'
+      by: [prob.expectation]
+      note: 'Матожидание произведения независимых величин — произведение матожиданий.'
+      check:
+        kind: same
+        py: 'q @ (e - q @ e) ** 2 + 2 * (q @ (e - q @ e)) * (p @ (hstar - h)) + p @ (hstar - h) ** 2'
+    - goal: 1
+      tex: '= \changed{\sigma^2} + \mathbb{E}(h^* - h_S)^2'
+      by: [prob.expectation]
+      note: '$\mathbb{E}\varepsilon = 0$, поэтому $\mathbb{E}\varepsilon^2 = \operatorname{Var}\varepsilon = \sigma^2$.'
+      check:
+        kind: same
+        py: 'q @ (e - q @ e) ** 2 + p @ (hstar - h) ** 2'
+    - goal: 2
+      tex: '= \sigma^2 + \changed{(h^* - \bar h)^2 + \operatorname{Var} h_S}, \qquad \bar h = \mathbb{E}_S h_S'
+      by: [stat.estimators]
+      note: 'Это двухчленное разложение MSE из урока IV.2. Шум $\sigma^2$ не убрать никакой моделью: даже $h_S = h^*$ ошибается на $\sigma^2$ в среднем.'
+      check:
+        kind: same
+        py: 'q @ (e - q @ e) ** 2 + (hstar - p @ h) ** 2 + p @ (h - p @ h) ** 2'
+
+pitfalls:
+  - 'Забыть шум: двухчленное разложение $\text{смещение}^2 + \operatorname{Var}$ верно для оценки параметра, а у ошибки предсказания есть третье слагаемое $\sigma^2$.'
+  - 'Думать, что ошибка на новых данных может стать меньше $\sigma^2$, если модель достаточно сложна.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Generalization / Bias-variance tradeoff'
+
+usedIn: [stat.risk-generalization]

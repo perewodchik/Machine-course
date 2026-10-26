@@ -1,0 +1,90 @@
+id: f.svm-dual
+kind: formula
+title:
+  ru: 'Веса SVM через двойственные переменные'
+  en: 'SVM weights from the dual variables'
+statement: 'w = \sum_{i=1}^{n} \alpha_i\, y^{(i)} x^{(i)}'
+
+# Фрагмент итоговой проверки V.2 (S5.01), курс «Классические методы». Задача min ½‖w‖² при y⁽ⁱ⁾wᵀx⁽ⁱ⁾ ≥ 1 (без
+# свободного члена, чтобы фрагмент был коротким). Лагранжиан, градиент по w, точка минимума — w как комбинация
+# объектов; подстановка даёт двойственную задачу, в которой объекты входят только скалярными произведениями.
+symbols:
+  - name: X
+    tex: 'X'
+    meaning: 'объекты по строкам'
+    shape: [n, d]
+  - name: y
+    tex: 'y'
+    meaning: 'метки $\pm 1$ (проверка берёт любые числа — вывод от этого не меняется)'
+    shape: [n, 1]
+  - name: alpha
+    tex: '\alpha'
+    meaning: 'множители Лагранжа, $\alpha_i \ge 0$'
+    shape: [n, 1]
+    sample: positive
+  - name: w
+    tex: 'w'
+    meaning: 'веса'
+    shape: [d, 1]
+
+dependsOn:
+  concepts: [calc.lagrange, calc.kkt, la.dot-product]
+  rules: [rule.grad-quadratic, rule.grad-linear]
+
+derivation:
+  plan:
+    - 'Записать лагранжиан с $\alpha_i \ge 0$'
+    - 'Найти минимум по $w$: градиент равен нулю'
+    - 'Подставить $w$ обратно — получится двойственная задача'
+  steps:
+    - goal: 0
+      tex: '\mathcal{L}(w, \alpha) = \tfrac12 \lVert w \rVert^2 - \sum_{i=1}^{n} \alpha_i \bigl(y^{(i)} w^\top x^{(i)} - 1\bigr)'
+      by: [calc.kkt]
+      note: 'Ограничение $1 - y^{(i)} w^\top x^{(i)} \le 0$ входит с множителем $\alpha_i \ge 0$.'
+      check:
+        kind: same
+        py: '0.5 * w @ w - alpha @ (y * (X @ w) - 1)'
+      mutations:
+        - tex: '\mathcal{L}(w, \alpha) = \tfrac12 \lVert w \rVert^2 + \sum_{i=1}^{n} \alpha_i \bigl(y^{(i)} w^\top x^{(i)} - 1\bigr)'
+          py: '0.5 * w @ w + alpha @ (y * (X @ w) - 1)'
+          why: 'Знак: при $\alpha_i \ge 0$ слагаемое должно штрафовать нарушение $y^{(i)} w^\top x^{(i)} < 1$, то есть входить как $\alpha_i(1 - y^{(i)} w^\top x^{(i)})$.'
+    - goal: 1
+      tex: '\nabla_w \mathcal{L} = \changed{w - \sum_{i=1}^{n} \alpha_i\, y^{(i)} x^{(i)}}'
+      by: [rule.grad-quadratic, rule.grad-linear]
+      check:
+        kind: gradient
+        wrt: w
+        py: 'w - X.T @ (alpha * y)'
+    - goal: 1
+      tex: 'w = \changed{\sum_{i=1}^{n} \alpha_i\, y^{(i)} x^{(i)}}'
+      by: [calc.stationary-point]
+      note: '$\mathcal{L}$ выпукла по $w$, и нулевой градиент — минимум. Веса — комбинация объектов; объекты с $\alpha_i > 0$ — опорные векторы.'
+      check:
+        kind: solution
+        wrt: w
+        py: 'X.T @ (alpha * y)'
+      mutations:
+        - tex: 'w = \sum_{i=1}^{n} \alpha_i\, x^{(i)}'
+          py: 'X.T @ alpha'
+          why: 'Потеряна метка $y^{(i)}$: она пришла из ограничения $y^{(i)} w^\top x^{(i)} \ge 1$ и задаёт, с какой стороны объект.'
+        - tex: 'w = -\sum_{i=1}^{n} \alpha_i\, y^{(i)} x^{(i)}'
+          py: '-X.T @ (alpha * y)'
+          why: 'Знак: из $w - \sum_i \alpha_i y^{(i)} x^{(i)} = 0$ сумма переносится вправо с плюсом.'
+    - goal: 2
+      tex: 'd(\alpha) = \sum_{i=1}^{n} \alpha_i - \tfrac12 \sum_{i, j} \alpha_i \alpha_j\, y^{(i)} y^{(j)}\, x^{(i)\top} x^{(j)}'
+      by: [la.dot-product]
+      note: 'Подстановка $w$ в $\mathcal{L}$. Объекты входят только через скалярные произведения — на этом стоят ядра.'
+      check:
+        kind: identity
+        lhs: '0.5 * (X.T @ (alpha * y)) @ (X.T @ (alpha * y)) - alpha @ (y * (X @ (X.T @ (alpha * y))) - 1)'
+        rhs: 'np.sum(alpha) - 0.5 * (alpha * y) @ (X @ X.T) @ (alpha * y)'
+      mutations:
+        - tex: 'd(\alpha) = \sum_{i=1}^{n} \alpha_i - \sum_{i, j} \alpha_i \alpha_j\, y^{(i)} y^{(j)}\, x^{(i)\top} x^{(j)}'
+          py: 'np.sum(alpha) - (alpha * y) @ (X @ X.T) @ (alpha * y)'
+          why: 'Потерян множитель $\tfrac12$: $\tfrac12 \lVert w \rVert^2$ даёт $+\tfrac12$ двойной суммы, линейный член — $-1$, вместе $-\tfrac12$.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Kernel methods and SVM / Lagrange duality'
+
+usedIn: [calc.kkt]

@@ -5,6 +5,7 @@
 import type { ChoiceOption, ExerciseSpec, MutationHint } from "../../lib/exercises/types";
 import { loadRegistry } from "../../lib/content/registry";
 import { instantiate } from "../../lib/content/rule-instance";
+import { FRAGMENTS, fragmentPool, fragmentTask, type FragmentAsk } from "../../lib/content/fragments";
 import { generator } from "../../lib/exercises/generators";
 import { scrambled } from "../../lib/exercises/check";
 import { rng } from "../../lib/math/rng";
@@ -38,9 +39,17 @@ interface Props {
   bind?: Record<string, string>;
   /** Дополнительные варианты к задаче из правила. */
   extra?: ChoiceOption[];
+  /** Или задача по фрагменту вывода V.2 (S5.01): формула из content/formulas/ml. */
+  fragment?: string;
+  /** Вид задачи по фрагменту: какое правило, восстанови строку, найди ошибку. */
+  ask?: FragmentAsk;
+  /** Шаг фрагмента с единицы. */
+  step?: number;
+  /** Подложенная ошибка шага с единицы (для «найди ошибку»). */
+  mutation?: number;
 }
 
-const { gen, variants = 8, seed = 1, n, title = "Упражнение", id, lesson, final = false, confidence = final, rule, bind = {}, extra = [] } = Astro.props;
+const { gen, variants = 8, seed = 1, n, title = "Упражнение", id, lesson, final = false, confidence = final, rule, bind = {}, extra = [], fragment, ask = "error", step = 1, mutation } = Astro.props;
 let { spec } = Astro.props;
 if (rule) {
   // задача с выбором из правила: «Чему равно (Xθ)ᵀ?» — верно θᵀXᵀ, неверные — мутации правила с объяснениями
@@ -59,11 +68,23 @@ if (rule) {
     hints: ["Проверьте размерности каждого варианта: какие произведения вообще определены?"],
   };
 }
-if (!spec && !gen) throw new Error("<Exercise>: нужен spec, gen или rule");
+if (fragment) {
+  const reg = await loadRegistry();
+  const f = reg.formulas.get(fragment);
+  if (!f) throw new Error(`<Exercise fragment="${fragment}">: нет такой формулы`);
+  const titleOf = (x: string) => {
+    const t = reg.rules.get(x)?.title.ru ?? reg.concepts.get(x)?.title.ru;
+    if (!t) throw new Error(`<Exercise fragment="${fragment}">: нет названия у ${x}`);
+    return t;
+  };
+  const pool = fragmentPool(FRAGMENTS.map((e) => reg.formulas.get(e.formula)!).filter(Boolean));
+  spec = fragmentTask(f, { ask, step, mutation, seed, titleOf, pool });
+}
+if (!spec && !gen) throw new Error("<Exercise>: нужен spec, gen, rule или fragment");
 const g = gen ? generator(gen) : undefined;
 const seeds = g ? Array.from({ length: Math.max(1, variants) }, (_, i) => seed + i) : [seed];
 const items = seeds.map((s) => ({ seed: s, spec: g ? g.make(s) : spec! }));
-const item = id ?? g?.id ?? rule ?? `exercise-${n ?? 1}`;
+const item = id ?? g?.id ?? rule ?? (fragment ? `${fragment}:${ask}:${step}` : `exercise-${n ?? 1}`);
 const hints = (ms?: MutationHint[]) => ms?.map((m) => ({ tex: m.tex, html: renderInline(m.why) }));
 const lessonKey = lesson ?? Astro.url.pathname.split("/").filter(Boolean).slice(0, 3).join("/");
 const heading = `${title}${n ? `\u00a0${n}` : ""}.`;

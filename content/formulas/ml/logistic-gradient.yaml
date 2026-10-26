@@ -1,0 +1,73 @@
+id: f.logistic-gradient
+kind: formula
+title:
+  ru: 'Градиент логарифма правдоподобия логистической регрессии'
+  en: 'gradient of the logistic regression log-likelihood'
+statement: '\nabla_\theta\, \ell(\theta) = X^\top \bigl(y - g(X\theta)\bigr)'
+
+# Фрагмент итоговой проверки V.2 (S5.01), курс «Основы ML». Логарифм правдоподобия выборки упрощается через
+# log(1 + e^z), затем градиент — по правилу цепочки; g применяется к вектору поэлементно.
+symbols:
+  - name: X
+    tex: 'X'
+    meaning: 'матрица признаков, строки — объекты'
+    shape: [n, d]
+  - name: y
+    tex: 'y'
+    meaning: 'метки $0$ или $1$ (проверка берёт числа из $(0, 1)$ — вывод от этого не меняется)'
+    shape: [n, 1]
+    sample: fraction
+  - name: theta
+    tex: '\theta'
+    meaning: 'параметры'
+    shape: [d, 1]
+
+dependsOn:
+  concepts: [calc.sigmoid, calc.chain-rule, calc.matrix-calculus, stat.mle]
+  rules: [rule.grad-linear]
+
+derivation:
+  plan:
+    - 'Записать логарифм правдоподобия через сигмоиду'
+    - 'Упростить: оба логарифма выражаются через $\log(1 + e^{z})$'
+    - 'Взять градиент по $\theta$'
+  steps:
+    - goal: 0
+      tex: '\ell(\theta) = \sum_{i=1}^{n} \Bigl(y^{(i)} \log g(\theta^\top x^{(i)}) + (1 - y^{(i)}) \log\bigl(1 - g(\theta^\top x^{(i)})\bigr)\Bigr)'
+      by: [stat.mle]
+      note: 'Объекты независимы, логарифм произведения — сумма логарифмов.'
+      check:
+        kind: same
+        py: 'np.sum(y * np.log(1 / (1 + np.exp(-X @ theta))) + (1 - y) * np.log(1 - 1 / (1 + np.exp(-X @ theta))))'
+    - goal: 1
+      tex: '= \changed{y^\top X\theta - \sum_{i=1}^{n} \log\bigl(1 + e^{\theta^\top x^{(i)}}\bigr)}'
+      by: [calc.sigmoid]
+      note: '$\log g(z) = z - \log(1 + e^{z})$ и $\log(1 - g(z)) = -\log(1 + e^{z})$.'
+      check:
+        kind: same
+        py: 'y @ X @ theta - np.sum(np.log(1 + np.exp(X @ theta)))'
+      mutations:
+        - tex: '= y^\top X\theta + \sum_{i=1}^{n} \log\bigl(1 + e^{\theta^\top x^{(i)}}\bigr)'
+          py: 'y @ X @ theta + np.sum(np.log(1 + np.exp(X @ theta)))'
+          why: 'Знак у суммы: $\log(1 - g(z)) = -\log(1 + e^{z})$, логарифм числа меньше единицы отрицателен.'
+    - goal: 2
+      tex: '\nabla_\theta\, \ell(\theta) = \changed{X^\top \bigl(y - g(X\theta)\bigr)}'
+      by: [rule.grad-linear, calc.chain-rule]
+      note: 'Градиент $y^\top X\theta$ — $X^\top y$; производная $\log(1 + e^{z})$ по $z$ — $g(z)$, и по правилу цепочки слагаемое $i$ даёт $g(\theta^\top x^{(i)})\, x^{(i)}$.'
+      check:
+        kind: gradient
+        wrt: theta
+        py: 'X.T @ (y - 1 / (1 + np.exp(-X @ theta)))'
+      mutations:
+        - tex: '\nabla_\theta\, \ell(\theta) = X^\top \bigl(g(X\theta) - y\bigr)'
+          py: 'X.T @ (1 / (1 + np.exp(-X @ theta)) - y)'
+          why: 'Это градиент потери $-\ell$, а не $\ell$. Перепутать знак — значит идти спуском там, где нужен подъём.'
+        - tex: '\nabla_\theta\, \ell(\theta) = X^\top \bigl(y - X\theta\bigr)'
+          py: 'X.T @ (y - X @ theta)'
+          why: 'Это градиент МНК: потеряна сигмоида. Производная $\log(1 + e^{z})$ — $g(z)$, а не $z$.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Classification and logistic regression / Logistic regression'
+
+usedIn: [calc.sigmoid]

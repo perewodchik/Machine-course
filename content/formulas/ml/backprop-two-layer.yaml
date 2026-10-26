@@ -1,0 +1,77 @@
+id: f.backprop-two-layer
+kind: formula
+title:
+  ru: 'Обратный проход двухслойной сети для мини-батча'
+  en: 'backpropagation through a two-layer network on a mini-batch'
+statement: '\nabla_W J = \bigl((r v^\top) \odot (1 - H \odot H)\bigr)^\top X, \qquad H = \tanh(X W^\top),\ r = Hv - y'
+
+# Фрагмент итоговой проверки V.2 (S5.01), курс «Глубокое обучение». Мини-батч X (n × d), скрытый слой
+# H = tanh(XWᵀ) (n × m), выход Hv, потеря J = ½‖Hv − y‖². Градиенты — правило цепочки в матричной записи;
+# ⊙ — поэлементное произведение, tanh' = 1 − tanh².
+symbols:
+  - name: X
+    tex: 'X'
+    meaning: 'мини-батч, объекты по строкам'
+    shape: [n, d]
+  - name: W
+    tex: 'W'
+    meaning: 'веса скрытого слоя'
+    shape: [m, d]
+  - name: v
+    tex: 'v'
+    meaning: 'веса выхода'
+    shape: [m, 1]
+  - name: y
+    tex: 'y'
+    meaning: 'ответы'
+    shape: [n, 1]
+
+dependsOn:
+  concepts: [calc.chain-rule, calc.matrix-calculus, la.matmul]
+  rules: [rule.matmul-outer, rule.grad-quadratic]
+
+derivation:
+  plan:
+    - 'Записать прямой проход и потерю батча'
+    - 'Градиент по весам выхода'
+    - 'Градиент по весам скрытого слоя: ошибка выхода, назад через $v$ и через $\tanh$'
+  steps:
+    - goal: 0
+      tex: 'J = \tfrac12 \lVert \tanh(X W^\top)\, v - y \rVert^2'
+      by: [calc.chain-rule]
+      check:
+        kind: same
+        py: '0.5 * np.sum((np.tanh(X @ W.T) @ v - y) ** 2)'
+    - goal: 1
+      tex: '\nabla_v J = \changed{H^\top r}, \qquad r = Hv - y'
+      by: [rule.grad-quadratic]
+      note: 'Как в МНК с матрицей признаков $H$: градиент $\tfrac12 \lVert Hv - y \rVert^2$ — $H^\top(Hv - y)$.'
+      check:
+        kind: gradient
+        wrt: v
+        py: 'np.tanh(X @ W.T).T @ (np.tanh(X @ W.T) @ v - y)'
+      mutations:
+        - tex: '\nabla_v J = H^\top y'
+          py: 'np.tanh(X @ W.T).T @ y'
+          why: 'Вместо ошибки $r = Hv - y$ взяты ответы: градиент потери зависит от того, насколько ошибается выход.'
+    - goal: 2
+      tex: '\nabla_W J = \changed{\bigl((r v^\top) \odot (1 - H \odot H)\bigr)^\top X}'
+      by: [calc.chain-rule, rule.matmul-outer]
+      note: 'Ошибка выхода $r$ уходит в скрытый слой через $v$ — матрица $r v^\top$ размера $n \times m$; через $\tanh$ — поэлементное умножение на $1 - H^2$; затем, как у линейного слоя, $\delta^\top X$ — сумма по объектам внешних произведений.'
+      check:
+        kind: gradient
+        wrt: W
+        py: '(np.outer(np.tanh(X @ W.T) @ v - y, v) * (1 - np.tanh(X @ W.T) ** 2)).T @ X'
+      mutations:
+        - tex: '\nabla_W J = (r v^\top)^\top X'
+          py: 'np.outer(np.tanh(X @ W.T) @ v - y, v).T @ X'
+          why: 'Пропущена производная $\tanh$: при проходе назад через нелинейность ошибка умножается на её производную $1 - H^2$.'
+        - tex: '\nabla_W J = X^\top \bigl((r v^\top) \odot (1 - H \odot H)\bigr)'
+          py: 'X.T @ (np.outer(np.tanh(X @ W.T) @ v - y, v) * (1 - np.tanh(X @ W.T) ** 2))'
+          why: 'Порядок множителей: так получается матрица $d \times m$, а $W$ — $m \times d$. Градиент имеет форму аргумента.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Deep learning / Backpropagation'
+
+usedIn: [calc.chain-rule]

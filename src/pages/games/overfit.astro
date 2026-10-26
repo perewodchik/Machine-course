@@ -1,0 +1,26 @@
+---
+// Игра «Переобучи, если сможешь» (S4.L4, урок IV.7): остров React с оболочкой GameShell. Блок «Чему учит игра» — статичный HTML.
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { Overfit, meta } from "../../games/overfit";
+import { loadCourse } from "../../lib/content/collections";
+
+const course = await loadCourse("foundations");
+const lesson = course.lessons.find((l) => l.key === meta.lesson);
+if (!lesson) throw new Error(`игра ${meta.id}: нет урока ${meta.lesson}`);
+const module = course.modules.find((m) => m.id === lesson.module);
+---
+<BaseLayout title={meta.title} description="Подберите степень полинома и силу регуляризации по валидации и проверьте модель на скрытом тесте." course={course}>
+  <main class="game shell" id="content">
+    <nav class="breadcrumb" aria-label="Путь">
+      <a href={`${course.href}#m-${lesson.module}`}>{module?.title}</a><span aria-hidden="true">/</span><span>Игра к уроку {lesson.number}</span>
+    </nav>
+    <h1>{meta.title}</h1>
+    <p class="lead game__lead">Полином высокой степени проходит через все обучающие точки&nbsp;— и&nbsp;проваливается на&nbsp;новых. Подберите степень и&nbsp;<i>λ</i> по&nbsp;валидационной части, затем сдайте модель и&nbsp;узнайте ошибку на&nbsp;скрытом тесте. Пять уровней, партия&nbsp;— <span class="nowrap">5–8&nbsp;минут</span>.</p>
+    <Overfit client:load>
+      <div class="block block--intuition game__teaches">
+        <p><span class="block__title">Чему учит игра.</span> Ошибка на&nbsp;обучении&nbsp;— эмпирический риск&nbsp;— падает с&nbsp;ростом сложности модели, а&nbsp;ошибка на&nbsp;новых данных сначала падает, потом растёт. Выбирать модель нужно по&nbsp;отложенным данным, а&nbsp;тест открывать один раз в&nbsp;конце.</p>
+        <p><a href={lesson.href}>Урок {lesson.number}. {lesson.title}</a></p>
+      </div>
+    </Overfit>
+  </main>
+</BaseLayout>
