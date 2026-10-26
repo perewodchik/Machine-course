@@ -17,6 +17,12 @@
 
 ---
 
+### 2026-10-26 — S7.02 данные курса и лицензии — нужен пользователь
+- **Сделано:** лицензии проверены по открытым источникам: Bank Marketing (UCI, Moro, Rita, Cortez 2014) — CC BY 4.0, распространять можно с указанием авторства; California Housing (StatLib, Pace и Barry 1997, перепись США 1990) — явной лицензии нет, источники просят ссылку на статью
+- **Где остановился:** скачать наборы и записать контрольные суммы нельзя: сетевая политика среды отклоняет archive.ics.uci.edu, ndownloader.figshare.com, www.openml.org, lib.stat.cmu.edu (403 на CONNECT). ADR и загрузчики с суммами — после того, как домены разрешат; выдумывать суммы нельзя
+- **Следующий шаг:** S7.03.
+- **Вопросы пользователю:** разрешить в настройках сети среды домены archive.ics.uci.edu и ndownloader.figshare.com (или www.openml.org); решить, берём ли California Housing без явной лицензии (только со ссылкой на Pace и Barry) или заменяем синтетическими «Квартирами»
+
 ### 2026-10-26 — S7.01 каталог курсов на сайте — готова
 - **Сделано:** content/catalog.yaml (узлы, рёбра сплошные и рекомендуемые, маршруты, проекты), геометрия src/lib/content/catalog-map.ts с тестом согласованности, src/pages/index.astro и src/client/catalog.ts, прогресс и пререквизиты на src/pages/[course]/index.astro, Prereqs на странице-заглушке урока
 - **Файлы:** content/catalog.yaml, src/lib/content/catalog-map.ts, src/pages/index.astro, src/client/catalog.ts, src/pages/[course]/index.astro, src/pages/[course]/[module]/[lesson].astro, src/styles/layout.css
