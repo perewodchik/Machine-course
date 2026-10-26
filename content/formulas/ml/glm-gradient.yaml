@@ -1,0 +1,86 @@
+id: f.glm-gradient
+kind: formula
+title:
+  ru: 'Градиент и гессиан канонической GLM'
+  en: 'gradient and Hessian of a canonical GLM'
+statement: '\nabla_\theta \ell = X^\top \bigl(y - a''(X\theta)\bigr), \qquad \nabla^2_\theta \ell = -X^\top \operatorname{diag}\bigl(a''''(X\theta)\bigr) X \preceq 0'
+
+# Урок 1.6 «Основ ML»: у GLM с T(y) = y и η = θᵀx логарифм правдоподобия — Σ[log b(y) + yη − a(η)]. Градиент —
+# сумма (y − a'(η)) x, то есть (y − h_θ(x)) x, как у LMS; гессиан — −Xᵀ diag(a'') X, а a'' — дисперсия y ≥ 0.
+# Проверка — с выпуклой a(η) = ½η² + log(1 + e^η): вывод не зависит от вида a, лишь бы a'' > 0.
+symbols:
+  - name: X
+    tex: 'X'
+    meaning: 'объекты по строкам'
+    shape: [n, d]
+  - name: y
+    tex: 'y'
+    meaning: 'ответы'
+    shape: [n, 1]
+  - name: theta
+    tex: '\theta'
+    meaning: 'веса'
+    shape: [d, 1]
+  - name: v
+    tex: 'v'
+    meaning: 'любое направление'
+    shape: [d, 1]
+
+dependsOn:
+  concepts: [stat.exponential-family, calc.hessian, ml.logistic-regression]
+  rules: [rule.grad-linear, rule.matmul-outer]
+
+derivation:
+  plan:
+    - 'Записать $\ell(\theta)$ канонической GLM'
+    - 'Продифференцировать: $a''(\eta) = \mathbb{E}[y] = h_\theta(x)$'
+    - 'Найти гессиан и его знак'
+  steps:
+    - goal: 0
+      tex: '\ell(\theta) = \sum_{i=1}^{n} \Bigl[\log b(y^{(i)}) + y^{(i)}\, \theta^\top x^{(i)} - a(\theta^\top x^{(i)})\Bigr] = \text{const} + y^\top X\theta - \sum_i a(\theta^\top x^{(i)})'
+      by: [stat.exponential-family]
+      note: 'Допущения GLM: $y \mid x$ из экспоненциального семейства с $T(y) = y$ и $\eta = \theta^\top x$. Слагаемое $\log b(y)$ от $\theta$ не зависит.'
+      check:
+        kind: same
+        py: 'y @ (X @ theta) - np.sum(0.5 * (X @ theta) ** 2 + np.log(1 + np.exp(X @ theta)))'
+    - goal: 1
+      tex: '\nabla_\theta \ell = \sum_{i=1}^{n} \bigl(y^{(i)} - a''(\theta^\top x^{(i)})\bigr)\, x^{(i)} = \changed{X^\top \bigl(y - a''(X\theta)\bigr)}'
+      by: [rule.grad-linear, calc.chain-rule]
+      note: '$a''(\eta) = \mathbb{E}[y; \eta] = h_\theta(x)$, поэтому слагаемое — $(y - h_\theta(x))\, x$: та же форма, что у LMS и логистической регрессии.'
+      check:
+        kind: gradient
+        wrt: theta
+        py: 'X.T @ (y - (X @ theta + 1 / (1 + np.exp(-X @ theta))))'
+      mutations:
+        - tex: '\nabla_\theta \ell = X^\top \bigl(a''(X\theta) - y\bigr)'
+          py: 'X.T @ ((X @ theta + 1 / (1 + np.exp(-X @ theta))) - y)'
+          why: 'Знак: это градиент потерь $-\ell$, для спуска. Подъём по $\ell$ идёт по $y - h_\theta(x)$.'
+        - tex: '\nabla_\theta \ell = X^\top \bigl(y - X\theta\bigr)'
+          py: 'X.T @ (y - X @ theta)'
+          why: 'Отклик подменён тождественным: $\mathbb{E}[y] = a''(\eta)$, а не $\eta$. Тождественный отклик — только у нормального распределения, где $a(\eta) = \eta^2/2$.'
+    - goal: 2
+      tex: '\nabla^2_\theta \ell = \changed{-X^\top \operatorname{diag}\bigl(a''''(X\theta)\bigr) X}'
+      by: [calc.hessian, rule.matmul-outer]
+      note: 'Слагаемое $i$ градиента даёт $-a''''(\eta_i)\, x^{(i)} x^{(i)\top}$; сумма внешних произведений с весами — $X^\top D X$.'
+      check:
+        kind: hessian
+        wrt: theta
+        py: '-X.T @ np.diag(1 + (1 / (1 + np.exp(-X @ theta))) * (1 - 1 / (1 + np.exp(-X @ theta)))) @ X'
+      mutations:
+        - tex: '\nabla^2_\theta \ell = -X^\top X'
+          py: '-X.T @ X'
+          why: 'Потеряны веса $a''''(\eta_i)$ — дисперсии ответов. Без них получается гессиан МНК.'
+    - goal: 2
+      tex: 'v^\top \nabla^2_\theta \ell\, v = -\sum_{i=1}^{n} a''''(\eta_i)\, (v^\top x^{(i)})^2 \le 0'
+      by: [la.psd, la.quadratic-form]
+      note: '$a''''(\eta) = \operatorname{Var}[y; \eta] \ge 0$ (урок IV.5): гессиан отрицательно полуопределён, $\ell$ вогнута, и у метода Ньютона один максимум.'
+      check:
+        kind: identity
+        lhs: 'v @ (-X.T @ np.diag(1 + (1 / (1 + np.exp(-X @ theta))) * (1 - 1 / (1 + np.exp(-X @ theta)))) @ X) @ v'
+        rhs: '-np.sum((1 + (1 / (1 + np.exp(-X @ theta))) * (1 - 1 / (1 + np.exp(-X @ theta)))) * (X @ v) ** 2)'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Generalized linear models'
+
+usedIn: [ml.glm]

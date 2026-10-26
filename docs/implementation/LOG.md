@@ -17,6 +17,38 @@
 
 ---
 
+### 2026-10-26 — L-ml-basics-1.6 Обобщённые линейные модели — готов
+- **Сделано:** урок (4 цикла, формулы f.glm-poisson и f.glm-gradient, 3 упражнения, итоговая ml.poisson-predict); виджет «Конструктор GLM» (src/widgets/ml/glm-builder: 4 распределения, таблица семейства, E[y|x] и p(y|x), неканонический отклик у Пуассона); набор mlf.datasets.ad_views (просмотры объявлений); генератор ml.poisson-predict; понятие ml.glm; ячейка ml_basics/glm.py со сверкой с PoissonRegressor(alpha=0)
+- **Файлы:** content/courses/ml-basics/linear-models/glm.mdx, content/formulas/ml/glm-*.yaml, src/widgets/ml/glm-builder/, code/snippets/ml_basics/glm.py, code/tests/test_glm.py, code/mlf/datasets.py
+- **Проверка:** validate, lint, check, build, vitest 712, pytest, check_consistency, e2e lesson-ml-1-6, скриншоты 1440 и 390
+- **Отклонения от плана и решения:** наведение на x заменено ползунком «запрос x»; у категориального веса оптимальные, без ползунков (шести весов слишком много); в ячейке нет графика — текстовый вывод
+- **Следующий шаг:** итоговая проверка модуля 1 (ExerciseSet).
+- **Вопросы пользователю:** —
+
+### 2026-10-26 — L-ml-basics-1.5 Перцептрон и многоклассовая классификация — готов
+- **Сделано:** урок (4 цикла, формулы f.softmax-binary и f.softmax-gradient, 4 упражнения, итоговая ml.softmax-prob); виджеты «Перцептрон» (src/widgets/ml/perceptron: разделимая и неразделимая задачи, поправки по шагам и эпохам) и «Области классов» (class-regions: области argmax, сдвиг всех θ, резкость, оптимум); src/lib/math/softmax.ts; генераторы ml.softmax-prob, ml.perceptron-update; понятия ml.perceptron, ml.softmax; ячейка ml_basics/softmax.py со сверкой с Perceptron и LogisticRegression(C=np.inf)
+- **Файлы:** content/courses/ml-basics/linear-models/perceptron-softmax.mdx, content/formulas/ml/softmax-*.yaml, src/widgets/ml/perceptron/, src/widgets/ml/class-regions/, code/snippets/ml_basics/softmax.py, code/tests/test_softmax.py
+- **Проверка:** validate, lint, check, build, vitest 706, pytest, check_consistency, e2e lesson-ml-1-5, скриншоты 1440 и 390
+- **Отклонения от плана и решения:** стрелки θ_j двигают ползунки выбранного класса, а не перетаскивание; режим перцептрона — отдельный виджет; предсказание «куда повернётся граница» — вопрос в тексте перед виджетом, а не шаг в виджете; сверка весов при одинаковом L2-штрафе (перевод C в λ) не сделана — только вероятности без штрафа
+- **Следующий шаг:** L-ml-basics-1.6 — обобщённые линейные модели.
+- **Вопросы пользователю:** —
+
+### 2026-10-26 — L-ml-basics-1.4 Логистическая регрессия и метод Ньютона — готов
+- **Сделано:** урок (4 цикла, формулы f.logistic-gradient, f.logistic-hessian и новая f.logistic-newton-irls, 5 упражнений, итоговая ml.logistic-prob); виджеты «Сигмоида над плоскостью» (src/widgets/ml/logistic-plane) и «Подъём против Ньютона» (ascent-newton); игра «Честная вероятность» (src/games/honest-probability, 4 уровня); src/lib/math/logistic.ts; генераторы ml.logistic-prob, ml.odds-factor; понятие ml.logistic-regression; ячейка ml_basics/logistic.py со сверкой с LogisticRegression(C=np.inf)
+- **Файлы:** content/courses/ml-basics/linear-models/logistic-regression.mdx, content/formulas/ml/logistic-newton-irls.yaml, src/widgets/ml/logistic-plane/, src/widgets/ml/ascent-newton/, src/games/honest-probability/, code/snippets/ml_basics/logistic.py, code/tests/test_logistic.py
+- **Проверка:** validate, lint, check, build, vitest 695, pytest, check_consistency, e2e lesson-ml-1-4 и lesson-bridge, скриншоты 1440 и 390
+- **Отклонения от плана и решения:** границу двигают ползунки (направление, сдвиг, крутизна), а не перетаскивание концов; точки не перетаскиваются — кнопка «Выброс у метро»; игра одномерная (метки на высотах 0 и 1, сигмоида g(k(x − b))); в scikit-learn 1.9 penalty=None устарел — сверка через C=np.inf
+- **Следующий шаг:** L-ml-basics-1.5 — перцептрон и многоклассовая классификация.
+- **Вопросы пользователю:** —
+
+### 2026-10-26 — L-ml-basics-1.3 Признаки, полиномы и LWR — готов
+- **Сделано:** урок (4 цикла, формула f.lwr-solution, 5 упражнений, итоговая ml.lwr-weight); виджет «Гибкость модели» (src/widgets/ml/flexibility: полином и LWR, данные — mlf.datasets.metro_prices через export_widget_data); генераторы ml.lwr-weight, ml.feature-count; понятия ml.feature-map, ml.lwr; ячейка ml_basics/features_lwr.py со сверкой с PolynomialFeatures и LinearRegression(sample_weight)
+- **Файлы:** content/courses/ml-basics/linear-models/features-lwr.mdx, src/widgets/ml/flexibility/, code/snippets/ml_basics/features_lwr.py, code/tests/test_features_lwr.py, code/mlf/datasets.py
+- **Проверка:** validate, lint, check, build, vitest 678, pytest, check_consistency, e2e lesson-ml-1-3, скриншоты 1440 и 390
+- **Отклонения от плана и решения:** данные — новый синтетический набор «цена м² от пути до метро» (у «Квартир» зависимость линейна); точка запроса — ползунок, а не перетаскивание; предел LWR проверяется при τ = 10⁵ мин на исходном признаке, а не 10³ на стандартизованном
+- **Следующий шаг:** L-ml-basics-1.4 — логистическая регрессия и метод Ньютона.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — L-ml-basics-1.2 Линейная регрессия и LMS — готов
 - **Сделано:** урок (4 цикла, 2 формулы f.lms-gradient и f.standardize-inverse, 5 упражнений, итоговая ml.step-scale); виджет «Спуск по линиям уровня» (src/widgets/ml/lms-path); уровни 6–7 «Квартиры» в игре «Порог расходимости»; генераторы ml.lms-update, ml.step-scale, ml.standardize-back; понятие ml.lms; ячейка ml_basics/lms.py со сверкой с LinearRegression и SGDRegressor
 - **Файлы:** content/courses/ml-basics/linear-models/linear-regression-lms.mdx, src/widgets/ml/lms-path/, src/games/divergence/, code/snippets/ml_basics/lms.py, code/tests/test_lms.py, tests/e2e/lesson-ml-1-2.spec.ts

@@ -1,0 +1,94 @@
+id: f.lwr-solution
+kind: formula
+title:
+  ru: 'Решение локально взвешенной регрессии'
+  en: 'locally weighted linear regression solution'
+statement: '\theta(x) = (X^\top W X)^{-1} X^\top W y, \qquad W = \operatorname{diag}\bigl(w^{(1)}, \dots, w^{(n)}\bigr)'
+
+# Урок 1.3 «Основ ML»: в точке запроса x каждый объект получает вес w⁽ⁱ⁾ = exp(−(x⁽ⁱ⁾ − x)²/(2τ²)), и веса θ(x)
+# минимизируют взвешенную сумму квадратов. Это МНК с матрицей весов: градиент, нормальные уравнения, решение.
+symbols:
+  - name: X
+    tex: 'X'
+    meaning: 'объекты по строкам, первый столбец — единицы'
+    shape: [n, d]
+  - name: y
+    tex: 'y'
+    meaning: 'ответы'
+    shape: [n, 1]
+  - name: w
+    tex: 'w'
+    meaning: 'веса объектов $w^{(i)} > 0$ для точки запроса'
+    shape: [n, 1]
+    sample: positive
+  - name: theta
+    tex: '\theta'
+    meaning: 'веса локальной модели'
+    shape: [d, 1]
+
+dependsOn:
+  concepts: [ml.least-squares, calc.matrix-calculus]
+  rules: [rule.grad-quadratic, rule.matvec-columns]
+
+derivation:
+  plan:
+    - 'Записать взвешенную сумму квадратов через диагональную матрицу весов'
+    - 'Найти градиент и приравнять его к нулю: взвешенные нормальные уравнения'
+    - 'Решить систему'
+  steps:
+    - goal: 0
+      tex: 'J(\theta) = \sum_{i=1}^{n} w^{(i)} \bigl(y^{(i)} - \theta^\top x^{(i)}\bigr)^2 = \changed{(X\theta - y)^\top W (X\theta - y)}'
+      by: [ml.loss]
+      note: 'Диагональная $W$ умножает квадрат $i$-го остатка на $w^{(i)}$: $r^\top W r = \sum_i w^{(i)} r_i^2$.'
+      check:
+        kind: same
+        py: '(X @ theta - y) @ np.diag(w) @ (X @ theta - y)'
+      mutations:
+        - tex: 'J(\theta) = (X\theta - y)^\top W^2 (X\theta - y)'
+          py: '(X @ theta - y) @ np.diag(w ** 2) @ (X @ theta - y)'
+          why: 'Вес стоит при квадрате остатка один раз: $W^2$ возвело бы веса в квадрат, и далёкие объекты гасились бы сильнее, чем задаёт $w^{(i)}$.'
+    - goal: 1
+      tex: '\nabla_\theta J = \changed{2 X^\top W (X\theta - y)}'
+      by: [rule.grad-quadratic, rule.matvec-columns]
+      note: 'Как у обычного МНК, только каждый остаток в сумме $\sum_i r_i x^{(i)}$ умножен на свой вес: $X^\top W r$.'
+      check:
+        kind: gradient
+        wrt: theta
+        py: '2 * X.T @ np.diag(w) @ (X @ theta - y)'
+      mutations:
+        - tex: '\nabla_\theta J = 2 X^\top (X\theta - y)'
+          py: '2 * X.T @ (X @ theta - y)'
+          why: 'Потеряна матрица весов: это градиент обычной суммы квадратов, где все объекты одинаково важны.'
+        - tex: '\nabla_\theta J = 2 X^\top W (y - X\theta)'
+          py: '2 * X.T @ np.diag(w) @ (y - X @ theta)'
+          why: 'Знак: производная $(y - \theta^\top x)^2$ по $\theta$ равна $-2(y - \theta^\top x)\,x$. С остатком $y - X\theta$ градиент идёт с минусом.'
+    - goal: 1
+      tex: 'X^\top W X\, \theta = X^\top W y'
+      by: [la.matmul]
+      note: 'Градиент равен нулю: взвешенные нормальные уравнения. При $W = I$ — обычные $X^\top X\theta = X^\top y$.'
+      check:
+        kind: stationary
+        lhs: 'X.T @ np.diag(w) @ X @ theta'
+        rhs: 'X.T @ np.diag(w) @ y'
+    - goal: 2
+      tex: '\theta(x) = \changed{(X^\top W X)^{-1} X^\top W y}'
+      by: [la.inverse]
+      note: 'Матрица $X^\top W X$ обратима, если веса положительны и $\operatorname{rank} X = d$. При малом $\tau$ почти все веса — нули, и она теряет обусловленность.'
+      check:
+        kind: solution
+        wrt: theta
+        py: 'np.linalg.solve(X.T @ np.diag(w) @ X, X.T @ np.diag(w) @ y)'
+      mutations:
+        - tex: '\theta(x) = (X^\top X)^{-1} X^\top W y'
+          py: 'np.linalg.solve(X.T @ X, X.T @ np.diag(w) @ y)'
+          why: 'Веса нужны с обеих сторон уравнения: $X^\top W X\theta = X^\top W y$. Без $W$ слева решение не минимизирует взвешенную сумму.'
+
+pitfalls:
+  - 'Считать расстояния для весов по нестандартизованным признакам: площадь в м² заглушит расстояние до метро в минутах.'
+  - 'Добавлять множитель $\tfrac{1}{\sqrt{2\pi}\,\tau}$ «как у плотности»: общий множитель весов сокращается в $\arg\min$.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Linear regression / Locally weighted linear regression'
+
+usedIn: [ml.lwr]

@@ -1,0 +1,67 @@
+id: f.softmax-binary
+kind: formula
+title:
+  ru: 'Softmax при двух классах — логистическая регрессия'
+  en: 'two-class softmax is logistic regression'
+statement: 'p_1(x) = \frac{e^{\theta_1^\top x}}{e^{\theta_1^\top x} + e^{\theta_2^\top x}} = g\bigl((\theta_1 - \theta_2)^\top x\bigr)'
+
+# Урок 1.5 «Основ ML»: деление числителя и знаменателя на e^{θ₁ᵀx} даёт сигмоиду разности логитов. Отсюда же —
+# общий сдвиг всех θ_j не меняет вероятностей: разность не меняется.
+symbols:
+  - name: x
+    tex: 'x'
+    meaning: 'признаки объекта'
+    shape: [d, 1]
+  - name: a
+    tex: '\theta_1'
+    meaning: 'веса класса 1'
+    shape: [d, 1]
+  - name: b
+    tex: '\theta_2'
+    meaning: 'веса класса 2'
+    shape: [d, 1]
+  - name: c
+    tex: 'c'
+    meaning: 'общий сдвиг весов'
+    shape: [d, 1]
+
+dependsOn:
+  concepts: [ml.logistic-regression, calc.sigmoid]
+  rules: []
+
+derivation:
+  plan:
+    - 'Записать softmax для двух классов'
+    - 'Поделить числитель и знаменатель на $e^{\theta_1^\top x}$'
+    - 'Проверить, что общий сдвиг весов ничего не меняет'
+  steps:
+    - goal: 0
+      tex: 'p_1(x) = \frac{e^{\theta_1^\top x}}{e^{\theta_1^\top x} + e^{\theta_2^\top x}}'
+      by: [ml.softmax]
+      check:
+        kind: same
+        py: 'np.exp(a @ x) / (np.exp(a @ x) + np.exp(b @ x))'
+    - goal: 1
+      tex: 'p_1(x) = \frac{1}{1 + e^{-(\theta_1 - \theta_2)^\top x}} = \changed{g\bigl((\theta_1 - \theta_2)^\top x\bigr)}'
+      by: [calc.sigmoid]
+      note: 'Деление на $e^{\theta_1^\top x}$ оставляет в знаменателе $e^{(\theta_2 - \theta_1)^\top x}$. Это логистическая регрессия с весами $\theta = \theta_1 - \theta_2$.'
+      check:
+        kind: same
+        py: '1 / (1 + np.exp(-(a - b) @ x))'
+      mutations:
+        - tex: 'p_1(x) = g\bigl((\theta_1 + \theta_2)^\top x\bigr)'
+          py: '1 / (1 + np.exp(-(a + b) @ x))'
+          why: 'Значение зависит только от разности логитов: в показателе — $(\theta_2 - \theta_1)^\top x$, а не сумма.'
+    - goal: 2
+      tex: 'g\bigl(((\theta_1 + c) - (\theta_2 + c))^\top x\bigr) = g\bigl((\theta_1 - \theta_2)^\top x\bigr)'
+      by: [calc.sigmoid]
+      note: 'Сдвиг всех $\theta_j$ на один вектор $c$ сокращается в разности: параметры softmax определены с точностью до общего сдвига.'
+      check:
+        kind: same
+        py: '1 / (1 + np.exp(-((a + c) - (b + c)) @ x))'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Classification and logistic regression / Multi-class classification'
+
+usedIn: [ml.softmax]

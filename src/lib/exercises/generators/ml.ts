@@ -151,3 +151,212 @@ export const standardizeBack: Generator = {
     };
   },
 };
+
+/** Урок 1.3: вес объекта в LWR. */
+export const lwrWeight: Generator = {
+  id: "ml.lwr-weight",
+  version: 1,
+  title: "Вес в LWR",
+  make(seed) {
+    const r = rng(seed);
+    const tau = r.pick([1, 2, 3, 5]);
+    const q = r.int(4, 30);
+    const k = r.pick([0.5, 1, 1.5, 2]);
+    const xi = q - k * tau >= 1 && r.next() < 0.5 ? q - k * tau : q + k * tau; // путь до метро не бывает отрицательным
+    const answer = round(Math.exp(-((xi - q) ** 2) / (2 * tau * tau)), 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`Локально взвешенная регрессия по пути до метро, ширина окна $\tau = ${tau}$ мин. Прогноз нужен для квартиры в $x = ${q}$ мин от метро. Какой вес $w^{(i)}$ получит обучающая квартира с $x^{(i)} = ${num(xi)}$ мин?`,
+      label: "w =",
+      answer,
+      tol: 0.001,
+      hints: [String.raw`$w^{(i)} = \exp\bigl(-(x^{(i)} - x)^2/(2\tau^2)\bigr)$. Расстояние здесь — ${num(k)} ширины окна.`],
+      right: String.raw`$w = \exp(-${num(k)}^2/2) = ${num(answer)}$: вес зависит только от расстояния в единицах $\tau$.`,
+      wrong: String.raw`Расстояние $\lvert x^{(i)} - x\rvert = ${num(k * tau)}$, это ${num(k)}$\tau$; $w = \exp(-${num(k * k)}/2) = ${num(answer)}$. Делить на $2\tau^2$, а не на $\tau$.`,
+    };
+  },
+};
+
+/** Урок 1.3: сколько столбцов у Φ для полинома второй степени с взаимодействиями или полинома одного признака. */
+export const featureCount: Generator = {
+  id: "ml.feature-count",
+  version: 1,
+  title: "Число признаков",
+  make(seed) {
+    const r = rng(seed);
+    if (seed % 2 === 0) {
+      const p = r.int(3, 12);
+      return {
+        kind: "numeric",
+        prompt: String.raw`Признак один — путь до метро. Полином степени $p = ${p}$: $\phi(x) = (1, x, x^2, \dots, x^{${p}})$. Сколько весов $\theta$ у модели $\theta^\top\phi(x)$?`,
+        label: "весов:",
+        answer: p + 1,
+        tol: 0,
+        hints: ["Посчитайте все степени от нулевой до p включительно."],
+        right: String.raw`$${p + 1}$: степени $0, 1, \dots, ${p}$; свободный член — вес при $x^0 = 1$.`,
+        wrong: String.raw`Не забудьте столбец единиц $x^0$: весов $p + 1 = ${p + 1}$.`,
+      };
+    }
+    const d = r.int(3, 8);
+    const answer = 1 + d + (d * (d + 1)) / 2;
+    return {
+      kind: "numeric",
+      prompt: String.raw`У квартиры $d = ${d}$ признаков. В $\phi(x)$ вошли единица, все признаки, их квадраты и все попарные произведения $x_j x_k$, $j < k$. Сколько столбцов у матрицы $\Phi$?`,
+      label: "столбцов:",
+      answer,
+      tol: 0,
+      hints: [String.raw`Единица — 1, признаки — $d$, квадраты — $d$, попарные произведения — $\binom{d}{2} = d(d - 1)/2$.`],
+      right: String.raw`$1 + ${d} + ${d} + ${(d * (d - 1)) / 2} = ${answer}$. Число признаков второй степени растёт как $d^2/2$: при сотне исходных их больше пяти тысяч.`,
+      wrong: String.raw`Сложите: единица, ${d} признаков, ${d} квадратов и $\binom{${d}}{2} = ${(d * (d - 1)) / 2}$ произведений — всего $${answer}$.`,
+    };
+  },
+};
+
+const sigm = (z: number) => 1 / (1 + Math.exp(-z));
+
+/** Урок 1.4: вероятность класса g(θᵀx) для квартиры. */
+export const logisticProb: Generator = {
+  id: "ml.logistic-prob",
+  version: 1,
+  title: "Вероятность класса",
+  make(seed) {
+    const r = rng(seed);
+    const t0 = r.int(-6, 2) / 2;
+    const t1 = r.int(2, 8) / 2;
+    const t2 = -r.int(1, 4) / 2;
+    const z1 = r.int(-4, 4) / 2;
+    const z2 = r.int(-4, 4) / 2;
+    const z = t0 + t1 * z1 + t2 * z2;
+    const answer = round(sigm(z), 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`Модель «квартира дороже медианы»: $h_\theta(x) = g(\theta^\top x)$, $\theta = (${num(t0)},\ ${num(t1)},\ ${num(t2)})^\top$, признаки $x = (1,\ x_1,\ x_2)$ — единица, стандартизованная площадь и стандартизованный путь до метро. У квартиры $x_1 = ${num(z1)}$, $x_2 = ${num(z2)}$. Какова вероятность, что она дороже медианы?`,
+      label: "p =",
+      answer,
+      tol: 0.002,
+      hints: [String.raw`Сначала $\theta^\top x = ${num(t0)} + ${num(t1)} \cdot (${num(z1)}) + (${num(t2)}) \cdot (${num(z2)})$, потом $g(z) = 1/(1 + e^{-z})$.`],
+      right: String.raw`$\theta^\top x = ${num(round(z, 4))}$, $g(${num(round(z, 4))}) = ${num(answer)}$.`,
+      wrong: String.raw`$\theta^\top x = ${num(round(z, 4))}$; вероятность — $g(z) = 1/(1 + e^{-z}) = ${num(answer)}$, а не само $\theta^\top x$.`,
+    };
+  },
+};
+
+/** Урок 1.4: во сколько раз меняются шансы при росте признака на единицу. */
+export const oddsFactor: Generator = {
+  id: "ml.odds-factor",
+  version: 1,
+  title: "Шансы и веса",
+  make(seed) {
+    const r = rng(seed);
+    const w = r.pick([0.4, 0.7, -0.5, 1.1, -0.9, 0.25]);
+    const k = r.pick([1, 2, 3]);
+    const answer = round(Math.exp(k * w), 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`В логистической регрессии вес при числе комнат $\theta_j = ${num(w)}$, остальные признаки не меняются. Комнат стало на ${k} больше. Во сколько раз изменились шансы $\dfrac{p}{1 - p}$ класса «дороже медианы»?`,
+      label: "в раз:",
+      answer,
+      tol: 0.002,
+      hints: [String.raw`$\log \frac{p}{1 - p} = \theta^\top x$: логарифм шансов линеен по признакам.`],
+      right: String.raw`Логарифм шансов вырос на $${k} \cdot ${num(w)}$, шансы умножились на $e^{${num(round(k * w, 4))}} = ${num(answer)}$.`,
+      wrong: String.raw`Линеен по признакам логарифм шансов, а не вероятность: $\log\frac{p}{1 - p}$ меняется на $${k}\theta_j$, шансы — в $e^{${num(round(k * w, 4))}} = ${num(answer)}$ раза.`,
+    };
+  },
+};
+
+/** Урок 1.5: вероятность класса по логитам softmax. */
+export const softmaxProb: Generator = {
+  id: "ml.softmax-prob",
+  version: 1,
+  title: "Softmax по логитам",
+  make(seed) {
+    const r = rng(seed);
+    const t = [r.int(-4, 6) / 2, r.int(-4, 6) / 2, r.int(-4, 6) / 2];
+    const j = r.int(0, 2);
+    const names = ["эконом", "комфорт", "бизнес"];
+    const m = Math.max(...t);
+    const e = t.map((v) => Math.exp(v - m));
+    const answer = round(e[j]! / e.reduce((a, b) => a + b, 0), 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`Softmax-регрессия выдала для квартиры логиты $t = (${t.map(num).join(",\\ ")})$ для сегментов «эконом», «комфорт», «бизнес». Какова вероятность сегмента «${names[j]}»?`,
+      label: "p =",
+      answer,
+      tol: 0.002,
+      hints: [String.raw`$p_j = e^{t_j} / \sum_s e^{t_s}$. Удобно сначала вычесть из всех логитов наибольший: вероятности от этого не меняются.`],
+      right: String.raw`$p = e^{${num(t[j]!)}} / (e^{${num(t[0]!)}} + e^{${num(t[1]!)}} + e^{${num(t[2]!)}}) = ${num(answer)}$.`,
+      wrong: String.raw`Возведите $e$ в каждый логит и поделите нужное слагаемое на сумму: $p = ${num(answer)}$. Делить сами логиты на их сумму нельзя — они бывают отрицательными.`,
+    };
+  },
+};
+
+/** Урок 1.5: одна поправка перцептрона. */
+export const perceptronUpdateGen: Generator = {
+  id: "ml.perceptron-update",
+  version: 1,
+  title: "Поправка перцептрона",
+  make(seed) {
+    const r = rng(seed);
+    for (;;) {
+      const th = [r.int(-4, 4) / 2, r.int(-4, 4) / 2, r.int(-4, 4) / 2];
+      const x = [1, r.int(-4, 4) / 2, r.int(-4, 4) / 2];
+      const z = th[0]! * x[0]! + th[1]! * x[1]! + th[2]! * x[2]!;
+      if (z === 0) continue;
+      const h = z > 0 ? 1 : 0;
+      const y = seed % 3 === 0 ? h : 1 - h; // иногда объект уже классифицирован верно
+      const j = 1 + (seed % 2);
+      const answer = round(th[j]! + (y - h) * x[j]!, 4);
+      return {
+        kind: "numeric",
+        prompt: String.raw`Перцептрон $h_\theta(x) = 1\{\theta^\top x \ge 0\}$, $\theta = (${th.map(num).join(",\\ ")})^\top$, шаг $\alpha = 1$. Пришёл объект $x = (${x.map(num).join(",\\ ")})^\top$ с меткой $y = ${y}$. Каким станет $\theta_${j}$ после обработки объекта?`,
+        label: String.raw`θ${j === 1 ? "₁" : "₂"} =`,
+        answer,
+        tol: 0.0005,
+        hints: [String.raw`Сначала посчитайте $\theta^\top x = ${num(z)}$ и предсказание $h$. Поправка $\alpha(y - h)x$ — только если $h \ne y$.`],
+        right: y === h ? String.raw`$\theta^\top x = ${num(z)}$, $h = ${h} = y$: ответ верный, поправки нет, $\theta_${j} = ${num(answer)}$.` : String.raw`$\theta^\top x = ${num(z)}$, $h = ${h} \ne y$: $\theta_${j} := ${num(th[j]!)} + (${y} - ${h}) \cdot ${num(x[j]!)} = ${num(answer)}$.`,
+        wrong: y === h ? String.raw`Предсказание $h = ${h}$ совпало с меткой: перцептрон на верных ответах веса не меняет.` : String.raw`Ошибка: $h = ${h}$, а $y = ${y}$. Поправка $(y - h)\,x_${j} = ${num((y - h) * x[j]!)}$, новое $\theta_${j} = ${num(answer)}$.`,
+      };
+    }
+  },
+};
+
+/** Урок 1.6: прогноз пуассоновской регрессии или во сколько раз он меняется при росте признака. */
+export const poissonPredict: Generator = {
+  id: "ml.poisson-predict",
+  version: 1,
+  title: "Прогноз пуассоновской регрессии",
+  make(seed) {
+    const r = rng(seed);
+    const t0 = r.int(-2, 4) / 4;
+    const t1 = r.pick([0.08, 0.1, 0.12, 0.15]);
+    const t2 = -r.pick([1.5, 2, 2.5]);
+    if (seed % 2 === 0) {
+      const k = r.int(2, 5);
+      const answer = round(Math.exp(k * t1), 4);
+      return {
+        kind: "numeric",
+        prompt: String.raw`Пуассоновская регрессия просмотров объявления: $\lambda = \exp(\theta_0 + \theta_1 x_1 + \theta_2 x_2)$, $x_1$ — число фото, $\theta_1 = ${num(t1)}$. В объявление добавили ${k} фото, остальное не менялось. Во сколько раз изменится ожидаемое число просмотров?`,
+        label: "в раз:",
+        answer,
+        tol: 0.002,
+        hints: [String.raw`$\log\lambda$ линеен по признакам: он вырос на $${k}\theta_1$.`],
+        right: String.raw`$\lambda$ умножается на $e^{${k} \cdot ${num(t1)}} = ${num(answer)}$ — независимо от остальных признаков.`,
+        wrong: String.raw`Признаки действуют на $\log\lambda$, а не на $\lambda$: прогноз умножается на $e^{${num(round(k * t1, 4))}} = ${num(answer)}$, а не растёт на $${num(round(k * t1, 4))}$.`,
+      };
+    }
+    const x1 = r.int(0, 15);
+    const x2 = r.pick([0.8, 0.9, 1, 1.1, 1.2]);
+    const eta = t0 + t1 * x1 + t2 * (x2 - 1);
+    const answer = round(Math.exp(eta), 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`Пуассоновская регрессия просмотров: $\lambda = \exp\bigl(\theta_0 + \theta_1 x_1 + \theta_2 (x_2 - 1)\bigr)$, $\theta = (${num(t0)},\ ${num(t1)},\ ${num(t2)})$, где $x_1$ — число фото, $x_2$ — цена к медиане района. У объявления $x_1 = ${x1}$, $x_2 = ${num(x2)}$. Сколько просмотров за неделю ожидает модель?`,
+      label: "λ =",
+      answer,
+      tol: 0.005,
+      hints: [String.raw`Сначала $\eta = \theta^\top x$, потом отклик Пуассона — экспонента: $\lambda = e^{\eta}$.`],
+      right: String.raw`$\eta = ${num(round(eta, 4))}$, $\lambda = e^{\eta} = ${num(answer)}$.`,
+      wrong: String.raw`$\eta = ${num(round(eta, 4))}$ — это $\log\lambda$, а не прогноз. Ожидаемое число просмотров — $e^{\eta} = ${num(answer)}$.`,
+    };
+  },
+};

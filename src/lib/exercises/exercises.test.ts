@@ -1355,6 +1355,91 @@ describe("генераторы", () => {
     }
   });
 
+  it("ml.lwr-weight: вес по расстоянию и τ из условия; ml.feature-count: перебор столбцов", () => {
+    for (let s = 1; s <= 30; s++) {
+      const t = make("ml.lwr-weight", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const tau = Number(/tau = (\d+)\$/.exec(t.prompt)![1]);
+      const q = Number(/\$x = (\d+)\$/.exec(t.prompt)![1]);
+      const xi = Number(/x\^\{\(i\)\} = ([\d.]+)\$/.exec(t.prompt)![1]);
+      expect(t.answer).toBeCloseTo(Math.exp(-((xi - q) ** 2) / (2 * tau * tau)), 4);
+
+      const c = make("ml.feature-count", s);
+      if (c.kind !== "numeric") throw new Error("ожидалось число");
+      const p = /p = (\d+)\$/.exec(c.prompt);
+      if (p) expect(c.answer).toBe(Number(p[1]) + 1);
+      else {
+        const d = Number(/d = (\d+)\$/.exec(c.prompt)![1]);
+        const cols = new Set<string>(["1"]);
+        for (let j = 0; j < d; j++) for (let k = j - 1; k < d; k++) cols.add(k < j ? `x${j}` : `x${j}x${k}`);
+        expect(c.answer).toBe(cols.size);
+      }
+    }
+  });
+
+  it("ml.logistic-prob: g(θᵀx) по условию; ml.odds-factor: отношение шансов при p из модели", () => {
+    const nums = (t: string) => t.replace(/−/g, "-");
+    for (let s = 1; s <= 30; s++) {
+      const t = make("ml.logistic-prob", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const p = nums(t.prompt);
+      const th = /\\theta = \(([-\d.]+),\\ ([-\d.]+),\\ ([-\d.]+)\)/.exec(p)!.slice(1).map(Number);
+      const x1 = Number(/x_1 = ([-\d.]+)\$/.exec(p)![1]);
+      const x2 = Number(/x_2 = ([-\d.]+)\$/.exec(p)![1]);
+      expect(t.answer).toBeCloseTo(1 / (1 + Math.exp(-(th[0]! + th[1]! * x1 + th[2]! * x2))), 4);
+
+      const o = make("ml.odds-factor", s);
+      if (o.kind !== "numeric") throw new Error("ожидалось число");
+      const q = nums(o.prompt);
+      const w = Number(/theta_j = ([-\d.]+)\$/.exec(q)![1]);
+      const k = Number(/на (\d) больше/.exec(q)![1]);
+      const odds = (z: number) => { const pr = 1 / (1 + Math.exp(-z)); return pr / (1 - pr); };
+      expect(o.answer).toBeCloseTo(odds(0.3 + k * w) / odds(0.3), 3);
+    }
+  });
+
+  it("ml.softmax-prob: вероятность по логитам; ml.perceptron-update: поправка только на ошибке", () => {
+    const nums = (t: string) => t.replace(/−/g, "-");
+    for (let s = 1; s <= 30; s++) {
+      const t = make("ml.softmax-prob", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const p = nums(t.prompt);
+      const logits = /t = \(([^)]+)\)/.exec(p)![1]!.split(",\\ ").map(Number);
+      const j = ["эконом", "комфорт", "бизнес"].indexOf(/сегмента «([^»]+)»\?/.exec(p)![1]!);
+      const z = logits.reduce((a, v) => a + Math.exp(v), 0);
+      expect(t.answer).toBeCloseTo(Math.exp(logits[j]!) / z, 4);
+
+      const u = make("ml.perceptron-update", s);
+      if (u.kind !== "numeric") throw new Error("ожидалось число");
+      const q = nums(u.prompt);
+      const th = /theta = \(([^)]+)\)/.exec(q)![1]!.split(",\\ ").map(Number);
+      const x = /x = \(([^)]+)\)/.exec(q)![1]!.split(",\\ ").map(Number);
+      const y = Number(/y = (\d)\$/.exec(q)![1]);
+      const k = Number(/theta_(\d)\$ после/.exec(q)![1]);
+      const h = th.reduce((a, v, i) => a + v * x[i]!, 0) >= 0 ? 1 : 0;
+      expect(u.answer).toBeCloseTo(th[k]! + (y - h) * x[k]!, 6);
+    }
+  });
+
+  it("ml.poisson-predict: λ = exp(θᵀx) и множитель e^(kθ₁) по условию", () => {
+    for (let s = 1; s <= 30; s++) {
+      const t = make("ml.poisson-predict", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const p = t.prompt.replace(/−/g, "-");
+      const add = /добавили (\d) фото/.exec(p);
+      if (add) {
+        const t1 = Number(/theta_1 = ([\d.]+)\$/.exec(p)![1]);
+        const lam = (photos: number) => Math.exp(0.3 + t1 * photos - 2 * 0.1);
+        expect(t.answer).toBeCloseTo(lam(4 + Number(add[1])) / lam(4), 3);
+      } else {
+        const th = /theta = \(([-\d.]+),\\ ([-\d.]+),\\ ([-\d.]+)\)/.exec(p)!.slice(1).map(Number);
+        const x1 = Number(/x_1 = (\d+)\$/.exec(p)![1]);
+        const x2 = Number(/x_2 = ([\d.]+)\$/.exec(p)![1]);
+        expect(t.answer).toBeCloseTo(Math.exp(th[0]! + th[1]! * x1 + th[2]! * (x2 - 1)), 3);
+      }
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

@@ -1,0 +1,75 @@
+id: f.logistic-newton-irls
+kind: formula
+title:
+  ru: 'Шаг Ньютона для логистической регрессии как взвешенный МНК (IRLS)'
+  en: 'Newton step for logistic regression as iteratively reweighted least squares'
+statement: '\theta^{+} = (X^\top D X)^{-1} X^\top D z, \qquad z = X\theta + D^{-1}\bigl(y - g(X\theta)\bigr)'
+
+# Урок 1.4 «Основ ML»: шаг Ньютона θ − H⁻¹∇ℓ с H = −XᵀDX переписывается как решение взвешенного МНК из урока 1.3:
+# веса — D_ii = g_i(1 − g_i), отклик — «рабочий» z. Каждая итерация — взвешенная регрессия, отсюда название IRLS.
+symbols:
+  - name: X
+    tex: 'X'
+    meaning: 'матрица признаков'
+    shape: [n, d]
+  - name: y
+    tex: 'y'
+    meaning: 'метки'
+    shape: [n, 1]
+    sample: fraction
+  - name: theta
+    tex: '\theta'
+    meaning: 'текущие веса'
+    shape: [d, 1]
+
+dependsOn:
+  concepts: [calc.newton, calc.hessian, ml.lwr]
+  rules: [rule.matmul-outer]
+
+derivation:
+  plan:
+    - 'Записать шаг Ньютона с гессианом $-X^\top D X$'
+    - 'Внести $\theta$ под общий множитель $(X^\top D X)^{-1}$'
+    - 'Узнать взвешенный МНК с весами $D$'
+  steps:
+    - goal: 0
+      tex: '\theta^{+} = \theta - H^{-1} \nabla_\theta \ell = \changed{\theta + (X^\top D X)^{-1} X^\top \bigl(y - g(X\theta)\bigr)}'
+      by: [calc.newton]
+      note: '$H = -X^\top D X$, поэтому $-H^{-1} = (X^\top D X)^{-1}$: шаг идёт вверх по $\ell$.'
+      check:
+        kind: identity
+        lhs: 'theta - np.linalg.solve(-X.T @ np.diag((1 / (1 + np.exp(-X @ theta))) * (1 - 1 / (1 + np.exp(-X @ theta)))) @ X, X.T @ (y - 1 / (1 + np.exp(-X @ theta))))'
+        rhs: 'theta + np.linalg.solve(X.T @ np.diag((1 / (1 + np.exp(-X @ theta))) * (1 - 1 / (1 + np.exp(-X @ theta)))) @ X, X.T @ (y - 1 / (1 + np.exp(-X @ theta))))'
+      mutations:
+        - tex: '\theta^{+} = \theta - (X^\top D X)^{-1} X^\top \bigl(y - g(X\theta)\bigr)'
+          py: 'theta - np.linalg.solve(X.T @ np.diag((1 / (1 + np.exp(-X @ theta))) * (1 - 1 / (1 + np.exp(-X @ theta)))) @ X, X.T @ (y - 1 / (1 + np.exp(-X @ theta))))'
+          why: 'Знак: без минуса в гессиане шаг идёт вниз по $\ell$, и метод уходит от максимума.'
+    - goal: 1
+      tex: '\theta^{+} = (X^\top D X)^{-1} \bigl(X^\top D X\, \theta + X^\top (y - g)\bigr) = \changed{(X^\top D X)^{-1} X^\top D \bigl(X\theta + D^{-1}(y - g)\bigr)}'
+      by: [la.inverse, la.matmul]
+      note: '$\theta = (X^\top D X)^{-1} X^\top D X\, \theta$; затем $X^\top$ выносится, а $D D^{-1} = I$.'
+      check:
+        kind: identity
+        lhs: 'theta + np.linalg.solve(X.T @ np.diag((1 / (1 + np.exp(-X @ theta))) * (1 - 1 / (1 + np.exp(-X @ theta)))) @ X, X.T @ (y - 1 / (1 + np.exp(-X @ theta))))'
+        rhs: 'np.linalg.solve(X.T @ np.diag((1 / (1 + np.exp(-X @ theta))) * (1 - 1 / (1 + np.exp(-X @ theta)))) @ X, X.T @ np.diag((1 / (1 + np.exp(-X @ theta))) * (1 - 1 / (1 + np.exp(-X @ theta)))) @ (X @ theta + (y - 1 / (1 + np.exp(-X @ theta))) / ((1 / (1 + np.exp(-X @ theta))) * (1 - 1 / (1 + np.exp(-X @ theta))))))'
+      mutations:
+        - tex: '\theta^{+} = (X^\top D X)^{-1} X^\top D \bigl(X\theta + (y - g)\bigr)'
+          py: 'np.linalg.solve(X.T @ np.diag((1 / (1 + np.exp(-X @ theta))) * (1 - 1 / (1 + np.exp(-X @ theta)))) @ X, X.T @ np.diag((1 / (1 + np.exp(-X @ theta))) * (1 - 1 / (1 + np.exp(-X @ theta)))) @ (X @ theta + y - 1 / (1 + np.exp(-X @ theta))))'
+          why: 'Потерян множитель $D^{-1}$: внося остаток под $X^\top D$, его нужно поделить на веса, иначе $D$ умножит его лишний раз.'
+    - goal: 2
+      tex: 'z = X\theta + D^{-1}\bigl(y - g(X\theta)\bigr), \qquad \theta^{+} = \arg\min_{\beta} \sum_{i=1}^{n} D_{ii} \bigl(z_i - \beta^\top x^{(i)}\bigr)^2'
+      by: [ml.lwr]
+      note: 'Это взвешенный МНК из урока 1.3: решение $(X^\top D X)^{-1} X^\top D z$. Веса и отклик пересчитываются на каждой итерации — iteratively reweighted least squares.'
+      check:
+        kind: identity
+        lhs: 'np.linalg.lstsq(np.sqrt((1 / (1 + np.exp(-X @ theta))) * (1 - 1 / (1 + np.exp(-X @ theta))))[:, None] * X, np.sqrt((1 / (1 + np.exp(-X @ theta))) * (1 - 1 / (1 + np.exp(-X @ theta)))) * (X @ theta + (y - 1 / (1 + np.exp(-X @ theta))) / ((1 / (1 + np.exp(-X @ theta))) * (1 - 1 / (1 + np.exp(-X @ theta))))), rcond=None)[0]'
+        rhs: 'theta + np.linalg.solve(X.T @ np.diag((1 / (1 + np.exp(-X @ theta))) * (1 - 1 / (1 + np.exp(-X @ theta)))) @ X, X.T @ (y - 1 / (1 + np.exp(-X @ theta))))'
+
+pitfalls:
+  - 'Обращать $X^\top D X$ через `inv`: систему решают `np.linalg.solve`; при почти разделимых данных $D_{ii} \to 0$ и матрица теряет обусловленность.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Classification and logistic regression / Newton''s method'
+
+usedIn: [ml.logistic-regression]

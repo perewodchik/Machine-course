@@ -69,3 +69,75 @@
   cs229:
     - edition: main-notes-2026-spring
       section: 'Linear regression / LMS algorithm'
+
+- id: ml.feature-map
+  title:
+    ru: 'Признаковое отображение'
+    en: 'feature map'
+  summary: 'Модель $h_\theta(x) = \theta^\top \phi(x)$ линейна по $\theta$, а не по $x$: степени, логарифмы и произведения признаков обучаются теми же нормальными уравнениями с матрицей $\Phi$ вместо $X$.'
+  lesson: features-lwr
+  prerequisites: [ml.least-squares, ml.supervised-learning]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Linear regression'
+
+- id: ml.lwr
+  title:
+    ru: 'Локально взвешенная регрессия'
+    en: 'locally weighted linear regression'
+  summary: 'Для каждой точки запроса — свой взвешенный МНК с весами $w^{(i)} = \exp\bigl(-(x^{(i)} - x)^2/(2\tau^2)\bigr)$: $\theta(x) = (X^\top W X)^{-1} X^\top W y$. Непараметрическая модель: для прогноза хранится вся выборка; ширина окна $\tau$ задаёт гибкость.'
+  lesson: features-lwr
+  prerequisites: [ml.least-squares, ml.feature-map, stat.risk-generalization]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Linear regression / Locally weighted linear regression'
+
+- id: ml.logistic-regression
+  title:
+    ru: 'Логистическая регрессия'
+    en: 'logistic regression'
+  summary: 'Вероятность класса $h_\theta(x) = g(\theta^\top x)$, веса — максимум правдоподобия Бернулли: $\nabla_\theta \ell = X^\top(y - g(X\theta))$, гессиан $-X^\top D X \preceq 0$, поэтому максимум один; метод Ньютона (IRLS) доходит до него за несколько итераций. Граница решений — гиперплоскость $\theta^\top x = 0$.'
+  lesson: logistic-regression
+  prerequisites: [ml.lms, calc.sigmoid, stat.mle, calc.newton, calc.convexity]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Classification and logistic regression'
+
+- id: ml.perceptron
+  title:
+    ru: 'Перцептрон'
+    en: 'perceptron'
+  summary: 'Модель $h_\theta(x) = 1\{\theta^\top x \ge 0\}$ и правило $\theta := \theta + \alpha(y^{(i)} - h_\theta(x^{(i)}))\,x^{(i)}$: поправка только на ошибках. На разделимых данных останавливается за конечное число ошибок, на неразделимых зацикливается; вероятностей не даёт.'
+  lesson: perceptron-softmax
+  prerequisites: [ml.logistic-regression]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Classification and logistic regression / The perceptron learning algorithm'
+
+- id: ml.softmax
+  title:
+    ru: 'Softmax-регрессия'
+    en: 'softmax (multinomial logistic) regression'
+  summary: 'У каждого из $k$ классов свой вектор $\theta_j$; вероятности $p_j(x) = e^{\theta_j^\top x} / \sum_s e^{\theta_s^\top x}$, потери — кросс-энтропия, градиент $\frac1n X^\top(P - Y)$. Параметры определены с точностью до общего сдвига; при $k = 2$ — логистическая регрессия с $\theta_1 - \theta_2$.'
+  lesson: perceptron-softmax
+  prerequisites: [ml.logistic-regression, prob.information]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Classification and logistic regression / Multi-class classification'
+
+- id: ml.glm
+  title:
+    ru: 'Обобщённые линейные модели'
+    en: 'generalized linear models (GLM)'
+  summary: 'Три допущения: $y \mid x$ из экспоненциального семейства, прогноз — $\mathbb{E}[T(y) \mid x]$, $\eta = \theta^\top x$. Отсюда линейная, логистическая, пуассоновская и softmax-регрессия; у канонической GLM $\nabla_\theta \ell = X^\top(y - h_\theta(X))$, а $\ell$ вогнута.'
+  lesson: glm
+  prerequisites: [stat.exponential-family, ml.logistic-regression, ml.softmax]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Generalized linear models'

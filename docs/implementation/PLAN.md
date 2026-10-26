@@ -11,11 +11,11 @@
 ## Сейчас
 
 - **Этап:** 7. Курс «Основы ML»
-- **Задача:** S7.L1 — L-ml-basics-1.3 — признаки, полиномы и LWR (в работе)
+- **Задача:** S7.L1 — итоговая проверка модуля 1 (ExerciseSet) (в работе)
 - **Ветка:** `docs/course-analysis` (ветка этой сессии: среда разрешает пуш только в неё; см. журнал)
 - **Ждёт пользователя:** S1.13 — проверить заголовки после первого деплоя в Cloudflare Workers (README, «Хостинг»); сборка «Workers Builds» в Cloudflare падает, не начавшись, — нужна панель Cloudflare; S2.14 — пилот на 6–10 участниках. Готовые срезы (уроки) вливаются в `main` через PR по просьбе пользователя
 - **Порядок:** математика (этапы 4–5) → «Основы ML» (этап 7). Этапы 8–9 запрещены до разрешения пользователя (решение 26.10.2026).
-- **Обновлено:** 2026-10-26 — готов L-ml-basics-1.2, дальше L-ml-basics-1.3 — признаки, полиномы и LWR
+- **Обновлено:** 2026-10-26 — готов L-ml-basics-1.6, дальше итоговая проверка модуля 1 (ExerciseSet)
 
 ## Этапы
 
@@ -547,10 +547,10 @@
 
 - [x] L-ml-basics-1.1. Задача обучения: данные, модель, потери, обобщение — `ml-basics/linear-models/learning-problem`
 - [x] L-ml-basics-1.2. Линейная регрессия и LMS: пакетный и стохастический спуск — `ml-basics/linear-models/linear-regression-lms`
-- [ ] L-ml-basics-1.3. Признаки, полиномы и локально взвешенная регрессия — `ml-basics/linear-models/features-lwr`
-- [ ] L-ml-basics-1.4. Логистическая регрессия и метод Ньютона — `ml-basics/linear-models/logistic-regression`
-- [ ] L-ml-basics-1.5. Перцептрон и многоклассовая классификация — `ml-basics/linear-models/perceptron-softmax`
-- [ ] L-ml-basics-1.6. Обобщённые линейные модели — `ml-basics/linear-models/glm`
+- [x] L-ml-basics-1.3. Признаки, полиномы и локально взвешенная регрессия — `ml-basics/linear-models/features-lwr`
+- [x] L-ml-basics-1.4. Логистическая регрессия и метод Ньютона — `ml-basics/linear-models/logistic-regression`
+- [x] L-ml-basics-1.5. Перцептрон и многоклассовая классификация — `ml-basics/linear-models/perceptron-softmax`
+- [x] L-ml-basics-1.6. Обобщённые линейные модели — `ml-basics/linear-models/glm`
 - [ ] Итоговая проверка модуля 1 «Линейные модели»: перемешанный набор задач уроков модуля (`ExerciseSet`)
 
 ### S7.L2. Уроки модуля 2 «Оценка и обобщение»

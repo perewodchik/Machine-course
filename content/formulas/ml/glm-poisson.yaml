@@ -1,0 +1,92 @@
+id: f.glm-poisson
+kind: formula
+title:
+  ru: 'Пуассоновская регрессия из трёх допущений GLM'
+  en: 'Poisson regression from the GLM assumptions'
+statement: 'y \mid x \sim \operatorname{Poisson}(\lambda), \quad \lambda = h_\theta(x) = e^{\theta^\top x}, \qquad \nabla_\theta \ell = X^\top\bigl(y - e^{X\theta}\bigr)'
+
+# Урок 1.6 «Основ ML»: распределение Пуассона — экспоненциальное семейство с η = log λ, a(η) = e^η, b(y) = 1/y!.
+# Отклик — E[y] = a'(η) = e^η, связь — логарифм; градиент на объекте — (y − e^{θᵀx}) x. Проверка на одном объекте;
+# y — положительное число (формулы верны и для нецелого y, если b(y) записать через Γ-функцию).
+symbols:
+  - name: y
+    tex: 'y'
+    meaning: 'число просмотров'
+    shape: []
+    sample: positive
+  - name: lam
+    tex: '\lambda'
+    meaning: 'среднее число просмотров'
+    shape: []
+    sample: positive
+  - name: x
+    tex: 'x'
+    meaning: 'признаки объявления'
+    shape: [d, 1]
+  - name: theta
+    tex: '\theta'
+    meaning: 'веса'
+    shape: [d, 1]
+
+dependsOn:
+  concepts: [stat.exponential-family, prob.discrete-distributions]
+  rules: []
+
+derivation:
+  plan:
+    - 'Записать распределение Пуассона в форме экспоненциального семейства'
+    - 'Найти отклик $\mathbb{E}[y] = a''(\eta)$ и подставить $\eta = \theta^\top x$'
+    - 'Вывести градиент логарифма правдоподобия на объекте'
+  steps:
+    - goal: 0
+      tex: '\frac{\lambda^{y} e^{-\lambda}}{y!} = \frac{1}{y!} \exp\bigl(y \log\lambda - \lambda\bigr) = b(y)\exp\bigl(\eta\, y - a(\eta)\bigr), \quad \eta = \log\lambda,\ a(\eta) = \changed{e^{\eta}}'
+      by: [stat.exponential-family]
+      note: '$\lambda^y = e^{y\log\lambda}$; естественный параметр — $\log\lambda$, а $\lambda = e^\eta$.'
+      check:
+        kind: identity
+        lhs: 'lam ** y * np.exp(-lam)'
+        rhs: 'np.exp(y * np.log(lam) - np.exp(np.log(lam)))'
+      mutations:
+        - tex: 'a(\eta) = \eta'
+          py: 'np.exp(y * np.log(lam) - np.log(lam))'
+          why: 'Нормировка — $\lambda = e^{\eta}$, а не $\log\lambda = \eta$: из $e^{-\lambda}$ получается $a(\eta) = e^\eta$.'
+    - goal: 1
+      tex: 'h_\theta(x) = \mathbb{E}[y; \eta] = a''(\eta) = \changed{e^{\theta^\top x}}'
+      by: [stat.exponential-family]
+      note: 'Допущения 2 и 3: прогноз — среднее, $\eta = \theta^\top x$. Отклик — экспонента, связь $\eta = \log\mu$ — логарифм; прогноз всегда положителен.'
+      check:
+        kind: identity
+        lhs: '(np.exp(theta @ x + 1e-6) - np.exp(theta @ x - 1e-6)) / 2e-6'
+        rhs: 'np.exp(theta @ x)'
+      mutations:
+        - tex: 'h_\theta(x) = \log(\theta^\top x)'
+          py: 'np.log(np.abs(theta @ x))'
+          why: 'Перепутаны отклик и связь: логарифм — функция связи $\eta = g^{-1}(\mu)$, а прогноз — обратная к ней экспонента.'
+    - goal: 2
+      tex: '\ell^{(i)}(\theta) = y\, \theta^\top x - e^{\theta^\top x} - \log y!'
+      by: [stat.mle]
+      note: 'Логарифм вероятности объекта при $\eta = \theta^\top x$; $\log y!$ от $\theta$ не зависит.'
+      check:
+        kind: same
+        py: 'y * (theta @ x) - np.exp(theta @ x)'
+    - goal: 2
+      tex: '\nabla_\theta \ell^{(i)} = \changed{\bigl(y - e^{\theta^\top x}\bigr)\, x}'
+      by: [calc.chain-rule]
+      note: 'По всем объектам — $X^\top(y - e^{X\theta})$ с экспонентой поэлементно: та же форма, что у LMS.'
+      check:
+        kind: gradient
+        wrt: theta
+        py: '(y - np.exp(theta @ x)) * x'
+      mutations:
+        - tex: '\nabla_\theta \ell^{(i)} = (y - \theta^\top x)\, x'
+          py: '(y - theta @ x) * x'
+          why: 'Отклик подменён тождественным: $h_\theta(x) = e^{\theta^\top x}$. С тождественным откликом $\lambda$ бывает отрицательной.'
+
+pitfalls:
+  - 'Обучать линейную регрессию на $\log y$ вместо пуассоновской: $\log 0$ не определён, а $\exp \mathbb{E}[\log y] \le \mathbb{E}[y]$ по неравенству Йенсена — прогноз занижен.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Generalized linear models / Constructing GLMs'
+
+usedIn: [ml.glm]
