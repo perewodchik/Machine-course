@@ -17,6 +17,29 @@
 
 ---
 
+### 2026-10-26 — S5.02 карта готовности к курсам ML — готова
+- **Сделано:** content/readiness.yaml (семь курсов ML), логика src/lib/progress/readiness.ts (диапазоны номеров, освежить, первая попытка задач V.2, согласование числительных), страница src/pages/ready.astro и клиент src/client/ready.ts; ссылка из итога V.2
+- **Файлы:** content/readiness.yaml, src/lib/progress/readiness.ts, src/pages/ready.astro, src/client/ready.ts, src/styles/layout.css
+- **Проверка:** vitest 645 (readiness.test.ts сверяет списки с README), lint, check, validate, build, e2e ready.spec.ts, раскладка и axe ready
+- **Отклонения от плана и решения:** «Практикум» без списка: отдельной математики у него нет; курсы ML, нужные до курса, — строкой текста: их уроков на сайте ещё нет
+- **Следующий шаг:** S5.03.
+- **Вопросы пользователю:** —
+
+### 2026-10-26 — L-V.2 итоговая проверка: математика в выводах ML — готов
+- **Сделано:** урок bridge/math-in-ml: четыре раздела по курсам ML, 19 задач по восьми фрагментам банка S5.01 («найди ошибку», «восстанови строку», «какое правило») и итоговая проверка по обратному проходу; номера строк во «найди ошибку» — слева текстом (\tag наезжал на формулу на 390 px)
+- **Файлы:** content/courses/foundations/bridge/math-in-ml.mdx, src/lib/content/fragments.ts, tests/e2e/lesson-bridge.spec.ts
+- **Проверка:** validate, build, vitest, pytest, check_consistency, e2e V.2, раскладка и axe v2
+- **Отклонения от плана и решения:** карта готовности по курсам — отдельная задача S5.02; в уроке — уроки для повторения в начале каждого раздела
+- **Следующий шаг:** S5.02 — карта готовности к курсам ML.
+- **Вопросы пользователю:** —
+
+### 2026-10-26 — L-V.1 линейная регрессия тремя способами — проверка — готов
+- **Сделано:** урок сделан в S2.06; проверен по определению готовности: цели карточки закрыты заданиями, проверка в каждом цикле, формулы f.residual-orthogonality, f.normal-equations, f.linreg-likelihood в реестре, лабораторная la/normal_equations, e2e и axe зелёные
+- **Проверка:** validate, build, pytest
+- **Отклонения от плана и решения:** игра «Подгони прямую» живёт в уроке 0.1; в V.1 её роль играет виджет FitLine — ссылка не добавлена
+- **Следующий шаг:** L-V.2.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — S5.01 банк фрагментов для итоговой проверки V.2 — готова
 - **Сделано:** фрагменты выводов из таблицы карточки V.2 — формулы f.logistic-gradient, f.logistic-hessian, f.glm-response, f.gda-mean, f.svm-dual, f.backprop-two-layer, f.em-jensen, f.pca-eigen с mutations у шагов; харнесс mlf проверяет, что каждая подложенная ошибка отличается от верного шага; новые виды проверки шага identity и bound (Йенсен не в ту сторону роняет тест); банк FRAGMENTS с курсом ML на фрагмент и сборщик задач fragmentTask; <Exercise fragment ask step mutation>
 - **Файлы:** content/formulas/ml/, code/mlf/formulas.py, src/lib/content/fragments.ts, src/lib/content/schemas.ts, src/components/pedagogy/Exercise.astro

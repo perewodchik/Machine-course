@@ -52,7 +52,7 @@ derivation:
           why: 'Знак у суммы: $\log(1 - g(z)) = -\log(1 + e^{z})$, логарифм числа меньше единицы отрицателен.'
     - goal: 2
       tex: '\nabla_\theta\, \ell(\theta) = \changed{X^\top \bigl(y - g(X\theta)\bigr)}'
-      by: [rule.grad-linear, calc.chain-rule]
+      by: [calc.chain-rule, rule.grad-linear]
       note: 'Градиент $y^\top X\theta$ — $X^\top y$; производная $\log(1 + e^{z})$ по $z$ — $g(z)$, и по правилу цепочки слагаемое $i$ даёт $g(\theta^\top x^{(i)})\, x^{(i)}$.'
       check:
         kind: gradient
