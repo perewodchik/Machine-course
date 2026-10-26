@@ -1,0 +1,67 @@
+id: f.constant-baseline
+kind: formula
+title:
+  ru: 'Лучшая константа: среднее для квадратов, медиана для модулей'
+  en: 'the best constant predictor: mean for squared loss, median for absolute loss'
+statement: '\arg\min_c \sum_{i=1}^{n} \bigl(y^{(i)} - c\bigr)^2 = \bar y, \qquad \arg\min_c \sum_{i=1}^{n} \bigl\lvert y^{(i)} - c\bigr\rvert = \operatorname{med}(y)'
+
+# Урок 1.1 «Основ ML»: бейзлайн-константа. Квадраты: разложение суммы квадратов показывает, что любая c хуже ȳ на n(ȳ − c)².
+# Модули: сумма |y − c| при любой c не меньше, чем при медиане (проверка — оценка снизу, n = 7 нечётно, медиана единственна).
+symbols:
+  - name: y
+    tex: 'y'
+    meaning: 'ответы обучающей выборки'
+    shape: [n, 1]
+  - name: c
+    tex: 'c'
+    meaning: 'константа-прогноз'
+    shape: []
+
+dependsOn:
+  concepts: [stat.descriptive, ml.loss]
+  rules: []
+
+derivation:
+  plan:
+    - 'Модули: сравнить сумму при любой константе с суммой при медиане'
+    - 'Квадраты: разложить сумму квадратов относительно среднего'
+  steps:
+    - goal: 0
+      tex: 'L_1(c) = \sum_{i=1}^{n} \bigl\lvert y^{(i)} - c \bigr\rvert'
+      by: [ml.loss]
+      check:
+        kind: same
+        py: 'np.sum(np.abs(y - c))'
+    - goal: 0
+      tex: '\ge \changed{\sum_{i=1}^{n} \bigl\lvert y^{(i)} - \operatorname{med}(y) \bigr\rvert}'
+      by: [stat.descriptive]
+      note: 'Сдвиг константы от медианы приближает её к половине точек и удаляет от другой половины — сумма не уменьшается.'
+      check:
+        kind: bound
+        side: below
+        py: 'np.sum(np.abs(y - np.median(y)))'
+      mutations:
+        - tex: '\ge \sum_{i=1}^{n} \bigl\lvert y^{(i)} - \bar y \bigr\rvert'
+          py: 'np.sum(np.abs(y - np.mean(y)))'
+          why: 'Для модуля ошибки лучшая константа — медиана, а не среднее: среднее тянет выброс, а сумма модулей от выброса растёт линейно.'
+    - goal: 1
+      tex: '\sum_{i=1}^{n} \bigl(y^{(i)} - c\bigr)^2 = \changed{\sum_{i=1}^{n} \bigl(y^{(i)} - \bar y\bigr)^2 + n\,(\bar y - c)^2}'
+      by: [stat.descriptive]
+      note: 'Добавить и вычесть $\bar y$ под квадратом; перекрёстное слагаемое $2(\bar y - c)\sum_i (y^{(i)} - \bar y)$ равно нулю. Второе слагаемое не меньше нуля и равно нулю только при $c = \bar y$.'
+      check:
+        kind: identity
+        lhs: 'np.sum((y - c) ** 2)'
+        rhs: 'np.sum((y - np.mean(y)) ** 2) + y.shape[0] * (np.mean(y) - c) ** 2'
+      mutations:
+        - tex: '\sum_{i=1}^{n} \bigl(y^{(i)} - c\bigr)^2 = \sum_{i=1}^{n} \bigl(y^{(i)} - \bar y\bigr)^2 + (\bar y - c)^2'
+          py: 'np.sum((y - np.mean(y)) ** 2) + (np.mean(y) - c) ** 2'
+          why: 'Потерян множитель $n$: слагаемое $(\bar y - c)^2$ появляется в каждой из $n$ сумм.'
+
+pitfalls:
+  - 'Минимизировать MAE средним: на скошенных ценах среднее тянет вверх дорогие квартиры, медиана — нет.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Supervised learning'
+
+usedIn: [ml.loss]

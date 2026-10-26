@@ -215,6 +215,16 @@
   .threshold__cm td.is-err { box-shadow: inset 0 0 0 2px var(--red-pen); }
   .threshold__auc { margin: var(--space-1) 0 0; font: var(--text-sm)/1.4 var(--font-ui); color: var(--ink-2); }
   @media (max-width: 900px) { .threshold__panel { grid-template-columns: minmax(0, 1fr); } }
+  /* «Обучение и тест» (курс «Основы ML», 1.1): два рисунка рядом, под ними управление */
+  .train-test__plots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
+  .train-test__legend { margin: var(--space-1) 0 0; font: var(--text-sm)/1.5 var(--font-ui); color: var(--ink-2); }
+  .train-test__controls { display: grid; gap: var(--space-3); margin-top: var(--space-3); }
+  .train-test .kit-slider { grid-template-columns: 5.2em minmax(0, 1fr) 2.4em; }
+  .train-test .kit-slider__name { white-space: nowrap; }
+  .train-test__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .train-test__actions .btn[aria-pressed="true"] { border-color: var(--pen); color: var(--pen); box-shadow: inset 0 0 0 1px var(--pen); }
+  .train-test__readouts { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-6); }
+  @media (max-width: 700px) { .train-test__plots { grid-template-columns: minmax(0, 1fr); } }
   .riemann__fn { font-family: var(--font-math); font-size: 1.05em; }
   .riemann__fn sup { font-size: 0.7em; }
   @media (max-width: 900px) { .riemann__controls { grid-template-columns: minmax(0, 1fr); } }

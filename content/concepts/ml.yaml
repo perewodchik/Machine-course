@@ -45,3 +45,15 @@
   prerequisites: []
   core: true
 
+
+- id: ml.supervised-learning
+  title:
+    ru: 'Обучение с учителем'
+    en: 'supervised learning'
+  summary: 'По парам $(x^{(i)}, y^{(i)})$ подобрать $h_\theta$, которая мало ошибается на новых объектах: потери на обучающей выборке, ошибка — на отложенной; бейзлайн-константа как точка отсчёта.'
+  lesson: learning-problem
+  prerequisites: [ml.loss, stat.risk-generalization]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Supervised learning'

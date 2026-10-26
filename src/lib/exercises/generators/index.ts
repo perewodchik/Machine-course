@@ -5,6 +5,7 @@ import { angle, composeOrder, det2, detArea, detRules, dot, eigenPower, eigvals2
 import { backprop, classifyPoint, convexForm, convexOps, criticalPoint, directional, gdStep, gradientPoint, hessian, jacobian, jacobianOrder, lrThreshold, matrixGrad, newton1d, newtonLogistic, partial, lagrangeLine, lagrangeEig, categoricalMle, kktAlpha, doubleIntegral, areaScale, polarIntegral } from "./calc";
 import { bayesTest, condDice, conditionalTable, covariance, covLinearGen, densityLinear, gaussAxes, mahalanobisGen, mixtureGen, mixtureMoments, entropyGen, klGen, logLoss, jointMarginal, diceEvent, independenceCheck, contMomentsGen, evVar, familyMoments, intervalProb, jensen, linearDensity, mcError, monomials, normalRule, pmfCdf, pointProb, totalProbability, union, unionBound, varLinear } from "./prob";
 import { besselGen, betaUpdate, ciMean, covMle, fwerGen, kfoldGen, predError, pValue, ridgeMap, gdaMle, iqrGen, logLik, logPartition, naturalParam, meanMedian, mleFamily, outlierShift, shrinkMse } from "./stat";
+import { bestConstant, rmseMae } from "./ml";
 
 export const generators: ReadonlyMap<string, Generator> = new Map(
   [
@@ -13,6 +14,7 @@ export const generators: ReadonlyMap<string, Generator> = new Map(
     ...[partial, gradientPoint, directional, criticalPoint, jacobian, jacobianOrder, backprop, matrixGrad, hessian, classifyPoint, convexForm, convexOps, gdStep, lrThreshold, newton1d, newtonLogistic, lagrangeLine, lagrangeEig, categoricalMle, kktAlpha, doubleIntegral, areaScale, polarIntegral],
     ...[totalProbability, bayesTest, union, conditionalTable, diceEvent, monomials, condDice, independenceCheck, pmfCdf, intervalProb, linearDensity, evVar, varLinear, jensen, familyMoments, pointProb, normalRule, contMomentsGen, mcError, unionBound, jointMarginal, covariance, covLinearGen, densityLinear, mahalanobisGen, gaussAxes, mixtureGen, mixtureMoments, entropyGen, klGen, logLoss],
     ...[meanMedian, iqrGen, outlierShift, shrinkMse, besselGen, mleFamily, logLik, covMle, gdaMle, naturalParam, logPartition, betaUpdate, ridgeMap, predError, kfoldGen, ciMean, pValue, fwerGen],
+    ...[rmseMae, bestConstant],
   ].map((g) => [g.id, g]),
 );
 

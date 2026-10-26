@@ -1,0 +1,41 @@
+# Входная проверка курса «Основы ML» (урок 1.1): по задаче на урок математики из строки «Нужны уроки математики»
+# программы курса (docs/program/ml-basics/README.md) — итоговое задание урока, тот же генератор. Верно с первой попытки
+# и без подсказок — галочка «знаю» (by: diagnostic); неверно — урок попадает в список «освежить».
+budget: 10
+items:
+  - lesson: foundations/linear-algebra/matrix-multiplication
+    gen: la.matmul-column
+    minutes: 0.8
+  - lesson: foundations/linear-algebra/orthogonality-projections
+    gen: la.project-orthogonal
+    minutes: 0.8
+  - lesson: foundations/calculus/gradient
+    gen: calc.gradient-point
+    minutes: 0.8
+  - lesson: foundations/calculus/matrix-calculus
+    gen: calc.matrix-grad
+    minutes: 0.8
+  - lesson: foundations/calculus/gradient-descent
+    gen: calc.lr-threshold
+    minutes: 0.8
+  - lesson: foundations/calculus/newton
+    gen: calc.newton-logistic
+    minutes: 0.8
+  - lesson: foundations/probability/bayes
+    gen: prob.bayes-test
+    minutes: 0.8
+  - lesson: foundations/probability/continuous-distributions
+    gen: prob.normal-rule
+    minutes: 0.8
+  - lesson: foundations/statistics/mle
+    gen: stat.mle-family
+    minutes: 0.8
+  - lesson: foundations/statistics/bayes-map
+    gen: stat.beta-update
+    minutes: 0.8
+  - lesson: foundations/statistics/risk-generalization
+    gen: stat.pred-error
+    minutes: 0.8
+  - lesson: foundations/bridge/linear-regression
+    gen: la.slope3
+    minutes: 0.8

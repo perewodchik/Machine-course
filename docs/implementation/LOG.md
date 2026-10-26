@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — L-ml-basics-1.1 задача обучения: данные, модель, потери, обобщение — готов
+- **Сделано:** урок ml-basics/linear-models/learning-problem: входная проверка (content/diagnostic-ml-basics.yaml, 12 задач; <Diagnostic bank> с отдельным ходом на банк), три цикла: постановка, цикл «разбиение — бейзлайн — модель — метрика», обобщение; формула f.constant-baseline (оценка снизу для медианы, тождество для среднего), генераторы ml.rmse-mae и ml.best-constant, виджет «Обучение и тест» (src/widgets/ml/train-test, src/lib/math/poly.ts), mlf.datasets.apartments_full, сниппет ml_basics/learning_problem.py с тестом против sklearn
+- **Файлы:** content/courses/ml-basics/linear-models/learning-problem.mdx, content/diagnostic-ml-basics.yaml, content/formulas/ml/constant-baseline.yaml, src/widgets/ml/train-test/, src/lib/exercises/generators/ml.ts, code/snippets/ml_basics/learning_problem.py, code/tests/test_learning_problem.py
+- **Проверка:** validate, lint, check, build, vitest 664, pytest (сверка с LinearRegression и sklearn.metrics), check_consistency, e2e lesson-ml-1-1 (ячейка в Pyodide), diagnostic, раскладка и axe ml11
+- **Отклонения от плана и решения:** S7.L1 зависит от S7.02, но уроки модуля — на синтетических «Квартирах» (California Housing нужна только проекту P1), поэтому начаты; scikit-learn в браузере недоступен (CDN Pyodide закрыт сетевой политикой), сверка с sklearn — в code/tests, scikit-learn добавлен в dev-зависимости; генератор данных в ячейке урока продублирован (в браузере нет mlf), тест сверяет копию с mlf.datasets
+- **Следующий шаг:** L-ml-basics-1.2 — линейная регрессия и LMS.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — S7.04 виджет «Порог классификатора» и игра «Цена ошибки» — готова
 - **Сделано:** classification.ts и тесты против чисел урока 2.1 (34/10/50/206, точность 0.773, полнота 0.405, AUC 0.848, лучший порог 0.181 и цена 121); data.json виджета из генератора и тест в test_threshold.py; виджет на _kit, обёртка Threshold.astro, регистрация в lessonComponents; игра error-cost (кредиты, спам-фильтр, равная цена, скрининг, решите сами), бот, тесты свойств
 - **Файлы:** src/lib/math/classification.ts, src/widgets/ml/threshold/, src/components/widgets/Threshold.astro, src/games/error-cost/, src/pages/games/error-cost.astro, src/pages/demo/threshold.astro, scripts/export_widget_data.py

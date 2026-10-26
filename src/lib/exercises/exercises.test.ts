@@ -1288,6 +1288,26 @@ describe("генераторы", () => {
     }
   });
 
+  it("ml.rmse-mae: RMSE и MAE по ошибкам, RMSE ≥ MAE; ml.best-constant: среднее для MSE, медиана для MAE (перебором)", () => {
+    for (let s = 1; s <= 30; s++) {
+      const t = make("ml.rmse-mae", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const e = /\$([^$]+)\$\. Найдите/.exec(t.prompt)![1]!.split(";\\ ").map((v) => Number(v.replace("−", "-")));
+      const rmse = Math.sqrt(e.reduce((a, v) => a + v * v, 0) / e.length);
+      const mae = e.reduce((a, v) => a + Math.abs(v), 0) / e.length;
+      expect(t.answer).toBeCloseTo(t.prompt.includes("RMSE.") ? rmse : mae, 3);
+      expect(rmse).toBeGreaterThanOrEqual(mae - 1e-12);
+
+      const c = make("ml.best-constant", s);
+      if (c.kind !== "numeric") throw new Error("ожидалось число");
+      const y = /млн ₽: \$([^$]+)\$/.exec(c.prompt)![1]!.split(",\\ ").map(Number);
+      const loss = (k: number) => y.reduce((a, v) => a + (c.prompt.includes("MAE") ? Math.abs(v - k) : (v - k) ** 2), 0);
+      const grid = Array.from({ length: 4001 }, (_, i) => i / 100);
+      const best = grid.reduce((a, k) => (loss(k) < loss(a) - 1e-12 ? k : a), 0);
+      expect(Math.abs(c.answer - best)).toBeLessThan(0.011);
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

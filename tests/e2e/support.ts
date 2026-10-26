@@ -42,6 +42,7 @@ export const layoutPages = {
   project: "/projects/demo-apartments/",
   threshold: "/demo/threshold/",
   costgame: "/games/error-cost/",
+  ml11: "/ml-basics/linear-models/learning-problem/",
   zoogame: "/games/dist-zoo/",
   corrgame: "/games/guess-correlation/",
   sigmagame: "/games/sigma-sculptor/",
