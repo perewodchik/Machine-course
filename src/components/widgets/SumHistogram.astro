@@ -1,0 +1,14 @@
+---
+// Обёртка виджета «Гистограмма суммы» для урока: рисунок с номером и подписью, остров React (client:visible).
+import { SumHistogram, type SumHistogramProps } from "../../widgets/prob/limit-theorems";
+
+interface Props extends SumHistogramProps {
+  /** Номер рисунка в уроке. */
+  n?: number;
+}
+const { n, ...props } = Astro.props;
+---
+<figure class="figure wide">
+  <SumHistogram client:visible {...props} />
+  <figcaption class="figure__caption">{n && <b>Рисунок {n}.</b>} <slot /></figcaption>
+</figure>

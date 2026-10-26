@@ -17,6 +17,15 @@ export const layoutPages = {
   i4: "/foundations/linear-algebra/matrix-as-map/",
   iii1: "/foundations/probability/probability-space/",
   iii2: "/foundations/probability/conditional-independence/",
+  iii4: "/foundations/probability/random-variables/",
+  iii5: "/foundations/probability/expectation-variance/",
+  iii6: "/foundations/probability/discrete-distributions/",
+  iii7: "/foundations/probability/continuous-distributions/",
+  iii8: "/foundations/probability/limit-theorems/",
+  iii9: "/foundations/probability/joint-distributions/",
+  iii10: "/foundations/probability/random-vectors/",
+  zoogame: "/games/dist-zoo/",
+  corrgame: "/games/guess-correlation/",
   iii3: "/foundations/probability/bayes/",
   puzzle: "/games/matrix-puzzle/",
   detective: "/games/bayes-detective/",
@@ -81,6 +90,8 @@ export async function expectNoAxeViolations(page: Page): Promise<void> {
   await page.evaluate(async () => {
     await document.fonts.ready;
   });
+  // переходы цвета (.btn, 160 мс) axe иначе может поймать на полпути и насчитать ложный недостаточный контраст
+  await page.emulateMedia({ reducedMotion: "reduce" });
   const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"]).analyze();
   expect(violations.map((v) => `${v.id}: ${v.help} — ${v.nodes.map((n) => n.target.join(" ")).join(", ")}`)).toEqual([]);
 }

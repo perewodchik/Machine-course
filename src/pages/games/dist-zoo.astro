@@ -1,0 +1,26 @@
+---
+// Игра «Зоопарк распределений» (S4.L3, урок III.6): остров React с оболочкой GameShell. Блок «Чему учит игра» — статичный HTML.
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { DistZoo, meta } from "../../games/dist-zoo";
+import { loadCourse } from "../../lib/content/collections";
+
+const course = await loadCourse("foundations");
+const lesson = course.lessons.find((l) => l.key === meta.lesson);
+if (!lesson) throw new Error(`игра ${meta.id}: нет урока ${meta.lesson}`);
+const module = course.modules.find((m) => m.id === lesson.module);
+---
+<BaseLayout title={meta.title} description="По сюжету или по форме функции вероятности узнайте распределение: Бернулли, биномиальное, геометрическое, Пуассона, категориальное или мультиномиальное." course={course}>
+  <main class="game shell" id="content">
+    <nav class="breadcrumb" aria-label="Путь">
+      <a href={`${course.href}#m-${lesson.module}`}>{module?.title}</a><span aria-hidden="true">/</span><span>Игра к уроку {lesson.number}</span>
+    </nav>
+    <h1>{meta.title}</h1>
+    <p class="lead game__lead">Число звонков за минуту, номер первой удачной попытки, исход одного броска&nbsp;— у&nbsp;каждой величины своё распределение. Узнайте его по сюжету или по форме функции вероятности. Пять уровней, партия&nbsp;— <span class="nowrap">3–5&nbsp;минут</span>.</p>
+    <DistZoo client:load>
+      <div class="block block--intuition game__teaches">
+        <p><span class="block__title">Чему учит игра.</span> Семейство распределения называет вопрос «что считаем»: исход одного испытания&nbsp;— Бернулли или категориальное, успехи в&nbsp;<i>n</i> испытаниях&nbsp;— биномиальное или мультиномиальное, номер первого успеха&nbsp;— геометрическое, число редких событий за&nbsp;интервал&nbsp;— Пуассона.</p>
+        <p><a href={lesson.href}>Урок {lesson.number}. {lesson.title}</a></p>
+      </div>
+    </DistZoo>
+  </main>
+</BaseLayout>

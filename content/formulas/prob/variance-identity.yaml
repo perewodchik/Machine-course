@@ -1,0 +1,60 @@
+id: f.variance-identity
+kind: formula
+title:
+  ru: 'Дисперсия через второй момент'
+  en: 'variance as second moment minus squared mean'
+statement: '\operatorname{Var} X = \mathbb{E}(X - \mathbb{E}X)^2 = \mathbb{E}X^2 - (\mathbb{E}X)^2'
+
+# Урок III.5: раскрываем квадрат, пользуемся линейностью матожидания и тем, что μ = E X — число.
+# Проверка — на дискретной величине: значения x, вероятности p (симплекс), E g(X) = Σ p g(x).
+symbols:
+  - name: x
+    tex: 'x'
+    meaning: 'значения дискретной величины $X$'
+    shape: [k, 1]
+  - name: p
+    tex: 'p'
+    meaning: 'их вероятности, $\sum_i p_i = 1$'
+    shape: [k, 1]
+    sample: simplex
+
+dependsOn:
+  concepts: [prob.expectation]
+  rules: []
+
+derivation:
+  plan:
+    - 'Обозначить $\mu = \mathbb{E}X$ и раскрыть квадрат под матожиданием'
+    - 'Разнести матожидание по слагаемым: оно линейно, а $\mu$ — константа'
+    - 'Подставить $\mathbb{E}X = \mu$ и $\mathbb{E}\,1 = 1$'
+  steps:
+    - goal: 0
+      tex: '\operatorname{Var} X = \mathbb{E}\bigl(X^2 - 2\mu X + \mu^2\bigr), \qquad \mu = \mathbb{E}X'
+      by: [prob.expectation]
+      note: 'Квадрат разности: $(X - \mu)^2 = X^2 - 2\mu X + \mu^2$.'
+      check:
+        kind: same
+        py: 'p @ (x ** 2 - 2 * (p @ x) * x + (p @ x) ** 2)'
+    - goal: 1
+      tex: '= \changed{\mathbb{E}X^2 - 2\mu\, \mathbb{E}X + \mu^2}'
+      by: [prob.expectation]
+      note: 'Линейность: $\mathbb{E}(aY + bZ + c) = a\,\mathbb{E}Y + b\,\mathbb{E}Z + c$. Она верна всегда, без независимости.'
+      check:
+        kind: same
+        py: 'p @ x ** 2 - 2 * (p @ x) * (p @ x) + (p @ x) ** 2 * np.sum(p)'
+    - goal: 2
+      tex: '= \mathbb{E}X^2 - 2\mu^2 + \mu^2 = \changed{\mathbb{E}X^2 - (\mathbb{E}X)^2}'
+      by: [prob.expectation]
+      note: 'Поэтому $\mathbb{E}X^2 \ge (\mathbb{E}X)^2$ — частный случай неравенства Йенсена для $f(x) = x^2$.'
+      check:
+        kind: same
+        py: 'p @ x ** 2 - (p @ x) ** 2'
+
+pitfalls:
+  - 'Считать $\mathbb{E}X^2 = (\mathbb{E}X)^2$: это и есть $\mathbb{E}\,g(X) = g(\mathbb{E}X)$, разница — ровно дисперсия.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'The EM algorithm / Jensen''s inequality'
+
+usedIn: [prob.expectation]

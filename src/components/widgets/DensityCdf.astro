@@ -1,0 +1,14 @@
+---
+// Обёртка виджета «Плотность и CDF при перетаскивании порога» для урока: рисунок с номером и подписью, остров React (client:visible).
+import { DensityCdf, type DensityCdfProps } from "../../widgets/prob/density-cdf";
+
+interface Props extends DensityCdfProps {
+  /** Номер рисунка в уроке. */
+  n?: number;
+}
+const { n, ...props } = Astro.props;
+---
+<figure class="figure wide">
+  <DensityCdf client:visible {...props} />
+  <figcaption class="figure__caption">{n && <b>Рисунок {n}.</b>} <slot /></figcaption>
+</figure>

@@ -11,11 +11,11 @@
 ## Сейчас
 
 - **Этап:** 4. Модули II–IV
-- **Задача:** S4.L3 — L-III.4 — случайные величины: PMF, PDF, CDF (в работе)
+- **Задача:** S4.L3 — L-III.11 — многомерное нормальное распределение (в работе)
 - **Ветка:** `docs/course-analysis` (ветка этой сессии: среда разрешает пуш только в неё; см. журнал)
 - **Ждёт пользователя:** S1.13 — проверить заголовки после первого деплоя в Cloudflare Workers (README, «Хостинг»); сборка «Workers Builds» в Cloudflare падает, не начавшись, — нужна панель Cloudflare; S2.14 — пилот на 6–10 участниках. Готовые срезы (уроки) вливаются в `main` через PR по просьбе пользователя
 - **Порядок:** математика (этапы 4–5) → «Основы ML» (этап 7). Этапы 8–9 запрещены до разрешения пользователя (решение 26.10.2026).
-- **Обновлено:** 2026-10-26 — готов L-III.3, дальше L-III.4 — случайные величины: PMF, PDF, CDF
+- **Обновлено:** 2026-10-26 — готов L-III.10, дальше L-III.11 — многомерное нормальное распределение
 
 ## Этапы
 
@@ -424,13 +424,13 @@
 - [x] L-III.1. Вероятностное пространство — `probability/probability-space`
 - [x] L-III.2. Условная вероятность и независимость — `probability/conditional-independence`
 - [x] L-III.3. Формула полной вероятности и Байес — `probability/bayes` (сделан в S2.08: только проверить по определению готовности)
-- [ ] L-III.4. Случайные величины: PMF, PDF, CDF — `probability/random-variables`
-- [ ] L-III.5. Матожидание, дисперсия, неравенство Йенсена — `probability/expectation-variance`
-- [ ] L-III.6. Дискретные распределения — `probability/discrete-distributions`
-- [ ] L-III.7. Непрерывные распределения — `probability/continuous-distributions`
-- [ ] L-III.8. Предельные теоремы и метод Монте-Карло — `probability/limit-theorems`
-- [ ] L-III.9. Совместные распределения и ковариация — `probability/joint-distributions`
-- [ ] L-III.10. Случайные векторы и линейные преобразования — `probability/random-vectors`
+- [x] L-III.4. Случайные величины: PMF, PDF, CDF — `probability/random-variables`
+- [x] L-III.5. Матожидание, дисперсия, неравенство Йенсена — `probability/expectation-variance`
+- [x] L-III.6. Дискретные распределения — `probability/discrete-distributions`
+- [x] L-III.7. Непрерывные распределения — `probability/continuous-distributions`
+- [x] L-III.8. Предельные теоремы и метод Монте-Карло — `probability/limit-theorems`
+- [x] L-III.9. Совместные распределения и ковариация — `probability/joint-distributions`
+- [x] L-III.10. Случайные векторы и линейные преобразования — `probability/random-vectors`
 - [ ] L-III.11. Многомерное нормальное распределение — `probability/multivariate-normal`
 - [ ] L-III.12. Смеси и скрытые переменные — `probability/mixtures-latent`
 - [ ] L-III.13. Энтропия, кросс-энтропия, KL — `probability/information`

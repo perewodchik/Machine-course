@@ -2,6 +2,8 @@
 import { describe, expect, it } from "vitest";
 import { rng } from "../math/rng";
 import { checkMatrix, checkNumeric, checkOrder, closeEnough, scrambled } from "./check";
+import { cdf as contCdf, contMoments } from "../math/continuous";
+import { moments, pmf } from "../math/distributions";
 import { generator, generators } from "./generators";
 import { formatNumber, parseNumber } from "./parse";
 import { renderInline } from "../../markdown/core/inline";
@@ -805,6 +807,198 @@ describe("генераторы", () => {
       const nb2 = pairs.filter(ev[B!]!).length;
       const nab2 = pairs.filter((o) => ev[A!]!(o) && ev[B!]!(o)).length;
       expect(c.options.find((o) => o.correct)!.text).toBe(36 * nab2 === na * nb2 ? "Независимы" : "Зависимы");
+    }
+  });
+
+  it("prob.pmf-cdf, prob.interval-prob, prob.linear-density: ответы сверены суммой, интегралом и гистограммой", () => {
+    for (let s = 1; s <= 24; s++) {
+      const t = make("prob.pmf-cdf", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const ps = [...t.prompt.matchAll(/P\(X = (\d)\) = ([\d.]+)/g)].map((m) => [Number(m[1]), Number(m[2])] as const);
+      expect(ps.reduce((a, [, p]) => a + p, 0)).toBeCloseTo(1, 12);
+      const tt = Number(/F\(([\d.]+)\) = P/.exec(t.prompt)![1]);
+      expect(t.answer).toBeCloseTo(ps.filter(([x]) => x <= tt).reduce((a, [, p]) => a + p, 0), 9);
+
+      const ip = make("prob.interval-prob", s);
+      if (ip.kind !== "numeric") throw new Error("ожидалось число");
+      const [a, b] = /P\(([\d.]+) \\le X \\le ([\d.]+)\)/.exec(ip.prompt)!.slice(1).map(Number) as [number, number];
+      const pdf = ip.prompt.includes("равномерна")
+        ? ((L) => (x: number) => (x >= 0 && x <= L ? 1 / L : 0))(Number(/\[0, (\d+)\]/.exec(ip.prompt)![1]))
+        : ((lam) => (x: number) => (x >= 0 ? lam * Math.exp(-lam * x) : 0))(Number(/p\(x\) = ([\d.]*)e/.exec(ip.prompt)![1] || 1));
+      let integral = 0;
+      const N = 4000;
+      for (let i = 0; i < N; i++) integral += pdf(a + ((i + 0.5) * (b - a)) / N) * ((b - a) / N);
+      expect(ip.answer).toBeCloseTo(integral, 3);
+
+      const ld = make("prob.linear-density", s);
+      if (ld.kind !== "numeric") throw new Error("ожидалось число");
+      const [lo, hi] = /отрезка \$\[(-?[\d.]+), (-?[\d.]+)\]\$/.exec(ld.prompt)!.slice(1).map(Number) as [number, number];
+      // плотность равномерной на образе отрезка — 1 / длина
+      expect(ld.answer).toBeCloseTo(1 / (hi - lo), 4);
+    }
+  });
+
+  it("prob.ev-var, prob.var-linear: ответ по таблице и по a² Var X; prob.jensen — знак f'' определяет ответ", () => {
+    for (let s = 1; s <= 24; s++) {
+      const t = make("prob.ev-var", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const ps = [...t.prompt.matchAll(/P\(X = (-?\d)\) = ([\d.]+)/g)].map((m) => [Number(m[1]), Number(m[2])] as const);
+      const m = ps.reduce((a, [x, p]) => a + x * p, 0);
+      const v = ps.reduce((a, [x, p]) => a + (x - m) ** 2 * p, 0);
+      expect(t.answer).toBeCloseTo(s % 2 === 0 ? v : m, 3);
+
+      const vl = make("prob.var-linear", s);
+      if (vl.kind !== "numeric") throw new Error("ожидалось число");
+      const V = Number(/Var\} X = (\d+)\$/.exec(vl.prompt)![1]);
+      const a = Number(/Var\}\((-?[\d.]+)X/.exec(vl.prompt)![1]);
+      expect(vl.answer).toBeCloseTo(a * a * V, 9);
+
+      const j = make("prob.jensen", s);
+      if (j.kind !== "choice") throw new Error("ожидался выбор");
+      // X равновероятно 1 или 4: сравниваем f(E X) с E f(X) численно
+      const f = j.prompt.includes("x^2") ? (x: number) => x * x : j.prompt.includes("log") ? Math.log : j.prompt.includes("e^x") ? Math.exp : Math.sqrt;
+      const lhs = f(2.5);
+      const rhs = (f(1) + f(4)) / 2;
+      expect(j.options.find((o) => o.correct)!.text).toBe(lhs < rhs ? String.raw`$f(\mathbb{E}X) < \mathbb{E}f(X)$` : String.raw`$f(\mathbb{E}X) > \mathbb{E}f(X)$`);
+    }
+  });
+
+  it("prob.family-moments и prob.point-prob: ответы сверены с src/lib/math/distributions", () => {
+    for (let s = 1; s <= 32; s++) {
+      const t = make("prob.family-moments", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const num = (re: RegExp) => Number(re.exec(t.prompt)![1]);
+      const [fam, p] = t.prompt.includes("число успехов")
+        ? (["binomial", { n: num(/в \$(\d+)\$ независимых/), phi: num(/успеха \$([\d.]+)\$/) }] as const)
+        : t.prompt.includes("номер первого")
+          ? (["geometric", { phi: num(/успеха \$([\d.]+)\$/) }] as const)
+          : t.prompt.includes("пуассоновская")
+            ? (["poisson", { lambda: num(/lambda = ([\d.]+)/) }] as const)
+            : (["bernoulli", { phi: num(/P\(X = 1\) = ([\d.]+)/) }] as const);
+      const m = moments(fam, p);
+      expect(t.answer).toBeCloseTo(t.prompt.includes("Var") ? m.variance : m.mean, 3);
+
+      const pp = make("prob.point-prob", s);
+      if (pp.kind !== "numeric") throw new Error("ожидалось число");
+      const k = Number(/P\(X = (\d)\)/.exec(pp.label)![1]);
+      const want = pp.prompt.includes("пуассоновское")
+        ? pmf("poisson", { lambda: Number(/lambda = (\d)/.exec(pp.prompt)![1]) }, k)
+        : pmf("binomial", { n: Number(/бросают \$(\d)\$/.exec(pp.prompt)![1]), phi: Number(/орла \$([\d.]+)\$/.exec(pp.prompt)![1]) }, k);
+      expect(pp.answer).toBeCloseTo(want, 3);
+    }
+  });
+
+  it("prob.normal-rule: ответ близок к точной вероятности нормального; prob.cont-moments — к моментам из continuous.ts", () => {
+    for (let s = 1; s <= 32; s++) {
+      const t = make("prob.normal-rule", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const tail = t.prompt.includes("больше");
+      const [mu, sigma] = tail
+        ? [Number(/средним \$(\d+)\$/.exec(t.prompt)![1]), Number(/отклонением \$(\d+)\$/.exec(t.prompt)![1])]
+        : [Number(/mathcal\{N\}\((\d+), (\d+)\)/.exec(t.prompt)![1]), Math.sqrt(Number(/mathcal\{N\}\((\d+), (\d+)\)/.exec(t.prompt)![2]))];
+      const P = (x: number) => contCdf("normal", { mu, sigma }, x);
+      if (tail) {
+        const hi = Number(/больше \$(\d+)\$/.exec(t.prompt)![1]);
+        expect(Math.abs(t.answer - (1 - P(hi)))).toBeLessThan(0.006);
+      } else {
+        const [lo, hi] = /P\((-?\d+) \\le X \\le (\d+)\)/.exec(t.prompt)!.slice(1).map(Number) as [number, number];
+        expect(Math.abs(t.answer - (P(hi) - P(lo)))).toBeLessThan(0.006);
+      }
+
+      const c = make("prob.cont-moments", s);
+      if (c.kind !== "numeric") throw new Error("ожидалось число");
+      const want = c.prompt.includes("Var");
+      const num = (re: RegExp) => Number(re.exec(c.prompt)![1]);
+      const m = c.prompt.includes("равномерна")
+        ? contMoments("uniform", { a: num(/\[(-?\d+), /), b: num(/, (-?\d+)\]/) })
+        : c.prompt.includes("показательная")
+          ? contMoments("exponential", { lambda: num(/lambda = ([\d.]+)/) })
+          : c.prompt.includes("Лапласа")
+            ? contMoments("laplace", { mu: num(/mu = (-?\d+)/), b: num(/b = ([\d.]+)/) })
+            : contMoments("beta", { alpha: num(/Beta\}\((\d)/), beta: num(/Beta\}\(\d, (\d)\)/) });
+      expect(c.answer).toBeCloseTo(want ? m.variance : m.mean, 3);
+    }
+  });
+
+  it("prob.mc-error: ответ — σ/√n или наименьшее n; prob.union-bound: граница не меньше точной вероятности для независимых", () => {
+    for (let s = 1; s <= 30; s++) {
+      const t = make("prob.mc-error", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const num = (re: RegExp) => Number(re.exec(t.prompt)![1]);
+      if (t.prompt.includes("Найдите стандартное")) {
+        expect(t.answer).toBeCloseTo(num(/sigma = (\d+)/) / Math.sqrt(num(/n = (\d+)/)), 4);
+      } else if (t.prompt.includes("наименьшее")) {
+        const [sigma, eps] = [num(/sigma = (\d+)/), num(/больше \$([\d.]+)\$/)];
+        expect(sigma / Math.sqrt(t.answer)).toBeLessThanOrEqual(eps + 1e-12);
+        expect(sigma / Math.sqrt(t.answer - 1)).toBeGreaterThan(eps);
+      } else {
+        const [n, k] = [num(/по \$(\d+)\$ точкам/), num(/в \$(\d+)\$ раза/)];
+        expect(Math.sqrt(t.answer / n)).toBeCloseTo(k, 12);
+      }
+
+      const u = make("prob.union-bound", s);
+      if (u.kind !== "numeric") throw new Error("ожидалось число");
+      const k = Number(/Есть \$(\d+)\$|Проверяем \$(\d+)\$/.exec(u.prompt)!.slice(1).find(Boolean));
+      if (u.prompt.includes("Есть")) {
+        const delta = Number(/не больше \$([\d.]+)\$/.exec(u.prompt)![1]);
+        expect(u.answer).toBeGreaterThanOrEqual(1 - (1 - delta) ** k);
+        expect(u.answer).toBeCloseTo(k * delta, 6);
+      } else {
+        expect(k * u.answer).toBeCloseTo(Number(/не больше \$([\d.]+)\$/.exec(u.prompt)![1]), 6);
+      }
+    }
+  });
+
+  it("prob.joint-marginal и prob.covariance: ответ совпадает с прямым счётом по таблице из условия", () => {
+    const table = (prompt: string) => [...prompt.matchAll(/X = \d & ([\d.]+) & ([\d.]+)/g)].map((m) => [Number(m[1]), Number(m[2])] as [number, number]);
+    for (let s = 1; s <= 30; s++) {
+      const t = make("prob.joint-marginal", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const rows = table(t.prompt);
+      expect(rows).toHaveLength(3);
+      expect(rows.flat().reduce((a, b) => a + b, 0)).toBeCloseTo(1, 9);
+      const ex = rows.reduce((acc, [a, b], x) => acc + x * (a + b), 0);
+      const cond = (y: 0 | 1) => rows.reduce((acc, row, x) => acc + x * row[y], 0) / rows.reduce((acc, row) => acc + row[y], 0);
+      if (t.prompt.includes("Найдите $P(X")) {
+        const x = Number(/Найдите \$P\(X = (\d)\)/.exec(t.prompt)![1]);
+        expect(t.answer).toBeCloseTo(rows[x]![0] + rows[x]![1], 6);
+      } else if (t.prompt.includes("полного")) expect(Math.abs(t.answer - ex)).toBeLessThan(0.002);
+      else expect(Math.abs(t.answer - cond(Number(/Y = (\d)\]\$\.$/.exec(t.prompt)![1]) as 0 | 1))).toBeLessThan(0.001);
+
+      const c = make("prob.covariance", s);
+      if (c.kind !== "numeric") throw new Error("ожидалось число");
+      const [[p00, p01], [p10, p11]] = table(c.prompt) as [[number, number], [number, number]];
+      expect(p00 + p01 + p10 + p11).toBeCloseTo(1, 9);
+      const pts: [number, number, number][] = [[0, 0, p00], [0, 1, p01], [1, 0, p10], [1, 1, p11]];
+      const E = (g: (x: number, y: number) => number) => pts.reduce((acc, [x, y, p]) => acc + p * g(x, y), 0);
+      const cov = E((x, y) => (x - E((a) => a)) * (y - E((_, b) => b)));
+      const want = c.prompt.includes("rho") ? cov / Math.sqrt(E((x) => (x - E((a) => a)) ** 2) * E((_, y) => (y - E((_, b) => b)) ** 2)) : cov;
+      expect(Math.abs(c.answer - want)).toBeLessThan(0.001);
+    }
+  });
+
+  it("prob.cov-linear: AΣAᵀ симметрична и совпадает с прямым счётом; prob.density-linear: 1/|det A|", () => {
+    const mats = (prompt: string) => [...prompt.matchAll(/\\begin\{pmatrix\} (-?\d+) & (-?\d+) \\\\ (-?\d+) & (-?\d+) \\end\{pmatrix\}/g)].map((m) => [[Number(m[1]), Number(m[2])], [Number(m[3]), Number(m[4])]]);
+    for (let s = 1; s <= 30; s++) {
+      const t = make("prob.cov-linear", s);
+      const [S, A] = mats(t.prompt) as [number[][], number[][] | undefined];
+      if (t.kind === "matrix") {
+        const C = [0, 1].map((i) => [0, 1].map((j) => [0, 1].reduce((acc, k) => acc + [0, 1].reduce((a2, l) => a2 + A![i]![k]! * S![k]![l]! * A![j]![l]!, 0), 0)));
+        for (const i of [0, 1]) for (const j of [0, 1]) expect(t.answer[i]![j]!).toBeCloseTo(C[i]![j]!, 9);
+        expect(S![0]![0]! * S![1]![1]! - S![0]![1]! ** 2).toBeGreaterThan(0);
+        expect(t.answer[0]![1]).toBe(t.answer[1]![0]);
+        expect(t.answer[0]![0]).toBeGreaterThanOrEqual(0);
+      } else if (t.kind === "numeric") {
+        const m = /Var\}\((-?\d+)X_1 ([+-]) (\d+)X_2\)/.exec(t.prompt)!;
+        const a = [Number(m[1]), (m[2] === "-" ? -1 : 1) * Number(m[3])];
+        expect(t.answer).toBeCloseTo(a[0]! ** 2 * S![0]![0]! + 2 * a[0]! * a[1]! * S![0]![1]! + a[1]! ** 2 * S![1]![1]!, 9);
+        expect(t.answer).toBeGreaterThanOrEqual(0);
+      } else throw new Error("ожидалась матрица или число");
+
+      const d = make("prob.density-linear", s);
+      if (d.kind !== "numeric") throw new Error("ожидалось число");
+      const [B] = mats(d.prompt) as [number[][]];
+      expect(d.answer).toBeCloseTo(1 / Math.abs(B[0]![0]! * B[1]![1]! - B[0]![1]! * B[1]![0]!), 4);
     }
   });
 

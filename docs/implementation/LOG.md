@@ -17,6 +17,62 @@
 
 ---
 
+### 2026-10-26 — L-III.10 L-III.10 — случайные векторы и линейные преобразования — готов
+- **Сделано:** урок random-vectors (три цикла: среднее и Σ ⪰ 0, Cov(AX + b) = AΣAᵀ, плотность и |det A|), виджет «Линейное преобразование облака», формула f.covariance-linear, генераторы prob.cov-linear (матрица и aᵀΣa) и prob.density-linear, сниппет random_vectors.py с тестом; e2e: axe ждёт конца переходов (reducedMotion) — гонка на кнопке «Следующий уровень» в CI PR #27
+- **Файлы:** content/courses/foundations/probability/random-vectors.mdx, src/widgets/prob/cloud-transform/, content/formulas/prob/covariance-linear.yaml, code/snippets/prob/random_vectors.py, tests/e2e/support.ts
+- **Проверка:** validate, lint, build, check, vitest 573, pytest, check_consistency, e2e III.10 и раскладка iii10 (axe), игры min-max-saddle и dist-zoo ×3
+- **Отклонения от плана и решения:** нет
+- **Следующий шаг:** L-III.11 — многомерное нормальное распределение.
+- **Вопросы пользователю:** —
+
+### 2026-10-26 — L-III.9 L-III.9 — совместные распределения и ковариация — готов
+- **Сделано:** урок joint-distributions (три цикла: совместное/маргинальное/условное, ковариация и корреляция, условное матожидание), виджет «Облако точек», игра «Угадай корреляцию» (/games/guess-correlation/), модель src/lib/math/correlation.ts, формула f.total-expectation, генераторы prob.joint-marginal и prob.covariance, сниппет covariance.py с тестом
+- **Файлы:** content/courses/foundations/probability/joint-distributions.mdx, src/widgets/prob/scatter-cloud/, src/games/guess-correlation/, src/lib/math/correlation.ts, content/formulas/prob/total-expectation.yaml, code/snippets/prob/covariance.py
+- **Проверка:** validate, lint, build, check, vitest 568, pytest, check_consistency, e2e III.9 и игры, раскладка iii9 и corrgame (axe)
+- **Отклонения от плана и решения:** «перетаскивание» точки в виджете сделано бегунками x₀, y₀ выброса: доступно с клавиатуры, в наборе виджетов нет перетаскивания точек
+- **Следующий шаг:** L-III.10 — случайные векторы и линейные преобразования.
+- **Вопросы пользователю:** —
+
+### 2026-10-26 — L-III.8 L-III.8 — предельные теоремы и метод Монте-Карло — готов
+- **Сделано:** урок limit-theorems (четыре цикла: ЗБЧ, Монте-Карло, ЦПТ, оценка объединения и ★ Хёффдинг), виджеты «Бегущее среднее» и «Гистограмма суммы», лабораторная prob/clt_simulations, формула f.sample-mean-variance, генераторы prob.mc-error и prob.union-bound, сниппет limits.py с тестом
+- **Файлы:** content/courses/foundations/probability/limit-theorems.mdx, src/widgets/prob/limit-theorems/, notebooks/src/prob/clt_simulations.py, content/formulas/prob/sample-mean-variance.yaml, code/snippets/prob/limits.py
+- **Проверка:** validate, lint, build, check, vitest 558, pytest, nbmake, check_consistency, e2e III.8 и раскладка iii8 (axe)
+- **Отклонения от плана и решения:** нет
+- **Следующий шаг:** L-III.9 — совместные распределения и ковариация.
+- **Вопросы пользователю:** —
+
+### 2026-10-26 — L-III.7 L-III.7: непрерывные распределения — готов
+- **Сделано:** урок continuous-distributions (четыре цикла: равномерное и показательное, нормальное и стандартизация, Лапласа и логистическое, бета и ★ Дирихле), виджет «Обозреватель непрерывных распределений», модель src/lib/math/continuous.ts (erf, lgamma), формула f.standardization, генераторы prob.normal-rule и prob.cont-moments, сниппет prob/continuous.py с тестом
+- **Файлы:** content/courses/foundations/probability/continuous-distributions.mdx, src/widgets/prob/cont-explorer/, src/lib/math/continuous.ts, content/formulas/prob/standardization.yaml, code/snippets/prob/continuous.py
+- **Проверка:** validate, lint, build, check, vitest 551, pytest, check_consistency, e2e урока и layout iii7 (axe)
+- **Отклонения от плана и решения:** нет
+- **Следующий шаг:** L-III.8 — предельные теоремы и метод Монте-Карло.
+- **Вопросы пользователю:** —
+
+### 2026-10-26 — L-III.6 L-III.6: дискретные распределения и игра «Зоопарк распределений» — готов
+- **Сделано:** урок discrete-distributions (три цикла: Бернулли, биномиальное, геометрическое; Пуассон; категориальное и мультиномиальное), виджет «Обозреватель распределений», игра «Зоопарк распределений» (5 уровней), общая модель src/lib/math/distributions.ts, формула f.binomial-mean, генераторы prob.family-moments и prob.point-prob, сниппет prob/discrete.py с тестом
+- **Файлы:** content/courses/foundations/probability/discrete-distributions.mdx, src/widgets/prob/dist-explorer/, src/games/dist-zoo/, src/lib/math/distributions.ts, content/formulas/prob/binomial-mean.yaml, code/snippets/prob/discrete.py
+- **Проверка:** validate, lint, build, check, vitest, pytest, check_consistency, e2e урока, игры и layout iii6/zoogame (axe)
+- **Отклонения от плана и решения:** нет
+- **Следующий шаг:** L-III.7 — непрерывные распределения.
+- **Вопросы пользователю:** —
+
+### 2026-10-26 — L-III.5 L-III.5: матожидание, дисперсия, неравенство Йенсена — готов
+- **Сделано:** урок expectation-variance (три цикла: центр масс и LOTUS, дисперсия и Var(aX + b), Йенсен и EM), виджет «Матожидание как центр масс» (fast-check: Var-тождество, Йенсен), формула f.variance-identity, генераторы prob.ev-var, prob.var-linear, prob.jensen, сниппет prob/moments.py с тестом, понятие prob.expectation
+- **Файлы:** content/courses/foundations/probability/expectation-variance.mdx, src/widgets/prob/center-mass/, content/formulas/prob/variance-identity.yaml, src/lib/exercises/generators/prob.ts, code/snippets/prob/moments.py
+- **Проверка:** validate, lint, build, check, vitest 529, pytest, check_consistency, e2e урока и layout iii5 (axe)
+- **Отклонения от плана и решения:** выпуклость уже введена в II.5 — урок ссылается на неё, а не вводит заново
+- **Следующий шаг:** L-III.6 — дискретные распределения.
+- **Вопросы пользователю:** —
+
+### 2026-10-26 — L-III.4 L-III.4: случайные величины — PMF, PDF, CDF — готов
+- **Сделано:** урок random-variables (четыре цикла: PMF и индикатор, плотность и CDF, плотность g(X), i.i.d.), виджет «Плотность и CDF при перетаскивании порога», формула f.density-transform, генераторы prob.pmf-cdf, prob.interval-prob, prob.linear-density, сниппет prob/density.py с тестом, понятие prob.random-variable
+- **Файлы:** content/courses/foundations/probability/random-variables.mdx, src/widgets/prob/density-cdf/, content/formulas/prob/density-transform.yaml, src/lib/exercises/generators/prob.ts, code/snippets/prob/density.py
+- **Проверка:** validate, lint, build, check, vitest 525, pytest, check_consistency, e2e урока и layout iii4 (axe)
+- **Отклонения от плана и решения:** нет
+- **Следующий шаг:** L-III.5 — матожидание, дисперсия, неравенство Йенсена.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — L-III.3 L-III.3: проверка урока «Байес» по определению готовности — готов
 - **Сделано:** урок bayes (S2.08) сверен с определением готовности: цели карточки (полная вероятность, Байес, базовая частота, последовательное обновление) проверяются заданиями, формулы в реестре, термины в глоссарии, PyCode и игра «Байес-детектив»; время урока приведено к карточке (120 минут)
 - **Файлы:** content/courses/foundations/probability/bayes.mdx

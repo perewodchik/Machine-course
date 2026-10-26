@@ -1,0 +1,57 @@
+id: f.standardization
+kind: formula
+title:
+  ru: 'Стандартизация нормальной величины'
+  en: 'standardizing a Gaussian'
+statement: 'X \sim \mathcal{N}(\mu, \sigma^2) \ \Rightarrow\ Z = \frac{X - \mu}{\sigma} \sim \mathcal{N}(0, 1)'
+
+# Урок III.7: формула плотности монотонной функции (урок III.4) для Z = (X − μ)/σ: g⁻¹(z) = μ + σz, производная σ.
+# Подставляем в плотность N(μ, σ²) — множитель σ сокращается со знаменателем. Проверка — в случайной точке z.
+symbols:
+  - name: z
+    tex: 'z'
+    meaning: 'значение стандартизованной величины'
+    shape: []
+  - name: mu
+    tex: '\mu'
+    meaning: 'матожидание $X$'
+    shape: []
+  - name: sigma
+    tex: '\sigma'
+    meaning: 'стандартное отклонение $X$ (не дисперсия)'
+    shape: []
+    sample: positive
+
+dependsOn:
+  concepts: [prob.random-variable, prob.normal]
+  rules: []
+
+derivation:
+  plan:
+    - 'Записать обратную функцию $x = \mu + \sigma z$ и её производную'
+    - 'Подставить в формулу плотности $p_Z(z) = p_X(g^{-1}(z))\, \lvert (g^{-1})''(z) \rvert$'
+    - 'Сократить: остаётся плотность $\mathcal{N}(0, 1)$'
+  steps:
+    - goal: 1
+      tex: 'p_Z(z) = p_X(\mu + \sigma z) \cdot \sigma = \frac{1}{\sqrt{2\pi}\, \sigma} \exp\Bigl(-\frac{(\mu + \sigma z - \mu)^2}{2\sigma^2}\Bigr) \cdot \sigma'
+      by: [prob.random-variable]
+      note: '$g^{-1}(z) = \mu + \sigma z$, $(g^{-1})''(z) = \sigma > 0$ (урок III.4).'
+      check:
+        kind: same
+        py: 'np.exp(-((mu + sigma * z) - mu) ** 2 / (2 * sigma ** 2)) / (np.sqrt(2 * np.pi) * sigma) * sigma'
+    - goal: 2
+      tex: '= \changed{\frac{1}{\sqrt{2\pi}}\, e^{-z^2/2}}'
+      by: [prob.normal]
+      note: 'В показателе $(\sigma z)^2 / (2\sigma^2) = z^2/2$, а $\sigma$ перед экспонентой сокращается. Обратно: $X = \mu + \sigma Z$, поэтому любой нормальный образец получают из стандартного.'
+      check:
+        kind: same
+        py: 'np.exp(-z ** 2 / 2) / np.sqrt(2 * np.pi)'
+
+pitfalls:
+  - 'Передавать в `np.random.normal(loc, scale)` дисперсию вместо $\sigma$: второй аргумент — стандартное отклонение, а $\mathcal{N}(\mu, \sigma^2)$ пишут через дисперсию.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Linear regression / Probabilistic interpretation'
+
+usedIn: [prob.continuous-distributions]

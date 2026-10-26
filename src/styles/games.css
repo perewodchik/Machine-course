@@ -180,6 +180,9 @@
   .game-fog__pad .game-fog__short { font-size: var(--text-sm); }
   .game-fog__pad .game-fog__short[aria-pressed="true"] { border-color: var(--pen); color: var(--pen); box-shadow: inset 0 0 0 1px var(--pen); }
   .game-fog__note { margin: 0; font: var(--text-sm) var(--font-ui); color: var(--ink-2); }
+  .game-zoo__story { display: grid; align-content: center; gap: var(--space-4); min-block-size: 240px; padding: var(--space-5); }
+  .game-zoo__text { margin: 0; font: 22px/1.45 var(--font-text); color: var(--ink); }
+  .game-zoo__ask { font: var(--text-sm) var(--font-ui); color: var(--ink-2); }
   .game__swatch--dashed { border-top-style: dashed; }
   .game-eigen { display: grid; gap: var(--space-3); }
   .game-eigen__matrix { margin: 0; font: 18px var(--font-math-upright); color: var(--ink); font-variant-numeric: tabular-nums; }
