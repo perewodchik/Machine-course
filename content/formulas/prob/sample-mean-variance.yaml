@@ -1,0 +1,58 @@
+id: f.sample-mean-variance
+kind: formula
+title:
+  ru: 'Дисперсия выборочного среднего'
+  en: 'variance of the sample mean'
+statement: '\operatorname{Var} \bar X = \frac{\sigma^2}{n}, \qquad \bar X = \frac{1}{n} \sum_{i=1}^{n} X_i, \quad X_i \text{ i.i.d.}, \ \operatorname{Var} X_i = \sigma^2'
+
+# Урок III.8: множитель 1/n выносится в квадрате, дисперсия суммы — сумма всех ковариаций, у независимых
+# остаются только n дисперсий. Проверка — при n = 7: дисперсия wᵀ C w линейной комбинации с w = 1/7,
+# ковариационная матрица независимых — σ² I (урок III.10 обобщит это до Var aᵀX = aᵀ Σ a).
+symbols:
+  - name: sigma
+    tex: '\sigma'
+    meaning: 'стандартное отклонение одного наблюдения'
+    shape: []
+    sample: positive
+
+dependsOn:
+  concepts: [prob.expectation, prob.independence]
+  rules: []
+
+derivation:
+  plan:
+    - 'Вынести множитель $1/n$ из дисперсии: он выходит в квадрате'
+    - 'Разложить дисперсию суммы на дисперсии и ковариации'
+    - 'Пользуясь независимостью, оставить $n$ одинаковых дисперсий'
+  steps:
+    - goal: 0
+      tex: '\operatorname{Var} \bar X = \frac{1}{n^2} \operatorname{Var} \sum_{i=1}^{n} X_i'
+      by: [prob.expectation]
+      note: '$\operatorname{Var}(aY) = a^2 \operatorname{Var} Y$ (урок III.5) при $a = 1/n$.'
+      check:
+        kind: same
+        py: '(np.ones(7) / 7) @ (sigma ** 2 * np.eye(7)) @ (np.ones(7) / 7)'
+    - goal: 1
+      tex: '= \frac{1}{n^2} \Bigl( \sum_{i=1}^{n} \operatorname{Var} X_i + \sum_{i \ne j} \operatorname{Cov}(X_i, X_j) \Bigr) = \changed{\frac{1}{n^2} \sum_{i=1}^{n} \operatorname{Var} X_i}'
+      by: [prob.independence]
+      note: 'Квадрат суммы отклонений — все попарные произведения. У независимых величин $\operatorname{Cov}(X_i, X_j) = 0$ при $i \ne j$ (урок III.9).'
+      check:
+        kind: same
+        py: 'np.sum(np.diag(sigma ** 2 * np.eye(7))) / 49'
+    - goal: 2
+      tex: '= \frac{1}{n^2} \cdot n \sigma^2 = \changed{\frac{\sigma^2}{n}}'
+      by: [prob.expectation]
+      note: 'Стандартное отклонение среднего — $\sigma/\sqrt{n}$: чтобы уменьшить ошибку вдвое, нужно вчетверо больше наблюдений.'
+      check:
+        kind: same
+        py: 'sigma ** 2 / 7'
+
+pitfalls:
+  - 'Считать, что ошибка среднего убывает как $1/n$: убывает дисперсия, а стандартное отклонение — только как $1/\sqrt{n}$.'
+  - 'Забыть про независимость: у зависимых наблюдений ковариации не пропадают, и $\operatorname{Var} \bar X$ может не убывать вовсе.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Generalization'
+
+usedIn: [prob.limit-theorems]

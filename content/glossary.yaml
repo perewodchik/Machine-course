@@ -369,3 +369,6 @@
 - id: continuous-distributions
   ru: 'равномерное, показательное, нормальное, Лапласа, логистическое, бета-распределение; распределение Дирихле'
   en: 'uniform, exponential, Gaussian (normal), Laplace, logistic, Beta distributions; Dirichlet distribution'
+- id: limit-theorems
+  ru: 'закон больших чисел; центральная предельная теорема; оценка объединения; неравенство Хёффдинга'
+  en: 'law of large numbers; central limit theorem; union bound; Hoeffding''s inequality'

@@ -920,6 +920,35 @@ describe("генераторы", () => {
     }
   });
 
+  it("prob.mc-error: ответ — σ/√n или наименьшее n; prob.union-bound: граница не меньше точной вероятности для независимых", () => {
+    for (let s = 1; s <= 30; s++) {
+      const t = make("prob.mc-error", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const num = (re: RegExp) => Number(re.exec(t.prompt)![1]);
+      if (t.prompt.includes("Найдите стандартное")) {
+        expect(t.answer).toBeCloseTo(num(/sigma = (\d+)/) / Math.sqrt(num(/n = (\d+)/)), 4);
+      } else if (t.prompt.includes("наименьшее")) {
+        const [sigma, eps] = [num(/sigma = (\d+)/), num(/больше \$([\d.]+)\$/)];
+        expect(sigma / Math.sqrt(t.answer)).toBeLessThanOrEqual(eps + 1e-12);
+        expect(sigma / Math.sqrt(t.answer - 1)).toBeGreaterThan(eps);
+      } else {
+        const [n, k] = [num(/по \$(\d+)\$ точкам/), num(/в \$(\d+)\$ раза/)];
+        expect(Math.sqrt(t.answer / n)).toBeCloseTo(k, 12);
+      }
+
+      const u = make("prob.union-bound", s);
+      if (u.kind !== "numeric") throw new Error("ожидалось число");
+      const k = Number(/Есть \$(\d+)\$|Проверяем \$(\d+)\$/.exec(u.prompt)!.slice(1).find(Boolean));
+      if (u.prompt.includes("Есть")) {
+        const delta = Number(/не больше \$([\d.]+)\$/.exec(u.prompt)![1]);
+        expect(u.answer).toBeGreaterThanOrEqual(1 - (1 - delta) ** k);
+        expect(u.answer).toBeCloseTo(k * delta, 6);
+      } else {
+        expect(k * u.answer).toBeCloseTo(Number(/не больше \$([\d.]+)\$/.exec(u.prompt)![1]), 6);
+      }
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

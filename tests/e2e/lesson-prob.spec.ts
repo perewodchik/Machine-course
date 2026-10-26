@@ -175,3 +175,39 @@ test("урок III.7: нормальное и 68 %, бета, разбор σ п
   await page.evaluate(() => window.scrollTo(0, 0));
   await expectNoAxeViolations(page);
 });
+
+test("урок III.8: бегущее среднее, гистограмма суммы при n = 50, разбор ошибки 1/n, итоговая проверка", async ({ page }) => {
+  await page.goto("/foundations/probability/limit-theorems/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Предельные теоремы и метод Монте-Карло");
+
+  const rm = page.locator(".running-mean").first();
+  await rm.scrollIntoViewIfNeeded();
+  await expect(rm.locator("xpath=ancestor::astro-island[1]")).not.toHaveAttribute("ssr", "");
+  await expect(rm.locator("[aria-live]")).toContainText("кубик, n = 500");
+  await rm.getByRole("button", { name: "Бернулли, φ = 0.2" }).press("Enter");
+  await expect(rm.locator("[aria-live]")).toContainText("μ = 0.20");
+
+  const sh = page.locator(".sum-histogram").first();
+  await sh.scrollIntoViewIfNeeded();
+  await expect(sh.locator("xpath=ancestor::astro-island[1]")).not.toHaveAttribute("ssr", "");
+  // одна показательная: P(|Z| ≤ 1) = 1 − e⁻² ≈ 0.86; сумма 50 — около 0.68
+  await expect(sh.locator("[aria-live]")).toContainText(/n = 1: .* — 0\.8[5-7]\d/);
+  await sh.getByRole("slider", { name: "n" }).press("End");
+  await expect(sh.locator("[aria-live]")).toContainText(/n = 50: .* — 0\.6[6-9]\d/);
+
+  const mc = page.locator("[data-exercise][data-item='prob.mc-error']").first();
+  const wrong = generator("prob.mc-error").make(1);
+  if (wrong.kind !== "numeric") throw new Error("ожидалось число");
+  await mc.locator("[data-variant]:not([hidden]) input").first().fill(String(wrong.answer * 1000 + 1));
+  await mc.getByRole("button", { name: "Проверить" }).click();
+  await expect(mc.locator("[data-feedback]")).not.toContainText("Верно");
+
+  const final = page.locator("#final-check");
+  const spec = generator("prob.mc-error").make(31);
+  if (spec.kind !== "numeric") throw new Error("ожидалось число");
+  await final.locator("[data-variant]:not([hidden]) input").first().fill(String(spec.answer));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});

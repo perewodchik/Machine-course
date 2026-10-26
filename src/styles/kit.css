@@ -174,6 +174,13 @@
   .cont-explorer__group { display: flex; flex-wrap: wrap; gap: var(--space-2); }
   .cont-explorer__group .btn[aria-pressed="true"] { border-color: var(--pen); color: var(--pen); box-shadow: inset 0 0 0 1px var(--pen); }
   @media (max-width: 900px) { .cont-explorer__controls { grid-template-columns: minmax(0, 1fr); } }
+  .running-mean__controls, .sum-histogram__controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; gap: var(--space-3) var(--space-5); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule); }
+  .running-mean__controls .kit-slider, .running-mean__group, .sum-histogram__group { grid-column: 1 / -1; }
+  .sum-histogram__controls .kit-slider { grid-column: span 2; }
+  .running-mean__again { grid-column: 1 / -1; justify-self: start; }
+  .running-mean__group, .sum-histogram__group { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .running-mean__group .btn[aria-pressed="true"], .sum-histogram__group .btn[aria-pressed="true"] { border-color: var(--pen); color: var(--pen); box-shadow: inset 0 0 0 1px var(--pen); }
+  @media (max-width: 900px) { .running-mean__controls, .sum-histogram__controls { grid-template-columns: minmax(0, 1fr); } .sum-histogram__controls .kit-slider { grid-column: 1 / -1; } }
   .riemann__fn { font-family: var(--font-math); font-size: 1.05em; }
   .riemann__fn sup { font-size: 0.7em; }
   @media (max-width: 900px) { .riemann__controls { grid-template-columns: minmax(0, 1fr); } }

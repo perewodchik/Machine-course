@@ -21,6 +21,7 @@ export const layoutPages = {
   iii5: "/foundations/probability/expectation-variance/",
   iii6: "/foundations/probability/discrete-distributions/",
   iii7: "/foundations/probability/continuous-distributions/",
+  iii8: "/foundations/probability/limit-theorems/",
   zoogame: "/games/dist-zoo/",
   iii3: "/foundations/probability/bayes/",
   puzzle: "/games/matrix-puzzle/",

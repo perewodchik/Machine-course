@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — L-III.8 L-III.8 — предельные теоремы и метод Монте-Карло — готов
+- **Сделано:** урок limit-theorems (четыре цикла: ЗБЧ, Монте-Карло, ЦПТ, оценка объединения и ★ Хёффдинг), виджеты «Бегущее среднее» и «Гистограмма суммы», лабораторная prob/clt_simulations, формула f.sample-mean-variance, генераторы prob.mc-error и prob.union-bound, сниппет limits.py с тестом
+- **Файлы:** content/courses/foundations/probability/limit-theorems.mdx, src/widgets/prob/limit-theorems/, notebooks/src/prob/clt_simulations.py, content/formulas/prob/sample-mean-variance.yaml, code/snippets/prob/limits.py
+- **Проверка:** validate, lint, build, check, vitest 558, pytest, nbmake, check_consistency, e2e III.8 и раскладка iii8 (axe)
+- **Отклонения от плана и решения:** нет
+- **Следующий шаг:** L-III.9 — совместные распределения и ковариация.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — L-III.7 L-III.7: непрерывные распределения — готов
 - **Сделано:** урок continuous-distributions (четыре цикла: равномерное и показательное, нормальное и стандартизация, Лапласа и логистическое, бета и ★ Дирихле), виджет «Обозреватель непрерывных распределений», модель src/lib/math/continuous.ts (erf, lgamma), формула f.standardization, генераторы prob.normal-rule и prob.cont-moments, сниппет prob/continuous.py с тестом
 - **Файлы:** content/courses/foundations/probability/continuous-distributions.mdx, src/widgets/prob/cont-explorer/, src/lib/math/continuous.ts, content/formulas/prob/standardization.yaml, code/snippets/prob/continuous.py

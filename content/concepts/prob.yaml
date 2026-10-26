@@ -45,6 +45,15 @@
   prerequisites: [prob.random-variable, prob.expectation]
   core: true
 
+- id: prob.limit-theorems
+  title:
+    ru: 'Предельные теоремы и метод Монте-Карло'
+    en: 'limit theorems and Monte Carlo'
+  summary: 'Закон больших чисел: выборочное среднее сходится к $\mathbb{E}X$; $\operatorname{Var} \bar X = \sigma^2/n$, ошибка Монте-Карло $\sim \sigma/\sqrt{n}$; ЦПТ: стандартизованная сумма i.i.d. близка к $\mathcal{N}(0, 1)$; оценка объединения $P(\cup A_i) \le \sum P(A_i)$, ★ Хёффдинг.'
+  lesson: limit-theorems
+  prerequisites: [prob.discrete-distributions, prob.continuous-distributions]
+  core: true
+
 - id: prob.independence
   title:
     ru: 'Независимость'

@@ -586,3 +586,94 @@ export const contMomentsGen: Generator = {
     };
   },
 };
+
+/** Урок III.8: ошибка выборочного среднего σ/√n — найти её, нужное n или во сколько раз увеличить выборку. */
+export const mcError: Generator = {
+  id: "prob.mc-error",
+  version: 1,
+  title: "Ошибка метода Монте-Карло",
+  make(seed) {
+    const r = rng(seed);
+    const kind = (seed - 1) % 3;
+    if (kind === 0) {
+      const sigma = r.pick([2, 3, 5, 10]);
+      const n = r.pick([25, 100, 400, 2500]);
+      const answer = round(sigma / Math.sqrt(n));
+      return {
+        kind: "numeric",
+        prompt: String.raw`Наблюдения независимы, $\sigma = ${sigma}$. Среднее посчитали по $n = ${n}$ наблюдениям. Найдите стандартное отклонение выборочного среднего $\bar X$.`,
+        label: String.raw`$\sqrt{\operatorname{Var} \bar X} =$`,
+        answer,
+        tol: 0.001,
+        hints: [String.raw`$\operatorname{Var} \bar X = \sigma^2/n$; стандартное отклонение — корень из дисперсии.`],
+        right: String.raw`$\sigma/\sqrt{n} = ${sigma}/${Math.sqrt(n)} = ${answer}$.`,
+        wrong: String.raw`Делить нужно на $\sqrt{n} = ${Math.sqrt(n)}$, а не на $n$: $n$ стоит в знаменателе дисперсии.`,
+      };
+    }
+    if (kind === 1) {
+      const sigma = r.pick([1, 2, 5]);
+      const eps = r.pick([0.1, 0.05, 0.01]);
+      const answer = Math.round((sigma / eps) ** 2);
+      return {
+        kind: "numeric",
+        prompt: String.raw`Оцениваем $\mathbb{E}\,g(X)$ средним по $n$ независимым значениям, $\sigma = ${sigma}$ — стандартное отклонение $g(X)$. Какое наименьшее $n$ даёт стандартное отклонение оценки не больше $${eps}$?`,
+        label: String.raw`$n =$`,
+        answer,
+        tol: 0.5,
+        hints: [String.raw`Решите $\sigma/\sqrt{n} \le ${eps}$ относительно $n$.`],
+        right: String.raw`$\sqrt{n} \ge ${sigma}/${eps} = ${round(sigma / eps)}$, $n \ge ${answer}$.`,
+        wrong: String.raw`Из $\sigma/\sqrt{n} \le \varepsilon$ следует $n \ge (\sigma/\varepsilon)^2$ — квадрат, а не $\sigma/\varepsilon$.`,
+      };
+    }
+    const n = r.pick([100, 1000, 500]);
+    const k = r.pick([2, 3, 10]);
+    const answer = n * k * k;
+    return {
+      kind: "numeric",
+      prompt: String.raw`Оценка Монте-Карло по $${n}$ точкам даёт ошибку около $\delta$. Сколько точек нужно, чтобы ошибка стала в $${k}$ раза меньше?`,
+      label: String.raw`$n =$`,
+      answer,
+      tol: 0.5,
+      hints: [String.raw`Ошибка $\sim \sigma/\sqrt{n}$: во сколько раз должен вырасти $\sqrt{n}$?`],
+      right: String.raw`$\sqrt{n}$ должен вырасти в $${k}$ раза, $n$ — в $${k * k}$: $${n} \cdot ${k * k} = ${answer}$.`,
+      wrong: String.raw`Ошибка убывает как $1/\sqrt{n}$, поэтому $n$ растёт в $${k}^2 = ${k * k}$ раза, а не в $${k}$.`,
+    };
+  },
+};
+
+/** Урок III.8: оценка объединения P(A₁ ∪ … ∪ A_k) ≤ Σ P(Aᵢ) — граница или допустимая вероятность одного события. */
+export const unionBound: Generator = {
+  id: "prob.union-bound",
+  version: 1,
+  title: "Оценка объединения",
+  make(seed) {
+    const r = rng(seed);
+    const k = r.pick([5, 10, 20, 50]);
+    if (seed % 2 === 1) {
+      const delta = r.pick([0.001, 0.002, 0.005]);
+      const answer = round(k * delta);
+      return {
+        kind: "numeric",
+        prompt: String.raw`Есть $${k}$ моделей. Для каждой вероятность, что ошибка на обучающей выборке далека от настоящей, не больше $${delta}$. Оцените сверху вероятность, что хотя бы для одной модели ошибка далека от настоящей.`,
+        label: String.raw`$P \le$`,
+        answer,
+        tol: 0.0005,
+        hints: [String.raw`$P(A_1 \cup \cdots \cup A_k) \le P(A_1) + \cdots + P(A_k)$ — независимость не нужна.`],
+        right: String.raw`$${k} \cdot ${delta} = ${answer}$.`,
+        wrong: String.raw`Вероятности объединения оценивают суммой: $${k} \cdot ${delta}$. Произведение — вероятность, что события случились все сразу, и то только для независимых.`,
+      };
+    }
+    const total = r.pick([0.05, 0.1, 0.01]);
+    const answer = round(total / k, 5);
+    return {
+      kind: "numeric",
+      prompt: String.raw`Проверяем $${k}$ гипотез и хотим, чтобы вероятность хотя бы одной ложной тревоги была не больше $${total}$. Какую вероятность ложной тревоги допустить для каждой гипотезы, если делить поровну?`,
+      label: String.raw`$\delta =$`,
+      answer,
+      tol: 0.00001,
+      hints: [String.raw`По оценке объединения $P(\text{хоть одна}) \le k\delta$; приравняйте $k\delta$ к $${total}$.`],
+      right: String.raw`$\delta = ${total}/${k} = ${answer}$ — поправка Бонферрони.`,
+      wrong: String.raw`Сумма $k$ одинаковых вероятностей — $k\delta$; она должна быть не больше $${total}$: $\delta = ${total}/${k}$.`,
+    };
+  },
+};
