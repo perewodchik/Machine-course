@@ -977,6 +977,31 @@ describe("генераторы", () => {
     }
   });
 
+  it("prob.cov-linear: AΣAᵀ симметрична и совпадает с прямым счётом; prob.density-linear: 1/|det A|", () => {
+    const mats = (prompt: string) => [...prompt.matchAll(/\\begin\{pmatrix\} (-?\d+) & (-?\d+) \\\\ (-?\d+) & (-?\d+) \\end\{pmatrix\}/g)].map((m) => [[Number(m[1]), Number(m[2])], [Number(m[3]), Number(m[4])]]);
+    for (let s = 1; s <= 30; s++) {
+      const t = make("prob.cov-linear", s);
+      const [S, A] = mats(t.prompt) as [number[][], number[][] | undefined];
+      if (t.kind === "matrix") {
+        const C = [0, 1].map((i) => [0, 1].map((j) => [0, 1].reduce((acc, k) => acc + [0, 1].reduce((a2, l) => a2 + A![i]![k]! * S![k]![l]! * A![j]![l]!, 0), 0)));
+        for (const i of [0, 1]) for (const j of [0, 1]) expect(t.answer[i]![j]!).toBeCloseTo(C[i]![j]!, 9);
+        expect(S![0]![0]! * S![1]![1]! - S![0]![1]! ** 2).toBeGreaterThan(0);
+        expect(t.answer[0]![1]).toBe(t.answer[1]![0]);
+        expect(t.answer[0]![0]).toBeGreaterThanOrEqual(0);
+      } else if (t.kind === "numeric") {
+        const m = /Var\}\((-?\d+)X_1 ([+-]) (\d+)X_2\)/.exec(t.prompt)!;
+        const a = [Number(m[1]), (m[2] === "-" ? -1 : 1) * Number(m[3])];
+        expect(t.answer).toBeCloseTo(a[0]! ** 2 * S![0]![0]! + 2 * a[0]! * a[1]! * S![0]![1]! + a[1]! ** 2 * S![1]![1]!, 9);
+        expect(t.answer).toBeGreaterThanOrEqual(0);
+      } else throw new Error("ожидалась матрица или число");
+
+      const d = make("prob.density-linear", s);
+      if (d.kind !== "numeric") throw new Error("ожидалось число");
+      const [B] = mats(d.prompt) as [number[][]];
+      expect(d.answer).toBeCloseTo(1 / Math.abs(B[0]![0]! * B[1]![1]! - B[0]![1]! * B[1]![0]!), 4);
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

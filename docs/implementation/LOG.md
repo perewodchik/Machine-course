@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — L-III.10 L-III.10 — случайные векторы и линейные преобразования — готов
+- **Сделано:** урок random-vectors (три цикла: среднее и Σ ⪰ 0, Cov(AX + b) = AΣAᵀ, плотность и |det A|), виджет «Линейное преобразование облака», формула f.covariance-linear, генераторы prob.cov-linear (матрица и aᵀΣa) и prob.density-linear, сниппет random_vectors.py с тестом; e2e: axe ждёт конца переходов (reducedMotion) — гонка на кнопке «Следующий уровень» в CI PR #27
+- **Файлы:** content/courses/foundations/probability/random-vectors.mdx, src/widgets/prob/cloud-transform/, content/formulas/prob/covariance-linear.yaml, code/snippets/prob/random_vectors.py, tests/e2e/support.ts
+- **Проверка:** validate, lint, build, check, vitest 573, pytest, check_consistency, e2e III.10 и раскладка iii10 (axe), игры min-max-saddle и dist-zoo ×3
+- **Отклонения от плана и решения:** нет
+- **Следующий шаг:** L-III.11 — многомерное нормальное распределение.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — L-III.9 L-III.9 — совместные распределения и ковариация — готов
 - **Сделано:** урок joint-distributions (три цикла: совместное/маргинальное/условное, ковариация и корреляция, условное матожидание), виджет «Облако точек», игра «Угадай корреляцию» (/games/guess-correlation/), модель src/lib/math/correlation.ts, формула f.total-expectation, генераторы prob.joint-marginal и prob.covariance, сниппет covariance.py с тестом
 - **Файлы:** content/courses/foundations/probability/joint-distributions.mdx, src/widgets/prob/scatter-cloud/, src/games/guess-correlation/, src/lib/math/correlation.ts, content/formulas/prob/total-expectation.yaml, code/snippets/prob/covariance.py

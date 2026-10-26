@@ -63,6 +63,15 @@
   prerequisites: [prob.expectation, prob.limit-theorems]
   core: true
 
+- id: prob.random-vectors
+  title:
+    ru: 'Случайные векторы и линейные преобразования'
+    en: 'random vectors and linear transformations'
+  summary: 'Среднее $\mu = \mathbb{E}X$ и ковариационная матрица $\Sigma = \mathbb{E}(X - \mu)(X - \mu)^\top \succeq 0$; $\operatorname{Var}(a^\top X) = a^\top \Sigma a$; $\operatorname{Cov}(AX + b) = A\Sigma A^\top$; плотность $p_Y(y) = p_X(A^{-1}(y - b))\, \lvert \det A \rvert^{-1}$.'
+  lesson: random-vectors
+  prerequisites: [prob.joint-distributions, la.psd]
+  core: true
+
 - id: prob.independence
   title:
     ru: 'Независимость'

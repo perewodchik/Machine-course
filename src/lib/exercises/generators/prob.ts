@@ -779,3 +779,82 @@ export const covariance: Generator = {
     };
   },
 };
+
+const pm = (m: number[][]) => String.raw`\begin{pmatrix} ${m.map((row) => row.join(" & ")).join(String.raw` \\ `)} \end{pmatrix}`;
+
+/** Урок III.10: ковариация линейного преобразования — матрица AΣAᵀ или дисперсия aᵀX = aᵀΣa. */
+export const covLinearGen: Generator = {
+  id: "prob.cov-linear",
+  version: 1,
+  title: "Ковариация линейного преобразования",
+  make(seed) {
+    const r = rng(seed);
+    const s1 = r.int(1, 4);
+    const s2 = r.int(1, 4);
+    // Σ ≻ 0: при s₁s₂ = 1 ковариация ±1 сделала бы Σ вырожденной
+    const c = s1 * s2 > 1 ? r.pick([-1, 0, 1]) : 0;
+    const S = [
+      [s1, c],
+      [c, s2],
+    ];
+    if (seed % 2 === 1) {
+      const A = [
+        [r.int(-2, 2), r.nonzero(-2, 2)],
+        [r.nonzero(-2, 2), r.int(-2, 2)],
+      ];
+      const AS = [0, 1].map((i) => [0, 1].map((j) => A[i]![0]! * S[0]![j]! + A[i]![1]! * S[1]![j]!));
+      const answer = [0, 1].map((i) => [0, 1].map((j) => AS[i]![0]! * A[j]![0]! + AS[i]![1]! * A[j]![1]!));
+      return {
+        kind: "matrix",
+        prompt: String.raw`$\operatorname{Cov} X = \Sigma = ${pm(S)}$, $A = ${pm(A)}$, $b = (3, -1)^\top$. Найдите $\operatorname{Cov}(AX + b)$.`,
+        label: String.raw`$\operatorname{Cov}(AX + b) =$`,
+        answer,
+        tol: 0.001,
+        hints: [String.raw`$\operatorname{Cov}(AX + b) = A\Sigma A^\top$; сдвиг $b$ на ковариацию не влияет.`, String.raw`Сначала $A\Sigma = ${pm(AS)}$, потом умножьте справа на $A^\top$.`],
+        right: String.raw`$A\Sigma A^\top = ${pm(answer)}$ — симметричная, как и положено ковариации.`,
+        wrong: String.raw`Проверьте: ответ должен быть симметричным. $A\Sigma = ${pm(AS)}$ — ещё не ковариация, нужно умножить на $A^\top$ справа.`,
+      };
+    }
+    const a = [r.nonzero(-3, 3), r.nonzero(-3, 3)];
+    const answer = a[0]! ** 2 * s1 + 2 * a[0]! * a[1]! * c + a[1]! ** 2 * s2;
+    return {
+      kind: "numeric",
+      prompt: String.raw`$\operatorname{Cov} X = \Sigma = ${pm(S)}$. Найдите $\operatorname{Var}(${a[0]}X_1 ${a[1]! < 0 ? "-" : "+"} ${Math.abs(a[1]!)}X_2)$.`,
+      label: String.raw`$\operatorname{Var} =$`,
+      answer,
+      tol: 0.001,
+      hints: [String.raw`$\operatorname{Var}(a^\top X) = a^\top \Sigma a$ при $a = (${a[0]}, ${a[1]})^\top$ — частный случай $A\Sigma A^\top$ с одной строкой.`],
+      right: String.raw`$a^\top\Sigma a = ${par(a[0]!)}^2 \cdot ${s1} + 2 \cdot ${par(a[0]!)} \cdot ${par(a[1]!)} \cdot ${par(c)} + ${par(a[1]!)}^2 \cdot ${s2} = ${answer}$.`,
+      wrong: String.raw`Не забудьте ковариацию: $\operatorname{Var}(a_1X_1 + a_2X_2) = a_1^2\Sigma_{11} + 2a_1a_2\Sigma_{12} + a_2^2\Sigma_{22}$.`,
+    };
+  },
+};
+
+/** Урок III.10: плотность Y = AX + b делится на |det A| — равномерное на квадрате или стандартное нормальное в центре. */
+export const densityLinear: Generator = {
+  id: "prob.density-linear",
+  version: 1,
+  title: "Плотность после линейного преобразования",
+  make(seed) {
+    const r = rng(seed);
+    let A: number[][];
+    do
+      A = [
+        [r.int(-3, 3), r.int(-2, 2)],
+        [r.int(-2, 2), r.int(-3, 3)],
+      ];
+    while (A[0]![0]! * A[1]![1]! - A[0]![1]! * A[1]![0]! === 0);
+    const d = A[0]![0]! * A[1]![1]! - A[0]![1]! * A[1]![0]!;
+    const answer = round(1 / Math.abs(d), 4);
+    return {
+      kind: "numeric",
+      prompt: String.raw`$X$ равномерен на квадрате $[0, 1]^2$: его плотность равна $1$ на квадрате. $Y = AX$, $A = ${pm(A)}$. Чему равна плотность $Y$ в точках параллелограмма $A[0, 1]^2$?`,
+      label: String.raw`$p_Y =$`,
+      answer,
+      tol: 0.0005,
+      hints: [String.raw`$p_Y(y) = p_X(A^{-1}y)\, \lvert \det A \rvert^{-1}$; площадь параллелограмма — $\lvert \det A \rvert$ (урок I.7).`],
+      right: String.raw`$\det A = ${d}$, $p_Y = 1/${Math.abs(d)} \approx ${answer}$: площадь выросла в $${Math.abs(d)}$ раз, плотность упала во столько же.`,
+      wrong: d < 0 ? String.raw`$\det A = ${d} < 0$, но плотность не бывает отрицательной: делить нужно на модуль, $\lvert \det A \rvert = ${-d}$.` : String.raw`Плотность делится на $\lvert \det A \rvert = ${d}$, а не умножается: вероятность квадрата растекается по площади $${d}$.`,
+    };
+  },
+};

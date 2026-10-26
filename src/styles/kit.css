@@ -186,6 +186,11 @@
   .scatter-cloud__group { display: flex; flex-wrap: wrap; gap: var(--space-2); }
   .scatter-cloud__group .btn[aria-pressed="true"] { border-color: var(--pen); color: var(--pen); box-shadow: inset 0 0 0 1px var(--pen); }
   @media (max-width: 900px) { .scatter-cloud__controls { grid-template-columns: minmax(0, 1fr); } }
+  .cloud-transform__controls { display: grid; gap: var(--space-4); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule); }
+  .cloud-transform__group { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .cloud-transform__matrix { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3) var(--space-5); }
+  .cloud-transform__readouts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: start; gap: var(--space-3) var(--space-5); }
+  @media (max-width: 900px) { .cloud-transform__matrix { grid-template-columns: minmax(0, 1fr); } .cloud-transform__readouts { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   .riemann__fn { font-family: var(--font-math); font-size: 1.05em; }
   .riemann__fn sup { font-size: 0.7em; }
   @media (max-width: 900px) { .riemann__controls { grid-template-columns: minmax(0, 1fr); } }

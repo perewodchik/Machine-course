@@ -243,3 +243,29 @@ test("урок III.9: облако — парабола и выброс, раз�
   await page.evaluate(() => window.scrollTo(0, 0));
   await expectNoAxeViolations(page);
 });
+
+test("урок III.10: облако — поворот и вырожденная матрица, итоговая проверка матрицей", async ({ page }) => {
+  await page.goto("/foundations/probability/random-vectors/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Случайные векторы и линейные преобразования");
+
+  const fig = page.locator(".cloud-transform").first();
+  await fig.scrollIntoViewIfNeeded();
+  await expect(fig.locator("xpath=ancestor::astro-island[1]")).not.toHaveAttribute("ssr", "");
+  // A = [[1.5, 0.5], [0, 0.8]]: AAᵀ = [[2.5, 0.4], [0.4, 0.64]], det A = 1.2
+  await expect(fig.locator("[aria-live]")).toContainText("AAᵀ = [[2.50, 0.40], [0.40, 0.64]], det A = 1.20");
+  await fig.getByRole("button", { name: "поворот" }).press("Enter");
+  await expect(fig.locator("[aria-live]")).toContainText("[[0.98, 0.00], [0.00, 0.98]]");
+  await fig.getByRole("button", { name: "вырожденная" }).press("Enter");
+  await expect(fig.locator("[aria-live]")).toContainText("det A = 0.00");
+
+  const final = page.locator("#final-check");
+  const spec = generator("prob.cov-linear").make(31);
+  if (spec.kind !== "matrix") throw new Error("ожидалась матрица");
+  const cells = final.locator("[data-variant]:not([hidden]) input");
+  await expect(cells).toHaveCount(4);
+  for (const [k, v] of spec.answer.flat().entries()) await cells.nth(k).fill(String(v));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});

@@ -1,0 +1,70 @@
+id: f.covariance-linear
+kind: formula
+title:
+  ru: 'Ковариационная матрица линейного преобразования'
+  en: 'covariance of a linear transformation'
+statement: '\operatorname{Cov}(AX + b) = A \Sigma A^\top, \qquad \Sigma = \operatorname{Cov} X = \mathbb{E}(X - \mu)(X - \mu)^\top'
+
+# Урок III.10: сдвиг b пропадает в отклонении от среднего, A выносится из матожидания слева и (транспонированная)
+# справа. Проверка — на дискретном векторе: значения — столбцы V (d × k) с вероятностями p, среднее μ = V p,
+# ковариация Σ = (V − μ) diag(p) (V − μ)ᵀ; A — матрица m × d, b — вектор длины m.
+symbols:
+  - name: A
+    tex: 'A'
+    meaning: 'матрица преобразования, $m \times d$'
+    shape: [m, d]
+  - name: b
+    tex: 'b'
+    meaning: 'вектор сдвига'
+    shape: [m, 1]
+  - name: V
+    tex: 'V'
+    meaning: 'значения случайного вектора $X$ — столбцы'
+    shape: [d, k]
+  - name: p
+    tex: 'p'
+    meaning: 'вероятности значений, $\sum_j p_j = 1$'
+    shape: [k, 1]
+    sample: simplex
+
+dependsOn:
+  concepts: [prob.joint-distributions, la.matmul]
+  rules: []
+
+derivation:
+  plan:
+    - 'Найти среднее $Y = AX + b$ по линейности и отклонение $Y - \mathbb{E}Y$'
+    - 'Подставить отклонение в определение ковариационной матрицы и транспонировать произведение'
+    - 'Вынести постоянные $A$ и $A^\top$ из матожидания'
+  steps:
+    - goal: 0
+      tex: '\operatorname{Cov} Y = \mathbb{E}(Y - \mathbb{E}Y)(Y - \mathbb{E}Y)^\top, \qquad \mathbb{E}Y = A\mu + b'
+      by: [prob.joint-distributions]
+      note: 'Матожидание вектора — вектор матожиданий; линейность даёт $\mathbb{E}(AX + b) = A\,\mathbb{E}X + b$.'
+      check:
+        kind: same
+        py: '((A @ V + b[:, None]) - (A @ (V @ p) + b)[:, None]) @ np.diag(p) @ ((A @ V + b[:, None]) - (A @ (V @ p) + b)[:, None]).T'
+    - goal: 1
+      tex: '= \mathbb{E}\, \changed{A(X - \mu)\bigl(A(X - \mu)\bigr)^\top} = \mathbb{E}\, A(X - \mu)(X - \mu)^\top \changed{A^\top}'
+      by: [la.matmul]
+      note: 'Сдвиг $b$ сокращается: $Y - \mathbb{E}Y = A(X - \mu)$. Транспонирование произведения: $(Au)^\top = u^\top A^\top$ (урок I.5).'
+      check:
+        kind: same
+        py: '(A @ (V - (V @ p)[:, None])) @ np.diag(p) @ (A @ (V - (V @ p)[:, None])).T'
+    - goal: 2
+      tex: '= A\, \changed{\mathbb{E}(X - \mu)(X - \mu)^\top}\, A^\top = \changed{A \Sigma A^\top}'
+      by: [prob.expectation]
+      note: '$A$ — константа: матожидание линейно и по каждой клетке матрицы. Результат симметричен и $\succeq 0$, как и должна быть ковариация.'
+      check:
+        kind: same
+        py: 'A @ ((V - (V @ p)[:, None]) @ np.diag(p) @ (V - (V @ p)[:, None]).T) @ A.T'
+
+pitfalls:
+  - 'Писать $\operatorname{Cov}(AX) = A\Sigma$: результат несимметричен и даже не той формы при $m \ne d$; $A$ входит дважды — слева и транспонированной справа.'
+  - 'Добавлять сдвиг: $\operatorname{Cov}(X + b) = \operatorname{Cov} X$ — сдвиг меняет среднее, но не разброс.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Principal components analysis'
+
+usedIn: [prob.random-vectors]

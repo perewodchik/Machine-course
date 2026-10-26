@@ -25,6 +25,7 @@ import CenterMass from "../widgets/CenterMass.astro";
 import DistExplorer from "../widgets/DistExplorer.astro";
 import RunningMean from "../widgets/RunningMean.astro";
 import ScatterCloud from "../widgets/ScatterCloud.astro";
+import CloudTransform from "../widgets/CloudTransform.astro";
 import SumHistogram from "../widgets/SumHistogram.astro";
 import ContExplorer from "../widgets/ContExplorer.astro";
 import GradientField from "../widgets/GradientField.astro";
@@ -42,5 +43,5 @@ import PyCell from "../python/PyCell.astro";
 import PyCode from "../python/PyCode.astro";
 
 // виджеты — обёртки .astro с островами React
-export const lessonComponents = { Block, Derivation, Diagnostic, Exercise, ExerciseSet, Formula, Note, Pilot, Prereqs, SymbolLegend, FitLine, GridMap, BayesGrid, Riemann, Span, NormBalls, Projection, MatmulViews, SystemLines, PlaneProjection, LevelSets, SvdSteps, LowRank, GradientField, CompGraph, Chord, Newton, Lagrange, Kkt, AreaStretch, Events, DensityCdf, CenterMass, DistExplorer, ContExplorer, RunningMean, SumHistogram, ScatterCloud, PyCode, PyCell, OpenIn };
-export { AreaStretch, BayesGrid, Block, CenterMass, Chord, CompGraph, ContExplorer, DensityCdf, Derivation, Diagnostic, DistExplorer, Events, Exercise, ExerciseSet, FitLine, Formula, GradientField, GridMap, Kkt, Lagrange, LevelSets, LowRank, MatmulViews, Newton, Note, NormBalls, Pilot, PlaneProjection, OpenIn, Prereqs, Projection, PyCell, PyCode, Riemann, RunningMean, ScatterCloud, Span, SumHistogram, SvdSteps, SymbolLegend, SystemLines };
+export const lessonComponents = { Block, Derivation, Diagnostic, Exercise, ExerciseSet, Formula, Note, Pilot, Prereqs, SymbolLegend, FitLine, GridMap, BayesGrid, Riemann, Span, NormBalls, Projection, MatmulViews, SystemLines, PlaneProjection, LevelSets, SvdSteps, LowRank, GradientField, CompGraph, Chord, Newton, Lagrange, Kkt, AreaStretch, Events, DensityCdf, CenterMass, DistExplorer, ContExplorer, RunningMean, SumHistogram, ScatterCloud, CloudTransform, PyCode, PyCell, OpenIn };
+export { AreaStretch, BayesGrid, Block, CenterMass, Chord, CloudTransform, CompGraph, ContExplorer, DensityCdf, Derivation, Diagnostic, DistExplorer, Events, Exercise, ExerciseSet, FitLine, Formula, GradientField, GridMap, Kkt, Lagrange, LevelSets, LowRank, MatmulViews, Newton, Note, NormBalls, Pilot, PlaneProjection, OpenIn, Prereqs, Projection, PyCell, PyCode, Riemann, RunningMean, ScatterCloud, Span, SumHistogram, SvdSteps, SymbolLegend, SystemLines };

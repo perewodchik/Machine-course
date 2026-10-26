@@ -23,6 +23,7 @@ export const layoutPages = {
   iii7: "/foundations/probability/continuous-distributions/",
   iii8: "/foundations/probability/limit-theorems/",
   iii9: "/foundations/probability/joint-distributions/",
+  iii10: "/foundations/probability/random-vectors/",
   zoogame: "/games/dist-zoo/",
   corrgame: "/games/guess-correlation/",
   iii3: "/foundations/probability/bayes/",
@@ -89,6 +90,8 @@ export async function expectNoAxeViolations(page: Page): Promise<void> {
   await page.evaluate(async () => {
     await document.fonts.ready;
   });
+  // переходы цвета (.btn, 160 мс) axe иначе может поймать на полпути и насчитать ложный недостаточный контраст
+  await page.emulateMedia({ reducedMotion: "reduce" });
   const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"]).analyze();
   expect(violations.map((v) => `${v.id}: ${v.help} — ${v.nodes.map((n) => n.target.join(" ")).join(", ")}`)).toEqual([]);
 }

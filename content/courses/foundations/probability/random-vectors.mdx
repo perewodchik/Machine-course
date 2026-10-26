@@ -1,0 +1,113 @@
+---
+id: random-vectors
+title: 'Случайные векторы и линейные преобразования'
+number: 'III.10'
+concepts: [prob.random-vectors]
+minutes: 120
+lead: 'Объект в ML — вектор признаков, и его разброс описывает не одно число, а матрица: дисперсии по диагонали, ковариации вне её. Разберём ковариационную матрицу, докажем, что она неотрицательно определена, и выясним, что с ней и с плотностью делает линейное преобразование. На этом стоят PCA и ICA.'
+---
+
+{/*
+  План урока (docs/program/03-probability.md, карточка III.10) — три цикла:
+  1. Случайный вектор: среднее, ковариационная матрица, Σ ⪰ 0 через Var(aᵀX); упражнение 1 (prob.cov-linear, вариант aᵀΣa).
+  2. Линейное преобразование: предсказание (Cov(AX)), формула 1 (f.covariance-linear), рисунок 1 (CloudTransform);
+     ошибка — Cov(AX) = AΣ; ячейка Python; упражнение 2 (prob.cov-linear).
+  3. Плотность после преобразования: |det A|, связь с II.10; ошибка — забыть модуль; CS229 PCA, ICA;
+     упражнение 3 (prob.density-linear).
+  Итог, итоговая проверка (prob.cov-linear, ставит «знаю»).
+*/}
+
+<Prereqs lessons={["foundations/probability/joint-distributions", "foundations/linear-algebra/quadratic-forms"]} />
+
+## Среднее и ковариационная матрица
+
+**Случайный вектор** $X = (X_1, \ldots, X_d)^\top$ — столбец случайных величин на одном пространстве исходов: признаки одной квартиры, пиксели одной картинки. Его **среднее** — вектор средних $\mu = \mathbb{E}X$, а разброс описывает **ковариационная матрица**
+
+$$
+\Sigma = \operatorname{Cov} X = \mathbb{E}(X - \mu)(X - \mu)^\top, \qquad \Sigma_{jk} = \operatorname{Cov}(X_j, X_k) .
+$$
+
+Внешнее произведение $(X - \mu)(X - \mu)^\top$ — матрица $d \times d$ всех попарных произведений отклонений. По диагонали $\Sigma$ стоят дисперсии $\operatorname{Var} X_j$, вне её — ковариации; $\Sigma$ симметрична. По выборке $x^{(1)}, \ldots, x^{(n)}$ её оценивают средним тех же матриц: $\frac1n \sum_i (x^{(i)} - \bar x)(x^{(i)} - \bar x)^\top$.
+
+Главное свойство: $\Sigma \succeq 0$. Возьмём любой постоянный вектор $a$ и величину $a^\top X$ — взвешенную сумму признаков. Её дисперсия
+
+$$
+\operatorname{Var}(a^\top X) = \mathbb{E}\bigl(a^\top (X - \mu)\bigr)^2 = a^\top\, \mathbb{E}(X - \mu)(X - \mu)^\top\, a = a^\top \Sigma a
+$$
+
+не бывает отрицательной, значит, квадратичная форма $a^\top \Sigma a \ge 0$ для всех $a$ — это и есть неотрицательная определённость (урок I.10). Если $a^\top \Sigma a = 0$ при $a \ne 0$, величина $a^\top X$ постоянна: вектор живёт в гиперплоскости, и $\Sigma$ вырождена.
+
+<Note label="По-английски">Случайный вектор — *random vector*, ковариационная матрица — *covariance matrix*, внешнее произведение — *outer product*.</Note>
+
+<Exercise gen="prob.cov-linear" n={1} variants={6} seed={2} />
+
+## Линейное преобразование
+
+<Exercise
+  title="Предскажите"
+  id="iii10.predict-cov"
+  spec={{
+    kind: "predict",
+    prompt: "$\\operatorname{Cov} X = \\Sigma$, $Y = AX$. Чему равна $\\operatorname{Cov} Y$?",
+    options: [
+      { text: "$A\\Sigma A^\\top$", correct: true, why: "Отклонение $Y - \\mathbb{E}Y = A(X - \\mu)$ входит в ковариацию дважды: слева $A$, справа — транспонированное $A^\\top$. Так же для одной величины $\\operatorname{Var}(aX) = a^2 \\operatorname{Var} X$." },
+      { text: "$A\\Sigma$", why: "Матрица $A\\Sigma$ обычно даже не симметрична, а ковариация симметрична всегда. Множитель $A$ нужен с обеих сторон, как $a^2$ у одной величины." },
+      { text: "$A^2 \\Sigma$", why: "Для чисел $a^2 \\sigma^2$ верно, но матрицы не коммутируют: $A$ встаёт слева, $A^\\top$ — справа, и порядок важен." },
+    ],
+    reveal: "$A\\Sigma A^\\top$.",
+  }}
+/>
+
+Сдвиг на постоянный вектор $b$ меняет среднее, но не отклонения, а матрица выносится из матожидания по обе стороны.
+
+<Formula formula="f.covariance-linear" n={1} />
+
+Для одной строки $a^\top$ формула даёт уже знакомое $\operatorname{Var}(a^\top X) = a^\top \Sigma a$. Отсюда и $\Sigma \succeq 0$ у любого $AX$: $A\Sigma A^\top$ симметрична, и $u^\top A\Sigma A^\top u = (A^\top u)^\top \Sigma (A^\top u) \ge 0$.
+
+<CloudTransform n={1} initial={{ A: [[1.5, 0.5], [0, 0.8]] }}>Облако $X \sim \mathcal{N}(0, I)$ из $300$ точек после преобразования $Y = AX + b$. Пунктир — эллипс уровня $2\sigma$ исходного облака, сплошной — эллипс ковариации $AA^\top$. Нажмите «поворот»: почему эллипс остался кругом? Нажмите «вырожденная»: что стало с облаком и с $\det A$? Сдвиньте $b$: меняются ли $\Sigma_{11}$, $\Sigma_{12}$, $\Sigma_{22}$?</CloudTransform>
+
+<Block kind="pitfall">
+
+Писать $\operatorname{Cov}(AX) = A\Sigma$. Ответ должен быть симметричным, а при $A$ размера $m \times d$ — размера $m \times m$; у $A\Sigma$ размер $m \times d$. Проверка размеров (урок I.3) ловит эту ошибку сразу.
+
+</Block>
+
+Проверим формулу на выборке из $200\,000$ векторов. В NumPy объекты — строки матрицы, как в CS229, поэтому $y^{(i)} = Ax^{(i)} + b$ для всех строк сразу — это `X @ A.T + b`. Перед запуском предскажите, с какой из двух матриц совпадёт выборочная ковариация.
+
+<PyCode src="prob/random_vectors.py#demo" run />
+
+Выборочная ковариация $\begin{smallmatrix} 4.22 & 3.22 \\ 3.22 & 4.03 \end{smallmatrix}$ совпадает с $A\Sigma A^\top = \begin{smallmatrix} 4.2 & 3.2 \\ 3.2 & 4 \end{smallmatrix}$, а $A\Sigma$ несимметрична и с ней не совпадает. $\operatorname{Var}(X_1 - 2X_2)$ по выборке — $3.61$, по формуле $a^\top \Sigma a = 3.6$. Собственные числа $\Sigma$ — $0.719$ и $2.281$: оба положительны, $\Sigma \succ 0$.
+
+<Note label="По-английски">Линейное преобразование случайного вектора — *linear transformation of a random vector*.</Note>
+
+<Exercise gen="prob.cov-linear" n={2} variants={6} />
+
+## Плотность после преобразования
+
+Пусть у $X$ плотность $p_X$, а $A$ обратима. Тогда у $Y = AX + b$ тоже есть плотность:
+
+$$
+p_Y(y) = p_X\bigl(A^{-1}(y - b)\bigr)\, \frac{1}{\lvert \det A \rvert} .
+$$
+
+Это многомерная версия формулы из урока III.4, а $\lvert \det A \rvert$ — якобиан из урока II.10: преобразование растягивает площади в $\lvert \det A \rvert$ раз (урок I.7), и вероятность, размазанная по большей площади, имеет меньшую плотность. Полная вероятность остаётся $1$. Если $\det A = 0$, облако сплющивается на прямую, как на рисунке 1 с вырожденной матрицей, и плотности у $Y$ нет вовсе.
+
+<Block kind="pitfall">
+
+Забывать модуль определителя. $\det A$ бывает отрицательным — у отражения, у матрицы с переставленными строками, — а плотность отрицательной не бывает. Ориентация для вероятности не важна, важна только площадь: $\lvert \det A \rvert$.
+
+</Block>
+
+Зачем это в ML. В PCA (CS229, «Principal components analysis») ищут направление $a$ с наибольшей дисперсией $a^\top \Sigma a$ при $\lVert a \rVert = 1$ — по уроку II.8 это собственный вектор $\Sigma$. В ICA («Independent components analysis») наблюдения $x = As$ — смесь независимых источников, а правдоподобие для восстанавливающей матрицы $W = A^{-1}$ берут из формулы плотности: в нём появляется $\log \lvert \det W \rvert$.
+
+<Note label="По-английски">Якобиан — *Jacobian*, модуль определителя — *absolute value of the determinant*.</Note>
+
+<Exercise gen="prob.density-linear" n={3} variants={6} />
+
+## Итог
+
+- $\mu = \mathbb{E}X$, $\Sigma = \mathbb{E}(X - \mu)(X - \mu)^\top$: дисперсии по диагонали, ковариации вне её; $\Sigma$ симметрична и $\succeq 0$, потому что $a^\top \Sigma a = \operatorname{Var}(a^\top X) \ge 0$.
+- $\operatorname{Cov}(AX + b) = A\Sigma A^\top$ — не $A\Sigma$; сдвиг ковариацию не меняет.
+- $p_Y(y) = p_X(A^{-1}(y - b))\, \lvert \det A \rvert^{-1}$ для обратимой $A$.
+
+<Exercise gen="prob.cov-linear" seed={31} id="post.iii10" title="Итоговая проверка" final />
