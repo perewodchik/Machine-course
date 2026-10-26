@@ -15,6 +15,7 @@ export const layoutPages = {
   lab: "/lab/",
   // срез этапа 2 (S2.11): ещё два урока и обе игры
   i4: "/foundations/linear-algebra/matrix-as-map/",
+  iii1: "/foundations/probability/probability-space/",
   iii3: "/foundations/probability/bayes/",
   puzzle: "/games/matrix-puzzle/",
   detective: "/games/bayes-detective/",
@@ -55,6 +56,8 @@ export const layoutPages = {
   ii6: "/foundations/calculus/gradient-descent/",
   ii7: "/foundations/calculus/newton/",
   ii8: "/foundations/calculus/lagrange/",
+  ii9: "/foundations/calculus/duality-kkt/",
+  ii10: "/foundations/calculus/multiple-integrals/",
   divgame: "/games/divergence/",
   foggame: "/games/foggy-descent/",
   saddlegame: "/games/min-max-saddle/",

@@ -695,6 +695,90 @@ describe("генераторы", () => {
     }
   });
 
+  it("calc.kkt-alpha: α* = max(0, g(c)/2), x* = c − α*(1, 1) — ближайшая допустимая точка", () => {
+    for (let s = 1; s <= 30; s++) {
+      const t = make("calc.kkt-alpha", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const b = Number(/x_1 \+ x_2 \\le (-?\d+)/.exec(t.prompt)![1]);
+      const [c1, c2] = /c = \((-?\d+), (-?\d+)\)/.exec(t.prompt)!.slice(1).map(Number) as [number, number];
+      const x = [c1 - t.answer, c2 - t.answer];
+      expect(x[0]! + x[1]!).toBeLessThanOrEqual(b + 1e-12);
+      expect(t.answer * (x[0]! + x[1]! - b)).toBeCloseTo(0, 12);
+      expect(t.answer > 0).toBe(s % 2 === 1);
+    }
+  });
+
+  it("calc.double-integral, calc.area-scale, calc.polar-integral: ответы сверены численной квадратурой", () => {
+    const mats = (tex: string) => [...tex.matchAll(/\\begin\{pmatrix\}(.*?)\\end\{pmatrix\}/g)].map((m) => m[1]!.split(" \\\\ ").map((row) => row.split(" & ").map(Number)));
+    const N = 400;
+    for (let s = 1; s <= 24; s++) {
+      const t = make("calc.double-integral", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const [, mono, a, b] = /iint_D (.*?)\\, dx\\, dy\$, где \$D = \[0, (\d)\] \\times \[0, (\d)\]/.exec(t.prompt)!;
+      const m = /^(\d*)(x(?:\^(\d))?)?y(?:\^(\d))?$/.exec(mono!)!;
+      const k = m[1] ? Number(m[1]) : 1;
+      const p = m[2] ? (m[3] ? Number(m[3]) : 1) : 0;
+      const q = m[4] ? Number(m[4]) : 1;
+      let sum = 0;
+      // правило средних точек на сетке N × N
+      for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+        const x = ((i + 0.5) * Number(a)) / N;
+        const y = ((j + 0.5) * Number(b)) / N;
+        sum += k * x ** p * y ** q;
+      }
+      expect(t.answer).toBeCloseTo((sum * Number(a) * Number(b)) / (N * N), 2);
+
+      const as = make("calc.area-scale", s);
+      if (as.kind !== "numeric") throw new Error("ожидалось число");
+      const A = mats(as.prompt)[0]!;
+      const S = Number(/площадь \$([\d.]+)\$/.exec(as.prompt)![1]);
+      // образ единичного квадрата — параллелограмм: площадь по формуле шнурка
+      const v = [[0, 0], [A[0]![0]!, A[1]![0]!], [A[0]![0]! + A[0]![1]!, A[1]![0]! + A[1]![1]!], [A[0]![1]!, A[1]![1]!]];
+      let sh = 0;
+      for (let i = 0; i < 4; i++) sh += v[i]![0]! * v[(i + 1) % 4]![1]! - v[(i + 1) % 4]![0]! * v[i]![1]!;
+      expect(as.answer).toBeCloseTo((Math.abs(sh) / 2) * S, 9);
+
+      const pi = make("calc.polar-integral", s);
+      if (pi.kind !== "numeric") throw new Error("ожидалось число");
+      const R2 = Number(/x\^2 \+ y\^2 \\le (\d+)\}/.exec(pi.prompt)![1]);
+      const kk = pi.prompt.includes("(x^2 + y^2)^2") ? 2 : pi.prompt.includes("(x^2 + y^2)") ? 1 : 0;
+      const R = Math.sqrt(R2);
+      let ps = 0;
+      const M = 600;
+      for (let i = 0; i < M; i++) for (let j = 0; j < M; j++) {
+        const x = -R + ((i + 0.5) * 2 * R) / M;
+        const y = -R + ((j + 0.5) * 2 * R) / M;
+        if (x * x + y * y <= R2) ps += (x * x + y * y) ** kk;
+      }
+      expect(pi.answer * Math.PI).toBeCloseTo((ps * 4 * R2) / (M * M), 0);
+    }
+  });
+
+  it("prob.dice-event: ответ — доля перебором 36 исходов; prob.monomials — перечисление мономов", () => {
+    for (let s = 1; s <= 24; s++) {
+      const t = make("prob.dice-event", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const num = (re: RegExp) => Number(re.exec(t.prompt)![1]);
+      const pairs = Array.from({ length: 36 }, (_, i) => [Math.floor(i / 6) + 1, (i % 6) + 1] as const);
+      const has = t.prompt.includes("равна")
+        ? ([a, b]: readonly [number, number]) => a + b === num(/равна \$(\d+)\$/)
+        : t.prompt.includes("не меньше")
+          ? ([a, b]: readonly [number, number]) => a + b >= num(/не меньше \$(\d+)\$/)
+          : t.prompt.includes("шестёрка")
+            ? ([a, b]: readonly [number, number]) => a === 6 || b === 6
+            : ([a, b]: readonly [number, number]) => Math.max(a, b) <= num(/не больше \$(\d+)\$/);
+      expect(t.answer).toBeCloseTo(pairs.filter(has).length / 36, 3);
+
+      const m = make("prob.monomials", s);
+      if (m.kind !== "numeric") throw new Error("ожидалось число");
+      const d = Number(/из \$(\d+)\$ переменных/.exec(m.prompt)![1]);
+      const k = Number(/не выше \$(\d+)\$/.exec(m.prompt)![1]);
+      // перечисляем показатели (a₁, …, a_d) с суммой ≤ k
+      const enumerate = (vars: number, left: number): number => (vars === 0 ? 1 : Array.from({ length: left + 1 }, (_, a) => enumerate(vars - 1, left - a)).reduce((x, y) => x + y, 0));
+      expect(m.answer).toBe(enumerate(d, k));
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

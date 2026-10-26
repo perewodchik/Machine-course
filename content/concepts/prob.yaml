@@ -1,5 +1,14 @@
 # Понятия теории вероятностей. Формат — content/concepts/la.yaml; программа — docs/program/03-probability.md.
 # Граф модуля III дополняется вместе с его уроками (этап 4); здесь — то, на что уже ссылаются формулы и уроки.
+- id: prob.probability-space
+  title:
+    ru: 'Вероятностное пространство'
+    en: 'probability space'
+  summary: 'Пространство исходов $\Omega$, события — его подмножества, вероятность $P$ с аксиомами: $P(A) \ge 0$, $P(\Omega) = 1$, сложение для несовместных; отсюда $P(\bar A) = 1 - P(A)$ и $P(A \cup B) = P(A) + P(B) - P(A \cap B)$.'
+  lesson: probability-space
+  prerequisites: []
+  core: true
+
 - id: prob.independence
   title:
     ru: 'Независимость'

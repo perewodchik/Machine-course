@@ -1,0 +1,14 @@
+---
+// Обёртка виджета «Как растягивается площадь при замене переменных» для урока: рисунок с номером и подписью, остров React (client:visible).
+import { AreaStretch, type AreaStretchProps } from "../../widgets/calc/area-stretch";
+
+interface Props extends AreaStretchProps {
+  /** Номер рисунка в уроке. */
+  n?: number;
+}
+const { n, ...props } = Astro.props;
+---
+<figure class="figure wide">
+  <AreaStretch client:visible {...props} />
+  <figcaption class="figure__caption">{n && <b>Рисунок {n}.</b>} <slot /></figcaption>
+</figure>

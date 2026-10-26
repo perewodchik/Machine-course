@@ -345,3 +345,12 @@
 - id: lagrange-multiplier
   ru: 'множитель Лагранжа; лагранжиан; ограничение-равенство'
   en: 'Lagrange multiplier; Lagrangian; equality constraint'
+- id: kkt
+  ru: 'двойственная задача; условия Каруша — Куна — Таккера; дополняющая нежёсткость'
+  en: 'dual problem; Karush–Kuhn–Tucker (KKT) conditions; complementary slackness'
+- id: multiple-integral
+  ru: 'кратный интеграл; теорема Фубини; замена переменных'
+  en: 'multiple integral; Fubini''s theorem; change of variables'
+- id: probability-space
+  ru: 'пространство исходов; событие; аксиомы вероятности; формула включений-исключений'
+  en: 'sample space; event; probability axioms; inclusion–exclusion'

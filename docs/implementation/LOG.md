@@ -17,6 +17,37 @@
 
 ---
 
+### 2026-10-26 — L-III.1 L-III.1: вероятностное пространство — готов
+- **Сделано:** урок probability-space (три цикла: исходы и события, аксиомы и включения-исключения, ★ подсчёт и число мономов), виджет «События как области», формула f.inclusion-exclusion, генераторы prob.dice-event и prob.monomials, сниппет prob/events.py с тестом
+- **Файлы:** content/courses/foundations/probability/probability-space.mdx, src/widgets/prob/events/, content/formulas/prob/inclusion-exclusion.yaml, src/lib/exercises/generators/prob.ts, code/snippets/prob/events.py
+- **Проверка:** validate, lint, build, vitest, pytest, e2e урока и layout iii1 (axe)
+- **Отклонения от плана и решения:** нет
+- **Следующий шаг:** L-III.2 — условная вероятность и независимость.
+- **Вопросы пользователю:** —
+
+### 2026-10-25 — S4.L2 уроки модуля II и итоговая проверка — готова
+- **Сделано:** итоговая проверка модуля II: ExerciseSet из девяти задач (II.1–II.8, II.10) в конце урока II.10, e2e проверяет 9 из 9
+- **Файлы:** content/courses/foundations/calculus/multiple-integrals.mdx, tests/e2e/lesson-calc.spec.ts
+- **Проверка:** validate, build, e2e модуля II
+- **Следующий шаг:** S4.L3.
+- **Вопросы пользователю:** —
+
+### 2026-10-25 — L-II.10 L-II.10: кратные интегралы и замена переменных — готов
+- **Сделано:** урок multiple-integrals (три цикла: Фубини, замена переменных и полярные координаты, гауссов интеграл), виджет «Как растягивается площадь», формула f.gaussian-integral (шаги проверены квадратурой), генераторы calc.double-integral, calc.area-scale, calc.polar-integral, сниппет integrals.py с тестом
+- **Файлы:** content/courses/foundations/calculus/multiple-integrals.mdx, src/widgets/calc/area-stretch/, content/formulas/calc/gaussian-integral.yaml, src/lib/exercises/generators/calc.ts, code/snippets/calculus/integrals.py
+- **Проверка:** validate, lint, build, check, vitest, pytest, check_consistency, e2e урока и layout ii10 (axe)
+- **Отклонения от плана и решения:** нет
+- **Следующий шаг:** итоговая проверка модуля II.
+- **Вопросы пользователю:** —
+
+### 2026-10-25 — L-II.9 L-II.9 ★: двойственность и условия KKT — готов
+- **Сделано:** урок duality-kkt (два цикла: KKT и дополняющая нежёсткость, двойственная задача и SVM), виджет «Активное и неактивное ограничение», формула f.dual-projection, генератор calc.kkt-alpha, понятие calc.kkt (core: false)
+- **Файлы:** content/courses/foundations/calculus/duality-kkt.mdx, src/widgets/calc/kkt/, content/formulas/calc/dual-projection.yaml, src/lib/exercises/generators/calc.ts
+- **Проверка:** validate, lint, build, check, vitest 502, pytest, check_consistency, e2e урока и layout ii9 (axe)
+- **Отклонения от плана и решения:** урок-углубление без ячейки Python: численная проверка двойственности — в model.test.ts виджета (fast-check)
+- **Следующий шаг:** L-II.10 — кратные интегралы.
+- **Вопросы пользователю:** —
+
 ### 2026-10-25 — L-II.8 L-II.8: множители Лагранжа; починка «Подгони прямую» — готов
 - **Сделано:** урок lagrange (три цикла: касание и лагранжиан, PCA — собственный вектор и λ, MLE категориального распределения), виджет «Касание линии уровня и ограничения», формула f.categorical-mle, генераторы calc.lagrange-line, calc.lagrange-eig, calc.categorical-mle, сниппет lagrange.py с тестом; в «Подгони прямую» уровень «выброс» иногда имел оптимум за бегунком — генератор перетягивает выборку
 - **Файлы:** content/courses/foundations/calculus/lagrange.mdx, src/widgets/calc/lagrange/, content/formulas/calc/categorical-mle.yaml, src/lib/exercises/generators/calc.ts, code/snippets/calculus/lagrange.py, src/games/fit-line/model.ts

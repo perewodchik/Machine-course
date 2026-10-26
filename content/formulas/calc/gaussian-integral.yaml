@@ -1,0 +1,53 @@
+id: f.gaussian-integral
+kind: formula
+title:
+  ru: 'Гауссов интеграл'
+  en: 'Gaussian integral'
+statement: '\int_{-\infty}^{\infty} e^{-x^2/2}\, dx = \sqrt{2\pi}'
+
+# Урок II.10: квадрат интеграла — двойной интеграл по плоскости (Фубини), в полярных координатах появляется
+# якобиан r, и внутренний интеграл берётся заменой u = r²/2. Каждый шаг проверяем численно — квадратурой
+# трапеций на мелкой сетке (хвосты за |x| > 10 меньше 10⁻²¹).
+symbols: []
+
+dependsOn:
+  concepts: [calc.integral, calc.change-of-variables]
+  rules: []
+
+derivation:
+  plan:
+    - 'Возвести интеграл в квадрат и записать как двойной по плоскости'
+    - 'Перейти к полярным координатам, не забыв якобиан $r$'
+    - 'Взять внутренний интеграл заменой $u = r^2/2$ и извлечь корень'
+  steps:
+    - goal: 0
+      tex: 'I^2 = \int_{-\infty}^{\infty} e^{-x^2/2} dx \int_{-\infty}^{\infty} e^{-y^2/2} dy = \changed{\iint_{\mathbb{R}^2} e^{-(x^2 + y^2)/2}\, dx\, dy}'
+      by: [calc.change-of-variables]
+      note: 'Произведение интегралов по разным переменным — повторный интеграл, а по теореме Фубини — двойной.'
+      check:
+        kind: same
+        py: 'np.trapezoid(np.trapezoid(np.exp(-(np.linspace(-10, 10, 2001)[:, None] ** 2 + np.linspace(-10, 10, 2001)[None, :] ** 2) / 2), np.linspace(-10, 10, 2001)), np.linspace(-10, 10, 2001))'
+    - goal: 1
+      tex: '= \int_0^{2\pi} \int_0^{\infty} e^{-r^2/2}\, \changed{r}\, dr\, d\varphi'
+      by: [calc.change-of-variables]
+      note: '$x^2 + y^2 = r^2$, а $dx\, dy = \lvert \det J \rvert\, dr\, d\varphi = r\, dr\, d\varphi$. Без множителя $r$ получился бы неверный ответ.'
+      check:
+        kind: same
+        py: '2 * np.pi * np.trapezoid(np.exp(-np.linspace(0, 12, 200001) ** 2 / 2) * np.linspace(0, 12, 200001), np.linspace(0, 12, 200001))'
+    - goal: 2
+      tex: '= 2\pi \int_0^{\infty} e^{-u}\, du = \changed{2\pi} \quad \Rightarrow \quad I = \sqrt{2\pi}'
+      by: [calc.integral]
+      note: 'Замена $u = r^2/2$, $du = r\, dr$ — множитель $r$ из якобиана как раз её и делает возможной. Интеграл $I > 0$, поэтому корень берём положительный.'
+      check:
+        kind: same
+        py: '2 * np.pi'
+
+pitfalls:
+  - 'Забыть якобиан полярных координат: $\int_0^{2\pi}\int_0^\infty e^{-r^2/2}\, dr\, d\varphi = 2\pi \sqrt{\pi/2}$ — не $2\pi$.'
+  - 'Забыть модуль: при замене переменных площадь умножается на $\lvert \det J \rvert$, а не на $\det J$, — иначе при отражении площадь стала бы отрицательной.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Probability review / Multivariate Gaussian'
+
+usedIn: [calc.change-of-variables]

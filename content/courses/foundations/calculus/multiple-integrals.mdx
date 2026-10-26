@@ -1,0 +1,114 @@
+---
+id: multiple-integrals
+title: 'Кратные интегралы и замена переменных'
+number: 'II.10'
+concepts: [calc.change-of-variables]
+minutes: 120
+lead: 'Вероятность для пары случайных величин — интеграл плотности по области на плоскости. Научимся считать такие интегралы как повторные, менять переменные с множителем |det J| и выведем константу нормального распределения √(2π) — она стоит в каждой формуле гауссианы.'
+---
+
+{/*
+  План урока (docs/program/02-calculus.md, карточка II.10) — три цикла:
+  1. Двойной интеграл как повторный: Фубини; упражнение 1 (calc.double-integral).
+  2. Замена переменных: предсказание (площадь образа квадрата), dx = |det J| du, рисунок 1 (AreaStretch), полярные
+     dx dy = r dr dφ; ошибки — забыть модуль, забыть r; упражнения 2 (calc.area-scale) и 3 (calc.polar-integral).
+  3. Гауссов интеграл: формула 1 (f.gaussian-integral), ячейка Python, нормальная плотность.
+  Итог, итоговая проверка (calc.polar-integral, ставит «знаю»), итоговая проверка модуля II (ExerciseSet, без ★ II.9).
+*/}
+
+<Prereqs lessons={["foundations/start/integral", "foundations/calculus/chain-rule-jacobian", "foundations/linear-algebra/inverse-determinant"]} />
+
+## Двойной интеграл
+
+Интеграл функции одной переменной — площадь под графиком (урок 0.7). **Двойной интеграл** $\iint_D f(x, y)\, dx\, dy$ — объём под поверхностью над областью $D$: разбиваем $D$ на маленькие прямоугольники, умножаем значение $f$ на площадь $\Delta x\, \Delta y$ и складываем.
+
+Считать его помогает **теорема Фубини**: для непрерывной $f$ на прямоугольнике $[a, b] \times [c, d]$ двойной интеграл равен повторному, причём порядок не важен:
+
+$$
+\iint_{[a, b] \times [c, d]} f(x, y)\, dx\, dy = \int_a^b \Bigl( \int_c^d f(x, y)\, dy \Bigr) dx .
+$$
+
+Внутренний интеграл берут по $y$ при замороженном $x$ — как частную производную, только наоборот. Если $f(x, y) = g(x)\, h(y)$, интеграл распадается в произведение $\int g\, dx \cdot \int h\, dy$. Так считают вероятности для независимых случайных величин: их совместная плотность — произведение.
+
+<Note label="По-английски">Кратный интеграл — *multiple integral*, повторный — *iterated integral*, теорема Фубини — *Fubini's theorem*.</Note>
+
+<Exercise gen="calc.double-integral" n={1} variants={6} />
+
+## Замена переменных
+
+<Exercise
+  title="Предскажите"
+  id="ii10.predict-area"
+  spec={{
+    kind: "predict",
+    prompt: "Единичный квадрат на плоскости $u$ отображается в $x = Au$, $A = \\begin{pmatrix} 2 & 1 \\\\ 0 & 3 \\end{pmatrix}$. Какая площадь у образа?",
+    options: [
+      { text: "$6$", correct: true, why: "Образ квадрата — параллелограмм, натянутый на столбцы $A$; его площадь — $\\lvert \\det A \\rvert = 2 \\cdot 3 - 1 \\cdot 0 = 6$ (урок I.7)." },
+      { text: "$5$ — след $A$", why: "След — сумма собственных значений, а площадь растягивается в их произведение раз: $\\det A = 6$." },
+      { text: "$1$ — сдвиг площадь не меняет", why: "Сдвигом был бы только наддиагональный элемент $1$. Диагональ $2$ и $3$ растягивает квадрат в $6$ раз." },
+    ],
+    reveal: "$6 = \\lvert \\det A \\rvert$.",
+  }}
+/>
+
+Линейное отображение умножает все площади на $\lvert \det A \rvert$ (урок I.7). Нелинейная замена $x = \varphi(u)$ около каждой точки почти линейна — её линейная часть есть якобиан $J$ (урок II.2). Поэтому маленькая клетка площади $du$ переходит в клетку площади $\lvert \det J(u) \rvert\, du$:
+
+$$
+\iint_{\varphi(U)} f(x)\, dx = \iint_U f\bigl(\varphi(u)\bigr)\, \lvert \det J(u) \rvert\, du .
+$$
+
+Самая частая замена — **полярные координаты** $x = r \cos\varphi$, $y = r \sin\varphi$. Якобиан $\begin{pmatrix} \cos\varphi & -r\sin\varphi \\ \sin\varphi & r\cos\varphi \end{pmatrix}$, его определитель $r$, и $dx\, dy = r\, dr\, d\varphi$: клетки далеко от центра шире.
+
+<AreaStretch n={1} initial={{ r: 1.5, phi: 30, d: 0.4 }}>Слева — клетка $\Delta r \times \Delta\varphi$ на плоскости $(\varphi, r)$, справа — её образ на плоскости $(x, y)$. Сравните площадь образа $S$ с $r\, \Delta r\, \Delta\varphi$: как меняется их отношение при уменьшении $\Delta$? Что происходит с образом у самого центра, при $r \to 0$?</AreaStretch>
+
+<Block kind="pitfall">
+
+Забыть модуль якобиана или сам якобиан. Площадь не бывает отрицательной, поэтому множитель — $\lvert \det J \rvert$: у отражения $\det J = -1$, а площадь не меняется. А в полярных координатах $dx\, dy = r\, dr\, d\varphi$, не $dr\, d\varphi$ — без множителя $r$ площадь круга радиуса $R$ вышла бы $2\pi R$ вместо $\pi R^2$.
+
+</Block>
+
+Зачем это в ML. Если $x = Au$ и у $u$ плотность $p_u$, то у $x$ плотность $p_x(x) = p_u(A^{-1} x)\, /\, \lvert \det A \rvert$: плотность падает там, где площадь растянулась. На этой формуле стоит метод независимых компонент (CS229, «Independent components analysis»).
+
+<Note label="По-английски">Замена переменных — *change of variables*, полярные координаты — *polar coordinates*.</Note>
+
+<Exercise gen="calc.area-scale" n={2} variants={6} />
+
+<Exercise gen="calc.polar-integral" n={3} variants={6} />
+
+## Гауссов интеграл
+
+Первообразной у $e^{-x^2/2}$ нет в элементарных функциях, но интеграл по всей прямой найти можно — через двойной интеграл и полярные координаты. Это классический пример, где замена переменных делает невозможное простым.
+
+<Formula formula="f.gaussian-integral" n={1} />
+
+Отсюда константа нормального распределения: $\frac{1}{\sqrt{2\pi}\, \sigma} e^{-(x - \mu)^2/(2\sigma^2)}$ интегрируется в единицу (замена $z = (x - \mu)/\sigma$ даёт множитель $\sigma$). В модуле III из той же замены получится нормировка многомерного нормального распределения с $\lvert \Sigma \rvert^{1/2}$ (CS229, «Probability review», «Multivariate Gaussian»). Проверим вывод численно; перед запуском предскажите, что выйдет в полярных координатах без множителя $r$.
+
+<PyCode src="calculus/integrals.py#demo" run />
+
+Все три способа дают $\sqrt{2\pi} \approx 2.506628$ и $2\pi \approx 6.283185$, а без якобиана получается $7.874805 = 2\pi\sqrt{\pi/2}$ — совсем другое число.
+
+## Итог
+
+- Двойной интеграл по прямоугольнику — повторный (Фубини); для $f = g(x) h(y)$ — произведение интегралов.
+- При замене $x = \varphi(u)$ площадь умножается на $\lvert \det J \rvert$; в полярных координатах $dx\, dy = r\, dr\, d\varphi$.
+- $\int e^{-x^2/2} dx = \sqrt{2\pi}$: квадрат интеграла в полярных координатах равен $2\pi$.
+
+<Exercise gen="calc.polar-integral" seed={31} id="post.ii10" title="Итоговая проверка" final />
+
+## Итоговая проверка модуля «Анализ и оптимизация»
+
+<ExerciseSet
+  seed={12}
+  title="Модуль «Анализ и оптимизация»"
+  items={[
+    { lesson: "foundations/calculus/gradient", gen: "calc.gradient-point", seed: 41 },
+    { lesson: "foundations/calculus/chain-rule-jacobian", gen: "calc.backprop", seed: 41 },
+    { lesson: "foundations/calculus/matrix-calculus", gen: "calc.matrix-grad", seed: 41 },
+    { lesson: "foundations/calculus/hessian-taylor", gen: "calc.classify", seed: 41 },
+    { lesson: "foundations/calculus/convexity", gen: "calc.convex-ops", seed: 41 },
+    { lesson: "foundations/calculus/gradient-descent", gen: "calc.lr-threshold", seed: 41 },
+    { lesson: "foundations/calculus/newton", gen: "calc.newton-1d", seed: 41 },
+    { lesson: "foundations/calculus/lagrange", gen: "calc.lagrange-eig", seed: 41 },
+    { lesson: "foundations/calculus/multiple-integrals", gen: "calc.area-scale", seed: 41 },
+  ]}
+/>

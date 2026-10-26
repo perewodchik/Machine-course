@@ -103,3 +103,66 @@ export const conditionalTable: Generator = {
     };
   },
 };
+
+type Dice = readonly [number, number];
+const DICE: Dice[] = Array.from({ length: 36 }, (_, i) => [Math.floor(i / 6) + 1, (i % 6) + 1] as const);
+
+/** Урок III.1: вероятность события на двух кубиках — доля из 36 равновозможных исходов. */
+export const diceEvent: Generator = {
+  id: "prob.dice-event",
+  version: 1,
+  title: "Событие на двух кубиках",
+  make(seed) {
+    const r = rng(seed);
+    const s = r.int(3, 10);
+    const m = r.int(2, 5);
+    const kinds = [
+      { tex: String.raw`сумма очков равна $${s}$`, has: ([a, b]: Dice) => a + b === s, hint: String.raw`Выпишите пары $(a, b)$ с $a + b = ${s}$.` },
+      { tex: String.raw`сумма очков не меньше $${s}$`, has: ([a, b]: Dice) => a + b >= s, hint: String.raw`Посчитайте пары по суммам $${s}, ${s + 1}, \ldots, 12$ — или через дополнение.` },
+      { tex: "выпала хотя бы одна шестёрка", has: ([a, b]: Dice) => a === 6 || b === 6, hint: String.raw`Через дополнение: «ни одной шестёрки» — $5 \cdot 5$ исходов.` },
+      { tex: String.raw`наибольшее из очков не больше $${m}$`, has: ([a, b]: Dice) => Math.max(a, b) <= m, hint: String.raw`Оба кубика показывают от $1$ до $${m}$: $${m} \cdot ${m}$ исходов.` },
+    ];
+    const k = kinds[(seed - 1) % kinds.length]!;
+    const n = DICE.filter(k.has).length;
+    const answer = Math.round((n / 36) * 1000) / 1000;
+    return {
+      kind: "numeric",
+      prompt: `Бросаем два кубика. Найдите вероятность, что ${k.tex}.`,
+      label: String.raw`$P =$`,
+      answer,
+      tol: 0.005,
+      hints: [String.raw`Исходов $36$, все равновозможны: $P = \lvert E \rvert / 36$.`, k.hint],
+      right: String.raw`Подходит $${n}$ исходов из $36$: $P = ${n}/36 \approx ${answer}$.`,
+      wrong: String.raw`Считайте упорядоченные пары: $(1, 2)$ и $(2, 1)$ — разные исходы. Подходящих пар $${n}$.`,
+    };
+  },
+};
+
+const binom = (n: number, k: number) => {
+  let c = 1;
+  for (let i = 1; i <= k; i++) c = (c * (n - k + i)) / i;
+  return Math.round(c);
+};
+
+/** Урок III.1 ★: число мономов степени не выше k от d переменных — C(d + k, k) (пригодится для полиномиальных ядер). */
+export const monomials: Generator = {
+  id: "prob.monomials",
+  version: 1,
+  title: "Число мономов",
+  make(seed) {
+    const r = rng(seed);
+    const d = r.int(2, 5);
+    const k = r.int(2, 3);
+    const answer = binom(d + k, k);
+    return {
+      kind: "numeric",
+      prompt: String.raw`Сколько мономов $x_1^{a_1} \cdots x_${d}^{a_${d}}$ степени не выше $${k}$ (включая константу $1$) можно составить из $${d}$ переменных?`,
+      label: "Число мономов:",
+      answer,
+      tol: 0,
+      hints: [String.raw`Добавьте фиктивную переменную $a_0 = ${k} - (a_1 + \cdots + a_${d})$: нужно разложить $${k}$ на $${d + 1}$ неотрицательных слагаемых.`, String.raw`«Шары и перегородки»: $${k}$ шаров и $${d}$ перегородок, $\binom{${d + k}}{${k}}$ способов.`],
+      right: String.raw`$\binom{d + k}{k} = \binom{${d + k}}{${k}} = ${answer}$.`,
+      wrong: String.raw`Не забудьте константу и мономы меньших степеней: ответ — $\binom{${d + k}}{${k}}$, а не только мономы степени ровно $${k}$.`,
+    };
+  },
+};

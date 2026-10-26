@@ -1,0 +1,61 @@
+id: f.inclusion-exclusion
+kind: formula
+title:
+  ru: 'Формула включений-исключений'
+  en: 'inclusion–exclusion'
+statement: 'P(A \cup B) = P(A) + P(B) - P(A \cap B)'
+
+# Урок III.1: через индикаторы (урок 0.4). На конечном Ω с весами pᵢ вероятность события — Σ pᵢ 1_A(i). Объединение
+# — дополнение к «ни A, ни B»: 1_{A∪B} = 1 − (1 − 1_A)(1 − 1_B). Раскрываем скобки и берём сумму с весами.
+# Равенства шагов — многочлены от индикаторов, поэтому проверка на любых числах a, b проверяет и индикаторы.
+symbols:
+  - name: p
+    tex: 'p'
+    meaning: 'вероятности исходов $\omega_1, \ldots, \omega_k$'
+    shape: [k, 1]
+    sample: simplex
+  - name: a
+    tex: '\mathbb{1}_A'
+    meaning: 'индикатор события $A$ на исходах'
+    shape: [k, 1]
+  - name: b
+    tex: '\mathbb{1}_B'
+    meaning: 'индикатор события $B$ на исходах'
+    shape: [k, 1]
+
+dependsOn:
+  concepts: [nota.indicator, prob.probability-space]
+  rules: []
+
+derivation:
+  plan:
+    - 'Записать объединение через дополнение: не попасть в $A \cup B$ — значит не попасть ни в $A$, ни в $B$'
+    - 'Раскрыть скобки в произведении индикаторов'
+    - 'Взять сумму с весами $p_i$: вероятность — сумма индикатора'
+  steps:
+    - goal: 0
+      tex: 'P(A \cup B) = \sum_i p_i \bigl(1 - (1 - \mathbb{1}_A(\omega_i))(1 - \mathbb{1}_B(\omega_i))\bigr)'
+      by: [prob.probability-space]
+      note: '$1 - \mathbb{1}_A$ — индикатор дополнения, произведение индикаторов — индикатор пересечения (урок 0.4).'
+      check:
+        kind: same
+        py: 'p @ (1 - (1 - a) * (1 - b))'
+    - goal: 1
+      tex: '= \sum_i p_i \bigl(\changed{\mathbb{1}_A(\omega_i) + \mathbb{1}_B(\omega_i) - \mathbb{1}_A(\omega_i)\, \mathbb{1}_B(\omega_i)}\bigr)'
+      by: [nota.indicator]
+      note: 'Раскрыли скобки: $1 - (1 - a - b + ab) = a + b - ab$.'
+      check:
+        kind: same
+        py: 'p @ (a + b - a * b)'
+    - goal: 2
+      tex: '= \changed{P(A) + P(B) - P(A \cap B)}'
+      by: [prob.probability-space]
+      note: 'Сумма разбилась на три: $\sum_i p_i \mathbb{1}_A = P(A)$, $\sum_i p_i \mathbb{1}_B = P(B)$, а $\mathbb{1}_A \mathbb{1}_B = \mathbb{1}_{A \cap B}$.'
+      check:
+        kind: same
+        py: 'p @ a + p @ b - p @ (a * b)'
+
+pitfalls:
+  - 'Складывать вероятности совместных событий: в $P(A) + P(B)$ пересечение посчитано дважды. Просто складывать можно только несовместные события, $A \cap B = \varnothing$.'
+
+usedIn: [prob.probability-space]

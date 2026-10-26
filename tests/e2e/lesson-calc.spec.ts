@@ -231,3 +231,80 @@ test("урок II.8: касание на окружности — собстве
   await page.evaluate(() => window.scrollTo(0, 0));
   await expectNoAxeViolations(page);
 });
+
+test("урок II.9: активное и неактивное ограничение, итоговая проверка", async ({ page }) => {
+  await page.goto("/foundations/calculus/duality-kkt/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Двойственность и условия KKT");
+
+  const fig = page.locator(".kkt").first();
+  await fig.scrollIntoViewIfNeeded();
+  await expect(fig.locator("xpath=ancestor::astro-island[1]")).not.toHaveAttribute("ssr", "");
+  // c = (2, 1): g(c) = 2, α* = g(c)/‖a‖² = 1, x* = (1, 0) — как в model.test.ts
+  await expect(fig.locator(".kkt__fact")).toContainText("Ограничение активно: x* на границе, α* = 1.00 > 0");
+  await fig.getByRole("slider", { name: "c1" }).fill("0");
+  await fig.getByRole("slider", { name: "c2" }).fill("0");
+  await expect(fig.locator(".kkt__fact")).toContainText("Ограничение неактивно");
+
+  const final = page.locator("#final-check");
+  const spec = generator("calc.kkt-alpha").make(31);
+  if (spec.kind !== "numeric") throw new Error("ожидалось число");
+  await final.locator("[data-variant]:not([hidden]) input").first().fill(String(spec.answer));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});
+
+test("урок II.10: площадь клетки в полярных координатах, разбор без якобиана, итоговая проверка", async ({ page }) => {
+  await page.goto("/foundations/calculus/multiple-integrals/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Кратные интегралы и замена переменных");
+
+  const fig = page.locator(".area-stretch").first();
+  await fig.scrollIntoViewIfNeeded();
+  await expect(fig.locator("xpath=ancestor::astro-island[1]")).not.toHaveAttribute("ssr", "");
+  // r = 1.5, Δ = 0.4: S = ½(1.9² − 1.5²)·0.4 = 0.272, r Δr Δφ = 0.24, отношение 1.133; при Δ = 0.02 — 1.007
+  await expect(fig.locator("[aria-live]")).toContainText("площадь образа 0.2720, r Δr Δφ = 0.2400, отношение 1.133");
+  await fig.getByRole("slider", { name: "Δ" }).fill("0.02");
+  await expect(fig.locator("[aria-live]")).toContainText("отношение 1.007");
+
+  const pi = page.locator("[data-exercise][data-item='calc.polar-integral']").first();
+  const seed = Number(await pi.locator("[data-variant]:not([hidden])").getAttribute("data-seed"));
+  const task = generator("calc.polar-integral").make(seed);
+  if (task.kind !== "numeric") throw new Error("ожидалось число");
+  // неверный ответ получает разбор про якобиан r
+  await pi.locator("[data-variant]:not([hidden]) input").first().fill(String(task.answer + 1));
+  await pi.getByRole("button", { name: "Проверить" }).click();
+  await expect(pi.locator("[data-feedback]")).toContainText("якобиан");
+
+  const final = page.locator("#final-check");
+  const spec = generator("calc.polar-integral").make(31);
+  if (spec.kind !== "numeric") throw new Error("ожидалось число");
+  await final.locator("[data-variant]:not([hidden]) input").first().fill(String(spec.answer));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});
+
+test("итоговая проверка модуля II: девять задач по урокам II.1–II.10 без ★ II.9", async ({ page }) => {
+  await page.goto("/foundations/calculus/multiple-integrals/");
+  const set = page.locator("[data-exercise-set]");
+  await set.scrollIntoViewIfNeeded();
+  const summary = set.locator("[data-summary]");
+  await expect(summary).toHaveText(/Решено верно: 0 из\s9\./);
+  for (const ex of await set.locator("[data-exercise]").all()) {
+    const gen = (await ex.getAttribute("data-item"))!;
+    const seed = Number(await ex.locator("[data-variant]").getAttribute("data-seed"));
+    const task = generator(gen).make(seed);
+    if (task.kind === "numeric") {
+      await ex.locator("input[data-input]").fill(String(task.answer));
+      await ex.getByRole("button", { name: "Проверить" }).click();
+    } else if (task.kind === "choice") {
+      await ex.locator("[data-option]").nth(task.options.findIndex((o) => o.correct)).click();
+    } else if (task.kind === "matrix") {
+      for (const [i, row] of task.answer.entries()) for (const [j, v] of row.entries()) await ex.locator(`[data-cell="${i},${j}"]`).fill(String(v));
+      await ex.getByRole("button", { name: "Проверить" }).click();
+    } else throw new Error(`задача ${gen}: вид ${task.kind}`);
+  }
+  await expect(summary).toHaveText(/Решено верно: 9 из\s9\./);
+});
