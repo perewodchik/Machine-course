@@ -1,0 +1,26 @@
+---
+// Игра «Покрой истину» (S4.L4, урок IV.8★): остров React с оболочкой GameShell. Блок «Чему учит игра» — статичный HTML.
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { CoverTruth, meta } from "../../games/cover-truth";
+import { loadCourse } from "../../lib/content/collections";
+
+const course = await loadCourse("foundations");
+const lesson = course.lessons.find((l) => l.key === meta.lesson);
+if (!lesson) throw new Error(`игра ${meta.id}: нет урока ${meta.lesson}`);
+const module = course.modules.find((m) => m.id === lesson.module);
+---
+<BaseLayout title={meta.title} description="Подберите множитель доверительного интервала так, чтобы 95 % интервалов накрывали истинное среднее." course={course}>
+  <main class="game shell" id="content">
+    <nav class="breadcrumb" aria-label="Путь">
+      <a href={`${course.href}#m-${lesson.module}`}>{module?.title}</a><span aria-hidden="true">/</span><span>Игра к уроку {lesson.number}</span>
+    </nav>
+    <h1>{meta.title}</h1>
+    <p class="lead game__lead">Сто выборок&nbsp;— сто интервалов. Подберите множитель <i>z</i> так, чтобы истинное среднее накрывала нужная доля интервалов: не больше и&nbsp;не меньше. Пять уровней, партия&nbsp;— <span class="nowrap">4–6&nbsp;минут</span>.</p>
+    <CoverTruth client:load>
+      <div class="block block--intuition game__teaches">
+        <p><span class="block__title">Чему учит игра.</span> Уровень доверия&nbsp;— свойство процедуры, а&nbsp;не&nbsp;одного интервала: 95&nbsp;% интервалов накрывают истину, конкретный либо накрыл, либо нет. Когда <i>σ</i> оценивается по&nbsp;малой выборке или данные скошены, табличный множитель нормального распределения обещает больше, чем даёт.</p>
+        <p><a href={lesson.href}>Урок {lesson.number}. {lesson.title}</a></p>
+      </div>
+    </CoverTruth>
+  </main>
+</BaseLayout>

@@ -405,3 +405,6 @@
 - id: risk-generalization
   ru: 'риск; эмпирический риск; переобучение; обучающая, валидационная и тестовая выборки; кросс-валидация; неустранимая ошибка; смещение и разброс'
   en: 'risk; empirical risk; overfitting; training, validation and test sets; cross-validation; irreducible error; bias and variance'
+- id: intervals-tests
+  ru: 'доверительный интервал; уровень доверия; бутстрэп; нулевая гипотеза; p-значение; ошибки первого и второго рода; мощность; множественные сравнения; поправка Бонферрони'
+  en: 'confidence interval; confidence level; bootstrap; null hypothesis; p-value; type I and type II errors; power; multiple comparisons; Bonferroni correction'

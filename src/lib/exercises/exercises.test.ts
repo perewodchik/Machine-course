@@ -1,5 +1,6 @@
 // Движок упражнений: разбор чисел (точка и запятая), проверки всех типов, генераторы с seed, ГПСЧ.
 import { describe, expect, it } from "vitest";
+import { gauss as gaussian } from "../math/correlation";
 import { rng } from "../math/rng";
 import { checkMatrix, checkNumeric, checkOrder, closeEnough, scrambled } from "./check";
 import { cdf as contCdf, contMoments } from "../math/continuous";
@@ -1257,6 +1258,33 @@ describe("генераторы", () => {
         expect(errs).toHaveLength(k);
         expect(c.answer).toBeCloseTo(errs.reduce((a, b) => a + b, 0) / k, 4);
       } else expect(c.answer).toBe(Number(/Сравниваем (\d+)/.exec(c.prompt)![1]) * k + 1);
+    }
+  });
+
+  it("stat.ci-mean: граница x̄ ± z σ/√n; stat.p-value: доля при H₀ не реже наблюдаемого; stat.fwer: 1 − (1 − α)^m и α/m", () => {
+    for (let s = 1; s <= 30; s++) {
+      const c = make("stat.ci-mean", s);
+      if (c.kind !== "numeric") throw new Error("ожидалось число");
+      const [n, mean, sigma] = /n = (\d+)\$ наблюдений \$\\bar x = ([\d.]+)\$, стандартное отклонение известно: \$\\sigma = (\d+)/.exec(c.prompt)!.slice(1).map(Number) as [number, number, number];
+      const z = Number(/z = ([\d.]+)/.exec(c.prompt)![1]);
+      expect(Math.abs(c.answer - mean)).toBeCloseTo((z * sigma) / Math.sqrt(n), 3);
+      expect(c.answer > mean).toBe(c.prompt.includes("верхнюю"));
+
+      const p = make("stat.p-value", s);
+      if (p.kind !== "numeric") throw new Error("ожидалось число");
+      const [mu0, sg, nn, xb] = /mu = (\d+)\$, \$\\sigma = (\d+)\$ известна\. По \$n = (\d+)\$ наблюдениям \$\\bar x = ([\d.]+)/.exec(p.prompt)!.slice(1).map(Number) as [number, number, number, number];
+      // моделирование при H₀: доля |Z| не меньше наблюдаемого
+      const r = rng(s);
+      const zObs = Math.abs(xb - mu0) / (sg / Math.sqrt(nn));
+      let hits = 0;
+      for (let i = 0; i < 20000; i++) if (Math.abs(gaussian(r)) >= zObs) hits++;
+      expect(Math.abs(p.answer - hits / 20000)).toBeLessThan(0.012);
+
+      const f = make("stat.fwer", s);
+      if (f.kind !== "numeric") throw new Error("ожидалось число");
+      const m = Number(/(\d+) (?:независимых гипотез|признаков)/.exec(f.prompt)![1]);
+      const al = Number(/(0\.0\d)/.exec(f.prompt)![1]);
+      expect(f.answer).toBeCloseTo(s % 2 === 1 ? 1 - (1 - al) ** m : al / m, 4);
     }
   });
 

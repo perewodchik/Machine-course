@@ -15,7 +15,7 @@ lead: 'Полином одиннадцатой степени проходит �
      ячейка Python; упражнение 2 (stat.kfold).
   3. Шум, смещение², разброс: формула 1 (f.prediction-error-decomposition); ошибка — двухчленное разложение без шума;
      упражнение 3 (stat.pred-error).
-  Итог, итоговая проверка (stat.pred-error, ставит «знаю»).
+  Итог, итоговая проверка (stat.pred-error, ставит «знаю»), итоговая проверка модуля IV (ExerciseSet, без ★ IV.8).
 */}
 
 <Prereqs lessons={["foundations/statistics/estimators"]} />
@@ -124,3 +124,19 @@ $$
 - Ошибка предсказания $= \sigma^2 + (h^* - \bar h)^2 + \operatorname{Var} h_S$: шум, смещение², разброс. Простые модели проигрывают смещением, сложные — разбросом.
 
 <Exercise gen="stat.pred-error" seed={31} id="post.iv7" title="Итоговая проверка" final />
+
+## Итоговая проверка модуля «Статистика»
+
+<ExerciseSet
+  seed={14}
+  title="Модуль «Статистика»"
+  items={[
+    { lesson: "foundations/statistics/descriptive", gen: "stat.mean-median", seed: 41 },
+    { lesson: "foundations/statistics/estimators", gen: "stat.shrink-mse", seed: 41 },
+    { lesson: "foundations/statistics/mle", gen: "stat.mle-family", seed: 41 },
+    { lesson: "foundations/statistics/multivariate-mle", gen: "stat.gda-mle", seed: 41 },
+    { lesson: "foundations/statistics/exponential-family", gen: "stat.natural-param", seed: 41 },
+    { lesson: "foundations/statistics/bayes-map", gen: "stat.ridge-map", seed: 41 },
+    { lesson: "foundations/statistics/risk-generalization", gen: "stat.kfold", seed: 41 },
+  ]}
+/>

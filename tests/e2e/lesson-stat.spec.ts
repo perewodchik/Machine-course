@@ -162,3 +162,52 @@ test("урок IV.7: предсказание, ссылка на игру, ра�
   await page.evaluate(() => window.scrollTo(0, 0));
   await expectNoAxeViolations(page);
 });
+
+test("итоговая проверка модуля IV: семь задач по урокам IV.1–IV.7", async ({ page }) => {
+  await page.goto("/foundations/statistics/risk-generalization/");
+  const set = page.locator("[data-exercise-set]");
+  await set.scrollIntoViewIfNeeded();
+  const summary = set.locator("[data-summary]");
+  await expect(summary).toHaveText(/Решено верно: 0 из\s7\./);
+  for (const ex of await set.locator("[data-exercise]").all()) {
+    const gen = (await ex.getAttribute("data-item"))!;
+    const seed = Number(await ex.locator("[data-variant]").getAttribute("data-seed"));
+    const task = generator(gen).make(seed);
+    if (task.kind === "numeric") {
+      await ex.locator("input[data-input]").fill(String(task.answer));
+      await ex.getByRole("button", { name: "Проверить" }).click();
+    } else if (task.kind === "choice") {
+      await ex.locator("[data-option]").nth(task.options.findIndex((o) => o.correct)).click();
+    } else if (task.kind === "matrix") {
+      for (const [i, row] of task.answer.entries()) for (const [j, v] of row.entries()) await ex.locator(`[data-cell="${i},${j}"]`).fill(String(v));
+      await ex.getByRole("button", { name: "Проверить" }).click();
+    } else throw new Error(`задача ${gen}: вид ${task.kind}`);
+  }
+  await expect(summary).toHaveText(/Решено верно: 7 из\s7\./);
+});
+
+test("урок IV.8★: смысл интервала, ссылка на игру, итоговая проверка", async ({ page }) => {
+  await page.goto("/foundations/statistics/intervals-tests/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Доверительные интервалы и проверка гипотез");
+  await expect(page.getByRole("link", { name: "Открыть игру" })).toHaveAttribute("href", "/games/cover-truth/");
+
+  const pr = page.locator("[data-exercise][data-item='iv8.predict-meaning']");
+  await pr.locator("[data-option]").filter({ hasText: /лежит в/ }).click();
+  await expect(pr.locator("[data-feedback]")).toContainText("в частотном подходе");
+
+  const final = page.locator("#final-check");
+  const spec = generator("stat.ci-mean").make(31);
+  if (spec.kind !== "numeric") throw new Error("ожидалось число");
+  // типичная ошибка — делить σ на n, а не на √n
+  const [n, mean, sigma] = /n = (\d+)\$ наблюдений \$\\bar x = ([\d.]+)\$, стандартное отклонение известно: \$\\sigma = (\d+)/.exec(spec.prompt)!.slice(1).map(Number) as [number, number, number];
+  const z = Number(/z = ([\d.]+)/.exec(spec.prompt)![1]);
+  const wrong = Math.round((mean + Math.sign(spec.answer - mean) * (z * sigma) / n) * 10000) / 10000;
+  await final.locator("[data-variant]:not([hidden]) input").first().fill(String(wrong));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).not.toContainText("Урок отмечен");
+  await final.locator("[data-variant]:not([hidden]) input").first().fill(String(spec.answer));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});

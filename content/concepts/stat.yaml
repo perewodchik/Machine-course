@@ -53,6 +53,15 @@
   prerequisites: [stat.estimators]
   core: true
 
+- id: stat.intervals-tests
+  title:
+    ru: 'Доверительные интервалы и проверка гипотез'
+    en: 'confidence intervals and hypothesis testing'
+  summary: 'Интервал $\bar x \pm z\, \sigma/\sqrt n$ по ЦПТ и бутстрэп; уровень доверия — частота накрытия, свойство процедуры; нулевая гипотеза, p-значение, ошибки I и II рода, мощность; множественные сравнения и поправка Бонферрони.'
+  lesson: intervals-tests
+  prerequisites: [prob.limit-theorems, stat.estimators]
+  core: false
+
 - id: stat.mle
   title:
     ru: 'Метод максимального правдоподобия'

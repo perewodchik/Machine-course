@@ -17,6 +17,20 @@
 
 ---
 
+### 2026-10-26 — S4.L4 уроки модуля IV — готова
+- **Сделано:** все уроки модуля IV и итоговая проверка модуля
+- **Проверка:** validate, build, pytest, e2e модуля IV
+- **Следующий шаг:** S5.01.
+- **Вопросы пользователю:** —
+
+### 2026-10-26 — L-IV.8 доверительные интервалы и проверка гипотез ★ — готов
+- **Сделано:** урок statistics/intervals-tests (три цикла: интервал по ЦПТ и бутстрэп, p-значение и ошибки I и II рода, множественные сравнения), игра «Покрой истину» (/games/cover-truth/: множитель z, 100 интервалов в залпе, покрытие по 4000 скрытым выборкам), формула f.familywise-error, генераторы stat.ci-mean, stat.p-value, stat.fwer, сниппет stats/intervals.py с тестом; итоговая проверка модуля IV (ExerciseSet из семи задач) — в конце урока IV.7
+- **Файлы:** content/courses/foundations/statistics/intervals-tests.mdx, src/games/cover-truth/, content/formulas/stat/familywise-error.yaml, code/snippets/stats/intervals.py
+- **Проверка:** validate, lint, build, check, vitest 628, pytest, check_consistency, e2e IV.7, IV.8, модульной проверки и обеих игр, раскладка iv8 и covergame (axe)
+- **Отклонения от плана и решения:** итоговая проверка модуля стоит в IV.7, а не в ★ IV.8 — как в модуле II; граница объединения из f.familywise-error проверяется отдельным тестом, в выводе — только равенства
+- **Следующий шаг:** S5.01 — банк фрагментов для итоговой проверки V.2.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — L-IV.7 риск, обобщение, кросс-валидация — готов
 - **Сделано:** урок statistics/risk-generalization (три цикла: риск и эмпирический риск, валидация и k-кратная кросс-валидация, шум + смещение² + разброс), игра «Переобучи, если сможешь» (/games/overfit/: степень и λ по валидации, скрытый тест), формула f.prediction-error-decomposition, генераторы stat.pred-error и stat.kfold, сниппет stats/cross_validation.py с тестом
 - **Файлы:** content/courses/foundations/statistics/risk-generalization.mdx, src/games/overfit/, content/formulas/stat/prediction-error-decomposition.yaml, code/snippets/stats/cross_validation.py

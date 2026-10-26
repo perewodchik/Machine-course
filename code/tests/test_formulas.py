@@ -60,3 +60,15 @@ def test_broken_scalar_hessian_is_caught():
     report = check_formula(data)
     assert not report.ok
     assert "гессиан" in report.problems[0]
+
+
+def test_familywise_union_bound():
+    """Неравенство из f.familywise-error: 1 − ∏(1 − α_j) ≤ Σ α_j на случайных уровнях, равенство только при m = 1."""
+    import numpy as np
+
+    rng = np.random.default_rng(0)
+    for m in range(1, 30):
+        a = rng.uniform(0, 0.2, size=m)
+        fwer = 1 - np.prod(1 - a)
+        assert fwer <= np.sum(a) + 1e-12
+        assert m == 1 or fwer < np.sum(a)
