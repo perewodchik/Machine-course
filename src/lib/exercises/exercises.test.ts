@@ -2,6 +2,7 @@
 import { describe, expect, it } from "vitest";
 import { rng } from "../math/rng";
 import { checkMatrix, checkNumeric, checkOrder, closeEnough, scrambled } from "./check";
+import { moments, pmf } from "../math/distributions";
 import { generator, generators } from "./generators";
 import { formatNumber, parseNumber } from "./parse";
 import { renderInline } from "../../markdown/core/inline";
@@ -858,6 +859,31 @@ describe("генераторы", () => {
       const lhs = f(2.5);
       const rhs = (f(1) + f(4)) / 2;
       expect(j.options.find((o) => o.correct)!.text).toBe(lhs < rhs ? String.raw`$f(\mathbb{E}X) < \mathbb{E}f(X)$` : String.raw`$f(\mathbb{E}X) > \mathbb{E}f(X)$`);
+    }
+  });
+
+  it("prob.family-moments и prob.point-prob: ответы сверены с src/lib/math/distributions", () => {
+    for (let s = 1; s <= 32; s++) {
+      const t = make("prob.family-moments", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const num = (re: RegExp) => Number(re.exec(t.prompt)![1]);
+      const [fam, p] = t.prompt.includes("число успехов")
+        ? (["binomial", { n: num(/в \$(\d+)\$ независимых/), phi: num(/успеха \$([\d.]+)\$/) }] as const)
+        : t.prompt.includes("номер первого")
+          ? (["geometric", { phi: num(/успеха \$([\d.]+)\$/) }] as const)
+          : t.prompt.includes("пуассоновская")
+            ? (["poisson", { lambda: num(/lambda = ([\d.]+)/) }] as const)
+            : (["bernoulli", { phi: num(/P\(X = 1\) = ([\d.]+)/) }] as const);
+      const m = moments(fam, p);
+      expect(t.answer).toBeCloseTo(t.prompt.includes("Var") ? m.variance : m.mean, 3);
+
+      const pp = make("prob.point-prob", s);
+      if (pp.kind !== "numeric") throw new Error("ожидалось число");
+      const k = Number(/P\(X = (\d)\)/.exec(pp.label)![1]);
+      const want = pp.prompt.includes("пуассоновское")
+        ? pmf("poisson", { lambda: Number(/lambda = (\d)/.exec(pp.prompt)![1]) }, k)
+        : pmf("binomial", { n: Number(/бросают \$(\d)\$/.exec(pp.prompt)![1]), phi: Number(/орла \$([\d.]+)\$/.exec(pp.prompt)![1]) }, k);
+      expect(pp.answer).toBeCloseTo(want, 3);
     }
   });
 

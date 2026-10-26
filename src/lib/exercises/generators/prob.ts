@@ -432,3 +432,86 @@ export const jensen: Generator = {
     };
   },
 };
+
+/** Урок III.6: матожидание или дисперсия известного семейства по параметрам. */
+export const familyMoments: Generator = {
+  id: "prob.family-moments",
+  version: 1,
+  title: "Моменты распределения",
+  make(seed) {
+    const r = rng(seed);
+    const fams = [
+      () => {
+        const [n, phi] = [r.pick([10, 20, 50]), r.pick([0.1, 0.2, 0.5])];
+        return { tex: String.raw`$X$ — число успехов в $${n}$ независимых испытаниях с вероятностью успеха $${phi}$`, mean: n * phi, variance: n * phi * (1 - phi), fm: String.raw`n\phi`, fv: String.raw`n\phi(1 - \phi)` };
+      },
+      () => {
+        const phi = r.pick([0.1, 0.2, 0.25, 0.5]);
+        return { tex: String.raw`$X$ — номер первого успеха в независимых испытаниях с вероятностью успеха $${phi}$`, mean: 1 / phi, variance: (1 - phi) / (phi * phi), fm: String.raw`1/\phi`, fv: String.raw`(1 - \phi)/\phi^2` };
+      },
+      () => {
+        const lam = r.pick([2, 3.5, 5, 8]);
+        return { tex: String.raw`$X$ — пуассоновская с $\lambda = ${lam}$`, mean: lam, variance: lam, fm: String.raw`\lambda`, fv: String.raw`\lambda` };
+      },
+      () => {
+        const phi = r.pick([0.3, 0.6, 0.8]);
+        return { tex: String.raw`$X$ — бернуллиевская с $P(X = 1) = ${phi}$`, mean: phi, variance: phi * (1 - phi), fm: String.raw`\phi`, fv: String.raw`\phi(1 - \phi)` };
+      },
+    ];
+    const f = fams[(seed - 1) % fams.length]!();
+    const wantVar = Math.floor((seed - 1) / fams.length) % 2 === 1;
+    const answer = round(wantVar ? f.variance : f.mean);
+    return {
+      kind: "numeric",
+      prompt: String.raw`${f.tex}. Найдите $${wantVar ? String.raw`\operatorname{Var} X` : String.raw`\mathbb{E}X`}$.`,
+      label: wantVar ? String.raw`$\operatorname{Var} X =$` : String.raw`$\mathbb{E}X =$`,
+      answer,
+      tol: 0.005,
+      hints: [String.raw`Сначала узнайте семейство по сюжету, потом возьмите его формулу.`],
+      right: String.raw`$${wantVar ? f.fv : f.fm} = ${answer}$.`,
+      wrong: String.raw`Формула семейства: $\mathbb{E}X = ${f.fm}$, $\operatorname{Var} X = ${f.fv}$.`,
+    };
+  },
+};
+
+/** Урок III.6: вероятность значения — Пуассон (нечётный seed) или биномиальное (чётный). */
+export const pointProb: Generator = {
+  id: "prob.point-prob",
+  version: 1,
+  title: "Вероятность значения",
+  make(seed) {
+    const r = rng(seed);
+    if (seed % 2 === 1) {
+      const lam = r.pick([1, 2, 3]);
+      const k = r.int(0, 3);
+      const fact = [1, 1, 2, 6][k]!;
+      const answer = round((Math.exp(-lam) * lam ** k) / fact);
+      return {
+        kind: "numeric",
+        prompt: String.raw`Число звонков за минуту — пуассоновское с $\lambda = ${lam}$. Найдите вероятность ровно $${k}$ звонков.`,
+        label: String.raw`$P(X = ${k}) =$`,
+        answer,
+        tol: 0.005,
+        hints: [String.raw`$P(X = k) = e^{-\lambda} \lambda^k / k!$.`],
+        right: String.raw`$e^{-${lam}} \cdot ${lam}^{${k}} / ${k}! \approx ${answer}$.`,
+        wrong: String.raw`Не забудьте множитель $e^{-\lambda} = e^{-${lam}} \approx ${round(Math.exp(-lam))}$ и деление на $${k}! = ${fact}$.`,
+      };
+    }
+    const n = r.pick([4, 5, 6]);
+    const phi = r.pick([0.2, 0.5]);
+    const k = r.int(1, n - 1);
+    let c = 1;
+    for (let i = 1; i <= k; i++) c = (c * (n - k + i)) / i;
+    const answer = round(c * phi ** k * (1 - phi) ** (n - k));
+    return {
+      kind: "numeric",
+      prompt: String.raw`Монету с вероятностью орла $${phi}$ бросают $${n}$ раз. Найдите вероятность ровно $${k}$ орлов.`,
+      label: String.raw`$P(X = ${k}) =$`,
+      answer,
+      tol: 0.005,
+      hints: [String.raw`$P(X = k) = \binom{n}{k} \phi^k (1 - \phi)^{n - k}$: $\binom{${n}}{${k}} = ${c}$.`],
+      right: String.raw`$${c} \cdot ${phi}^{${k}} \cdot ${round(1 - phi)}^{${n - k}} \approx ${answer}$.`,
+      wrong: String.raw`Орлы могут выпасть в любых $${k}$ бросках из $${n}$: вероятность одной последовательности нужно умножить на $\binom{${n}}{${k}} = ${c}$.`,
+    };
+  },
+};

@@ -1,0 +1,14 @@
+---
+// Обёртка виджета «Обозреватель распределений» для урока: рисунок с номером и подписью, остров React (client:visible).
+import { DistExplorer, type DistExplorerProps } from "../../widgets/prob/dist-explorer";
+
+interface Props extends DistExplorerProps {
+  /** Номер рисунка в уроке. */
+  n?: number;
+}
+const { n, ...props } = Astro.props;
+---
+<figure class="figure wide">
+  <DistExplorer client:visible {...props} />
+  <figcaption class="figure__caption">{n && <b>Рисунок {n}.</b>} <slot /></figcaption>
+</figure>

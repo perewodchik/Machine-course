@@ -22,6 +22,7 @@ import AreaStretch from "../widgets/AreaStretch.astro";
 import Events from "../widgets/Events.astro";
 import DensityCdf from "../widgets/DensityCdf.astro";
 import CenterMass from "../widgets/CenterMass.astro";
+import DistExplorer from "../widgets/DistExplorer.astro";
 import GradientField from "../widgets/GradientField.astro";
 import LevelSets from "../widgets/LevelSets.astro";
 import LowRank from "../widgets/LowRank.astro";
@@ -37,5 +38,5 @@ import PyCell from "../python/PyCell.astro";
 import PyCode from "../python/PyCode.astro";
 
 // виджеты — обёртки .astro с островами React
-export const lessonComponents = { Block, Derivation, Diagnostic, Exercise, ExerciseSet, Formula, Note, Pilot, Prereqs, SymbolLegend, FitLine, GridMap, BayesGrid, Riemann, Span, NormBalls, Projection, MatmulViews, SystemLines, PlaneProjection, LevelSets, SvdSteps, LowRank, GradientField, CompGraph, Chord, Newton, Lagrange, Kkt, AreaStretch, Events, DensityCdf, CenterMass, PyCode, PyCell, OpenIn };
-export { AreaStretch, BayesGrid, Block, CenterMass, Chord, CompGraph, DensityCdf, Derivation, Diagnostic, Events, Exercise, ExerciseSet, FitLine, Formula, GradientField, GridMap, Kkt, Lagrange, LevelSets, LowRank, MatmulViews, Newton, Note, NormBalls, Pilot, PlaneProjection, OpenIn, Prereqs, Projection, PyCell, PyCode, Riemann, Span, SvdSteps, SymbolLegend, SystemLines };
+export const lessonComponents = { Block, Derivation, Diagnostic, Exercise, ExerciseSet, Formula, Note, Pilot, Prereqs, SymbolLegend, FitLine, GridMap, BayesGrid, Riemann, Span, NormBalls, Projection, MatmulViews, SystemLines, PlaneProjection, LevelSets, SvdSteps, LowRank, GradientField, CompGraph, Chord, Newton, Lagrange, Kkt, AreaStretch, Events, DensityCdf, CenterMass, DistExplorer, PyCode, PyCell, OpenIn };
+export { AreaStretch, BayesGrid, Block, CenterMass, Chord, CompGraph, DensityCdf, Derivation, Diagnostic, DistExplorer, Events, Exercise, ExerciseSet, FitLine, Formula, GradientField, GridMap, Kkt, Lagrange, LevelSets, LowRank, MatmulViews, Newton, Note, NormBalls, Pilot, PlaneProjection, OpenIn, Prereqs, Projection, PyCell, PyCode, Riemann, Span, SvdSteps, SymbolLegend, SystemLines };

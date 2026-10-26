@@ -27,6 +27,15 @@
   prerequisites: [prob.random-variable, calc.convexity]
   core: true
 
+- id: prob.discrete-distributions
+  title:
+    ru: 'Дискретные распределения'
+    en: 'discrete distributions'
+  summary: 'Бернулли ($\mathbb{E} = \phi$), биномиальное ($n\phi$, $n\phi(1 - \phi)$), геометрическое ($1/\phi$), Пуассона ($\mathbb{E} = \operatorname{Var} = \lambda$), категориальное и мультиномиальное.'
+  lesson: discrete-distributions
+  prerequisites: [prob.expectation, prob.independence]
+  core: true
+
 - id: prob.independence
   title:
     ru: 'Независимость'

@@ -363,3 +363,6 @@
 - id: expectation
   ru: 'матожидание; дисперсия; LOTUS; неравенство Йенсена'
   en: 'expectation; variance; law of the unconscious statistician (LOTUS); Jensen''s inequality'
+- id: discrete-distributions
+  ru: 'распределения Бернулли, биномиальное, геометрическое, Пуассона, категориальное, мультиномиальное'
+  en: 'Bernoulli, binomial, geometric, Poisson, categorical, multinomial distributions'

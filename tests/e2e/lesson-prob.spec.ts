@@ -125,3 +125,26 @@ test("урок III.5: центр масс и разрыв Йенсена, раз
   await page.evaluate(() => window.scrollTo(0, 0));
   await expectNoAxeViolations(page);
 });
+
+test("урок III.6: обозреватель распределений, ссылка на игру, итоговая проверка", async ({ page }) => {
+  await page.goto("/foundations/probability/discrete-distributions/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Дискретные распределения");
+  await expect(page.getByRole("link", { name: "Открыть игру" })).toHaveAttribute("href", "/games/dist-zoo/");
+
+  const fig = page.locator(".dist-explorer").first();
+  await fig.scrollIntoViewIfNeeded();
+  await expect(fig.locator("xpath=ancestor::astro-island[1]")).not.toHaveAttribute("ssr", "");
+  // Bin(10, 0.3): E = 3, Var = 2.1; Пуассон λ = 3: E = Var = 3
+  await expect(fig.locator("[aria-live]")).toContainText("E X = 3.00, Var X = 2.10");
+  await fig.getByRole("button", { name: "Пуассона" }).press("Enter");
+  await expect(fig.locator("[aria-live]")).toContainText("E X = 3.00, Var X = 3.00");
+
+  const final = page.locator("#final-check");
+  const spec = generator("prob.family-moments").make(31);
+  if (spec.kind !== "numeric") throw new Error("ожидалось число");
+  await final.locator("[data-variant]:not([hidden]) input").first().fill(String(spec.answer));
+  await final.getByRole("button", { name: "Проверить" }).click();
+  await expect(final.locator("[data-feedback]")).toContainText("Урок отмечен");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expectNoAxeViolations(page);
+});

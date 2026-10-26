@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-10-26 — L-III.6 L-III.6: дискретные распределения и игра «Зоопарк распределений» — готов
+- **Сделано:** урок discrete-distributions (три цикла: Бернулли, биномиальное, геометрическое; Пуассон; категориальное и мультиномиальное), виджет «Обозреватель распределений», игра «Зоопарк распределений» (5 уровней), общая модель src/lib/math/distributions.ts, формула f.binomial-mean, генераторы prob.family-moments и prob.point-prob, сниппет prob/discrete.py с тестом
+- **Файлы:** content/courses/foundations/probability/discrete-distributions.mdx, src/widgets/prob/dist-explorer/, src/games/dist-zoo/, src/lib/math/distributions.ts, content/formulas/prob/binomial-mean.yaml, code/snippets/prob/discrete.py
+- **Проверка:** validate, lint, build, check, vitest, pytest, check_consistency, e2e урока, игры и layout iii6/zoogame (axe)
+- **Отклонения от плана и решения:** нет
+- **Следующий шаг:** L-III.7 — непрерывные распределения.
+- **Вопросы пользователю:** —
+
 ### 2026-10-26 — L-III.5 L-III.5: матожидание, дисперсия, неравенство Йенсена — готов
 - **Сделано:** урок expectation-variance (три цикла: центр масс и LOTUS, дисперсия и Var(aX + b), Йенсен и EM), виджет «Матожидание как центр масс» (fast-check: Var-тождество, Йенсен), формула f.variance-identity, генераторы prob.ev-var, prob.var-linear, prob.jensen, сниппет prob/moments.py с тестом, понятие prob.expectation
 - **Файлы:** content/courses/foundations/probability/expectation-variance.mdx, src/widgets/prob/center-mass/, content/formulas/prob/variance-identity.yaml, src/lib/exercises/generators/prob.ts, code/snippets/prob/moments.py

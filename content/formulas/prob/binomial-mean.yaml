@@ -1,0 +1,57 @@
+id: f.binomial-mean
+kind: formula
+title:
+  ru: 'Матожидание биномиального распределения'
+  en: 'mean of the binomial distribution'
+statement: '\mathbb{E}X = n\sym{phi}{\phi}, \qquad X \sim \operatorname{Bin}(n, \sym{phi}{\phi})'
+
+# Урок III.6: вместо суммы Σ k C(n, k) φᵏ(1 − φ)ⁿ⁻ᵏ — индикаторы: X = Σᵢ 1{испытание i успешно}, и по линейности
+# E X = Σᵢ P(успех в i) = nφ. Проверка — при n = 5: прямая сумма по функции вероятности равна 5φ.
+symbols:
+  - name: phi
+    tex: '\phi'
+    meaning: 'вероятность успеха в одном испытании'
+    shape: []
+    sample: fraction
+    role: param
+
+dependsOn:
+  concepts: [prob.expectation, nota.indicator]
+  rules: []
+
+derivation:
+  plan:
+    - 'Записать матожидание по определению — через функцию вероятности'
+    - 'Представить $X$ суммой индикаторов успеха в каждом испытании'
+    - 'Применить линейность матожидания и $\mathbb{E}\,1\{A\} = P(A)$'
+  steps:
+    - goal: 0
+      tex: '\mathbb{E}X = \sum_{k=0}^{n} k \binom{n}{k} \sym{phi}{\phi}^k (1 - \sym{phi}{\phi})^{n - k}'
+      by: [prob.expectation]
+      note: 'Определение: значение, умноженное на его вероятность. Сумму можно взять и так, но есть путь короче.'
+      check:
+        kind: same
+        py: 'np.arange(6) @ (np.array([1, 5, 10, 10, 5, 1]) * phi ** np.arange(6) * (1 - phi) ** (5 - np.arange(6)))'
+    - goal: 1
+      tex: '= \mathbb{E} \sum_{i=1}^{n} 1\{\text{успех в испытании } i\} = \changed{\sum_{i=1}^{n} \mathbb{E}\, 1\{\text{успех в } i\}}'
+      by: [nota.indicator, prob.expectation]
+      note: 'Число успехов — сумма индикаторов; матожидание суммы — сумма матожиданий, независимость здесь не нужна.'
+      check:
+        kind: same
+        py: '5 * phi'
+    - goal: 2
+      tex: '= \sum_{i=1}^{n} \sym{phi}{\phi} = \changed{n \sym{phi}{\phi}}'
+      by: [prob.expectation]
+      note: '$\mathbb{E}\, 1\{A\} = P(A) = \phi$ (урок III.4). Дисперсия — $n\phi(1 - \phi)$: у суммы независимых индикаторов дисперсии складываются, а у каждого $\phi(1 - \phi)$.'
+      check:
+        kind: same
+        py: '5 * phi'
+
+pitfalls:
+  - 'Путать биномиальное и геометрическое: биномиальное — число успехов в заданных $n$ испытаниях ($\mathbb{E} = n\phi$), геометрическое — номер первого успеха ($\mathbb{E} = 1/\phi$).'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Classification and logistic regression'
+
+usedIn: [prob.discrete-distributions]
