@@ -7,7 +7,7 @@ import { loadRegistry } from "../../lib/content/registry";
 import { instantiate } from "../../lib/content/rule-instance";
 import { FRAGMENTS, fragmentPool, fragmentTask, type FragmentAsk } from "../../lib/content/fragments";
 import { generator } from "../../lib/exercises/generators";
-import { scrambled } from "../../lib/exercises/check";
+import { answerDecimals, scrambled } from "../../lib/exercises/check";
 import { rng } from "../../lib/math/rng";
 import { checkFormula } from "../../lib/symbolic/check";
 import { validateTask } from "../../lib/symbolic/derivation";
@@ -91,6 +91,15 @@ const heading = `${title}${n ? `\u00a0${n}` : ""}.`;
 const kind = items[0]!.spec.kind;
 const uid = `ex-${item.replace(/[^a-z0-9]+/gi, "-")}-${n ?? 0}`;
 
+/** Подпись под числовым полем: до скольких знаков округлять (по допуску задачи); у точных ответов подписи нет. */
+function precision(s: ExerciseSpec): string | null {
+  if (s.kind !== "numeric") return null;
+  const k = answerDecimals(s.answer, s.tol, s.rel);
+  if (k === null) return null;
+  if (k === 0) return "Округляйте до целых.";
+  return `Округляйте не грубее чем до ${k} ${k === 1 ? "знака" : "знаков"} после точки.`;
+}
+
 /** Данные для проверки в браузере: только ответы, без текстов. */
 function answerData(s: ExerciseSpec, seedValue: number) {
   switch (s.kind) {
@@ -125,7 +134,8 @@ function answerData(s: ExerciseSpec, seedValue: number) {
         {sp.kind === "numeric" && (
           <div class="field">
             <label for={`${vid}-input`} set:html={renderInline(sp.label)} />
-            <input class="input" id={`${vid}-input`} inputmode="decimal" autocomplete="off" spellcheck="false" data-input aria-label={inlineText(sp.label).replace(/=$/, "").trim()} />
+            <input class="input" id={`${vid}-input`} inputmode="decimal" autocomplete="off" spellcheck="false" data-input aria-label={inlineText(sp.label).replace(/=$/, "").trim()} aria-describedby={precision(sp) ? `${vid}-precision` : undefined} />
+            {precision(sp) && <span class="field__note" id={`${vid}-precision`}>{precision(sp)}</span>}
           </div>
         )}
 

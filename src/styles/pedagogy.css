@@ -150,6 +150,8 @@
 @layer components {
   .exercise__variant:focus { outline: none; }
   .field { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); margin-top: var(--space-3); font-family: var(--font-ui); font-size: var(--text-sm); }
+  /* подпись под числовым полем: до скольких знаков округлять — карандашом, отдельной строкой */
+  .field__note { flex-basis: 100%; color: var(--ink-3); font-size: var(--text-xs); }
   .input { width: 7.5rem; height: 36px; padding: 0 10px; border: 1px solid var(--control-border); border-radius: var(--radius-control); background: var(--surface); color: var(--ink); font: 500 var(--text-sm) var(--font-ui); font-variant-numeric: tabular-nums; }
   .input:focus-visible { outline: 2px solid var(--pen); outline-offset: 1px; border-color: var(--pen); }
   .input.is-right { border-color: var(--green-pen); box-shadow: inset 0 0 0 1px var(--green-pen); }
