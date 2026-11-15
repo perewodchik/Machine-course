@@ -33,8 +33,9 @@ derivation:
     - 'Узнать в остатке выброшенного объекта обычный остаток, делённый на $1 - H_{ii}$'
   steps:
     - goal: 0
-      tex: '\operatorname{LOO} = \frac1n \sum_{i=1}^{n} \bigl(y^{(i)} - x^{(i)\top} \hat\theta_{-i}\bigr)^2, \qquad \hat\theta_{-i} \text{ — веса без объекта } i'
+      tex: '\operatorname{LOO} = \frac1n \sum_{i=1}^{n} \bigl(y^{(i)} - x^{(i)\top} \hat\theta_{-i}\bigr)^2'
       by: [ml.ridge]
+      note: '$\hat\theta_{-i}$ — веса, обученные без объекта $i$: $n$ отдельных обучений.'
       check:
         kind: same
         py: 'np.mean(np.array([(np.r_[1.0, X[i, 1:]] @ np.linalg.solve(np.delete(np.c_[np.ones(X.shape[0]), X[:, 1:]], i, 0).T @ np.delete(np.c_[np.ones(X.shape[0]), X[:, 1:]], i, 0) + lam * np.diag(np.r_[0.0, np.ones(X.shape[1] - 1)]), np.delete(np.c_[np.ones(X.shape[0]), X[:, 1:]], i, 0).T @ np.delete(y, i)) - y[i]) ** 2 for i in np.arange(X.shape[0])]))'
