@@ -1,0 +1,62 @@
+id: f.brier-proper
+kind: formula
+title:
+  ru: 'Оценка Брайера поощряет честные вероятности'
+  en: 'the Brier score is a proper scoring rule'
+statement: '\mathbb{E}_{y \sim \mathrm{Bernoulli}(p)} (q - y)^2 = (q - p)^2 + p(1 - p) \ge p(1 - p)'
+
+# Урок 2.1 «Основ ML»: ожидаемый квадрат ошибки прогноза q для y ~ Bernoulli(p) раскладывается на квадрат отклонения
+# прогноза от истинной вероятности и неустранимый разброс p(1 − p). Минимум — при q = p.
+symbols:
+  - name: p
+    tex: 'p'
+    meaning: 'истинная вероятность $y = 1$'
+    shape: []
+    sample: fraction
+  - name: q
+    tex: 'q'
+    meaning: 'прогноз модели'
+    shape: []
+    sample: fraction
+
+dependsOn:
+  concepts: [prob.expectation]
+  rules: []
+
+derivation:
+  plan:
+    - 'Посчитать матожидание по двум значениям $y$'
+    - 'Выделить полный квадрат'
+    - 'Оценить снизу'
+  steps:
+    - goal: 0
+      tex: '\mathbb{E}(q - y)^2 = p\,(q - 1)^2 + (1 - p)\, q^2'
+      by: [prob.expectation]
+      check:
+        kind: same
+        py: 'p * (q - 1) ** 2 + (1 - p) * q ** 2'
+    - goal: 1
+      tex: '\mathbb{E}(q - y)^2 = q^2 - 2pq + p = \changed{(q - p)^2 + p(1 - p)}'
+      by: [ml.loss]
+      note: 'Первое слагаемое — цена нечестного прогноза, второе от $q$ не зависит: это разброс самого исхода.'
+      check:
+        kind: same
+        py: '(q - p) ** 2 + p * (1 - p)'
+      mutations:
+        - tex: '\mathbb{E}(q - y)^2 = (q - p)^2'
+          py: '(q - p) ** 2'
+          why: 'Потерян неустранимый разброс $p(1 - p)$: даже честный прогноз $q = p$ ошибается, потому что $y$ — случайный исход.'
+    - goal: 2
+      tex: '\mathbb{E}(q - y)^2 \ge p(1 - p), \quad \text{равенство при } q = p'
+      by: [ml.loss]
+      note: 'Модель с честными вероятностями получает наименьшую оценку Брайера. Возведение оценок в куб меняет $q$ и ухудшает оценку, хотя AUC не трогает.'
+      check:
+        kind: bound
+        py: 'p * (1 - p)'
+        side: below
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Classification and logistic regression'
+
+usedIn: [ml.classification-metrics]

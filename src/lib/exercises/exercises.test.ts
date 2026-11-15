@@ -1440,6 +1440,79 @@ describe("генераторы", () => {
     }
   });
 
+  it("ml.precision-prevalence: точность по Байесу на счётчиках; ml.cost-threshold: порог — перебором цены", () => {
+    for (let s = 1; s <= 30; s++) {
+      const t = make("ml.precision-prevalence", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const phi = Number(/Положительных ([\d.]+) %/.exec(t.prompt)![1]) / 100;
+      const tpr = Number(/TPR\} = ([\d.]+)\$/.exec(t.prompt)![1]);
+      const f = Number(/FPR\} = ([\d.]+)\$/.exec(t.prompt)![1]);
+      const n = 1e6;
+      expect(t.answer).toBeCloseTo((phi * n * tpr) / (phi * n * tpr + (1 - phi) * n * f), 4);
+
+      const c = make("ml.cost-threshold", s);
+      if (c.kind !== "numeric") throw new Error("ожидалось число");
+      const call = Number(/стоит (\d+) ₽/.exec(c.prompt)![1]);
+      const gain = Number(/приносит банку (\d+) ₽/.exec(c.prompt)![1]);
+      // наименьшая p на сетке, при которой ожидаемая выгода звонка p · gain − call неотрицательна
+      const grid = Array.from({ length: 100001 }, (_, k) => k / 100000);
+      expect(Math.abs(grid.find((p) => p * gain - call >= -1e-12)! - c.answer)).toBeLessThan(1e-4);
+    }
+  });
+
+  it("ml.ols-variance: σ²·tr H / n по настоящей матрице проектора (и плюс σ², если спрашивают ошибку)", () => {
+    for (let s = 1; s <= 30; s++) {
+      const t = make("ml.ols-variance", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const d = Number(/d = (\d+)\$/.exec(t.prompt)![1]);
+      const n = Number(/n = (\d+)\$/.exec(t.prompt)![1]);
+      const sigma = Number(/sigma = ([\d.]+)\$/.exec(t.prompt)![1]);
+      // след проектора на столбцы d первых степеней через Грама–Шмидта: число ненулевых направлений
+      const xs = Array.from({ length: n }, (_, i) => -1 + (2 * i) / (n - 1));
+      const basis: number[][] = [];
+      for (let k = 0; k < d; k++) {
+        let v = xs.map((x) => x ** k);
+        for (const b of basis) {
+          const c = v.reduce((a, vi, i) => a + vi * b[i]!, 0);
+          v = v.map((vi, i) => vi - c * b[i]!);
+        }
+        const nv = Math.hypot(...v);
+        basis.push(v.map((vi) => vi / nv));
+      }
+      const trace = xs.reduce((a, _, i) => a + basis.reduce((s2, b) => s2 + b[i]! ** 2, 0), 0);
+      const v = (sigma * sigma * trace) / n;
+      expect(t.answer).toBeCloseTo(t.prompt.includes("ожидаемая ошибка") ? sigma * sigma + v : v, 5);
+    }
+  });
+
+  it("ml.shrink-orth: ответ — минимум штрафованной функции одной переменной (перебор по сетке)", () => {
+    for (let s = 1; s <= 30; s++) {
+      const t = make("ml.shrink-orth", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const p = t.prompt.replace(/−/g, "-");
+      const z = Number(/hat\\theta_j = ([-\d.]+)\$/.exec(p)![1]);
+      const lam = Number(/lambda = ([\d.]+)\$\?/.exec(p)![1]);
+      const l1 = p.includes("лассо");
+      // при XᵀX = I задача распадается: ½(θ − z)² + штраф
+      const f = (th: number) => 0.5 * (th - z) ** 2 + (l1 ? lam * Math.abs(th) : 0.5 * lam * th * th);
+      let best = 0;
+      for (let k = -40000; k <= 40000; k++) if (f(k / 10000) < f(best)) best = k / 10000;
+      expect(Math.abs(t.answer - best)).toBeLessThan(2e-4);
+    }
+  });
+
+  it("ml.cv-se: среднее и SE по ошибкам из условия", () => {
+    for (let s = 1; s <= 30; s++) {
+      const t = make("ml.cv-se", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const errs = /фолдах \$([^$]+)\$/.exec(t.prompt)![1]!.split(",\\ ").map(Number);
+      const k = errs.length;
+      const m = errs.reduce((a, b) => a + b, 0) / k;
+      const sd = Math.sqrt(errs.reduce((a, e) => a + (e - m) ** 2, 0) / (k - 1));
+      expect(t.answer).toBeCloseTo(t.prompt.includes("стандартную ошибку") ? sd / Math.sqrt(k) : m, 4);
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

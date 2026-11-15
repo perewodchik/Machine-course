@@ -1,0 +1,53 @@
+id: f.auc-pairs
+kind: formula
+title:
+  ru: 'AUC — доля правильно упорядоченных пар'
+  en: 'AUC as the fraction of correctly ordered pairs'
+statement: '\mathrm{AUC} = P(s^{+} > s^{-}) + \tfrac12 P(s^{+} = s^{-})'
+
+# Урок 2.1 «Основ ML»: площадь под эмпирической ROC трапециями равна доле пар (положительный, отрицательный), в которых
+# оценка положительного больше. Проверка — 7 объектов с непрерывными оценками s (ничьих нет), метки 0, 1, 0, 1, 0, 1, 0:
+# 3 положительных и 4 отрицательных.
+symbols:
+  - name: s
+    tex: 's'
+    meaning: 'оценки объектов'
+    shape: [n, 1]
+
+dependsOn:
+  concepts: [prob.expectation]
+  rules: []
+
+derivation:
+  plan:
+    - 'Построить ROC: пороги — оценки по убыванию'
+    - 'Сложить площади трапеций'
+    - 'Увидеть в каждой вертикальной полосе число положительных выше очередного отрицательного'
+  steps:
+    - goal: 0
+      tex: '\mathrm{AUC} = \sum_{k} \bigl(\mathrm{FPR}_k - \mathrm{FPR}_{k-1}\bigr)\, \frac{\mathrm{TPR}_k + \mathrm{TPR}_{k-1}}{2}'
+      by: [ml.loss]
+      note: 'Шаг порога вниз по оценкам: положительный объект поднимает TPR на $1/n_+$, отрицательный сдвигает FPR на $1/n_-$.'
+      check:
+        kind: same
+        py: 'np.sum(np.diff(np.r_[0, np.cumsum(1 - (np.arange(7) % 2)[np.argsort(-s)])]) * (np.r_[0, np.cumsum((np.arange(7) % 2)[np.argsort(-s)])][1:] + np.r_[0, np.cumsum((np.arange(7) % 2)[np.argsort(-s)])][:-1]) / 2) / (3 * 4)'
+    - goal: 2
+      tex: '\mathrm{AUC} = \changed{\frac{1}{n_+ n_-} \sum_{i:\, y^{(i)} = 1} \sum_{j:\, y^{(j)} = 0} 1\{s^{(i)} > s^{(j)}\}}'
+      by: [prob.expectation]
+      note: 'Каждый отрицательный объект добавляет полосу шириной $1/n_-$ высотой «доля положительных с оценкой выше» — это и есть доля пар, где положительный выше. При ничьих трапеция даёт ½ за пару.'
+      check:
+        kind: same
+        py: 'np.mean(np.array([[s[i] > s[j] for j in (0, 2, 4, 6)] for i in (1, 3, 5)]))'
+      mutations:
+        - tex: '\mathrm{AUC} = \frac{1}{n^2} \sum_{i:\, y^{(i)} = 1} \sum_{j:\, y^{(j)} = 0} 1\{s^{(i)} > s^{(j)}\}'
+          py: 'np.sum(np.array([[s[i] > s[j] for j in (0, 2, 4, 6)] for i in (1, 3, 5)])) / 49'
+          why: 'Пар (положительный, отрицательный) — $n_+ n_-$, а не $n^2$: делить надо на число сравниваемых пар.'
+
+pitfalls:
+  - 'Считать AUC мерой качества вероятностей: она не меняется при любом монотонном преобразовании оценок — ни калибровку, ни выбранный порог не видит.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Classification and logistic regression'
+
+usedIn: [ml.classification-metrics]

@@ -1,0 +1,64 @@
+id: f.selection-optimism
+kind: formula
+title:
+  ru: 'Оптимизм выбора по валидации'
+  en: 'optimism of selecting by validation error'
+statement: '\mathbb{E}\bigl[\min_m \widehat{\operatorname{err}}_m\bigr] \le \min_m \operatorname{err}_m \le \mathbb{E}\, \operatorname{err}_{\hat m}'
+
+# Урок 2.4 «Основ ML»: валидационные оценки несмещены, но минимум из нескольких шумных оценок смещён вниз —
+# минимум ожиданий не меньше ожидания минимума. Проверка — две модели с истинными ошибками a и b, у каждой оценка
+# с независимым шумом ±e (четыре равновероятных исхода): ожидание минимума оценок не больше min(a, b).
+symbols:
+  - name: a
+    tex: '\operatorname{err}_1'
+    meaning: 'истинная ошибка модели 1'
+    shape: []
+    sample: positive
+  - name: b
+    tex: '\operatorname{err}_2'
+    meaning: 'истинная ошибка модели 2'
+    shape: []
+    sample: positive
+  - name: e
+    tex: 'e'
+    meaning: 'размах шума валидационной оценки'
+    shape: []
+    sample: fraction
+
+dependsOn:
+  concepts: [prob.expectation, stat.risk-generalization]
+  rules: []
+
+derivation:
+  plan:
+    - 'Записать истинную ошибку лучшей модели'
+    - 'Перебрать исходы шума и усреднить минимум оценок'
+    - 'Сравнить'
+  steps:
+    - goal: 0
+      tex: '\min_m \operatorname{err}_m = \min(\operatorname{err}_1, \operatorname{err}_2)'
+      by: [stat.risk-generalization]
+      check:
+        kind: same
+        py: 'np.minimum(a, b)'
+    - goal: 1
+      tex: '\mathbb{E}\bigl[\min_m \widehat{\operatorname{err}}_m\bigr] = \tfrac14 \sum_{s, t = \pm 1} \min(\operatorname{err}_1 + s e,\ \operatorname{err}_2 + t e) \changed{\le \min_m \operatorname{err}_m}'
+      by: [prob.expectation]
+      note: 'Минимум — вогнутая функция, и по неравенству Йенсена $\mathbb{E}\min \le \min \mathbb{E}$: в каждом исходе минимум оценок не больше оценки лучшей модели, а та в среднем равна её истинной ошибке. Чем больше моделей перебрано, тем сильнее занижение.'
+      check:
+        kind: bound
+        side: below
+        py: '(np.minimum(a + e, b + e) + np.minimum(a + e, b - e) + np.minimum(a - e, b + e) + np.minimum(a - e, b - e)) / 4'
+      mutations:
+        - tex: '\mathbb{E}\bigl[\min_m \widehat{\operatorname{err}}_m\bigr] = \tfrac14 \sum_{s, t = \pm 1} \max(\operatorname{err}_1 + s e,\ \operatorname{err}_2 + t e)'
+          py: '(np.maximum(a + e, b + e) + np.maximum(a + e, b - e) + np.maximum(a - e, b + e) + np.maximum(a - e, b - e)) / 4'
+          why: 'Выбирают модель с наименьшей оценкой, а не с наибольшей: занижение возникает именно потому, что минимум цепляется за удачный шум.'
+
+pitfalls:
+  - 'Отчитываться минимальной ошибкой кросс-валидации как ожидаемой ошибкой на новых данных: честную оценку дают тест, открытый один раз, или вложенная кросс-валидация.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Regularization and model selection'
+
+usedIn: [ml.model-selection]

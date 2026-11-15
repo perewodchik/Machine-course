@@ -17,6 +17,45 @@
 
 ---
 
+### 2026-10-26 — L-ml-basics-2.4 Выбор модели и кросс-валидация — готов
+- **Сделано:** урок (3 цикла, формулы f.selection-optimism и f.ridge-loo, 4 упражнения, итоговая ml.cv-se); виджет «Фолды» (src/widgets/ml/folds: k = 2, 5, 10, n, ошибки фолдов ± SE против отложенной части, стратификация звонков); генератор ml.cv-se; понятие ml.model-selection; ячейка ml_basics/cross_val.py (k фолдов, стратификация, правило одной SE, утечка при отборе признаков) со сверкой с cross_val_score и StratifiedKFold
+- **Файлы:** content/courses/ml-basics/evaluation/model-selection.mdx, content/formulas/ml/{selection-optimism,ridge-loo}.yaml, src/widgets/ml/folds/, code/snippets/ml_basics/cross_val.py, code/tests/test_cross_val.py
+- **Проверка:** validate, lint, check, build, vitest, pytest, check_consistency, e2e lesson-ml-2-4, скриншоты 1440 и 390
+- **Отклонения от плана и решения:** финальный режим игры не сделан — добавлен пунктом в S7.L2; GridSearchCV и вложенная кросс-валидация описаны в тексте, в ячейке не считаются (sklearn в браузере не грузится); стратификация — на 60 синтетических звонках вместо Bank Marketing (S7.02)
+- **Следующий шаг:** L-ml-basics-2.5 — кривые обучения, анализ ошибок и утечки.
+- **Вопросы пользователю:** —
+
+### 2026-10-26 — L-ml-basics-2.3 Регуляризация: L2 и L1 — готов
+- **Сделано:** урок (4 цикла, формулы f.ridge-closed-form, f.lasso-soft-threshold, f.lasso-coordinate-step, 3 упражнения, итоговая ml.shrink-orth); виджет «Путь регуляризации» (src/widgets/ml/reg-path: круг и ромб ограничения на плоскости двух весов, путь пяти весов и RMSE от lg λ, см² без стандартизации); генератор ml.shrink-orth; понятие ml.lasso; ячейка ml_basics/regularization.py (гребневая центрированием, лассо покоординатным спуском) со сверкой с Ridge, Lasso, lasso_path
+- **Файлы:** content/courses/ml-basics/evaluation/regularization.mdx, content/formulas/ml/{ridge-closed-form,lasso-soft-threshold,lasso-coordinate-step}.yaml, src/widgets/ml/reg-path/, code/snippets/ml_basics/regularization.py, code/tests/test_regularization.py
+- **Проверка:** validate, lint, check, build, vitest, pytest, check_consistency, e2e lesson-ml-2-3, скриншоты 1440 и 390
+- **Отклонения от плана и решения:** f.penalty-constraint не заведена: эквивалентность штрафа и ограничения показана виджетом и сослана на II.8; режим «λ» игры не сделан — урок ссылается на ручку λ в базовой игре IV.7 (нужна задача: уровни с L1 и разреженной истиной); ограничение — ползунок, а не перетаскивание
+- **Следующий шаг:** L-ml-basics-2.4 — выбор модели и кросс-валидация.
+- **Вопросы пользователю:** —
+
+### 2026-10-26 — L-ml-basics-2.2 Смещение и разброс — готов
+- **Сделано:** урок (4 цикла, формулы f.prediction-error-decomposition (из IV.7), f.ols-variance-trace, f.mc-bias-inflation, 4 упражнения, итоговая ml.ols-variance); виджет «Облако моделей» (src/widgets/ml/model-cloud: 100 полиномов, h̄, гистограмма ĥ(x₀), столбик разложения, U по степени); игра «Переобучи, если сможешь: облако» (src/games/overfit-cloud, 4 уровня); polyFitMoments в src/lib/math/poly.ts (O(n·d)); генератор ml.ols-variance; понятие ml.bias-variance; ячейка ml_basics/bias_variance.py со сверкой с make_pipeline(PolynomialFeatures, LinearRegression)
+- **Файлы:** content/courses/ml-basics/evaluation/bias-variance.mdx, content/formulas/ml/{ols-variance-trace,mc-bias-inflation}.yaml, src/widgets/ml/model-cloud/, src/games/overfit-cloud/, code/snippets/ml_basics/bias_variance.py, code/tests/test_bias_variance.py
+- **Проверка:** validate, lint, check, build, vitest 733, pytest, check_consistency, e2e lesson-ml-2-2 и overfit, скриншоты 1440 и 390
+- **Отклонения от плана и решения:** f.bias-variance-point не заведена — переиспользована f.prediction-error-decomposition из IV.7 (тот же вывод); режим «Облако» — отдельная игра /games/overfit-cloud/ с общим движком, а не режим старой; x₀ — ползунок, а не перетаскивание
+- **Следующий шаг:** L-ml-basics-2.3 — регуляризация: L2 и L1.
+- **Вопросы пользователю:** —
+
+### 2026-10-26 — L-ml-basics-2.1 Метрики классификации — готов
+- **Сделано:** урок (4 цикла, формулы f.f1-counts, f.auc-pairs, f.precision-prevalence, f.cost-threshold, f.brier-proper, 4 упражнения, итоговая ml.precision-prevalence); виджет «Порог: кривые и цена» (src/widgets/ml/threshold-lab: гистограммы, ROC, PR, стоимость, надёжность, φ, цены, искажение s³); метрики в src/lib/math/classification.ts (aucRanks, prPoints, averagePrecision, brier, reliability, f1); набор mlf.datasets.bank_calls; генераторы ml.precision-prevalence, ml.cost-threshold; понятие ml.classification-metrics; ячейка ml_basics/metrics.py со сверкой с sklearn.metrics до 1e-12
+- **Файлы:** content/courses/ml-basics/evaluation/classification-metrics.mdx, content/formulas/ml/{f1-counts,auc-pairs,precision-prevalence,cost-threshold,brier-proper}.yaml, src/widgets/ml/threshold-lab/, code/snippets/ml_basics/metrics.py, code/tests/test_classification_metrics.py
+- **Проверка:** validate, lint, check, build, vitest 724, pytest, check_consistency, e2e lesson-ml-2-1, error-cost, threshold, скриншоты 1440 и 390
+- **Отклонения от плана и решения:** Bank Marketing недоступен (S7.02): ячейка — на синтетических «звонках банка» mlf.datasets.bank_calls с ~11 % откликов; новый виджет threshold-lab рядом со старым threshold (тот остаётся на /demo/threshold/); кривая надёжности видна всегда, а не только после искажения
+- **Следующий шаг:** L-ml-basics-2.2 — смещение и разброс.
+- **Вопросы пользователю:** —
+
+### 2026-10-26 — S7.L1 Итоговая проверка модуля 1 — готова
+- **Сделано:** ExerciseSet из 14 задач в конце урока 1.6: 10 генераторов уроков 1.1–1.6 и 4 задачи с выбором (шаг за порогом, разделимые данные, LogisticRegression() по умолчанию, выбор модели для счётчика). Блок S7.L1 — [x].
+- **Проверка:** validate, build, e2e lesson-ml-1-6 (14 задач, код в тексте).
+- **Отклонения от плана и решения:** типы «вывод по шагам» и «код» из карточки не вошли — в ExerciseSet нет шаговых и кодовых задач; выводы проверяются формулами уроков, код — ячейками.
+- **Следующий шаг:** S7.L2 — уроки модуля 2 «Оценка и обобщение».
+- **Вопросы пользователю:** S7.02 — доступ к наборам данных и решение по California Housing (нужно для проекта P1).
+
 ### 2026-10-26 — L-ml-basics-1.6 Обобщённые линейные модели — готов
 - **Сделано:** урок (4 цикла, формулы f.glm-poisson и f.glm-gradient, 3 упражнения, итоговая ml.poisson-predict); виджет «Конструктор GLM» (src/widgets/ml/glm-builder: 4 распределения, таблица семейства, E[y|x] и p(y|x), неканонический отклик у Пуассона); набор mlf.datasets.ad_views (просмотры объявлений); генератор ml.poisson-predict; понятие ml.glm; ячейка ml_basics/glm.py со сверкой с PoissonRegressor(alpha=0)
 - **Файлы:** content/courses/ml-basics/linear-models/glm.mdx, content/formulas/ml/glm-*.yaml, src/widgets/ml/glm-builder/, code/snippets/ml_basics/glm.py, code/tests/test_glm.py, code/mlf/datasets.py

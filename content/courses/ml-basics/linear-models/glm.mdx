@@ -18,7 +18,7 @@ cs229:
   3. Канонический случай: формула 2 (f.glm-gradient), вогнутость; упражнение 3 (σ² не меняет θ̂).
   4. Ячейка Python (просмотры объявлений; числа и сверка с PoissonRegressor(alpha=0) — code/tests/test_glm.py);
      ловушки — линейная регрессия на счётчиках и на log y.
-  Итог, итоговая проверка (ml.poisson-predict, ставит «знаю»).
+  Итог, итоговая проверка (ml.poisson-predict, ставит «знаю»), итоговая проверка модуля 1 (ExerciseSet, 14 задач).
 */}
 
 <Prereqs lessons={["foundations/calculus/convexity", "foundations/probability/discrete-distributions", "foundations/probability/continuous-distributions", "foundations/statistics/mle", "foundations/statistics/exponential-family", "ml-basics/linear-models/linear-regression-lms", "ml-basics/linear-models/logistic-regression", "ml-basics/linear-models/perceptron-softmax"]} />
@@ -125,3 +125,60 @@ $$
 - У&nbsp;канонической GLM $\nabla_\theta \ell = X^\top(y - h_\theta(X))$, гессиан $-X^\top \operatorname{diag}(a'') X \preceq 0$: правдоподобие вогнуто, и&nbsp;метод Ньютона общий для всех.
 
 <Exercise gen="ml.poisson-predict" seed={31} id="post.ml-basics.1.6" title="Итоговая проверка" final />
+
+## Итоговая проверка модуля «Линейные модели»
+
+<ExerciseSet
+  seed={16}
+  title="Модуль «Линейные модели»"
+  intro="Четырнадцать задач по урокам 1.1–1.6 вперемешку. Проверка ничего не блокирует: ошибки покажут, какие уроки повторить перед проектом P1 и модулем 2."
+  items={[
+    { lesson: "ml-basics/linear-models/learning-problem", gen: "ml.rmse-mae", seed: 41 },
+    { lesson: "ml-basics/linear-models/learning-problem", gen: "ml.best-constant", seed: 42 },
+    { lesson: "ml-basics/linear-models/linear-regression-lms", gen: "ml.lms-update", seed: 41 },
+    { lesson: "ml-basics/linear-models/linear-regression-lms", gen: "ml.step-scale", seed: 42 },
+    { lesson: "ml-basics/linear-models/linear-regression-lms", id: "m1.near-threshold", spec: {
+      kind: "choice",
+      prompt: "Пакетный спуск запустили с шагом $2.1/\\lambda_{\\max}$. Что покажет график $J$ по итерациям?",
+      options: [
+        { text: "$J$ растёт экспоненциально: отклонение вдоль главного собственного вектора умножается на $-1.1$ за шаг", correct: true, why: "Множитель $1 - \\alpha\\lambda_{\\max} = -1.1$ по модулю больше единицы: точка перескакивает минимум всё дальше." },
+        { text: "$J$ убывает, но медленнее, чем при $1.9/\\lambda_{\\max}$", why: "За порогом $2/\\lambda_{\\max}$ спуск не замедляется, а расходится." },
+        { text: "$J$ колеблется около минимума, как у SGD", why: "Колебания у минимума — свойство SGD с постоянным шагом. Пакетный спуск за порогом уходит от минимума." },
+      ],
+    } },
+    { lesson: "ml-basics/linear-models/features-lwr", gen: "ml.lwr-weight", seed: 41 },
+    { lesson: "ml-basics/linear-models/features-lwr", gen: "ml.feature-count", seed: 41 },
+    { lesson: "ml-basics/linear-models/logistic-regression", gen: "ml.logistic-prob", seed: 41 },
+    { lesson: "ml-basics/linear-models/logistic-regression", id: "m1.separable", spec: {
+      kind: "choice",
+      prompt: "Классы разделимы прямой без ошибок. Что происходит с весами логистической регрессии без штрафа при подъёме по $\\ell$?",
+      options: [
+        { text: "$\\lVert\\theta\\rVert$ растёт без предела: максимума правдоподобия нет", correct: true, why: "Чем круче сигмоида при той же границе, тем ближе все $p(y \\mid x)$ к единице, и $\\ell$ растёт к нулю, не достигая его. Остановить рост может штраф $\\lambda\\lVert\\theta\\rVert^2$." },
+        { text: "Веса сходятся к границе с наибольшим зазором", why: "Это свойство SVM (курс «Классические методы»). У логистической регрессии без штрафа конечного максимума нет." },
+        { text: "Метод Ньютона сходится за одну итерацию", why: "Гессиан $-X^\\top D X$ при уверенных вероятностях вырождается ($D_{ii} \\to 0$), и шаги Ньютона только растут." },
+      ],
+    } },
+    { lesson: "ml-basics/linear-models/logistic-regression", id: "m1.sklearn-default", spec: {
+      kind: "choice",
+      prompt: "Свои веса логистической регрессии, найденные методом Ньютона, сравнили с `LogisticRegression()` по умолчанию — у библиотеки они заметно меньше по модулю. Почему?",
+      options: [
+        { text: "По умолчанию там L2-штраф с `C=1.0`; для сверки его отключают: `C=np.inf`", correct: true, why: "Штраф стягивает веса к нулю. Без него оба метода ищут один и тот же максимум вогнутой $\\ell$ и совпадают до точности остановки." },
+        { text: "Библиотека использует градиентный подъём, а он не дошёл до максимума", why: "Решатель по умолчанию сходится до заданной точности. Разница — не в методе, а в целевой функции: в ней есть штраф." },
+        { text: "Веса определены с точностью до общего сдвига", why: "Это про softmax-регрессию с $k$ векторами $\\theta_j$. У двоичной логистической регрессии один вектор весов, и он единственный." },
+      ],
+    } },
+    { lesson: "ml-basics/linear-models/perceptron-softmax", gen: "ml.softmax-prob", seed: 41 },
+    { lesson: "ml-basics/linear-models/perceptron-softmax", gen: "ml.perceptron-update", seed: 43 },
+    { lesson: "ml-basics/linear-models/glm", gen: "ml.poisson-predict", seed: 41 },
+    { lesson: "ml-basics/linear-models/glm", id: "m1.choose-model", spec: {
+      kind: "choice",
+      prompt: "Нужно предсказывать число заявок на просмотр квартиры за день. Какую модель, отклик и потери выбрать?",
+      options: [
+        { text: "Пуассоновскую регрессию: отклик $e^{\\theta^\\top x}$, потери — минус логарифм пуассоновского правдоподобия", correct: true, why: "Ответ — неотрицательный счётчик. Пуассоновская GLM всегда даёт положительный прогноз, а её градиент — та же форма $(y - h_\\theta(x))\\,x$." },
+        { text: "Линейную регрессию на числе заявок с квадратичными потерями", why: "Она может предсказать отрицательное число заявок и не учитывает, что разброс счётчика растёт вместе со средним." },
+        { text: "Логистическую регрессию: заявка либо есть, либо нет", why: "Ответ — число заявок, а не факт заявки. Логистическая регрессия предсказывает вероятность события, а не счётчик." },
+      ],
+    } },
+  ]}
+/>
+

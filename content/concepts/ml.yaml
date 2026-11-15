@@ -141,3 +141,51 @@
   cs229:
     - edition: main-notes-2026-spring
       section: 'Generalized linear models'
+
+- id: ml.classification-metrics
+  title:
+    ru: 'Метрики классификации и калибровка'
+    en: 'classification metrics and calibration'
+  summary: 'При пороге $t$ — матрица ошибок, точность, полнота, FPR и $F_1$; ROC- и PR-кривые — все пороги сразу, AUC — доля правильно упорядоченных пар. Порог по цене ошибок $t^\star = c_{FP}/(c_{FP} + c_{FN})$ верен для калиброванных вероятностей; калибровку проверяют кривой надёжности и оценкой Брайера.'
+  lesson: classification-metrics
+  prerequisites: [ml.logistic-regression, prob.bayes]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Classification and logistic regression'
+
+- id: ml.bias-variance
+  title:
+    ru: 'Смещение и разброс'
+    en: 'bias–variance tradeoff'
+  summary: 'Модель, обученная на случайной выборке, случайна: ожидаемая ошибка в точке — шум $\sigma^2$, плюс квадрат промаха средней модели (смещение²), плюс её разброс по выборкам. Сложность модели уменьшает смещение и раздувает разброс, рост $n$ только сжимает разброс; у МНК средний разброс в обучающих точках — $\sigma^2 d/n$.'
+  lesson: bias-variance
+  prerequisites: [stat.risk-generalization, ml.feature-map]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Generalization'
+
+- id: ml.lasso
+  title:
+    ru: 'Лассо и путь регуляризации'
+    en: 'lasso and the regularization path'
+  summary: 'Штраф $\lambda\lVert\theta\rVert_1$ зануляет часть весов и отбирает признаки: при ортонормированных признаках решение — мягкий порог $S_\lambda(\hat\theta_j)$, в общем случае — покоординатный спуск. Путь $\theta_j(\lambda)$ показывает, в каком порядке признаки входят в модель; признаки стандартизуют по обучающей части, свободный член не штрафуют.'
+  lesson: regularization
+  prerequisites: [ml.ridge, ml.bias-variance, calc.convexity]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Regularization and model selection'
+
+- id: ml.model-selection
+  title:
+    ru: 'Выбор модели и кросс-валидация'
+    en: 'model selection and cross-validation'
+  summary: 'Гиперпараметры выбирают по валидации или $k$-кратной кросс-валидации, тест открывают один раз. Минимум валидационных ошибок оптимистичен; правило одной SE берёт самую простую модель в пределах ошибки от лучшей; вся предобработка — внутри фолда, честная оценка процедуры — вложенная кросс-валидация.'
+  lesson: model-selection
+  prerequisites: [ml.bias-variance, ml.ridge, stat.risk-generalization]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Regularization and model selection'

@@ -1,0 +1,57 @@
+id: f.f1-counts
+kind: formula
+title:
+  ru: 'F₁ через счётчики матрицы ошибок'
+  en: 'F1 score from confusion counts'
+statement: 'F_1 = \frac{2\,\text{precision} \cdot \text{recall}}{\text{precision} + \text{recall}} = \frac{2\,\mathrm{TP}}{2\,\mathrm{TP} + \mathrm{FP} + \mathrm{FN}}'
+
+# Урок 2.1 «Основ ML»: среднее гармоническое точности и полноты; подстановка счётчиков убирает дроби. TN в F₁ не входит.
+symbols:
+  - name: tp
+    tex: '\mathrm{TP}'
+    meaning: 'верно отмеченные положительные'
+    shape: []
+    sample: positive
+  - name: fp
+    tex: '\mathrm{FP}'
+    meaning: 'ложные срабатывания'
+    shape: []
+    sample: positive
+  - name: fn
+    tex: '\mathrm{FN}'
+    meaning: 'пропуски'
+    shape: []
+    sample: positive
+
+dependsOn:
+  concepts: [ml.loss]
+  rules: []
+
+derivation:
+  plan:
+    - 'Записать точность и полноту через счётчики'
+    - 'Подставить в среднее гармоническое и сократить'
+  steps:
+    - goal: 0
+      tex: '\text{precision} = \frac{\mathrm{TP}}{\mathrm{TP} + \mathrm{FP}}, \qquad \text{recall} = \frac{\mathrm{TP}}{\mathrm{TP} + \mathrm{FN}}'
+      by: [ml.loss]
+      check:
+        kind: same
+        py: '2 * (tp / (tp + fp)) * (tp / (tp + fn)) / (tp / (tp + fp) + tp / (tp + fn))'
+    - goal: 1
+      tex: 'F_1 = \frac{2\,\mathrm{TP}^2 / \bigl((\mathrm{TP} + \mathrm{FP})(\mathrm{TP} + \mathrm{FN})\bigr)}{\mathrm{TP}\,(2\,\mathrm{TP} + \mathrm{FP} + \mathrm{FN}) / \bigl((\mathrm{TP} + \mathrm{FP})(\mathrm{TP} + \mathrm{FN})\bigr)} = \changed{\frac{2\,\mathrm{TP}}{2\,\mathrm{TP} + \mathrm{FP} + \mathrm{FN}}}'
+      by: [ml.loss]
+      note: 'Общий знаменатель сокращается. Истинно отрицательные TN в $F_1$ не входят: при дисбалансе их много, и они не должны маскировать ошибки.'
+      check:
+        kind: same
+        py: '2 * tp / (2 * tp + fp + fn)'
+      mutations:
+        - tex: 'F_1 = \frac{\mathrm{TP}}{\mathrm{TP} + \mathrm{FP} + \mathrm{FN}}'
+          py: 'tp / (tp + fp + fn)'
+          why: 'Потеряна двойка: это индекс Жаккара, а не $F_1$. Он всегда меньше $F_1$, кроме случая без ошибок.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Classification and logistic regression'
+
+usedIn: [ml.classification-metrics]

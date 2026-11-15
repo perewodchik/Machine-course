@@ -1,0 +1,59 @@
+id: f.mc-bias-inflation
+kind: formula
+title:
+  ru: 'Оценка смещения по B выборкам завышена на разброс/B'
+  en: 'Monte Carlo bias estimate is inflated by variance over B'
+statement: '\mathbb{E}\bigl(\bar h_B(x) - h^\star(x)\bigr)^2 = \bigl(\bar h(x) - h^\star(x)\bigr)^2 + \frac{\operatorname{Var} \hat h_S(x)}{B}'
+
+# Урок 2.2 «Основ ML»: среднее B независимых моделей — случайная величина со средним h̄ и дисперсией Var/B; её квадрат
+# промаха раскладывается на квадрат смещения и эту дисперсию. Проверка — точный перебор: ĥ_S(x) равновероятно
+# принимает значения v_1, …, v_k, B = 2 независимые выборки.
+symbols:
+  - name: v
+    tex: 'v'
+    meaning: 'равновероятные значения $\hat h_S(x)$'
+    shape: [m, 1]
+  - name: h
+    tex: 'h^\star(x)'
+    meaning: 'истинное значение'
+    shape: []
+
+dependsOn:
+  concepts: [prob.expectation, stat.risk-generalization]
+  rules: []
+
+derivation:
+  plan:
+    - 'Записать квадрат промаха среднего по двум выборкам перебором'
+    - 'Разложить: квадрат смещения плюс дисперсия среднего'
+    - 'Дисперсия среднего $B$ независимых — разброс, делённый на $B$'
+  steps:
+    - goal: 0
+      tex: '\mathbb{E}\bigl(\bar h_2 - h^\star\bigr)^2 = \frac{1}{k^2} \sum_{a, b} \Bigl(\frac{v_a + v_b}{2} - h^\star\Bigr)^2'
+      by: [prob.expectation]
+      check:
+        kind: same
+        py: 'np.mean(np.array([[((a + b) / 2 - h) ** 2 for b in v] for a in v]))'
+    - goal: 1
+      tex: '= \bigl(\mathbb{E}\bar h_2 - h^\star\bigr)^2 + \operatorname{Var}\bar h_2 = \changed{\bigl(\bar h - h^\star\bigr)^2 + \frac{\operatorname{Var} \hat h_S}{2}}'
+      by: [prob.expectation]
+      note: '$\mathbb{E}(Z - c)^2 = (\mathbb{E}Z - c)^2 + \operatorname{Var} Z$; дисперсия среднего двух независимых копий — половина дисперсии одной.'
+      check:
+        kind: same
+        py: '(np.mean(v) - h) ** 2 + np.var(v) / 2'
+      mutations:
+        - tex: '= \bigl(\bar h - h^\star\bigr)^2'
+          py: '(np.mean(v) - h) ** 2'
+          why: 'Потеряна дисперсия среднего: $\bar h_B$ — сам случайный, и его промах включает разброс, уменьшенный в $B$ раз.'
+        - tex: '= \bigl(\bar h - h^\star\bigr)^2 + \operatorname{Var} \hat h_S'
+          py: '(np.mean(v) - h) ** 2 + np.var(v)'
+          why: 'Разброс не делится на $B$: усреднение $B$ независимых моделей уменьшает дисперсию в $B$ раз.'
+
+pitfalls:
+  - 'Читать смещение², посчитанное по облаку из $B$ моделей, как истинное: у гибкой модели с огромным разбросом оценка почти целиком состоит из разброс$/B$.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Generalization'
+
+usedIn: [ml.bias-variance]

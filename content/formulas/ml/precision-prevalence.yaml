@@ -1,0 +1,67 @@
+id: f.precision-prevalence
+kind: formula
+title:
+  ru: 'Точность зависит от доли положительных'
+  en: 'precision depends on prevalence'
+statement: '\text{precision} = \frac{\phi\, \mathrm{TPR}}{\phi\, \mathrm{TPR} + (1 - \phi)\, \mathrm{FPR}}'
+
+# Урок 2.1 «Основ ML»: TPR и FPR — доли внутри классов, они от φ не зависят; TP и FP — счётчики, они масштабируются
+# числом положительных φn и отрицательных (1 − φ)n. Поэтому ROC стоит на месте, а точность падает вместе с φ.
+symbols:
+  - name: n
+    tex: 'n'
+    meaning: 'число объектов'
+    shape: []
+    sample: positive
+  - name: phi
+    tex: '\phi'
+    meaning: 'доля положительных'
+    shape: []
+    sample: fraction
+  - name: tpr
+    tex: '\mathrm{TPR}'
+    meaning: 'полнота'
+    shape: []
+    sample: fraction
+  - name: fpr
+    tex: '\mathrm{FPR}'
+    meaning: 'доля ложных срабатываний'
+    shape: []
+    sample: fraction
+
+dependsOn:
+  concepts: [prob.bayes]
+  rules: []
+
+derivation:
+  plan:
+    - 'Выразить TP и FP через долю положительных и доли внутри классов'
+    - 'Подставить в определение точности и сократить $n$'
+  steps:
+    - goal: 0
+      tex: '\mathrm{TP} = \phi n\, \mathrm{TPR}, \qquad \mathrm{FP} = (1 - \phi) n\, \mathrm{FPR}'
+      by: [prob.bayes]
+      note: 'TPR — доля отмеченных среди $\phi n$ положительных, FPR — среди $(1 - \phi) n$ отрицательных.'
+      check:
+        kind: same
+        py: '(phi * n * tpr) / (phi * n * tpr + (1 - phi) * n * fpr)'
+    - goal: 1
+      tex: '\text{precision} = \frac{\mathrm{TP}}{\mathrm{TP} + \mathrm{FP}} = \changed{\frac{\phi\, \mathrm{TPR}}{\phi\, \mathrm{TPR} + (1 - \phi)\, \mathrm{FPR}}}'
+      by: [prob.bayes]
+      note: 'Это формула Байеса из урока III.3: априорная вероятность $\phi$, «чувствительность» TPR и «ложная тревога» FPR. При малом $\phi$ даже маленький FPR даёт много ложных срабатываний.'
+      check:
+        kind: same
+        py: 'phi * tpr / (phi * tpr + (1 - phi) * fpr)'
+      mutations:
+        - tex: '\text{precision} = \frac{\phi\, \mathrm{TPR}}{\phi\, \mathrm{TPR} + \mathrm{FPR}}'
+          py: 'phi * tpr / (phi * tpr + fpr)'
+          why: 'Потерян множитель $1 - \phi$: FPR — доля среди отрицательных, и число ложных срабатываний пропорционально их доле.'
+        - tex: '\text{precision} = 1 - \mathrm{FPR}'
+          py: '1 - fpr'
+          why: 'FPR — доля ложных среди отрицательных, а $1 - \text{precision}$ — доля ложных среди отмеченных. Они совпадают только случайно; первая от $\phi$ не зависит, вторая — зависит.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Classification and logistic regression'
+
+usedIn: [ml.classification-metrics]

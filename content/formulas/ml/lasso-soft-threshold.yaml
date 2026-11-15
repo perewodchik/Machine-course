@@ -1,0 +1,62 @@
+id: f.lasso-soft-threshold
+kind: formula
+title:
+  ru: 'Лассо при ортонормированных признаках — мягкий порог'
+  en: 'lasso with orthonormal features is soft thresholding'
+statement: '\arg\min_{t}\ \tfrac12 (t - z)^2 + \lambda \lvert t \rvert = S_\lambda(z) = \operatorname{sign}(z) \max(\lvert z \rvert - \lambda, 0)'
+
+# Урок 2.3 «Основ ML»: при XᵀX = I потери ½‖Xθ − y‖² = ½‖θ − θ̂‖² + const распадаются по координатам, и каждая
+# задача — ½(t − z)² + λ|t| с z = θ̂_j. Минимум — мягкий порог: малые |z| зануляются. Проверка: значение в S_λ(z) не
+# больше, чем в случайной точке t, а сдвиг без порога хуже.
+symbols:
+  - name: z
+    tex: 'z'
+    meaning: 'вес МНК $\hat\theta_j$'
+    shape: []
+  - name: t
+    tex: 't'
+    meaning: 'любое значение веса'
+    shape: []
+  - name: lam
+    tex: '\lambda'
+    meaning: 'коэффициент регуляризации'
+    shape: []
+    sample: positive
+
+dependsOn:
+  concepts: [calc.convexity, ml.least-squares]
+  rules: []
+
+derivation:
+  plan:
+    - 'Записать задачу для одной координаты'
+    - 'Найти минимум отдельно при $t > 0$, $t < 0$ и проверить $t = 0$'
+  steps:
+    - goal: 0
+      tex: 'f(t) = \tfrac12 (t - z)^2 + \lambda \lvert t \rvert'
+      by: [calc.convexity]
+      note: 'Функция выпукла, но в нуле у неё излом: производной там нет.'
+      check:
+        kind: same
+        py: '0.5 * (t - z) ** 2 + lam * abs(t)'
+    - goal: 1
+      tex: 'f\bigl(S_\lambda(z)\bigr) \le f(t), \qquad S_\lambda(z) = \changed{\operatorname{sign}(z) \max(\lvert z \rvert - \lambda, 0)}'
+      by: [calc.convexity]
+      note: 'При $t > 0$ условие $t - z + \lambda = 0$ даёт $t = z - \lambda$, оно допустимо при $z > \lambda$; при $t < 0$ — $t = z + \lambda$ при $z < -\lambda$. Если $\lvert z \rvert \le \lambda$, ноль уже лучше: вес зануляется.'
+      check:
+        kind: bound
+        side: below
+        py: '0.5 * (np.sign(z) * np.maximum(abs(z) - lam, 0) - z) ** 2 + lam * abs(np.sign(z) * np.maximum(abs(z) - lam, 0))'
+      mutations:
+        - tex: 'S_\lambda(z) = z - \lambda'
+          py: '0.5 * (z - lam - z) ** 2 + lam * abs(z - lam)'
+          why: 'Без порога и без знака: при отрицательном $z$ сдвиг на $-\lambda$ уводит вес от нуля, а при $\lvert z \rvert < \lambda$ лучший вес — ровно ноль.'
+
+pitfalls:
+  - 'Ждать нулей от L2: гребневая даёт $z/(1 + \lambda)$ — веса только стремятся к нулю. Занулять умеет излом $\lvert t \rvert$.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Regularization and model selection'
+
+usedIn: [ml.lasso]
