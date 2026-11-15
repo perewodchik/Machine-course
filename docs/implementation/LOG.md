@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-11-15 — S7.09 Аудит реализации; точность и допуски числовых ответов — готова
+- **Сделано:** независимая проверка всего сделанного (список из 16 находок — `AUDIT-2026-11-15.md`); исправлено: подпись точности под числовым полем и допуск не шире четверти ответа (раньше округлённый до сотых ответ получал «Пока нет», а ноль и типичная ошибка засчитывались), повтор вариантов в `la.kernel-vector`, ссылка на несуществующий урок V.5 в II.9, запуск e2e (образ сессии несёт chromium-1243, все тесты падали на запуске браузера); в план добавлены S7.10–S7.13, у S7.05 и S7.06 записана зависимость от S7.02
+- **Файлы:** src/lib/exercises/check.ts, src/components/pedagogy/Exercise.astro, src/lib/exercises/exercises.test.ts, src/lib/exercises/generators/la.ts, playwright.config.ts, docs/implementation/AUDIT-2026-11-15.md, PLAN.md
+- **Проверка:** validate, lint, check, build → ok; vitest 715; pytest → ok; check_consistency → ok; e2e → 1114 passed, 414 skipped (визуальные — только в CI); скриншот числовой задачи урока 1.4
+- **Отклонения от плана и решения:** правило «знаю с любой попытки и с подсказками» не менялось — оно записано в conventions/pedagogy.md; ветка — та, что назначает среда сессии
+- **Следующий шаг:** S7.10, затем S7.12, S7.13, затем итоговая проверка модуля 1 (S7.L1).
+- **Вопросы пользователю:** S7.11 — уроки заявляют в среднем 135 минут при объёме на 30–50: пересчитать часы или дописывать уроки? S7.02 — разрешить в сетевой политике archive.ics.uci.edu и www.openml.org (наборы для проектов P1 и P2).
+
 ### 2026-10-26 — L-ml-basics-1.6 Обобщённые линейные модели — готов
 - **Сделано:** урок (4 цикла, формулы f.glm-poisson и f.glm-gradient, 3 упражнения, итоговая ml.poisson-predict); виджет «Конструктор GLM» (src/widgets/ml/glm-builder: 4 распределения, таблица семейства, E[y|x] и p(y|x), неканонический отклик у Пуассона); набор mlf.datasets.ad_views (просмотры объявлений); генератор ml.poisson-predict; понятие ml.glm; ячейка ml_basics/glm.py со сверкой с PoissonRegressor(alpha=0)
 - **Файлы:** content/courses/ml-basics/linear-models/glm.mdx, content/formulas/ml/glm-*.yaml, src/widgets/ml/glm-builder/, code/snippets/ml_basics/glm.py, code/tests/test_glm.py, code/mlf/datasets.py
