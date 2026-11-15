@@ -1,0 +1,61 @@
+id: f.ols-train-test-gap
+kind: formula
+title:
+  ru: 'Ошибки обучения и проверки МНК сходятся к σ² с двух сторон'
+  en: 'OLS training and test errors converge to sigma squared from both sides'
+statement: '\mathbb{E}\,\operatorname{err}_{\text{обуч}} = \sigma^2 \Bigl(1 - \frac dn\Bigr), \qquad \mathbb{E}\,\operatorname{err}_{\text{новые } y} = \sigma^2 \Bigl(1 + \frac dn\Bigr)'
+
+# Урок 2.5 «Основ ML»: истина в классе, x фиксированы, шум некоррелирован. Остатки на обучении — (I − H)ε, их средний
+# квадрат в ожидании σ² tr(I − H)/n; на новых ответах в тех же точках шум свежий, а прогноз несёт σ² tr H / n разброса.
+# Разрыв — 2σ²d/n: кривые обучения сходятся к σ² снизу и сверху.
+symbols:
+  - name: X
+    tex: 'X'
+    meaning: 'признаки, ранг $d$'
+    shape: [n, d]
+  - name: sigma
+    tex: '\sigma'
+    meaning: 'стандартное отклонение шума'
+    shape: []
+    sample: positive
+
+dependsOn:
+  concepts: [la.projection, ml.bias-variance]
+  rules: []
+
+derivation:
+  plan:
+    - 'Остатки на обучении — проекция шума на дополнение столбцов $X$'
+    - 'Ожидание их квадрата — след $I - H$'
+    - 'На новых ответах — свежий шум плюс разброс прогноза'
+  steps:
+    - goal: 0
+      tex: 'y - Hy = (I - H)\varepsilon, \qquad \mathbb{E}\,\tfrac1n \lVert (I - H)\varepsilon \rVert^2 = \frac{\sigma^2}{n} \operatorname{tr}(I - H) = \changed{\sigma^2 \Bigl(1 - \frac dn\Bigr)}'
+      by: [la.projection, la.trace]
+      note: '$(I - H)X\theta^\star = 0$: истина в классе уходит из остатков целиком. $I - H$ — проектор ранга $n - d$, его след $n - d$.'
+      check:
+        kind: identity
+        lhs: 'sigma ** 2 * np.trace(np.eye(X.shape[0]) - X @ np.linalg.solve(X.T @ X, X.T)) / X.shape[0]'
+        rhs: 'sigma ** 2 * (1 - X.shape[1] / X.shape[0])'
+      mutations:
+        - tex: '= \sigma^2'
+          py: 'sigma ** 2'
+          why: 'Ошибка на обучении меньше шума: МНК подгоняет $d$ направлений шума, и остатки теряют $d$ степеней свободы из $n$.'
+    - goal: 2
+      tex: '\mathbb{E}\,\tfrac1n \lVert y_{\text{нов}} - Hy \rVert^2 = \sigma^2 + \frac{\sigma^2}{n} \operatorname{tr} H = \changed{\sigma^2 \Bigl(1 + \frac dn\Bigr)}'
+      by: [la.trace]
+      note: 'Свежий шум независим от прогноза: $\sigma^2$ неустранимой ошибки плюс разброс прогноза $\sigma^2 d/n$ (урок 2.2). Разрыв между кривыми — $2\sigma^2 d/n$.'
+      check:
+        kind: identity
+        lhs: 'sigma ** 2 + sigma ** 2 * np.trace(X @ np.linalg.solve(X.T @ X, X.T)) / X.shape[0]'
+        rhs: 'sigma ** 2 * (1 + X.shape[1] / X.shape[0])'
+      mutations:
+        - tex: '= \sigma^2 \Bigl(1 - \frac dn\Bigr)'
+          py: 'sigma ** 2 * (1 - X.shape[1] / X.shape[0])'
+          why: 'Это ошибка на обучении. На новых ответах прогноз не подогнан под их шум, и к $\sigma^2$ прибавляется разброс, а не вычитается.'
+
+cs229:
+  - edition: main-notes-2026-spring
+    section: 'Generalization'
+
+usedIn: [ml.ml-practice]

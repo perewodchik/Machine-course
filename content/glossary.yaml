@@ -441,3 +441,6 @@
 - id: model-selection
   ru: 'обучающая, валидационная и тестовая выборки; гиперпараметр; k-кратная кросс-валидация; фолд; стратификация; правило одной стандартной ошибки; вложенная кросс-валидация; «без одного»; конвейер'
   en: 'train, validation and test sets; hyperparameter; k-fold cross-validation; fold; stratification; one-standard-error rule; nested cross-validation; leave-one-out (LOO); pipeline'
+- id: ml-practice
+  ru: 'кривая обучения; высокое смещение; высокий разброс; анализ ошибок; срез; абляция; утечка; целевая утечка; временная утечка; утечка через предобработку'
+  en: 'learning curve; high bias; high variance; error analysis; slice; ablation study; leakage; target leakage; temporal leakage; preprocessing leakage'

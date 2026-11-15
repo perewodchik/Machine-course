@@ -333,6 +333,28 @@
   .folds__strat { margin-top: var(--space-3); }
   .folds__check { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 44px; font: var(--text-sm)/1.4 var(--font-ui); }
   @media (max-width: 700px) { .folds__plots { grid-template-columns: minmax(0, 1fr); } }
+  .learning-curves__band { stroke: none; opacity: 0.16; }
+  .learning-curves__band.is-train { fill: var(--sym-1); }
+  .learning-curves__band.is-val { fill: var(--sym-3); }
+  .learning-curves__legend, .learning-curves__verdict { margin: var(--space-1) 0 0; font: var(--text-sm)/1.5 var(--font-ui); color: var(--ink-2); }
+  .learning-curves__verdict { color: var(--ink); }
+  .learning-curves__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-top: var(--space-3); }
+  .learning-curves__ask { font: var(--text-sm)/1.4 var(--font-ui); color: var(--ink-2); }
+  .learning-curves__actions .btn[aria-pressed="true"] { border-color: var(--pen); color: var(--pen); box-shadow: inset 0 0 0 1px var(--pen); }
+  .learning-curves__controls { display: grid; gap: var(--space-3); margin-top: var(--space-3); }
+  .learning-curves .kit-slider { grid-template-columns: 5.6em minmax(0, 1fr) 3em; }
+  .learning-curves__readouts { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-6); }
+  .find-leak__board { padding: var(--space-3) var(--space-4) 0; }
+  .find-leak__story { margin: 0 0 var(--space-3); font: var(--text-base)/1.6 var(--font-text); }
+  .find-leak__validation { margin: 0 0 var(--space-2); font: var(--text-sm)/1.5 var(--font-ui); color: var(--ink); }
+  .find-leak__options { display: grid; gap: var(--space-2); }
+  .find-leak__option { display: grid; gap: 2px; min-height: 44px; padding: var(--space-2) var(--space-3); border: 1px solid var(--rule); border-radius: var(--radius-control); background: var(--paper); color: var(--ink); font: var(--text-sm)/1.4 var(--font-ui); text-align: left; cursor: pointer; }
+  .find-leak__option:hover:not(:disabled) { border-color: var(--pen); }
+  .find-leak__option:focus-visible { outline: 2px solid var(--pen); outline-offset: 2px; }
+  .find-leak__option:disabled { cursor: default; }
+  .find-leak__option.is-right { border-color: var(--pen); box-shadow: inset 0 0 0 1px var(--pen); }
+  .find-leak__option.is-wrong { border-style: dashed; color: var(--ink-2); }
+  .find-leak__kind, .find-leak__known { color: var(--ink-2); font-size: var(--text-xs); }
   .riemann__fn { font-family: var(--font-math); font-size: 1.05em; }
   .riemann__fn sup { font-size: 0.7em; }
   @media (max-width: 900px) { .riemann__controls { grid-template-columns: minmax(0, 1fr); } }

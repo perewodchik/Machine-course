@@ -1,0 +1,26 @@
+---
+// Игра «Найди утечку» (урок 2.5 «Основ ML»): остров React с оболочкой GameShell. Блок «Чему учит игра» — статичный HTML.
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { FindLeak, meta } from "../../games/find-leak";
+import { loadCourse } from "../../lib/content/collections";
+
+const course = await loadCourse("ml-basics");
+const lesson = course.lessons.find((l) => l.key === meta.lesson);
+if (!lesson) throw new Error(`игра ${meta.id}: нет урока ${meta.lesson}`);
+const module = course.modules.find((m) => m.id === lesson.module);
+---
+<BaseLayout title={meta.title} description="По описанию задачи, признаков и разбиения найдите, откуда модель знает ответ, — или убедитесь, что утечки нет." course={course}>
+  <main class="game shell" id="content">
+    <nav class="breadcrumb" aria-label="Путь">
+      <a href={`${course.href}#m-${lesson.module}`}>{module?.title}</a><span aria-hidden="true">/</span><span>Игра к уроку {lesson.number}</span>
+    </nav>
+    <h1>{meta.title}</h1>
+    <p class="lead game__lead">Валидация подозрительно хороша. По&nbsp;описанию признаков, конвейера и&nbsp;разбиения найдите, откуда модель знает ответ,&nbsp;— или убедитесь, что утечки нет. Пять уровней, партия&nbsp;— <span class="nowrap">3–5&nbsp;минут</span>.</p>
+    <FindLeak client:load>
+      <div class="block block--intuition game__teaches">
+        <p><span class="block__title">Чему учит игра.</span> Утечка&nbsp;— это когда при обучении модель видит то, чего в&nbsp;работе не&nbsp;будет: признак, известный только после события; статистики, посчитанные вместе с&nbsp;валидацией; будущее или копии объектов по&nbsp;обе стороны разбиения. Признак утечки&nbsp;— качество, которое не&nbsp;повторяется на&nbsp;новых данных.</p>
+        <p><a href={lesson.href}>Урок {lesson.number}. {lesson.title}</a></p>
+      </div>
+    </FindLeak>
+  </main>
+</BaseLayout>
