@@ -189,3 +189,15 @@
   cs229:
     - edition: main-notes-2026-spring
       section: 'Regularization and model selection'
+
+- id: ml.ml-practice
+  title:
+    ru: 'Диагностика: кривые обучения, срезы, абляции, утечки'
+    en: 'diagnostics: learning curves, error analysis, ablations, leakage'
+  summary: 'Кривые обучения ставят диагноз: смещение (обе на плато выше цели) или разброс (большой разрыв). Ошибка по срезам показывает, что чинить первым, абляция на одних фолдах — что помогает на самом деле. Слишком хорошее качество — симптом утечки: признак из ответа, будущее в обучении, статистики по всей выборке.'
+  lesson: ml-practice
+  prerequisites: [ml.bias-variance, ml.model-selection]
+  core: true
+  cs229:
+    - edition: main-notes-2026-spring
+      section: 'Generalization'

@@ -17,6 +17,13 @@
 
 ---
 
+### 2026-11-15 — L-ml-basics-2.5 Кривые обучения, анализ ошибок и утечки; итоговая проверка модуля 2 — готовы
+- **Сделано:** урок (4 цикла, формула f.ols-train-test-gap, 3 упражнения, итоговая ml.slice-gain); виджет «Кривые обучения» (src/widgets/ml/learning-curves: диагноз кнопкой, лечение — n ×2, степень +2, λ ×10); игра «Найди утечку» (src/games/find-leak, 5 уровней); генератор ml.slice-gain; понятие ml.ml-practice; ячейка ml_basics/ml_practice.py (кривые как learning_curve, срезы, абляция, утечка «цена за м²»); итоговая проверка модуля 2 — ExerciseSet из 14 задач в конце урока 2.5.
+- **Проверка:** validate, lint, check, build, vitest 755, pytest, check_consistency, e2e lesson-ml-2-5 и вся раскладка и axe на телефоне, скриншоты 1440 и 390.
+- **Отклонения от плана и решения:** незакоммиченная первая версия урока пропала при пересоздании контейнера — восстановлена; в игре нет чисел «качества после переобучения» — исходы описаны словами, чтобы не выдумывать результаты; ячейка — на синтетических «Квартирах», без Bank Marketing (S7.02).
+- **Следующий шаг:** режимы «λ» и финальный игры «Переобучи, если сможешь» (S7.L2), затем S7.05 — проект P1 (ждёт S7.02).
+- **Вопросы пользователю:** S7.02 — доступ к наборам данных и решение по California Housing.
+
 ### 2026-10-26 — L-ml-basics-2.4 Выбор модели и кросс-валидация — готов
 - **Сделано:** урок (3 цикла, формулы f.selection-optimism и f.ridge-loo, 4 упражнения, итоговая ml.cv-se); виджет «Фолды» (src/widgets/ml/folds: k = 2, 5, 10, n, ошибки фолдов ± SE против отложенной части, стратификация звонков); генератор ml.cv-se; понятие ml.model-selection; ячейка ml_basics/cross_val.py (k фолдов, стратификация, правило одной SE, утечка при отборе признаков) со сверкой с cross_val_score и StratifiedKFold
 - **Файлы:** content/courses/ml-basics/evaluation/model-selection.mdx, content/formulas/ml/{selection-optimism,ridge-loo}.yaml, src/widgets/ml/folds/, code/snippets/ml_basics/cross_val.py, code/tests/test_cross_val.py

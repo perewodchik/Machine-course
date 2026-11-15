@@ -1513,6 +1513,29 @@ describe("генераторы", () => {
     }
   });
 
+  it("ml.slice-gain: выигрыш — разность общей ошибки до и после; ошибки МНК — σ²(1 ∓ d/n)", () => {
+    for (let s = 1; s <= 30; s++) {
+      const t = make("ml.slice-gain", s);
+      if (t.kind !== "numeric") throw new Error("ожидалось число");
+      const p = t.prompt;
+      const sl = /—\s*([\d.]+) % объектов/.exec(p);
+      if (sl) {
+        const share = Number(sl[1]) / 100;
+        const err = Number(/MSE модели — ([\d.]+)\./.exec(p)![1]);
+        const ratio = Number(/в ([\d.]+) раза/.exec(p)![1]);
+        // общая ошибка — среднее по срезам; остальные срезы подобраны так, чтобы среднее было err
+        const restErr = (err - share * ratio * err) / (1 - share);
+        const after = share * err + (1 - share) * restErr;
+        expect(t.answer).toBeCloseTo(err - after, 4);
+      } else {
+        const d = Number(/d = (\d+)\$/.exec(p)![1]);
+        const n = Number(/n = (\d+)\$/.exec(p)![1]);
+        const sigma = Number(/sigma = ([\d.]+)\$/.exec(p)![1]);
+        expect(t.answer).toBeCloseTo(sigma * sigma * (p.includes("новых ответах") ? 1 + d / n : 1 - d / n), 5);
+      }
+    }
+  });
+
   it("все тексты задач разбираются KaTeX", () => {
     const texts = (sp: ExerciseSpec) => [
       sp.prompt,

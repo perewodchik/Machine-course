@@ -487,3 +487,44 @@ export const cvSe: Generator = {
     };
   },
 };
+
+/** Урок 2.5: выигрыш от починки среза или ожидаемые ошибки обучения и проверки МНК. */
+export const sliceGain: Generator = {
+  id: "ml.slice-gain",
+  version: 1,
+  title: "Срезы и разрыв кривых",
+  make(seed) {
+    const r = rng(seed);
+    if (seed % 2 === 1) {
+      const share = r.pick([0.05, 0.1, 0.2, 0.3, 0.4]);
+      const err = r.pick([0.5, 0.8, 1]);
+      const ratio = r.pick([1.2, 1.5, 2, 3]);
+      const answer = round(share * (ratio * err - err), 4);
+      return {
+        kind: "numeric",
+        prompt: String.raw`Средняя MSE модели — ${num(err)}. Срез «квартиры у метро» — ${num(round(share * 100, 1))} % объектов, его MSE в ${num(ratio)} раза выше средней. На сколько упадёт общая MSE, если довести этот срез до средней ошибки?`,
+        label: "ΔMSE =",
+        answer,
+        tol: 0.0005,
+        hints: [String.raw`Общая ошибка — взвешенное среднее срезов: $\operatorname{err} = \sum_g \frac{n_g}{n} \operatorname{err}_g$. Выигрыш — $\frac{n_g}{n}(\operatorname{err}_g - \operatorname{err})$.`],
+        right: String.raw`$${num(share)} \cdot (${num(round(ratio * err, 4))} - ${num(err)}) = ${num(answer)}$. Большой срез с умеренной ошибкой часто выгоднее маленького с огромной.`,
+        wrong: String.raw`Выигрыш — доля среза, умноженная на его избыток над средней: $${num(share)} \cdot ${num(round(ratio * err - err, 4))} = ${num(answer)}$.`,
+      };
+    }
+    const sigma = r.pick([0.5, 1, 2]);
+    const d = r.int(2, 10);
+    const n = r.pick([20, 50, 100, 200]);
+    const test = seed % 4 === 0;
+    const answer = round(sigma * sigma * (test ? 1 + d / n : 1 - d / n), 6);
+    return {
+      kind: "numeric",
+      prompt: String.raw`МНК с $d = ${d}$ весами, истина в классе модели, $n = ${n}$ точек при фиксированных $x$, шум $\sigma = ${num(sigma)}$. Какова ожидаемая MSE ${test ? "на новых ответах в тех же точках" : "на обучении"}?`,
+      label: "MSE =",
+      answer,
+      tol: Math.max(1e-4, answer * 0.005),
+      hints: [String.raw`На обучении остатки теряют $d$ степеней свободы: $\sigma^2(1 - d/n)$. На новых ответах к шуму добавляется разброс: $\sigma^2(1 + d/n)$.`],
+      right: String.raw`$${num(round(sigma * sigma, 4))} \cdot (1 ${test ? "+" : "-"} ${d}/${n}) = ${num(answer)}$. Кривые сходятся к $\sigma^2$ ${test ? "сверху" : "снизу"}.`,
+      wrong: test ? String.raw`На новых ответах ошибка выше шума: $\sigma^2(1 + d/n) = ${num(answer)}$.` : String.raw`На обучении ошибка ниже шума: $\sigma^2(1 - d/n) = ${num(answer)}$.`,
+    };
+  },
+};
