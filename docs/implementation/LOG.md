@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-11-16 — S7.02 Данные курса и лицензии — готова
+- **Сделано:** ADR 0006: P2 — Bank Marketing (UCI, CC BY 4.0, bank-full, 45 211 звонков), P1 — King County House Sales (OpenML 42092, CC0, 21 613 продаж) вместо California Housing (решение пользователя 16.11.2026); scripts/fetch_datasets.py качает источники, сверяет sha256 и собирает файлы; загрузчики mlf.datasets.bank_marketing(), house_sales(), as_frame() читают mlf/data/*.csv.gz без интернета и проверяют sha256; подвыборки по 10 000 строк в public/data/.
+- **Файлы:** docs/adr/0006-ml-datasets.md, code/mlf/datasets.py, code/mlf/data/, scripts/fetch_datasets.py, public/data/, code/tests/test_datasets_real.py; программа P1, P2 и каталог.
+- **Проверка:** pytest → 492 passed, 1 skipped (as_frame без pandas); fetch_datasets.py --check → ok; check_consistency → ошибок нет.
+- **Отклонения от плана и решения:** «кэш» не нужен — полные наборы лежат в пакете mlf (0.5 и 0.7 МБ gzip), ноутбуки не ходят в сеть; срезы ошибок P1 — по почтовому индексу и классу постройки.
+- **Следующий шаг:** S7.05 — проект P1 на King County.
+- **Вопросы пользователю:** —
+
 ### 2026-11-15 — L-ml-basics-2.5 Кривые обучения, анализ ошибок и утечки; итоговая проверка модуля 2 — готовы
 - **Сделано:** урок (4 цикла, формула f.ols-train-test-gap, 3 упражнения, итоговая ml.slice-gain); виджет «Кривые обучения» (src/widgets/ml/learning-curves: диагноз кнопкой, лечение — n ×2, степень +2, λ ×10); игра «Найди утечку» (src/games/find-leak, 5 уровней); генератор ml.slice-gain; понятие ml.ml-practice; ячейка ml_basics/ml_practice.py (кривые как learning_curve, срезы, абляция, утечка «цена за м²»); итоговая проверка модуля 2 — ExerciseSet из 14 задач в конце урока 2.5.
 - **Проверка:** validate, lint, check, build, vitest 755, pytest, check_consistency, e2e lesson-ml-2-5 и вся раскладка и axe на телефоне, скриншоты 1440 и 390.
