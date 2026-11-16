@@ -697,7 +697,7 @@ export const solutionsCount: Generator = {
 /** Урок I.6: какой вектор лежит в ядре матрицы 2 × 3. Ядро — прямая, её направление — векторное произведение строк. */
 export const kernelVector: Generator = {
   id: "la.kernel-vector",
-  version: 2,
+  version: 3,
   title: "Вектор из ядра",
   make(seed) {
     const r = rng(seed);
@@ -718,7 +718,10 @@ export const kernelVector: Generator = {
     const Av = (v: number[]) => A.map((row) => row.reduce((s, a, i) => s + a * v[i]!, 0));
     const vec = (v: number[]) => `(${v.join(", ")})`;
     const flip = k.map((x, i) => (i === k.findIndex((y) => y !== 0) ? -x : x) + 0);
-    const cands = [flip, r1, k.map((x) => x + 1)].filter((v) => Av(v).some((x) => x !== 0));
+    // неверные варианты: не из ядра и без повторов (flip и r1 иногда совпадают — тогда берётся следующий кандидат)
+    const cands = [flip, r1, k.map((x) => x + 1), r2, k.map((x, i) => (i === 0 ? x + 1 : x))]
+      .filter((v) => Av(v).some((x) => x !== 0))
+      .filter((v, i, all) => all.findIndex((u) => vec(u) === vec(v)) === i);
     const options: ChoiceOption[] = r.shuffle([
       { text: `$${vec(k)}$`, correct: true, why: String.raw`$A v = ${vec(Av(k))}$: обе строки $A$ перпендикулярны $v$.` },
       ...cands.slice(0, 2).map((v) => ({ text: `$${vec(v)}$`, why: String.raw`$A v = ${vec(Av(v))} \ne 0$: этот вектор не в ядре.` })),

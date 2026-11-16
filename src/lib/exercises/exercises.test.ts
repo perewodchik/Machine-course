@@ -2,7 +2,7 @@
 import { describe, expect, it } from "vitest";
 import { gauss as gaussian } from "../math/correlation";
 import { rng } from "../math/rng";
-import { checkMatrix, checkNumeric, checkOrder, closeEnough, scrambled } from "./check";
+import { answerDecimals, checkMatrix, checkNumeric, checkOrder, closeEnough, scrambled } from "./check";
 import { cdf as contCdf, contMoments } from "../math/continuous";
 import { moments, pmf } from "../math/distributions";
 import { generator, generators } from "./generators";
@@ -44,6 +44,42 @@ describe("проверки", () => {
     expect(checkNumeric("0.51", 0.5).correct).toBe(false);
     expect(checkNumeric("полтора", 1.5)).toEqual({ value: null, correct: false });
     expect(closeEnough(101, 100, 0, 0.02)).toBe(true);
+  });
+
+  it("малый ответ: ноль и ошибка «вдвое больше» не проходят в допуск", () => {
+    // 0.0015 — хвост за 3σ; с допуском 0.006 раньше засчитывались и 0, и 0.003 (забыли поделить пополам)
+    expect(closeEnough(0, 0.0015, 0.006)).toBe(false);
+    expect(closeEnough(0.003, 0.0015, 0.006)).toBe(false);
+    expect(closeEnough(0.0015, 0.0015, 0.006)).toBe(true);
+    expect(closeEnough(0.004, 0, 0.005)).toBe(true); // у нулевого ответа допуск прежний
+  });
+
+  it("подпись точности: сколько знаков после точки хватает для допуска", () => {
+    expect(answerDecimals(0.3247, 0.001)).toBe(3);
+    expect(answerDecimals(0.5)).toBe(2);
+    expect(answerDecimals(250, 2.5)).toBe(0);
+    expect(answerDecimals(7, 0)).toBeNull();
+  });
+
+  it("у каждого генератора: округлённый по подписи ответ засчитан, ноль — нет, варианты выбора различны", () => {
+    for (const [id, g] of generators) {
+      for (let seed = 1; seed <= 250; seed++) {
+        const s = g.make(seed);
+        if (s.kind === "numeric") {
+          const k = answerDecimals(s.answer, s.tol, s.rel);
+          if (k !== null) {
+            const rounded = Number(s.answer.toFixed(k));
+            expect(closeEnough(rounded, s.answer, s.tol, s.rel), `${id}, seed ${seed}: ${s.answer} → ${rounded}`).toBe(true);
+          }
+          if (s.answer !== 0) expect(closeEnough(0, s.answer, s.tol, s.rel), `${id}, seed ${seed}: ноль засчитан`).toBe(false);
+        }
+        if (s.kind === "choice") {
+          const texts = s.options.map((o) => o.text);
+          expect(new Set(texts).size, `${id}, seed ${seed}: одинаковые варианты`).toBe(texts.length);
+          expect(s.options.filter((o) => o.correct).length, `${id}, seed ${seed}`).toBe(1);
+        }
+      }
+    }
   });
 
   it("матрица: клетки по отдельности, пустая клетка — null", () => {

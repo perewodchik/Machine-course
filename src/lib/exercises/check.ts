@@ -7,8 +7,27 @@ export interface NumericResult {
   correct: boolean;
 }
 
+/**
+ * Допуск числового ответа: max(tol, rel·|ответ|), но не шире четверти самого ответа.
+ * Без ограничения малые ответы (вероятность 0.0015 при допуске 0.006) засчитывали и ноль, и типичную ошибку «вдвое больше».
+ */
+export function numericTolerance(answer: number, tol = 0.005, rel = 0): number {
+  const base = Math.max(tol, rel * Math.abs(answer));
+  return Math.abs(answer) < 1e-9 ? base : Math.min(base, Math.abs(answer) / 4);
+}
+
 export function closeEnough(value: number, answer: number, tol = 0.005, rel = 0): boolean {
-  return Math.abs(value - answer) <= Math.max(tol, rel * Math.abs(answer)) + 1e-12;
+  return Math.abs(value - answer) <= numericTolerance(answer, tol, rel) + 1e-12;
+}
+
+/**
+ * До скольких знаков после точки достаточно округлить ответ, чтобы он попал в допуск; null — ответ нужен точный (tol: 0).
+ * Показывается под полем ввода: без подсказки ученик округлял до сотых и получал «неверно» при допуске 0.001.
+ */
+export function answerDecimals(answer: number, tol?: number, rel?: number): number | null {
+  const t = numericTolerance(answer, tol, rel);
+  if (t <= 0) return null;
+  return Math.max(0, Math.ceil(-Math.log10(2 * t) - 1e-9));
 }
 
 export function checkNumeric(raw: string, answer: number, tol?: number, rel?: number): NumericResult {

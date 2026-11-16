@@ -1,10 +1,13 @@
 // E2E и доступность. Сайт заранее собран (`npm run build`), сервер — `astro preview`.
-// @playwright/test ровно 1.56.1: его Chromium (chromium-1194) — в образе CI mcr.microsoft.com/playwright:v1.56.1-noble.
-// В среде, где лежит другой Chromium (облачный контейнер: /opt/pw-browsers/chromium-1243), путь к нему задаёт
-// PW_CHROMIUM_PATH, например /opt/pw-browsers/chromium-1243/chrome-linux64/chrome. Визуальные эталоны — только в CI.
+// @playwright/test ровно 1.56.1: его Chromium (chromium-1194) лежит в /opt/pw-browsers (PLAYWRIGHT_BROWSERS_PATH).
+import { existsSync } from "node:fs";
 import { defineConfig, devices } from "@playwright/test";
 
-const executablePath = process.env.PW_CHROMIUM_PATH || undefined;
+// Образ облачной сессии может нести Chromium другой сборки, чем ждёт Playwright 1.56.1 (chromium-1194): тогда запуск
+// падает с «Executable doesn't exist» у всех тестов. Если своей сборки нет, а общий /opt/pw-browsers/chromium есть — берём его.
+const browsers = process.env.PLAYWRIGHT_BROWSERS_PATH ?? "/opt/pw-browsers";
+const fallback = `${browsers}/chromium`;
+const executablePath = !existsSync(`${browsers}/chromium_headless_shell-1194`) && existsSync(fallback) ? fallback : undefined;
 
 const port = 4321;
 
