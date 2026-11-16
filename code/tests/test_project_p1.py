@@ -35,7 +35,7 @@ def notebook_code(transform) -> str:
 @pytest.fixture(scope="module")
 def solved():
     ns: dict = {"__name__": "p1"}
-    exec(compile(notebook_code(build_notebooks.keep_solutions), str(SRC), "exec"), ns)  # noqa: S102
+    exec(compile(notebook_code(build_notebooks.keep_solutions), str(SRC), "exec"), ns)
     return ns
 
 
@@ -66,7 +66,7 @@ def test_raw_linear_model_fails_threshold(solved):
 def test_student_version_does_not_pass():
     ns: dict = {"__name__": "p1_student"}
     with pytest.raises(NotImplementedError):
-        exec(compile(notebook_code(build_notebooks.strip_solutions), str(SRC), "exec"), ns)  # noqa: S102
+        exec(compile(notebook_code(build_notebooks.strip_solutions), str(SRC), "exec"), ns)
 
 
 def test_scaling_leak_is_caught():
@@ -85,7 +85,7 @@ def test_scaling_leak_is_caught():
 
 def test_selection_by_test_is_caught(solved):
     with pytest.raises(project.LeakError):
-        solved["test"].X
+        _ = solved["test"].X
     with pytest.raises(project.LeakError, match="уже была"):
         solved["P"].final(lambda r: np.zeros(len(r)))
 

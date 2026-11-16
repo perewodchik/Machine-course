@@ -75,6 +75,8 @@ jobs:
           cache: pip
           cache-dependency-path: code/pyproject.toml
       - run: pip install -e "code[dev]"
+      - name: Линтер Python (ruff.toml в корне)
+        run: ruff check .
       - name: Формулы, выводы и сниппеты
         run: pytest
         working-directory: code

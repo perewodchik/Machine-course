@@ -4,10 +4,10 @@ LinearRegression (sample_weight) в каждой точке и с обычной
 from itertools import pairwise
 
 import numpy as np
-from ml_basics.features_lwr import _lesson_cell, lwr, metro_prices, poly_features
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 
+from ml_basics.features_lwr import _lesson_cell, lwr, metro_prices, poly_features
 from mlf.datasets import metro_prices as course_metro_prices
 
 

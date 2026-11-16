@@ -5,6 +5,9 @@
 from pathlib import Path
 
 import numpy as np
+from sklearn.linear_model import Ridge
+from sklearn.model_selection import StratifiedKFold, cross_val_score
+
 from ml_basics.cross_val import (
     _lesson_cell,
     apartments,
@@ -13,9 +16,6 @@ from ml_basics.cross_val import (
     ridge_fit,
     stratified,
 )
-from sklearn.linear_model import Ridge
-from sklearn.model_selection import StratifiedKFold, cross_val_score
-
 from mlf.datasets import apartments_full
 
 

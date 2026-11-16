@@ -34,7 +34,7 @@ def notebook_code(transform) -> str:
 @pytest.fixture(scope="module")
 def solved():
     ns: dict = {"__name__": "p2"}
-    exec(compile(notebook_code(build_notebooks.keep_solutions), str(SRC), "exec"), ns)  # noqa: S102
+    exec(compile(notebook_code(build_notebooks.keep_solutions), str(SRC), "exec"), ns)
     return ns
 
 
@@ -63,7 +63,7 @@ def test_our_metrics_match_sklearn(solved):
 
 def test_student_version_does_not_pass():
     with pytest.raises(NotImplementedError):
-        exec(compile(notebook_code(build_notebooks.strip_solutions), str(SRC), "exec"), {"__name__": "p2s"})  # noqa: S102
+        exec(compile(notebook_code(build_notebooks.strip_solutions), str(SRC), "exec"), {"__name__": "p2s"})
 
 
 def test_duration_leak_is_caught():
@@ -73,7 +73,7 @@ def test_duration_leak_is_caught():
 
 def test_threshold_on_test_is_caught(solved):
     with pytest.raises(project.LeakError):
-        solved["test"].X
+        _ = solved["test"].X
     with pytest.raises(project.LeakError, match="уже была"):
         solved["P"].final(lambda r: np.zeros(len(r)))
 

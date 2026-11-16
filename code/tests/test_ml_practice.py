@@ -2,11 +2,11 @@
 до 1e-10; формула ошибок обучения и теста МНК σ²(1 ∓ d/n) подтверждается симуляцией; данные — apartments_full."""
 
 import numpy as np
-from ml_basics.ml_practice import _lesson_cell, apartments, cv_mse, learning_curve
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import KFold, cross_val_score
 from sklearn.model_selection import learning_curve as sk_learning_curve
 
+from ml_basics.ml_practice import _lesson_cell, apartments, cv_mse, learning_curve
 from mlf.datasets import apartments_full
 
 

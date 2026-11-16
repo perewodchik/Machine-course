@@ -3,10 +3,11 @@ LinearRegression); σ² + смещение² + разброс совпадает
 разброс МНК в обучающих точках — σ²d/n; оценка смещения² по B выборкам завышена на разброс/B."""
 
 import numpy as np
-from ml_basics.bias_variance import _lesson_cell, cloud, draw, fit_predict, h_star
 from sklearn.linear_model import LinearRegression
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import PolynomialFeatures
+
+from ml_basics.bias_variance import _lesson_cell, cloud, draw, fit_predict, h_star
 
 
 def test_lesson_cell_output(capsys):

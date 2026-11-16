@@ -3,6 +3,8 @@ Perceptron из scikit-learn; вероятности softmax после спус
 при k = 2 softmax — логистическая регрессия с θ₁ − θ₂; данные — mlf.datasets.apartments_full."""
 
 import numpy as np
+from sklearn.linear_model import LogisticRegression, Perceptron
+
 from ml_basics.softmax import (
     _lesson_cell,
     apartments,
@@ -11,8 +13,6 @@ from ml_basics.softmax import (
     segments,
     softmax,
 )
-from sklearn.linear_model import LogisticRegression, Perceptron
-
 from mlf.datasets import apartments_full
 
 

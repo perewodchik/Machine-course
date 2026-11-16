@@ -3,9 +3,9 @@
 шаг больше 2/λmax расходится; данные ячейки — mlf.datasets.apartments_full."""
 
 import numpy as np
-from ml_basics.lms import _lesson_cell, apartments, gd
 from sklearn.linear_model import LinearRegression, SGDRegressor
 
+from ml_basics.lms import _lesson_cell, apartments, gd
 from mlf.datasets import apartments_full
 
 

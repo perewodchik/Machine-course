@@ -6,16 +6,6 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-from ml_basics.metrics import (
-    _lesson_cell,
-    auc_pairs,
-    average_precision,
-    bank_calls,
-    confusion,
-    curves,
-    fit_logistic,
-    reliability,
-)
 from sklearn.calibration import calibration_curve
 from sklearn.metrics import (
     average_precision_score,
@@ -26,6 +16,16 @@ from sklearn.metrics import (
     roc_curve,
 )
 
+from ml_basics.metrics import (
+    _lesson_cell,
+    auc_pairs,
+    average_precision,
+    bank_calls,
+    confusion,
+    curves,
+    fit_logistic,
+    reliability,
+)
 from mlf import datasets
 
 PUBLIC = Path(__file__).resolve().parents[2] / "public"
