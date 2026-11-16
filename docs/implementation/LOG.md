@@ -17,6 +17,14 @@
 
 ---
 
+### 2026-11-16 — S7.05 Проект P1, S7.06 Проект P2 — готовы
+- **Сделано:** ноутбуки p1_house_prices (King County: разбиение по домам, LMS с нуля, признаки, LWR, срезы) и p2_bank_marketing (утечка длительности, Ньютон против sklearn, L1/L2 по CV, порог по прибыли, калибровка Платта); в mlf.project — split(groups=, stratify=), check_scaling, check_units, check_features, average_precision, brier, final(extra=); страницы /projects/p1-house-prices/ и /projects/p2-bank-marketing/; длительность проекта — в часах; PW_CHROMIUM_PATH в playwright.config.ts (техдолг: браузер 1243 в облачном контейнере).
+- **Пороги по бейзлайну:** P1 — этап 3 ≤ 85 % RMSE этапа 1 (200 000 → 127 000 $), тест ≤ 160 000 $ (эталон 121 000 $, сырая линейная 192 000 $ не проходит); P2 — PR-AUC на валидации ≥ 0.37, на тесте ≥ 0.35 (эталон 0.41, с утечкой было бы 0.56, случайная 0.117).
+- **Проверка:** pytest (test_project_p1, test_project_p2: числа текста, заготовка ученика падает, подложенные утечки ловятся); nbmake по всем ноутбукам; validate, build, check, vitest.
+- **Отклонения от плана и решения:** P2 сделан до режимов игры S7.L2 (проекту они не нужны); финальная модель P2 обучена только на обучающей части, чтобы порог с валидации к ней подходил; затраты 5 € и выгода 60 € — наши допущения.
+- **Следующий шаг:** уроки 2.1 и 2.4 на подвыборке Bank Marketing, затем S7.L2.
+- **Вопросы пользователю:** —
+
 ### 2026-11-16 — S7.02 Данные курса и лицензии — готова
 - **Сделано:** ADR 0006: P2 — Bank Marketing (UCI, CC BY 4.0, bank-full, 45 211 звонков), P1 — King County House Sales (OpenML 42092, CC0, 21 613 продаж) вместо California Housing (решение пользователя 16.11.2026); scripts/fetch_datasets.py качает источники, сверяет sha256 и собирает файлы; загрузчики mlf.datasets.bank_marketing(), house_sales(), as_frame() читают mlf/data/*.csv.gz без интернета и проверяют sha256; подвыборки по 10 000 строк в public/data/.
 - **Файлы:** docs/adr/0006-ml-datasets.md, code/mlf/datasets.py, code/mlf/data/, scripts/fetch_datasets.py, public/data/, code/tests/test_datasets_real.py; программа P1, P2 и каталог.

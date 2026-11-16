@@ -25,12 +25,16 @@ export const getStaticPaths = (async () =>
 const { p } = Astro.props as { p: Project };
 const course = await loadCourse(p.course);
 const repo = "https://github.com/perewodchik/Machine-course/blob/main";
+// длинные проекты — в часах: «Около 7 часов», короткие — в минутах
+const hours = Math.round(p.minutes / 60);
+const hourWord = hours % 10 === 1 && hours % 100 !== 11 ? "часа" : "часов";
+const duration = p.minutes >= 120 ? `${hours}\u00a0${hourWord}` : `${p.minutes}\u00a0минут`;
 ---
 <BaseLayout title={p.title} description={p.summary} course={course}>
   <main class="shell project" id="content">
     <nav class="breadcrumb" aria-label="Путь"><a href={course.href}>{course.title}</a><span aria-hidden="true">/</span><span>Проект</span></nav>
     <h1>{p.title}</h1>
-    <p class="lead">{p.summary} Около {p.minutes}&nbsp;минут.</p>
+    <p class="lead">{p.summary} Около {duration}.</p>
     <p class="project__links">
       <a class="btn btn--sm btn--primary" href={`https://colab.research.google.com/github/perewodchik/Machine-course/blob/main/notebooks/${p.notebook}.ipynb`}>Открыть в&nbsp;Colab</a>
       <a class="btn btn--sm" href={`${repo}/notebooks/${p.notebook}.ipynb`}>Ноутбук на&nbsp;GitHub</a>

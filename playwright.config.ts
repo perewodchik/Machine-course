@@ -1,6 +1,10 @@
 // E2E и доступность. Сайт заранее собран (`npm run build`), сервер — `astro preview`.
-// @playwright/test ровно 1.56.1: его Chromium (chromium-1194) лежит в /opt/pw-browsers (PLAYWRIGHT_BROWSERS_PATH).
+// @playwright/test ровно 1.56.1: его Chromium (chromium-1194) — в образе CI mcr.microsoft.com/playwright:v1.56.1-noble.
+// В среде, где лежит другой Chromium (облачный контейнер: /opt/pw-browsers/chromium-1243), путь к нему задаёт
+// PW_CHROMIUM_PATH, например /opt/pw-browsers/chromium-1243/chrome-linux64/chrome. Визуальные эталоны — только в CI.
 import { defineConfig, devices } from "@playwright/test";
+
+const executablePath = process.env.PW_CHROMIUM_PATH || undefined;
 
 const port = 4321;
 
@@ -22,6 +26,7 @@ export default defineConfig({
     baseURL: `http://localhost:${port}`,
     locale: "ru-RU",
     trace: "retain-on-failure",
+    launchOptions: executablePath ? { executablePath } : {},
   },
   projects: [
     { name: "desktop", use: { ...devices["Desktop Chrome"], viewport: { width: 1440, height: 900 } } },

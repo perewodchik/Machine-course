@@ -40,6 +40,8 @@ export const layoutPages = {
   cs229: "/cs229/linear-regression/",
   sheet: "/cheatsheet/statistics/",
   project: "/projects/demo-apartments/",
+  projectP1: "/projects/p1-house-prices/",
+  projectP2: "/projects/p2-bank-marketing/",
   threshold: "/demo/threshold/",
   costgame: "/games/error-cost/",
   ml11: "/ml-basics/linear-models/learning-problem/",
