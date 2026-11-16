@@ -28,7 +28,6 @@ OUT = ROOT / "prototype" / "assets" / "data"
 SITE = {
     "fit-line": ROOT / "src" / "widgets" / "la" / "fit-line" / "data.json",
     "fit-line-game": ROOT / "src" / "games" / "fit-line" / "data.json",
-    "threshold": ROOT / "src" / "widgets" / "ml" / "threshold" / "data.json",
     "flexibility": ROOT / "src" / "widgets" / "ml" / "flexibility" / "data.json",
     "logistic": ROOT / "src" / "widgets" / "ml" / "logistic-plane" / "data.json",
     "ascent-newton": ROOT / "src" / "widgets" / "ml" / "ascent-newton" / "data.json",
@@ -114,7 +113,7 @@ def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "threshold.js").write_text(render("THRESHOLD_DATA", threshold_payload()))
     print("prototype/assets/data/threshold.js")
-    for name, payload in (("fit-line", fit_line_payload()), ("fit-line-game", apartments_payload()), ("threshold", threshold_payload()), ("flexibility", metro_payload()), ("logistic", logistic_payload()), ("ascent-newton", logistic_payload()), ("class-regions", segments_payload()), ("perceptron", segments_payload()), ("glm-builder", glm_payload()), ("reg-path", reg_path_payload()), ("folds", folds_payload())):
+    for name, payload in (("fit-line", fit_line_payload()), ("fit-line-game", apartments_payload()), ("flexibility", metro_payload()), ("logistic", logistic_payload()), ("ascent-newton", logistic_payload()), ("class-regions", segments_payload()), ("perceptron", segments_payload()), ("glm-builder", glm_payload()), ("reg-path", reg_path_payload()), ("folds", folds_payload())):
         path = SITE[name]
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n")
