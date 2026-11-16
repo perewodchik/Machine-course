@@ -34,7 +34,7 @@ Workflow с `workflow_dispatch` видны в Actions только после п
 
 ## Playwright
 
-- `@playwright/test` **ровно 1.56.1**: его Chromium (chromium-1194) уже лежит в `/opt/pw-browsers`. Другая версия ищет другой браузер; тогда — `launchOptions.executablePath: '/opt/pw-browsers/chromium'`. `playwright install` не запускать.
+- `@playwright/test` **ровно 1.56.1**: его Chromium (chromium-1194) уже лежит в `/opt/pw-browsers`. Если в образе сессии лежит другая сборка (с 27.10.2026 — chromium-1243), `playwright.config.ts` сам берёт `/opt/pw-browsers/chromium`. Признак поломки — «Executable doesn't exist» у всех тестов сразу: это среда, а не код. `playwright install` не запускать.
 - `playwright.config.ts`: `webServer` — `astro preview --ignore-lock` (без флага Astro 7 под ИИ-агентом уходит в фон, и Playwright теряет сервер; фоновый сервер — `npx astro preview --background`, остановка — `npx astro preview stop`); проекты `desktop` 1440 px и `mobile` 390 px с сенсором; `@axe-core/playwright` для доступности (помощники — `tests/e2e/support.ts`).
 - axe не проверяет контраст текста под псевдоэлементами (`::before`/`::after` поверх колонки) — такие линии и фоны делать элементами с `aria-hidden`.
 - **Визуальные эталоны** снимаются только в CI, в образе `mcr.microsoft.com/playwright:v1.56.1-noble`: локальные шрифты и сглаживание дают другие пиксели. Локально — функциональные проверки и axe.
