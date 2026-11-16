@@ -5,6 +5,8 @@
 ``StratifiedKFold``, формулу «без одного» — с n обучениями.
 """
 
+import csv
+
 import numpy as np
 
 
@@ -20,6 +22,13 @@ def apartments(n=2000, seed=2028):
     X = np.column_stack([area, rooms, floor, metro, age])
     price = 1.5 + 0.11 * area + 0.4 * rooms + 0.03 * floor - 0.06 * metro - 0.02 * age + rng.normal(0, 0.8, size=n)
     return X, np.round(price, 2)
+
+
+def bank_responses(n, seed, path="data/bank_marketing-10k.csv"):
+    """Отклики n случайных звонков Bank Marketing (UCI, CC BY 4.0): 1 — клиент открыл вклад."""
+    with open(path, encoding="utf-8") as f:
+        y = np.array([row["y"] == "yes" for row in csv.DictReader(f)], dtype=int)
+    return y[np.random.default_rng(seed).choice(len(y), n, replace=False)]
 # endregion
 
 
@@ -71,8 +80,8 @@ def _lesson_cell() -> None:
     simple = max(m for m in res if res[m][0] <= res[best][0] + res[best][1])
     print(f"лучший λ = {best}, по правилу одной SE — λ = {simple}")
 
-    # стратификация: доля откликов ~11 % в каждом из 5 фолдов
-    yb = (np.random.default_rng(3).random(200) < 0.11).astype(int)
+    # стратификация: 200 настоящих звонков, откликов ~11 % — поровну в каждом из 5 фолдов
+    yb = bank_responses(200, seed=5)
     plain = [int(yb[f].sum()) for f in kfold(200, 5, seed=1)]
     strat = [int(yb[f].sum()) for f in stratified(yb, 5, seed=1)]
     print(f"положительных по фолдам: просто {plain}, стратифицированно {strat}")

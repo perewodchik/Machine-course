@@ -48,6 +48,7 @@ async function run(id: number, setup: string, code: string): Promise<void> {
   const globals = py.globals.get("dict")();
   try {
     await py.loadPackagesFromImports(`${setup}\n${code}`, quiet);
+    await mountData(py, `${setup}\n${code}`);
     if (setup) await py.runPythonAsync(setup, { globals, filename: SETUP_FILE });
     await py.runPythonAsync(code, { globals, filename: CELL_FILE });
     const ms = performance.now() - t0;
@@ -62,6 +63,26 @@ async function run(id: number, setup: string, code: string): Promise<void> {
   } finally {
     globals.destroy();
   }
+}
+
+// Наборы данных курса (S7.02): ячейка читает «data/<файл>.csv» относительным путём, как тесты из public/.
+// Перед запуском воркер скачивает упомянутые файлы с /data/ сайта и кладёт в текущую папку Pyodide — один раз.
+const DATA_REF = /\bdata\/([\w.-]+\.csv)\b/g;
+const mounted = new Set<string>();
+
+async function mountData(py: PyodideAPI, source: string): Promise<void> {
+  const names = [...new Set([...source.matchAll(DATA_REF)].map((m) => m[1]))].filter((n) => !mounted.has(n));
+  if (!names.length) return;
+  const dir = `${py.FS.cwd()}/data`;
+  py.FS.mkdirTree(dir);
+  await Promise.all(
+    names.map(async (name) => {
+      const res = await fetch(`/data/${name}`);
+      if (!res.ok) throw new Error(`Не удалось загрузить набор данных /data/${name}: ${res.status}`);
+      py.FS.writeFile(`${dir}/${name}`, new Uint8Array(await res.arrayBuffer()));
+      mounted.add(name);
+    }),
+  );
 }
 
 /** Формы выражений ячейки (shapes.ts); сбой анализа не должен портить запуск. */

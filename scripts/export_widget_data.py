@@ -17,10 +17,11 @@ sys.path.insert(0, str(ROOT / "code" / "snippets"))
 sys.path.insert(0, str(ROOT / "code"))
 
 from la.normal_equations import make_data  # noqa: E402
+from ml_basics.cross_val import bank_responses  # noqa: E402
 from ml_basics.logistic import expensive  # noqa: E402
 from ml_basics.softmax import segments  # noqa: E402
 from ml_basics.threshold import make_scores  # noqa: E402
-from mlf.datasets import ad_views, apartments, apartments_full, bank_calls, metro_prices  # noqa: E402
+from mlf.datasets import ad_views, apartments, apartments_full, metro_prices  # noqa: E402
 
 OUT = ROOT / "prototype" / "assets" / "data"
 # данные виджетов сайта: лежат рядом с виджетом, импортируются как JSON
@@ -94,10 +95,15 @@ def reg_path_payload() -> dict:
 
 
 def folds_payload() -> dict:
-    """«Фолды» (урок 2.4): площадь и цена первых 60 «Квартир», отклики первых 60 звонков банка."""
+    """«Фолды» (урок 2.4): площадь и цена первых 60 «Квартир», отклики 60 случайных звонков Bank Marketing."""
     X, price = apartments_full()
-    _, calls = bank_calls()
-    return {"source": "code/mlf/datasets.py#apartments_full, bank_calls", "area": X[:60, 0].tolist(), "price": price[:60].tolist(), "calls": calls[:60].astype(int).tolist()}
+    calls = bank_responses(60, seed=7, path=ROOT / "public" / "data" / "bank_marketing-10k.csv")
+    return {
+        "source": "code/mlf/datasets.py#apartments_full; code/snippets/ml_basics/cross_val.py#bank_responses (Bank Marketing, UCI, CC BY 4.0)",
+        "area": X[:60, 0].tolist(),
+        "price": price[:60].tolist(),
+        "calls": calls.tolist(),
+    }
 
 
 def render(name: str, payload: dict) -> str:
