@@ -1,5 +1,6 @@
 // Набор для рисунков виджетов: свой SVG-слой на d3-scale. Виджеты импортируют только отсюда.
 export { Axis } from "./Axis";
+export { DragHandle } from "./DragHandle";
 export { Ellipse, covAxes } from "./Ellipse";
 export { Line } from "./Line";
 export { MathText } from "./MathText";

@@ -1,9 +1,9 @@
 // Виджет «Области классов» (урок 1.5 «Основ ML»): квартиры трёх сегментов на плоскости стандартизованных признаков,
 // области argmax_j θ_jᵀx (насыщенность — max_j p_j), стрелки w_j трёх классов. Ручки — направление, длина и сдвиг
-// выбранного класса; «Сдвинуть все» прибавляет один вектор ко всем θ_j, «Резкость ×2» умножает все веса на 2,
+// выбранного класса; конец любой стрелки можно тянуть на рисунке (направление и длина; ползунки — то же с клавиатуры); «Сдвинуть все» прибавляет один вектор ко всем θ_j, «Резкость ×2» умножает все веса на 2,
 // «К оптимуму» — спуск по кросс-энтропии. Форма точки — класс (круг, квадрат, треугольник), цвет повторяет форму.
-import { useState } from "react";
-import { ParamSlider, Plane, Readout, Vector, fmt, useLiveText, usePlane, type Role } from "../../_kit";
+import { useRef, useState } from "react";
+import { DragHandle, ParamSlider, Plane, Readout, Vector, fmt, useLiveText, usePlane, type Role } from "../../_kit";
 import type { Theta } from "../../../lib/math/softmax";
 import { best, CLASSES, fromTheta, region, shiftAll, stats, toTheta, X, Y, type Arrow } from "./model";
 
@@ -56,6 +56,14 @@ export default function ClassRegions() {
   const s = stats(theta);
   const setArrow = (patch: Partial<Arrow>) => setTheta(toTheta(arrows.map((x, j) => (j === sel ? { ...x, ...patch } : x))));
   const scale = 2 / Math.max(1, ...arrows.map((x) => x.k));
+  // масштаб стрелок зависит от самой длинной: пока тянем, держим его неизменным, иначе конец уходит из-под пальца
+  const dragScale = useRef<number | null>(null);
+  const dragTip = (j: number, x: number, y: number) => {
+    const sc = dragScale.current ?? scale;
+    const phi = Math.round((Math.atan2(y, x) * 180) / Math.PI);
+    const k = Math.round(Math.min(12, Math.hypot(x, y) / sc) * 10) / 10;
+    setTheta(toTheta(arrows.map((v, i) => (i === j ? { ...v, phi, k } : v))));
+  };
   const live = useLiveText(`Кросс-энтропия ${fmt(s.J, 3)}, верных ${fmt(100 * s.acc, 1)} %. Класс «${CLASSES[sel]}»: направление ${fmt(a.phi, 0)}°, длина ${fmt(a.k, 1)}, сдвиг ${fmt(a.b, 1)}`);
   return (
     <div className="class-regions">
@@ -66,8 +74,27 @@ export default function ClassRegions() {
           const r = (x.phi * Math.PI) / 180;
           return <Vector key={j} to={[scale * x.k * Math.cos(r), scale * x.k * Math.sin(r)]} role={ROLE[j]} label={`θ_${j + 1}`} />;
         })}
+        {arrows.map((x, j) => {
+          const r = (x.phi * Math.PI) / 180;
+          return (
+            <DragHandle
+              key={`h${j}`}
+              x={scale * x.k * Math.cos(r)}
+              y={scale * x.k * Math.sin(r)}
+              role={ROLE[j]}
+              r={5}
+              title={`Тяните, чтобы задать направление и длину θ${"₁₂₃"[j]}`}
+              onStart={() => {
+                dragScale.current = scale;
+                setSel(j);
+              }}
+              onDrag={(px, py) => dragTip(j, px, py)}
+              onEnd={() => (dragScale.current = null)}
+            />
+          );
+        })}
       </Plane>
-      <p className="class-regions__legend">круги — эконом, квадраты — комфорт, треугольники — бизнес; цвет области — класс с наибольшей вероятностью, насыщенность — сама вероятность; оси — стандартизованные признаки</p>
+      <p className="class-regions__legend">круги — эконом, квадраты — комфорт, треугольники — бизнес; цвет области — класс с наибольшей вероятностью, насыщенность — сама вероятность; оси — стандартизованные признаки; концы стрелок можно тянуть</p>
       <div className="class-regions__controls">
         <div className="class-regions__actions" role="group" aria-label="Класс, который двигаем">
           {CLASSES.map((c, j) => (

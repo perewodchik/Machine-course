@@ -26,6 +26,16 @@
   .kit-point.r3 circle { fill: var(--sym-3); }
   .kit-point.r4 circle { fill: var(--ink-3); }
 
+  /* ручка на рисунке (DragHandle): прозрачная зона касания 44 px и кольцо цвета роли */
+  .kit-handle { cursor: grab; touch-action: none; }
+  .kit-handle:active { cursor: grabbing; }
+  .kit-handle__hit { fill: transparent; }
+  .kit-handle__ring { fill: var(--surface); stroke-width: 2.5; }
+  .kit-handle:hover .kit-handle__ring { stroke-width: 4; }
+  .kit-handle.r1 .kit-handle__ring { stroke: var(--sym-1); }
+  .kit-handle.r2 .kit-handle__ring { stroke: var(--sym-2); }
+  .kit-handle.r3 .kit-handle__ring { stroke: var(--sym-3); }
+  .kit-handle.r4 .kit-handle__ring { stroke: var(--ink-3); }
   .kit-line line, .kit-vector line { stroke-width: 2.5; stroke-linecap: round; }
   .kit-line.is-dashed line { stroke-width: 1.5; stroke-dasharray: 4 3; }
   .kit-line.is-lit line, .kit-vector.is-lit line { stroke-width: 4; }
