@@ -57,6 +57,8 @@ export const layoutPages = {
   ml25: "/ml-basics/evaluation/ml-practice/",
   leakgame: "/games/find-leak/",
   cloudgame: "/games/overfit-cloud/",
+  lambdagame: "/games/overfit-lambda/",
+  finalgame: "/games/overfit-final/",
   honestgame: "/games/honest-probability/",
   zoogame: "/games/dist-zoo/",
   corrgame: "/games/guess-correlation/",
