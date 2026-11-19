@@ -2,7 +2,12 @@
 1e-10; стратифицированные фолды держат долю классов, как StratifiedKFold; формула «без одного» для гребневой без
 штрафа на свободный член совпадает с n обучениями."""
 
+from pathlib import Path
+
 import numpy as np
+from sklearn.linear_model import Ridge
+from sklearn.model_selection import StratifiedKFold, cross_val_score
+
 from ml_basics.cross_val import (
     _lesson_cell,
     apartments,
@@ -11,14 +16,15 @@ from ml_basics.cross_val import (
     ridge_fit,
     stratified,
 )
-from sklearn.linear_model import Ridge
-from sklearn.model_selection import StratifiedKFold, cross_val_score
-
 from mlf.datasets import apartments_full
 
 
-def test_lesson_cell_output(capsys):
-    """Ячейка урока 2.4 (<PyCode src="ml_basics/cross_val.py#data+tools+demo" run />) печатает ровно это."""
+def test_lesson_cell_output(capsys, monkeypatch):
+    """Ячейка урока 2.4 (<PyCode src="ml_basics/cross_val.py#data+tools+demo" run />) печатает ровно это.
+
+    Звонки ячейка читает из data/bank_marketing-10k.csv: в браузере файл кладёт воркер, здесь — корень сайта public/.
+    """
+    monkeypatch.chdir(Path(__file__).resolve().parents[2] / "public")
     _lesson_cell()
     assert capsys.readouterr().out == (
         "   λ     CV-MSE   ± SE\n"
@@ -29,7 +35,7 @@ def test_lesson_cell_output(capsys):
         "   30    1.167  0.172\n"
         "  100    3.021  0.446\n"
         "лучший λ = 1, по правилу одной SE — λ = 3\n"
-        "положительных по фолдам: просто [4, 0, 6, 4, 3], стратифицированно [4, 4, 3, 3, 3]\n"
+        "положительных по фолдам: просто [1, 2, 3, 6, 9], стратифицированно [5, 4, 4, 4, 4]\n"
         "чистый шум: отбор по всей выборке — 0.86 верных, отбор внутри фолда — 0.42\n"
     )
 
@@ -79,14 +85,14 @@ def test_ridge_leave_one_out_formula():
 
 
 def test_site_widget_data_matches_generator():
-    """Данные «Фолдов» (src/widgets/ml/folds/data.json) — первые 60 «Квартир» и звонков банка."""
+    """Данные «Фолдов» (src/widgets/ml/folds/data.json) — первые 60 «Квартир» и отклики 60 звонков Bank Marketing."""
     import json
-    from pathlib import Path
 
-    from mlf.datasets import bank_calls
+    from ml_basics.cross_val import bank_responses
 
+    root = Path(__file__).resolve().parents[2]
     X, y = apartments_full()
-    _, calls = bank_calls()
-    data = json.loads((Path(__file__).resolve().parents[2] / "src/widgets/ml/folds/data.json").read_text(encoding="utf-8"))
+    calls = bank_responses(60, seed=7, path=root / "public/data/bank_marketing-10k.csv")
+    data = json.loads((root / "src/widgets/ml/folds/data.json").read_text(encoding="utf-8"))
     assert data["area"] == X[:60, 0].tolist() and data["price"] == y[:60].tolist()
-    assert data["calls"] == calls[:60].astype(int).tolist()
+    assert data["calls"] == calls.tolist() and sum(data["calls"]) == 7

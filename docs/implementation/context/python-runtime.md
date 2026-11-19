@@ -20,6 +20,11 @@
 - COOP/COEP: в проде — `public/_headers`, в `astro dev`/`preview` — `server.headers` в `astro.config.mjs`.
 - Тесты: `tests/e2e/python.spec.ts` (θ из сниппета, «Стоп» без перезагрузки Python, правка, без JS), юнит — `snippets`, `python`, `traceback`.
 
+## Наборы данных в ячейках (S7.02)
+
+- Настоящие данные в уроке — подвыборки `public/data/<набор>-10k.csv` (≤ 10⁴ строк, ADR 0006). Сниппет читает файл относительным путём `data/<набор>-10k.csv` модулем `csv`. Воркер (`src/python/worker.ts`, `mountData`) находит такие пути в коде ячейки, скачивает файлы с `/data/` и кладёт в текущую папку Pyodide — один раз на страницу. Тест сниппета делает `monkeypatch.chdir(public/)` (образец — `code/tests/test_classification_metrics.py`).
+- В ноутбуках и проектах — полные наборы из пакета: `mlf.datasets.bank_marketing()`, `house_sales()` (без интернета, sha256 сверяется).
+
 ## Лабораторные (S2.09)
 
 - `scripts/build_notebooks.py` раскрывает `# snippet: путь#регион` через `code/mlf/snippets.py` (те же правила регионов, что `src/lib/content/snippets.ts`; общая фикстура `tests/fixtures/snippets`). Над кодом региона — комментарий, откуда он; неразрешённая ссылка роняет сборку.

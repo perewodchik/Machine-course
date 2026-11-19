@@ -95,8 +95,8 @@ flowchart LR
 | Набор | Курсы | Источник и лицензия |
 |---|---|---|
 | «Квартиры» | основы, табличные | Наш синтетический (из курса математики), seed |
-| California Housing | P1 | scikit-learn `fetch_california_housing` (StatLib) — [проверить лицензию] |
-| Bank Marketing | P2 | UCI, CC BY 4.0 |
+| King County House Sales | P1 | OpenML 42092, CC0 1.0 (ADR 0006; вместо California Housing без явной лицензии) |
+| Bank Marketing | основы (2.1, 2.4), P2 | UCI, CC BY 4.0 (ADR 0006) |
 | SMS Spam Collection; «Отзывы» | классические, P3 | UCI, CC BY 4.0; «Отзывы» — наш синтетический корпус на русском |
 | Default of Credit Card Clients | табличные, P4 | UCI, CC BY 4.0 |
 | Цифры 8×8; MNIST | глубокое обучение, P5 | UCI Optical Recognition of Handwritten Digits (CC BY 4.0); MNIST (CC BY-SA 3.0) |

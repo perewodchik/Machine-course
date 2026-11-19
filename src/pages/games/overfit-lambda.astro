@@ -1,0 +1,26 @@
+---
+// Игра «Переобучи, если сможешь: λ» (урок 2.3 «Основ ML»): остров React с оболочкой GameShell. Блок «Чему учит игра» — статичный HTML.
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { OverfitLambda, meta } from "../../games/overfit-lambda";
+import { loadCourse } from "../../lib/content/collections";
+
+const course = await loadCourse("ml-basics");
+const lesson = course.lessons.find((l) => l.key === meta.lesson);
+if (!lesson) throw new Error(`игра ${meta.id}: нет урока ${meta.lesson}`);
+const module = course.modules.find((m) => m.id === lesson.module);
+---
+<BaseLayout title={meta.title} description="Выберите тип штрафа (L1 или L2) и силу λ для линейной модели с 20 признаками по валидации и проверьте модель на скрытом тесте." course={course}>
+  <main class="game shell" id="content">
+    <nav class="breadcrumb" aria-label="Путь">
+      <a href={`${course.href}#m-${lesson.module}`}>{module?.title}</a><span aria-hidden="true">/</span><span>Игра к уроку {lesson.number}</span>
+    </nav>
+    <h1>{meta.title}</h1>
+    <p class="lead game__lead">Двадцать признаков, а&nbsp;полезных среди них может быть всего два. Выберите штраф&nbsp;— L2 сжимает все веса, L1 обнуляет лишние&nbsp;— и&nbsp;силу <i>λ</i> по&nbsp;валидационной части, затем сдайте модель и&nbsp;узнайте ошибку на&nbsp;скрытом тесте. Пять уровней, партия&nbsp;— <span class="nowrap">4–6&nbsp;минут</span>.</p>
+    <OverfitLambda client:load>
+      <div class="block block--intuition game__teaches">
+        <p><span class="block__title">Чему учит игра.</span> Тип штрафа&nbsp;— предположение об&nbsp;истине: L1 выигрывает, когда полезных признаков мало, L2&nbsp;— когда все понемногу полезны. При <i>λ</i>&nbsp;→&nbsp;∞ модель вырождается в&nbsp;константу <i>ȳ</i>, и&nbsp;на&nbsp;чистом шуме это лучшая модель. Выбирают и&nbsp;штраф, и&nbsp;<i>λ</i> по&nbsp;отложенным данным.</p>
+        <p><a href={lesson.href}>Урок {lesson.number}. {lesson.title}</a></p>
+      </div>
+    </OverfitLambda>
+  </main>
+</BaseLayout>

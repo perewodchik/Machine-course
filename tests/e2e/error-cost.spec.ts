@@ -1,28 +1,9 @@
-// «Порог классификатора» и «Цена ошибки» (S7.04): числа виджета совпадают с Python (порог 0.5 — 34/10/50/206,
-// точность 0.773, полнота 0.405, AUC 0.848), порог двигается с клавиатуры; в игре 0.5 на кредитах дорог, лучший
-// порог принимается, журнал; axe.
+// «Цена ошибки» (S7.04): в игре 0.5 на кредитах дорог, лучший порог принимается, журнал; axe.
+// Виджет порога в уроке 2.1 («Порог: кривые и цена», threshold-lab) проверяет lesson-ml-2-1.spec.ts.
 import { expect, test } from "@playwright/test";
 import { rng } from "../../src/lib/math/rng";
 import { best, errorCost } from "../../src/games/error-cost/model";
 import { expectNoAxeViolations, waitForIslands } from "./support";
-
-test("виджет: числа как в Python, клавиатура, цена", async ({ page }) => {
-  await page.goto("/demo/threshold/");
-  await waitForIslands(page);
-  const w = page.locator(".threshold");
-  await expect(w.locator(".threshold__cm tbody td b")).toHaveText(["34", "50", "10", "206"]);
-  await expect(w.locator(".threshold__metrics")).toContainText("0.773");
-  await expect(w.locator(".threshold__metrics")).toContainText("0.405");
-  await expect(w.locator(".threshold__auc")).toHaveText("AUC = 0.848");
-  await expect(w.locator(".threshold__metrics")).toContainText("260");
-  const slider = w.getByRole("slider", { name: "t" });
-  await slider.fill("0.7");
-  await expect(w.locator(".threshold__metrics")).toContainText("0.846");
-  await expect(w.locator(".threshold__metrics")).toContainText("0.131");
-  await slider.press("ArrowLeft");
-  await expect(slider).toHaveValue("0.695");
-  await expectNoAxeViolations(page);
-});
 
 test("игра: порог 0.5 на кредитах не принят, лучший — принят, журнал", async ({ page }) => {
   const SEED = 4;

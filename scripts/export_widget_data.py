@@ -17,17 +17,17 @@ sys.path.insert(0, str(ROOT / "code" / "snippets"))
 sys.path.insert(0, str(ROOT / "code"))
 
 from la.normal_equations import make_data  # noqa: E402
+from ml_basics.cross_val import bank_responses  # noqa: E402
 from ml_basics.logistic import expensive  # noqa: E402
 from ml_basics.softmax import segments  # noqa: E402
 from ml_basics.threshold import make_scores  # noqa: E402
-from mlf.datasets import ad_views, apartments, apartments_full, bank_calls, metro_prices  # noqa: E402
+from mlf.datasets import ad_views, apartments, apartments_full, metro_prices  # noqa: E402
 
 OUT = ROOT / "prototype" / "assets" / "data"
 # данные виджетов сайта: лежат рядом с виджетом, импортируются как JSON
 SITE = {
     "fit-line": ROOT / "src" / "widgets" / "la" / "fit-line" / "data.json",
     "fit-line-game": ROOT / "src" / "games" / "fit-line" / "data.json",
-    "threshold": ROOT / "src" / "widgets" / "ml" / "threshold" / "data.json",
     "flexibility": ROOT / "src" / "widgets" / "ml" / "flexibility" / "data.json",
     "logistic": ROOT / "src" / "widgets" / "ml" / "logistic-plane" / "data.json",
     "ascent-newton": ROOT / "src" / "widgets" / "ml" / "ascent-newton" / "data.json",
@@ -94,10 +94,15 @@ def reg_path_payload() -> dict:
 
 
 def folds_payload() -> dict:
-    """«Фолды» (урок 2.4): площадь и цена первых 60 «Квартир», отклики первых 60 звонков банка."""
+    """«Фолды» (урок 2.4): площадь и цена первых 60 «Квартир», отклики 60 случайных звонков Bank Marketing."""
     X, price = apartments_full()
-    _, calls = bank_calls()
-    return {"source": "code/mlf/datasets.py#apartments_full, bank_calls", "area": X[:60, 0].tolist(), "price": price[:60].tolist(), "calls": calls[:60].astype(int).tolist()}
+    calls = bank_responses(60, seed=7, path=ROOT / "public" / "data" / "bank_marketing-10k.csv")
+    return {
+        "source": "code/mlf/datasets.py#apartments_full; code/snippets/ml_basics/cross_val.py#bank_responses (Bank Marketing, UCI, CC BY 4.0)",
+        "area": X[:60, 0].tolist(),
+        "price": price[:60].tolist(),
+        "calls": calls.tolist(),
+    }
 
 
 def render(name: str, payload: dict) -> str:
@@ -108,7 +113,7 @@ def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "threshold.js").write_text(render("THRESHOLD_DATA", threshold_payload()))
     print("prototype/assets/data/threshold.js")
-    for name, payload in (("fit-line", fit_line_payload()), ("fit-line-game", apartments_payload()), ("threshold", threshold_payload()), ("flexibility", metro_payload()), ("logistic", logistic_payload()), ("ascent-newton", logistic_payload()), ("class-regions", segments_payload()), ("perceptron", segments_payload()), ("glm-builder", glm_payload()), ("reg-path", reg_path_payload()), ("folds", folds_payload())):
+    for name, payload in (("fit-line", fit_line_payload()), ("fit-line-game", apartments_payload()), ("flexibility", metro_payload()), ("logistic", logistic_payload()), ("ascent-newton", logistic_payload()), ("class-regions", segments_payload()), ("perceptron", segments_payload()), ("glm-builder", glm_payload()), ("reg-path", reg_path_payload()), ("folds", folds_payload())):
         path = SITE[name]
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n")

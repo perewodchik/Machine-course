@@ -4,10 +4,10 @@
 
 import numpy as np
 import pytest
-from ml_basics.glm import _lesson_cell, ad_views, poisson_newton
 from sklearn.linear_model import LinearRegression, PoissonRegressor
 from sklearn.metrics import mean_poisson_deviance
 
+from ml_basics.glm import _lesson_cell, ad_views, poisson_newton
 from mlf.datasets import ad_views as course_ad_views
 
 

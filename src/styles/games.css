@@ -184,6 +184,9 @@
   /* «Переобучи»: имена бегунков — слова, им нужна колонка шире, чем у одной буквы */
   .game-overfit .kit-slider { grid-template-columns: 5.2em minmax(0, 1fr) 2.4em; }
   .game-overfit .kit-slider__name { white-space: nowrap; }
+  /* режимы «λ» и «финал»: выбранный штраф или способ оценки — синей ручкой, как остальные переключатели */
+  .game-overfit .btn[aria-pressed="true"] { border-color: var(--pen); color: var(--pen); box-shadow: inset 0 0 0 1px var(--pen); }
+  .game-overfit [role="group"] { flex-wrap: wrap; }
   .game-range__readouts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); }
   @media (max-width: 900px) { .game-range__readouts { grid-template-columns: minmax(0, 1fr); } }
   .game-fog__pad { display: grid; grid-template-columns: repeat(3, 48px); gap: var(--space-2); }

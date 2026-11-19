@@ -1,8 +1,9 @@
 // Виджет «Гибкость модели» (урок 1.3 «Основ ML»): цена м² от пути до метро, две ручки сложности. Полином — степень
 // p от 1 до 15. LWR — ширина окна τ (логарифмическая шкала) и точка запроса x: размер обучающей точки — её вес w⁽ⁱ⁾,
-// у x — локальная прямая θ(x), штриховая — вся кривая LWR. Справа внизу — RMSE на обучении и на валидации.
+// у x — локальная прямая θ(x), штриховая — вся кривая LWR; точку запроса можно тянуть по рисунку (ползунок —
+// то же с клавиатуры). Справа внизу — RMSE на обучении и на валидации.
 import { useMemo, useState } from "react";
-import { Line, ParamSlider, Plane, Point, Polyline, Readout, fmt, useLiveText } from "../../_kit";
+import { DragHandle, Line, ParamSlider, Plane, Point, Polyline, Readout, fmt, useLiveText } from "../../_kit";
 import { localLine, loadData, lwrModel, polyModel } from "./model";
 
 export interface FlexibilityProps {
@@ -41,10 +42,10 @@ export default function Flexibility({ mode: mode0 = "poly" }: FlexibilityProps) 
         {data.train.map(([x, y], i) => <Point key={`t${i}`} x={x} y={y} role="data" r={local ? 2.5 + 3.5 * local.w[i]! : 3.5} />)}
         <Polyline points={curve} role="target" dashed={mode === "lwr"} />
         {local && <Line from={[q - half, at(q - half)]} to={[q + half, at(q + half)]} role="param" />}
-        {local && <Point x={q} y={at(q)} role="param" r={5} />}
+        {local && <DragHandle x={q} y={clampY(at(q))} role="param" r={6} title="Тяните, чтобы сдвинуть точку запроса" onDrag={(x) => setQ(Math.min(40, Math.max(1, Math.round(x * 2) / 2)))} />}
       </Plane>
       <p className="flexibility__legend">
-        {mode === "poly" ? "крупные точки — обучение, мелкие — валидация; кривая — полином" : "размер точки — её вес в точке запроса; отрезок — локальная прямая θ(x), штриховая — кривая LWR"}
+        {mode === "poly" ? "крупные точки — обучение, мелкие — валидация; кривая — полином" : "размер точки — её вес в точке запроса; отрезок — локальная прямая θ(x), штриховая — кривая LWR; точку запроса можно тянуть"}
       </p>
       <div className="flexibility__controls">
         {mode === "poly" ? (

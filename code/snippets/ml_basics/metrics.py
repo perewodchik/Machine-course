@@ -4,19 +4,24 @@
 ``code/tests/test_classification_metrics.py`` сверяет вывод и каждую метрику с ``sklearn.metrics`` до 1e-12.
 """
 
+import csv
+
 import numpy as np
 
 
 # region data
-def bank_calls(n=10_000, seed=2031):
-    """Звонки банка: возраст, прошлых контактов, длительность (мин), час; открыл ли вклад (как mlf.datasets.bank_calls)."""
-    rng = np.random.default_rng(seed)
-    age = np.round(rng.uniform(18, 80, size=n))
-    prev = rng.poisson(0.6, size=n).astype(float)
-    dur = np.round(rng.exponential(4, size=n), 1)
-    hour = rng.integers(9, 21, size=n).astype(float)
-    eta = -4 + 0.02 * (age - 45) + 0.5 * prev + 0.25 * dur - 0.05 * (hour - 15)
-    return np.column_stack([age, prev, dur, hour]), (rng.random(n) < 1 / (1 + np.exp(-eta))).astype(float)
+def bank_calls(path="data/bank_marketing-10k.csv"):
+    """10 000 звонков Bank Marketing (UCI, CC BY 4.0): признаки до звонка и открыл ли клиент вклад.
+
+    Признаки: возраст, средний остаток (евро), звонков в этой кампании, звонков раньше, есть ипотека, есть кредит,
+    прошлая кампания успешна, тип связи неизвестен. Длительности звонка нет: её узнают только после звонка.
+    """
+    with open(path, encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    numbers = [[float(r[c]) for c in ("age", "balance", "campaign", "previous")] for r in rows]
+    flags = [[r["housing"] == "yes", r["loan"] == "yes", r["poutcome"] == "success", r["contact"] == "unknown"] for r in rows]
+    y = np.array([r["y"] == "yes" for r in rows], dtype=float)
+    return np.column_stack([numbers, np.array(flags, dtype=float)]), y
 
 
 def fit_logistic(X, y, iters=12):
@@ -71,7 +76,7 @@ def _lesson_cell() -> None:
     # region demo
     F, y = bank_calls()
     X = np.column_stack([np.ones(len(y)), (F - F.mean(axis=0)) / F.std(axis=0)])
-    tr = np.arange(len(y)) < 7000  # первые 7000 звонков — обучение, остальные 3000 — проверка
+    tr = np.random.default_rng(0).permutation(len(y)) < 7000  # случайные 7000 звонков — обучение, 3000 — проверка
     s = 1 / (1 + np.exp(-X[~tr] @ fit_logistic(X[tr], y[tr])))
     yt = y[~tr]
 

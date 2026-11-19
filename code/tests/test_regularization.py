@@ -3,9 +3,9 @@
 деление на 1 + λ и мягкий порог; XᵀX + λI обратима при d > n."""
 
 import numpy as np
-from ml_basics.regularization import _lesson_cell, apartments, lasso, ridge, soft
 from sklearn.linear_model import Lasso, Ridge, lasso_path
 
+from ml_basics.regularization import _lesson_cell, apartments, lasso, ridge, soft
 from mlf.datasets import apartments_full
 
 

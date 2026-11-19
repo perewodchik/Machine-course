@@ -1,0 +1,18 @@
+# Линтер Python для code/ и scripts/. Лабораторные (notebooks/) не линтуются: директива «# snippet:» вставляет код
+# при сборке, до неё имена не определены; их проверяет запуск nbmake. Запуск: ruff check . (из корня); в CI — job «Python».
+target-version = "py312"
+line-length = 160
+extend-exclude = ["node_modules", "dist", "public", ".venv", "notebooks", "tests/fixtures"]
+
+[lint]
+# явный набор правил: новая версия ruff не меняет, что проверяется
+select = ["E4", "E7", "E9", "F", "I", "B", "UP", "BLE", "RUF100"]
+# zip(strict=…) — стиль, а не ошибка: в уроках длины массивов совпадают по построению
+ignore = ["B905"]
+
+[lint.per-file-ignores]
+# код уроков: короткие lambda и математические имена (I — интеграл) читаются как формулы; lambda в цикле вызывается сразу
+"code/snippets/**" = ["E731", "E741", "B023"]
+
+[lint.isort]
+known-first-party = ["mlf", "la", "calculus", "prob", "stats", "ml_basics", "bridge", "start"]

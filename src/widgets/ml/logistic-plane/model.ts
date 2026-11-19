@@ -67,6 +67,23 @@ export function best(items: readonly Item[]): number[] {
 }
 
 /** Две точки границы θᵀx = 0 в исходных единицах — далеко за краями поля (Plane обрежет). */
+/**
+ * Граница через две точки (площадь, до метро): направление φ и сдвиг c прямой nᵀz = c в стандартизованных
+ * координатах. Из двух нормалей берётся ближайшая к прежней φ — «дороже» остаётся с той же стороны. Крутизна k
+ * не меняется. Для перетаскивания границы на рисунке: одна точка — под пальцем, другая — неподвижная.
+ */
+export function lineThrough(a: readonly [number, number], b: readonly [number, number], phi: number): { phi: number; c: number } | null {
+  const za = [(a[0] - MU[0]) / SD[0], (a[1] - MU[1]) / SD[1]];
+  const zb = [(b[0] - MU[0]) / SD[0], (b[1] - MU[1]) / SD[1]];
+  const d = [zb[0]! - za[0]!, zb[1]! - za[1]!];
+  const len = Math.hypot(d[0]!, d[1]!);
+  if (len < 1e-6) return null; // точки слились: прямая не определена
+  let n = [-d[1]! / len, d[0]! / len];
+  const old = (phi * Math.PI) / 180;
+  if (n[0]! * Math.cos(old) + n[1]! * Math.sin(old) < 0) n = [-n[0]!, -n[1]!];
+  return { phi: (Math.atan2(n[1]!, n[0]!) * 180) / Math.PI, c: n[0]! * za[0]! + n[1]! * za[1]! };
+}
+
 export function boundary(theta: readonly number[]): [[number, number], [number, number]] {
   const [t0, t1, t2] = theta as [number, number, number];
   // точка на границе, ближайшая к центру в стандартизованных координатах, и направление вдоль неё

@@ -22,9 +22,10 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 import numpy as np
 
@@ -61,7 +62,7 @@ def sample_symbols(symbols: list[dict], rng: np.random.Generator) -> dict[str, A
 
 def evaluate(expr: str, env: dict[str, Any]):
     # Выражения берутся только из репозитория курса; встроенные функции Python им не нужны.
-    return eval(expr, {"__builtins__": {"abs": abs}}, dict(env))  # noqa: S307
+    return eval(expr, {"__builtins__": {"abs": abs}}, dict(env))
 
 
 def numeric_gradient(f: Callable[[dict], float], env: dict[str, Any], wrt: str, h: float = 1e-6) -> np.ndarray:
@@ -98,10 +99,10 @@ def check_formula(data: dict, seed: int = 0) -> Report:
                 if not _close(evaluate(c["lhs"], env), evaluate(c["rhs"], env)):
                     report.problems.append(f"проверка {i}: левая и правая части не совпадают")
             elif c["kind"] == "gradient":
-                expected = numeric_gradient(lambda e: evaluate(c["f"], e), env, c["wrt"])
+                expected = numeric_gradient(lambda e: evaluate(c["f"], e), env, c["wrt"])  # noqa: B023 — вызывается сразу
                 if not _close(evaluate(c["grad"], env), expected):
                     report.problems.append(f"проверка {i}: градиент не совпадает с численным")
-        except Exception as exc:  # размерности, опечатки в выражении
+        except Exception as exc:  # noqa: BLE001 — размерности, опечатки в выражении
             report.problems.append(f"проверка {i}: выражение не вычисляется ({exc})")
 
     # мутации правила (S3.05): типичная ошибка должна давать другой ответ — иначе это не ошибка
@@ -109,7 +110,7 @@ def check_formula(data: dict, seed: int = 0) -> Report:
     for i, m in enumerate(data.get("mutations", []), 1):
         try:
             same = reference is not None and _close(evaluate(m["py"], env), evaluate(reference, env))
-        except Exception:  # размерности не сходятся — ошибка видна и так
+        except Exception:  # noqa: BLE001 — размерности не сходятся, ошибка видна и так
             same = False
         if same:
             report.problems.append(f"мутация {i}: «{m['tex']}» совпадает с верным ответом — это не ошибка")
@@ -132,7 +133,7 @@ def check_formula(data: dict, seed: int = 0) -> Report:
                     report.problems.append(f"шаг {i}: значение не совпадает с предыдущим шагом")
                 ref, f_expr, target = value, c["py"], value
             elif kind == "gradient":
-                expected = numeric_gradient(lambda e: evaluate(f_expr, e), env, c["wrt"])
+                expected = numeric_gradient(lambda e: evaluate(f_expr, e), env, c["wrt"])  # noqa: B023 — вызывается сразу
                 if not _close(evaluate(c["py"], env), expected):
                     report.problems.append(f"шаг {i}: градиент не совпадает с численным градиентом шага выше")
                 grad_expr, target = c["py"], expected
@@ -170,12 +171,12 @@ def check_formula(data: dict, seed: int = 0) -> Report:
                 for j, s in stationary:
                     if not _close(evaluate(s["lhs"], at), evaluate(s["rhs"], at)):
                         report.problems.append(f"шаг {j}: равенство не выполняется в найденной точке")
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001 — любая ошибка выражения — сообщение автору
             report.problems.append(f"шаг {i}: выражение не вычисляется ({exc})")
         for j, m in enumerate(step.get("mutations", []), 1):
             try:
                 same = target is not None and _close(evaluate(m["py"], env), target)
-            except Exception:  # размерности не сходятся — ошибка видна и так
+            except Exception:  # noqa: BLE001 — размерности не сходятся, ошибка видна и так
                 same = False
             if same:
                 report.problems.append(f"шаг {i}, ошибка {j}: «{m['tex']}» совпадает с верным шагом — это не ошибка")

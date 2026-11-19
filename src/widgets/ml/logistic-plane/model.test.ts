@@ -1,8 +1,8 @@
 // «Сигмоида над плоскостью»: ручки ↔ θ взаимно обратны; максимум — как в ячейке урока; ×10 к крутизне не двигает
-// границу; выброс сдвигает оптимальную границу.
+// границу; выброс сдвигает оптимальную границу; граница через две точки (перетаскивание) проходит через обе.
 import { describe, expect, it } from "vitest";
 import { ascentPath, newtonPath } from "../../../lib/math/logistic";
-import { BASE, OUTLIER, best, boundary, design, fromTheta, prob, stats, toTheta } from "./model";
+import { BASE, OUTLIER, best, boundary, design, fromTheta, lineThrough, prob, stats, toTheta } from "./model";
 
 describe("сигмоида над плоскостью", () => {
   it("ручки и θ взаимно обратны", () => {
@@ -43,5 +43,20 @@ describe("сигмоида над плоскостью", () => {
     const a = fromTheta(best(BASE));
     const b = fromTheta(best([...BASE, OUTLIER]));
     expect(Math.abs(a.c - b.c) + Math.abs(a.phi - b.phi) / 10).toBeGreaterThan(0.02);
+  });
+
+  it("граница через две точки проходит через обе и сохраняет сторону «дороже»", () => {
+    const knobs = { phi: 30, c: 0.4, k: 2 };
+    const a: [number, number] = [50, 10];
+    const b: [number, number] = [90, 30];
+    const line = lineThrough(a, b, knobs.phi)!;
+    const t = toTheta({ ...knobs, ...line });
+    expect(prob(t, a[0], a[1])).toBeCloseTo(0.5, 9);
+    expect(prob(t, b[0], b[1])).toBeCloseTo(0.5, 9);
+    // нормаль выбрана ближе к прежней: та же точка далеко по прежней нормали — по-прежнему «дороже»
+    const flipped = lineThrough(b, a, knobs.phi)!;
+    expect(flipped.phi).toBeCloseTo(line.phi, 9);
+    expect(Math.abs(((line.phi - knobs.phi + 540) % 360) - 180)).toBeLessThanOrEqual(90);
+    expect(lineThrough(a, a, 0)).toBeNull();
   });
 });

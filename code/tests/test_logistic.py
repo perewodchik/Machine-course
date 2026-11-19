@@ -3,6 +3,8 @@
 на разделимых данных ℓ растёт с ‖θ‖ без предела; данные — mlf.datasets.apartments_full."""
 
 import numpy as np
+from sklearn.linear_model import LogisticRegression
+
 from ml_basics.logistic import (
     _lesson_cell,
     apartments,
@@ -11,8 +13,6 @@ from ml_basics.logistic import (
     loglik,
     newton,
 )
-from sklearn.linear_model import LogisticRegression
-
 from mlf.datasets import apartments_full
 
 

@@ -32,3 +32,4 @@
 | [0003](0003-hosting.md) | Хостинг: Cloudflare Pages | заменено 0005 |
 | [0004](0004-course-catalog.md) | Каталог курсов: математика — предисловие, ML — восемь курсов | принято |
 | [0005](0005-hosting-workers.md) | Хостинг: Cloudflare Workers со статическими ассетами | принято |
+| [0006](0006-ml-datasets.md) | Наборы данных «Основ ML»: Bank Marketing (CC BY 4.0) и King County House Sales (CC0) вместо California Housing | принято |

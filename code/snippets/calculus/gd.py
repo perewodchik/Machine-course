@@ -63,7 +63,7 @@ def _sgd_cell() -> None:
     eta = 0.05
     ups = 0
     history = [J(theta)]
-    for epoch in range(20):
+    for _ in range(20):  # 20 эпох
         for i in rng.permutation(n):  # один объект — одна оценка градиента
             g_i = (X[i] @ theta - y[i]) * X[i]
             theta = theta - eta * g_i

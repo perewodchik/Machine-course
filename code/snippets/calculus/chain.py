@@ -22,7 +22,7 @@ def _lesson_cell() -> None:
     print("L =", L, " ∇θL =", dL_dtheta)
 
     h = 1e-6
-    loss = lambda t: (t @ x - y) ** 2  # noqa: E731
+    loss = lambda t: (t @ x - y) ** 2
     numeric = np.array([(loss(theta + h * e) - loss(theta - h * e)) / (2 * h) for e in np.eye(2)])
     print("численно:", numeric.round(6))
 
