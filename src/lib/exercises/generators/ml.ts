@@ -36,7 +36,7 @@ export const rmseMae: Generator = {
 /** Урок 1.1: лучшая константа — среднее для квадратов, медиана для модулей. */
 export const bestConstant: Generator = {
   id: "ml.best-constant",
-  version: 1,
+  version: 2,
   title: "Лучшая константа",
   make(seed) {
     const r = rng(seed);
@@ -53,7 +53,7 @@ export const bestConstant: Generator = {
       tol: 0.002,
       hints: [mae ? "Для суммы модулей сдвиг константы приближает её к одной половине точек и удаляет от другой — где это уравновешено?" : String.raw`Продифференцируйте $\sum_i (y^{(i)} - c)^2$ по $c$ и приравняйте к нулю.`],
       right: mae ? String.raw`Медиана $= ${answer}$: выброс почти не влияет на неё.` : String.raw`Среднее $= ${answer}$: для квадратов лучшая константа — $\bar y$.`,
-      wrong: mae ? String.raw`Для MAE лучшая константа — медиана (здесь $${answer}$), а не среднее: дорогой выброс тянет среднее вверх.` : String.raw`Для MSE лучшая константа — среднее $\bar y = ${answer}$, а не медиана.`,
+      wrong: mae ? String.raw`Частая ошибка — взять среднее. Для MAE лучшая константа — медиана: дорогой выброс тянет среднее вверх, а медиану — нет.` : String.raw`Частая ошибка — взять медиану. Для MSE лучшая константа — среднее $\bar y$.`,
     };
   },
 };
@@ -63,19 +63,19 @@ const num = (v: number) => String(v).replace("-", "−");
 /** Урок 1.2: одно обновление LMS на объекте. */
 export const lmsUpdate: Generator = {
   id: "ml.lms-update",
-  version: 1,
+  version: 2,
   title: "Шаг LMS",
   make(seed) {
     const r = rng(seed);
     const t0 = r.int(-4, 4) / 2;
     const t1 = r.int(1, 6) / 4;
-    const x = r.int(2, 8) / 2;
+    const x = r.int(1, 4); // целый x и шаг 0.1 или 0.2: ответ не длиннее четырёх знаков
     const y = r.int(2, 16) / 2;
-    const alpha = r.pick([0.1, 0.05, 0.2]);
+    const alpha = r.pick([0.1, 0.2]); // шаг 0.05 давал ответ с пятью-шестью знаками
     const j = seed % 2; // какую координату спрашиваем
     const h = t0 + t1 * x;
     const err = y - h;
-    const answer = round((j ? t1 : t0) + alpha * err * (j ? x : 1), 6);
+    const answer = round((j ? t1 : t0) + alpha * err * (j ? x : 1), 4);
     return {
       kind: "numeric",
       prompt: String.raw`Модель $h_\theta(x) = \theta_0 + \theta_1 x$, сейчас $\theta = (${num(t0)},\ ${num(t1)})^\top$. Стохастический спуск берёт объект $x^{(i)} = ${num(x)}$, $y^{(i)} = ${num(y)}$ с шагом $\alpha = ${alpha}$. Каким станет $\theta_${j}$ после одного шага LMS?`,
@@ -155,7 +155,7 @@ export const standardizeBack: Generator = {
 /** Урок 1.3: вес объекта в LWR. */
 export const lwrWeight: Generator = {
   id: "ml.lwr-weight",
-  version: 1,
+  version: 2,
   title: "Вес в LWR",
   make(seed) {
     const r = rng(seed);
@@ -172,7 +172,7 @@ export const lwrWeight: Generator = {
       tol: 0.001,
       hints: [String.raw`$w^{(i)} = \exp\bigl(-(x^{(i)} - x)^2/(2\tau^2)\bigr)$. Расстояние здесь — ${num(k)} ширины окна.`],
       right: String.raw`$w = \exp(-${num(k)}^2/2) = ${num(answer)}$: вес зависит только от расстояния в единицах $\tau$.`,
-      wrong: String.raw`Расстояние $\lvert x^{(i)} - x\rvert = ${num(k * tau)}$, это ${num(k)}$\tau$; $w = \exp(-${num(k * k)}/2) = ${num(answer)}$. Делить на $2\tau^2$, а не на $\tau$.`,
+      wrong: String.raw`Частая ошибка — делить квадрат расстояния на $\tau$ или на $\tau^2$: в показателе стоит $\lvert x^{(i)} - x\rvert^2 / (2\tau^2)$. Здесь расстояние — ${num(k)}$\tau$.`,
     };
   },
 };
@@ -217,7 +217,7 @@ const sigm = (z: number) => 1 / (1 + Math.exp(-z));
 /** Урок 1.4: вероятность класса g(θᵀx) для квартиры. */
 export const logisticProb: Generator = {
   id: "ml.logistic-prob",
-  version: 1,
+  version: 2,
   title: "Вероятность класса",
   make(seed) {
     const r = rng(seed);
@@ -236,7 +236,7 @@ export const logisticProb: Generator = {
       tol: 0.002,
       hints: [String.raw`Сначала $\theta^\top x = ${num(t0)} + ${num(t1)} \cdot (${num(z1)}) + (${num(t2)}) \cdot (${num(z2)})$, потом $g(z) = 1/(1 + e^{-z})$.`],
       right: String.raw`$\theta^\top x = ${num(round(z, 4))}$, $g(${num(round(z, 4))}) = ${num(answer)}$.`,
-      wrong: String.raw`$\theta^\top x = ${num(round(z, 4))}$; вероятность — $g(z) = 1/(1 + e^{-z}) = ${num(answer)}$, а не само $\theta^\top x$.`,
+      wrong: String.raw`$\theta^\top x = ${num(round(z, 4))}$ — ещё не вероятность. Частая ошибка — забыть сигмоиду $g(z) = 1/(1 + e^{-z})$.`,
     };
   },
 };
@@ -244,7 +244,7 @@ export const logisticProb: Generator = {
 /** Урок 1.4: во сколько раз меняются шансы при росте признака на единицу. */
 export const oddsFactor: Generator = {
   id: "ml.odds-factor",
-  version: 1,
+  version: 2,
   title: "Шансы и веса",
   make(seed) {
     const r = rng(seed);
@@ -259,7 +259,7 @@ export const oddsFactor: Generator = {
       tol: 0.002,
       hints: [String.raw`$\log \frac{p}{1 - p} = \theta^\top x$: логарифм шансов линеен по признакам.`],
       right: String.raw`Логарифм шансов вырос на $${k} \cdot ${num(w)}$, шансы умножились на $e^{${num(round(k * w, 4))}} = ${num(answer)}$.`,
-      wrong: String.raw`Линеен по признакам логарифм шансов, а не вероятность: $\log\frac{p}{1 - p}$ меняется на $${k}\theta_j$, шансы — в $e^{${num(round(k * w, 4))}} = ${num(answer)}$ раза.`,
+      wrong: String.raw`Линеен по признакам логарифм шансов, а не вероятность: $\log\frac{p}{1 - p}$ меняется на $${k}\theta_j$, поэтому шансы меняются в $e^{${num(round(k * w, 4))}}$ раз.`,
     };
   },
 };
@@ -267,7 +267,7 @@ export const oddsFactor: Generator = {
 /** Урок 1.5: вероятность класса по логитам softmax. */
 export const softmaxProb: Generator = {
   id: "ml.softmax-prob",
-  version: 1,
+  version: 2,
   title: "Softmax по логитам",
   make(seed) {
     const r = rng(seed);
@@ -285,7 +285,7 @@ export const softmaxProb: Generator = {
       tol: 0.002,
       hints: [String.raw`$p_j = e^{t_j} / \sum_s e^{t_s}$. Удобно сначала вычесть из всех логитов наибольший: вероятности от этого не меняются.`],
       right: String.raw`$p = e^{${num(t[j]!)}} / (e^{${num(t[0]!)}} + e^{${num(t[1]!)}} + e^{${num(t[2]!)}}) = ${num(answer)}$.`,
-      wrong: String.raw`Возведите $e$ в каждый логит и поделите нужное слагаемое на сумму: $p = ${num(answer)}$. Делить сами логиты на их сумму нельзя — они бывают отрицательными.`,
+      wrong: String.raw`Возведите $e$ в каждый логит и поделите нужное слагаемое на сумму. Частая ошибка — делить сами логиты на их сумму: они бывают отрицательными.`,
     };
   },
 };
@@ -293,7 +293,7 @@ export const softmaxProb: Generator = {
 /** Урок 1.5: одна поправка перцептрона. */
 export const perceptronUpdateGen: Generator = {
   id: "ml.perceptron-update",
-  version: 1,
+  version: 2,
   title: "Поправка перцептрона",
   make(seed) {
     const r = rng(seed);
@@ -314,7 +314,7 @@ export const perceptronUpdateGen: Generator = {
         tol: 0.0005,
         hints: [String.raw`Сначала посчитайте $\theta^\top x = ${num(z)}$ и предсказание $h$. Поправка $\alpha(y - h)x$ — только если $h \ne y$.`],
         right: y === h ? String.raw`$\theta^\top x = ${num(z)}$, $h = ${h} = y$: ответ верный, поправки нет, $\theta_${j} = ${num(answer)}$.` : String.raw`$\theta^\top x = ${num(z)}$, $h = ${h} \ne y$: $\theta_${j} := ${num(th[j]!)} + (${y} - ${h}) \cdot ${num(x[j]!)} = ${num(answer)}$.`,
-        wrong: y === h ? String.raw`Предсказание $h = ${h}$ совпало с меткой: перцептрон на верных ответах веса не меняет.` : String.raw`Ошибка: $h = ${h}$, а $y = ${y}$. Поправка $(y - h)\,x_${j} = ${num((y - h) * x[j]!)}$, новое $\theta_${j} = ${num(answer)}$.`,
+        wrong: y === h ? String.raw`Предсказание $h = ${h}$ совпало с меткой: перцептрон на верных ответах веса не меняет.` : String.raw`Ошибка: $h = ${h}$, а $y = ${y}$. Поправка — $(y - h)\,x_${j}$: прибавьте её к старому $\theta_${j}$.`,
       };
     }
   },
@@ -323,7 +323,7 @@ export const perceptronUpdateGen: Generator = {
 /** Урок 1.6: прогноз пуассоновской регрессии или во сколько раз он меняется при росте признака. */
 export const poissonPredict: Generator = {
   id: "ml.poisson-predict",
-  version: 1,
+  version: 2,
   title: "Прогноз пуассоновской регрессии",
   make(seed) {
     const r = rng(seed);
@@ -341,7 +341,7 @@ export const poissonPredict: Generator = {
         tol: 0.002,
         hints: [String.raw`$\log\lambda$ линеен по признакам: он вырос на $${k}\theta_1$.`],
         right: String.raw`$\lambda$ умножается на $e^{${k} \cdot ${num(t1)}} = ${num(answer)}$ — независимо от остальных признаков.`,
-        wrong: String.raw`Признаки действуют на $\log\lambda$, а не на $\lambda$: прогноз умножается на $e^{${num(round(k * t1, 4))}} = ${num(answer)}$, а не растёт на $${num(round(k * t1, 4))}$.`,
+        wrong: String.raw`Признаки действуют на $\log\lambda$, а не на $\lambda$: прогноз умножается на $e^{${num(round(k * t1, 4))}}$, а не растёт на $${num(round(k * t1, 4))}$.`,
       };
     }
     const x1 = r.int(0, 15);
@@ -356,7 +356,7 @@ export const poissonPredict: Generator = {
       tol: 0.005,
       hints: [String.raw`Сначала $\eta = \theta^\top x$, потом отклик Пуассона — экспонента: $\lambda = e^{\eta}$.`],
       right: String.raw`$\eta = ${num(round(eta, 4))}$, $\lambda = e^{\eta} = ${num(answer)}$.`,
-      wrong: String.raw`$\eta = ${num(round(eta, 4))}$ — это $\log\lambda$, а не прогноз. Ожидаемое число просмотров — $e^{\eta} = ${num(answer)}$.`,
+      wrong: String.raw`$\eta = ${num(round(eta, 4))}$ — это $\log\lambda$, а не прогноз. Ожидаемое число просмотров — $e^{\eta}$.`,
     };
   },
 };
@@ -364,7 +364,7 @@ export const poissonPredict: Generator = {
 /** Урок 2.1: точность по доле положительных, TPR и FPR. */
 export const precisionPrevalence: Generator = {
   id: "ml.precision-prevalence",
-  version: 1,
+  version: 2,
   title: "Точность при дисбалансе",
   make(seed) {
     const r = rng(seed);
@@ -380,7 +380,7 @@ export const precisionPrevalence: Generator = {
       tol: 0.002,
       hints: [String.raw`На $n$ объектов: $\mathrm{TP} = \phi n \cdot \mathrm{TPR}$, $\mathrm{FP} = (1 - \phi) n \cdot \mathrm{FPR}$; точность — $\mathrm{TP}/(\mathrm{TP} + \mathrm{FP})$.`],
       right: String.raw`$\frac{${num(phi)} \cdot ${num(tpr)}}{${num(phi)} \cdot ${num(tpr)} + ${num(round(1 - phi, 4))} \cdot ${num(fprV)}} = ${num(answer)}$: на одно верное срабатывание — ${num(round((1 - answer) / answer, 1))} ложных.`,
-      wrong: String.raw`Точность — не $1 - \mathrm{FPR}$. Отрицательных в $${num(round((1 - phi) / phi, 1))}$ раз больше, поэтому даже малый FPR даёт много ложных срабатываний: precision $= ${num(answer)}$.`,
+      wrong: String.raw`Точность — не $1 - \mathrm{FPR}$. Отрицательных в $${num(round((1 - phi) / phi, 1))}$ раз больше, поэтому даже малый FPR даёт много ложных срабатываний. Посчитайте TP и FP на одного положительного.`,
     };
   },
 };
@@ -388,7 +388,7 @@ export const precisionPrevalence: Generator = {
 /** Урок 2.1: порог по цене звонка и выгоде отклика. */
 export const costThreshold: Generator = {
   id: "ml.cost-threshold",
-  version: 1,
+  version: 2,
   title: "Порог по цене ошибок",
   make(seed) {
     const r = rng(seed);
@@ -403,7 +403,7 @@ export const costThreshold: Generator = {
       tol: 0.001,
       hints: [String.raw`Лишний звонок — ложное срабатывание: $c_{FP} = ${call}$. Пропущенный клиент — упущенная выгода за вычетом звонка: $c_{FN} = ${gain} - ${call}$.`],
       right: String.raw`$t^\star = \frac{c_{FP}}{c_{FP} + c_{FN}} = \frac{${call}}{${call} + ${gain - call}} = ${num(answer)}$ — звонок окупается уже при малой вероятности отклика.`,
-      wrong: String.raw`Не 0.5: $c_{FP} = ${call}$, $c_{FN} = ${gain - call}$, и $t^\star = ${call}/${gain} = ${num(answer)}$. Звонить выгодно, когда $p \cdot ${gain - call} > (1 - p) \cdot ${call}$.`,
+      wrong: String.raw`Частая ошибка — порог 0.5 «по умолчанию». Здесь $c_{FP} = ${call}$, $c_{FN} = ${gain - call}$: звонить выгодно, когда $p \cdot ${gain - call} > (1 - p) \cdot ${call}$.`,
     };
   },
 };
@@ -411,7 +411,7 @@ export const costThreshold: Generator = {
 /** Урок 2.2: средний разброс МНК в обучающих точках σ²d/n и ожидаемая ошибка при истине в классе. */
 export const olsVariance: Generator = {
   id: "ml.ols-variance",
-  version: 1,
+  version: 2,
   title: "Разброс МНК",
   make(seed) {
     const r = rng(seed);
@@ -431,7 +431,7 @@ export const olsVariance: Generator = {
       tol: Math.max(1e-4, answer * 0.005),
       hints: [String.raw`Средний разброс МНК в обучающих точках — $\sigma^2 d / n$: след проектора $H$ равен $d$.${total ? " К нему добавьте шум нового ответа." : ""}`],
       right: total ? String.raw`$\sigma^2 + \sigma^2 d/n = ${num(round(sigma * sigma, 4))} + ${num(round(v, 6))} = ${num(answer)}$: шум плюс разброс, смещения нет.` : String.raw`$\sigma^2 d/n = ${num(round(sigma * sigma, 4))} \cdot ${d}/${n} = ${num(answer)}$.`,
-      wrong: total ? String.raw`Ошибка на новых ответах не меньше шума $\sigma^2 = ${num(round(sigma * sigma, 4))}$; к нему добавляется разброс $\sigma^2 d/n = ${num(round(v, 6))}$.` : String.raw`Разброс — $\sigma^2 d/n$, а не $\sigma^2/n$ и не $\sigma^2$: каждый вес добавляет $\sigma^2/n$.`,
+      wrong: total ? String.raw`Ошибка на новых ответах не меньше шума $\sigma^2 = ${num(round(sigma * sigma, 4))}$; к нему добавляется разброс $\sigma^2 d/n$.` : String.raw`Разброс — $\sigma^2 d/n$, а не $\sigma^2/n$ и не $\sigma^2$: каждый вес добавляет $\sigma^2/n$.`,
     };
   },
 };
@@ -439,14 +439,14 @@ export const olsVariance: Generator = {
 /** Урок 2.3: веса гребневой и лассо при ортонормированных признаках по весу МНК. */
 export const shrinkOrth: Generator = {
   id: "ml.shrink-orth",
-  version: 1,
+  version: 2,
   title: "Сжатие весов",
   make(seed) {
     const r = rng(seed);
     const z = (r.next() < 0.5 ? -1 : 1) * r.pick([0.3, 0.5, 0.8, 1.2, 2, 3]);
     const lam = r.pick([0.5, 1, 2]);
     const isLasso = seed % 2 === 1;
-    const answer = round(isLasso ? Math.sign(z) * Math.max(Math.abs(z) - lam, 0) : z / (1 + lam), 6);
+    const answer = round(isLasso ? Math.sign(z) * Math.max(Math.abs(z) - lam, 0) : z / (1 + lam), 4);
     return {
       kind: "numeric",
       prompt: isLasso
@@ -457,7 +457,7 @@ export const shrinkOrth: Generator = {
       tol: 0.0005,
       hints: [isLasso ? String.raw`Мягкий порог: $S_\lambda(z) = \operatorname{sign}(z) \max(\lvert z \rvert - \lambda, 0)$.` : String.raw`При $X^\top X = I$ решение $(I + \lambda I)^{-1} X^\top y = \hat\theta / (1 + \lambda)$.`],
       right: isLasso ? String.raw`$S_{${num(lam)}}(${num(z)}) = ${num(answer)}$${answer === 0 ? ": вес меньше порога и зануляется" : ": вес сдвинут к нулю на λ"}.` : String.raw`$${num(z)}/(1 + ${num(lam)}) = ${num(answer)}$: гребневая сжимает, но не зануляет.`,
-      wrong: isLasso ? String.raw`Лассо вычитает $\lambda$ из модуля и зануляет, если $\lvert z \rvert \le \lambda$: здесь $${num(answer)}$. Деление на $1 + \lambda$ — это гребневая.` : String.raw`Гребневая делит на $1 + \lambda$: $${num(answer)}$. Вычитание $\lambda$ с порогом — это лассо.`,
+      wrong: isLasso ? String.raw`Лассо вычитает $\lambda$ из модуля и зануляет, если $\lvert z \rvert \le \lambda$. Частая ошибка — делить на $1 + \lambda$: так сжимает гребневая.` : String.raw`Гребневая делит на $1 + \lambda$. Частая ошибка — вычесть $\lambda$ с порогом: так сжимает лассо.`,
     };
   },
 };
@@ -465,7 +465,7 @@ export const shrinkOrth: Generator = {
 /** Урок 2.4: среднее и стандартная ошибка кросс-валидации по ошибкам фолдов. */
 export const cvSe: Generator = {
   id: "ml.cv-se",
-  version: 1,
+  version: 2,
   title: "Среднее и SE кросс-валидации",
   make(seed) {
     const r = rng(seed);
@@ -483,7 +483,7 @@ export const cvSe: Generator = {
       tol: 0.002,
       hints: [askSe ? String.raw`Сначала среднее $${num(round(mean, 4))}$, затем $s^2 = \frac{1}{k - 1}\sum_j (\operatorname{err}_j - \operatorname{CV})^2$ и деление на $\sqrt{k}$.` : String.raw`$\operatorname{CV}_k = \frac1k \sum_j \operatorname{err}_j$.`],
       right: askSe ? String.raw`$s = ${num(round(s, 4))}$, $\operatorname{SE} = ${num(round(s, 4))}/\sqrt{${k}} = ${num(answer)}$. Обучающие части фолдов пересекаются, поэтому SE — грубая и заниженная оценка.` : String.raw`$\operatorname{CV}_${k} = ${num(answer)}$.`,
-      wrong: askSe ? String.raw`SE — разброс ошибок фолдов, делённый на $\sqrt{k}$: $s = ${num(round(s, 4))}$, $\operatorname{SE} = ${num(answer)}$. Делитель в $s^2$ — $k - 1$.` : String.raw`Среднее ошибок фолдов: $${num(answer)}$.`,
+      wrong: askSe ? String.raw`SE — стандартное отклонение ошибок фолдов, делённое на $\sqrt{k}$; делитель в $s^2$ — $k - 1$. Частая ошибка — забыть $\sqrt{k}$ или делить $s^2$ на $k$.` : String.raw`Сложите ошибки фолдов и разделите на $k$.`,
     };
   },
 };
@@ -491,7 +491,7 @@ export const cvSe: Generator = {
 /** Урок 2.5: выигрыш от починки среза или ожидаемые ошибки обучения и проверки МНК. */
 export const sliceGain: Generator = {
   id: "ml.slice-gain",
-  version: 1,
+  version: 2,
   title: "Срезы и разрыв кривых",
   make(seed) {
     const r = rng(seed);
@@ -508,7 +508,7 @@ export const sliceGain: Generator = {
         tol: 0.0005,
         hints: [String.raw`Общая ошибка — взвешенное среднее срезов: $\operatorname{err} = \sum_g \frac{n_g}{n} \operatorname{err}_g$. Выигрыш — $\frac{n_g}{n}(\operatorname{err}_g - \operatorname{err})$.`],
         right: String.raw`$${num(share)} \cdot (${num(round(ratio * err, 4))} - ${num(err)}) = ${num(answer)}$. Большой срез с умеренной ошибкой часто выгоднее маленького с огромной.`,
-        wrong: String.raw`Выигрыш — доля среза, умноженная на его избыток над средней: $${num(share)} \cdot ${num(round(ratio * err - err, 4))} = ${num(answer)}$.`,
+        wrong: String.raw`Выигрыш — доля среза, умноженная на его избыток над средней ошибкой. Частая ошибка — взять всю ошибку среза, а не избыток.`,
       };
     }
     const sigma = r.pick([0.5, 1, 2]);
@@ -524,7 +524,7 @@ export const sliceGain: Generator = {
       tol: Math.max(1e-4, answer * 0.005),
       hints: [String.raw`На обучении остатки теряют $d$ степеней свободы: $\sigma^2(1 - d/n)$. На новых ответах к шуму добавляется разброс: $\sigma^2(1 + d/n)$.`],
       right: String.raw`$${num(round(sigma * sigma, 4))} \cdot (1 ${test ? "+" : "-"} ${d}/${n}) = ${num(answer)}$. Кривые сходятся к $\sigma^2$ ${test ? "сверху" : "снизу"}.`,
-      wrong: test ? String.raw`На новых ответах ошибка выше шума: $\sigma^2(1 + d/n) = ${num(answer)}$.` : String.raw`На обучении ошибка ниже шума: $\sigma^2(1 - d/n) = ${num(answer)}$.`,
+      wrong: test ? String.raw`На новых ответах ошибка выше шума: множитель $1 + d/n$.` : String.raw`На обучении ошибка ниже шума: множитель $1 - d/n$.`,
     };
   },
 };
