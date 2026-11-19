@@ -87,3 +87,21 @@ def _lesson_cell() -> None:
     print(f"J = {cross_entropy(Theta, X, y):.4f}, доля верных: {np.mean(P.argmax(axis=1) == y):.3f}")
     print("вероятности первой квартиры:", np.round(P[0], 3), " после сдвига всех θ_j:", np.round(softmax(X @ (Theta + 5.0))[0], 3))
     # endregion
+
+
+def _sklearn_cell() -> None:
+    """Служебная обёртка: регион sklearn — ячейка сверки урока 1.5 (scikit-learn грузится только в ней)."""
+    # region sklearn
+    from sklearn.linear_model import LogisticRegression, Perceptron
+
+    X, y = segments()
+    m = y != 1  # эконом против бизнеса — разделимы
+    sk = Perceptron(max_iter=1000, tol=None, random_state=0).fit(X[m][:, 1:], y[m] == 2)
+    print("Perceptron из sklearn на разделимых классах, доля верных:", sk.score(X[m][:, 1:], y[m] == 2))
+
+    Theta = np.zeros((3, 3))
+    for _ in range(3000):
+        Theta -= 2.0 * ce_grad(Theta, X, y)
+    lr = LogisticRegression(C=1e12, tol=1e-10, max_iter=10_000).fit(X[:, 1:], y)  # три класса — softmax, штраф ≈ 0
+    print("вероятности softmax совпали с LogisticRegression до 10⁻³:", np.abs(softmax(X @ Theta) - lr.predict_proba(X[:, 1:])).max() < 1e-3)
+    # endregion

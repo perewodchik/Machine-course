@@ -47,7 +47,10 @@ async function run(id: number, setup: string, code: string): Promise<void> {
   // у каждой ячейки своё пространство имён: запуск повторяем, порядок ячеек не важен
   const globals = py.globals.get("dict")();
   try {
-    await py.loadPackagesFromImports(`${setup}\n${code}`, quiet);
+    // пакеты — по импортам видимого кода и верхнего уровня служебного: импорт внутри служебной функции сниппета
+    // (ячейка сверки со scikit-learn) не должен тянуть библиотеку в соседние ячейки того же сниппета
+    const topLevel = setup.split("\n").filter((line) => /^(import|from)\s/.test(line)).join("\n");
+    await py.loadPackagesFromImports(`${topLevel}\n${code}`, quiet);
     await mountData(py, `${setup}\n${code}`);
     if (setup) await py.runPythonAsync(setup, { globals, filename: SETUP_FILE });
     await py.runPythonAsync(code, { globals, filename: CELL_FILE });

@@ -1,5 +1,5 @@
 // Кладёт Pyodide в public/py/<версия>/ (каталог в git не попадает, ADR 0002).
-// Ядро — из npm-пакета pyodide (версия закреплена в package-lock), пакеты (numpy и зависимости) — из CDN Pyodide,
+// Ядро — из npm-пакета pyodide (версия закреплена в package-lock), пакеты (numpy, scikit-learn и зависимости) — из CDN Pyodide,
 // а если он недоступен — из архива релиза на GitHub. Каждый пакет сверяется с sha256 из pyodide-lock.json;
 // то, что уже лежит на месте и совпадает, не копируется и не скачивается заново.
 //
@@ -9,7 +9,7 @@ import { createHash } from "node:crypto";
 import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { PY_PACKAGES, PYODIDE_VERSION } from "../src/python/version";
+import { PY_LAZY_PACKAGES, PY_PACKAGES, PYODIDE_VERSION } from "../src/python/version";
 
 const root = path.resolve(import.meta.dirname, "..");
 const pkgDir = path.join(root, "node_modules/pyodide");
@@ -56,7 +56,7 @@ const visit = (name: string) => {
   wanted.set(name, pkg);
   pkg.depends.forEach(visit);
 };
-PY_PACKAGES.forEach(visit);
+[...PY_PACKAGES, ...PY_LAZY_PACKAGES].forEach(visit);
 
 const ok = (pkg: LockPackage, file = path.join(outDir, pkg.file_name)) => existsSync(file) && sha256(file) === pkg.sha256;
 const missing = [...wanted.values()].filter((pkg) => !ok(pkg));

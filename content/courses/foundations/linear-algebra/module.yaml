@@ -3,7 +3,7 @@ id: linear-algebra
 number: 'I'
 title:
   ru: 'Линейная алгебра'
-hours: [28, 34]
+hours: [12, 18]
 lessons:
   - slug: vectors-span
     number: 'I.1'

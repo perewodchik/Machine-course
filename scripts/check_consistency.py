@@ -7,7 +7,8 @@
 - в docs/implementation/PLAN.md каждый урок встречается ровно один раз с верными номером, названием и ключом;
 - задачи плана: ID уникальны, зависимости существуют и идут раньше, пакеты из «Контекста» существуют;
 - ссылки на ID задач в документах существуют; цели content/redirects.yaml существуют;
-- относительные ссылки в Markdown не битые.
+- относительные ссылки в Markdown не битые;
+- minutes уроков и hours модулей совпадают с оценкой по объёму (scripts/estimate_time.py, S7.11).
 
 Запуск: python scripts/check_consistency.py  (код выхода 1 при ошибках)
 """
@@ -210,6 +211,13 @@ for old, new in (redirects.get("lessons") or {}).items():
         err(f"redirects: цель {new} не существует")
     if old in lessons:
         err(f"redirects: старый ключ {old} всё ещё занят уроком")
+
+# ───────── время уроков по объёму (S7.11) ─────────
+sys.path.insert(0, str(ROOT / "scripts"))
+import estimate_time  # noqa: E402
+
+for problem in estimate_time.problems():
+    err(problem)
 
 # ───────── ссылки в Markdown ─────────
 SKIP = ("node_modules", ".git", "venv", ".venv", "dist", "test-results", "test-screens", "frontend-design", "design-critique", "design-system",

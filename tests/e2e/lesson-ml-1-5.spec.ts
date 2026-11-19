@@ -45,7 +45,7 @@ test("урок 1.5: перцептрон, области классов, ито�
 test("урок 1.5: ячейка Python — перцептрон и softmax", async ({ page }) => {
   test.setTimeout(150_000);
   await page.goto(url);
-  const cell = page.locator("[data-py-cell]");
+  const cell = page.locator("[data-py-cell]").first();
   await cell.getByRole("button", { name: "Запустить" }).click();
   await expect(cell.locator("[data-py-status]")).toHaveText(/^готово/, { timeout: 90_000 });
   await expect(cell.locator("[data-py-output]")).toHaveText(

@@ -45,7 +45,7 @@ test("урок 1.4: два виджета, итоговая проверка", a
 test("урок 1.4: ячейка Python — Ньютон и подъём", async ({ page }) => {
   test.setTimeout(150_000);
   await page.goto(url);
-  const cell = page.locator("[data-py-cell]");
+  const cell = page.locator("[data-py-cell]").first();
   await cell.getByRole("button", { name: "Запустить" }).click();
   await expect(cell.locator("[data-py-status]")).toHaveText(/^готово/, { timeout: 90_000 });
   await expect(cell.locator("[data-py-output]")).toHaveText(

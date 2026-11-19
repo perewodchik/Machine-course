@@ -212,7 +212,7 @@ export const condDice: Generator = {
 /** Урок III.2: независимы ли события — проверка P(A ∩ B) = P(A) P(B); среди вариантов — несовместные. */
 export const independenceCheck: Generator = {
   id: "prob.independence-check",
-  version: 1,
+  version: 2,
   title: "Независимы ли события",
   make(seed) {
     // пары: первая — независимые, вторая — зависимые совместные, третья — несовместные
@@ -231,12 +231,14 @@ export const independenceCheck: Generator = {
     const indep = 36 * nab === na * nb;
     const facts = String.raw`$P(A) = ${na}/36$, $P(B) = ${nb}/36$, $P(A \cap B) = ${nab}/36$, а $P(A)\,P(B) = ${na * nb}/1296 = ${Math.round(((na * nb) / 36) * 100) / 100}/36$`;
     const why = indep ? `${facts}: равны — события независимы.` : nab === 0 ? `${facts}: события несовместны, и знание, что произошло $B$, исключает $A$ — сильнейшая зависимость.` : `${facts}: не равны — события зависимы.`;
+    // три исхода вместо «да / нет»: несовместность — частый случай, который путают с независимостью
     return {
       kind: "choice",
-      prompt: `Бросаем два кубика. $A$ — ${A.tex}, $B$ — ${B.tex}. Независимы ли $A$ и $B$?`,
+      prompt: `Бросаем два кубика. $A$ — ${A.tex}, $B$ — ${B.tex}. Что верно про $A$ и $B$?`,
       options: [
         { text: "Независимы", correct: indep, why },
-        { text: "Зависимы", correct: !indep, why },
+        { text: "Зависимы, но могут случиться вместе", correct: !indep && nab > 0, why },
+        { text: "Несовместны — и потому зависимы", correct: nab === 0, why },
       ],
       hints: [String.raw`Сравните $P(A \cap B)$ с $P(A)\,P(B)$ — или $P(A \mid B)$ с $P(A)$.`],
     };
@@ -279,7 +281,7 @@ export const pmfCdf: Generator = {
 /** Урок III.4: P(a ≤ X ≤ b) — интеграл плотности; чётный seed — равномерное, нечётный — показательное. */
 export const intervalProb: Generator = {
   id: "prob.interval-prob",
-  version: 1,
+  version: 2,
   title: "Вероятность интервала по плотности",
   make(seed) {
     const r = rng(seed);
@@ -314,7 +316,7 @@ export const intervalProb: Generator = {
       answer,
       tol: 0.005,
       hints: [String.raw`Первообразная $\lambda e^{-\lambda x}$ — это $-e^{-\lambda x}$; $F(x) = 1 - e^{-\lambda x}$.`],
-      right: String.raw`$F(${bb}) - F(${a}) = e^{-${lam * a}} - e^{-${lam * bb}} \approx ${answer}$.`,
+      right: String.raw`$F(${bb}) - F(${a}) = ${a === 0 ? "1" : String.raw`e^{-${lam * a}}`} - e^{-${lam * bb}} \approx ${answer}$.`,
       wrong: String.raw`$P(a \le X \le b) = F(b) - F(a) = e^{-\lambda a} - e^{-\lambda b}$; значение плотности в точке — не вероятность.`,
     };
   },
@@ -348,7 +350,7 @@ export const linearDensity: Generator = {
 /** Урок III.5: матожидание (нечётный seed) или дисперсия (чётный) по таблице функции вероятности. */
 export const evVar: Generator = {
   id: "prob.ev-var",
-  version: 1,
+  version: 2,
   title: "Матожидание и дисперсия по таблице",
   make(seed) {
     const r = rng(seed);
@@ -378,7 +380,7 @@ export const evVar: Generator = {
       tol: 0.005,
       hints: wantVar ? [String.raw`$\operatorname{Var} X = \mathbb{E}X^2 - (\mathbb{E}X)^2$; $\mathbb{E}X = ${round(m)}$.`] : [String.raw`$\mathbb{E}X = \sum_x x\, P(X = x)$.`],
       right: wantVar ? String.raw`$\mathbb{E}X^2 = ${round(m2)}$, $(\mathbb{E}X)^2 = ${round(m * m)}$, $\operatorname{Var} X = ${answer}$.` : String.raw`$\mathbb{E}X = ${xs.map((x, i) => `${par(x)} \\cdot ${ps[i]}`).join(" + ")} = ${answer}$.`,
-      wrong: wantVar ? String.raw`$\mathbb{E}X^2$ — среднее квадратов, $\sum_x x^2 P(X = x) = ${round(m2)}$; из него вычитают квадрат среднего $${round(m * m)}$.` : String.raw`Каждое значение умножьте на его вероятность и сложите; простое среднее значений $${round(xs.reduce((a, b) => a + b, 0) / 3)}$ годится, только если вероятности равны.`,
+      wrong: wantVar ? String.raw`$\mathbb{E}X^2$ — среднее квадратов, $\sum_x x^2 P(X = x)$; частая ошибка — не вычесть из него квадрат среднего.` : String.raw`Каждое значение умножьте на его вероятность и сложите; простое среднее значений $${round(xs.reduce((a, b) => a + b, 0) / 3)}$ годится, только если вероятности равны.`,
     };
   },
 };
@@ -386,7 +388,7 @@ export const evVar: Generator = {
 /** Урок III.5: Var(aX + b) = a² Var X — сдвиг не меняет разброс, множитель входит в квадрате. */
 export const varLinear: Generator = {
   id: "prob.var-linear",
-  version: 1,
+  version: 2,
   title: "Дисперсия линейной функции",
   make(seed) {
     const r = rng(seed);
@@ -402,7 +404,7 @@ export const varLinear: Generator = {
       tol: 0.005,
       hints: [String.raw`Сдвиг на константу не меняет отклонений от среднего, а множитель $a$ умножает каждое отклонение на $a$, его квадрат — на $a^2$.`],
       right: String.raw`$\operatorname{Var}(aX + b) = a^2 \operatorname{Var} X = ${a * a} \cdot ${v} = ${answer}$.`,
-      wrong: String.raw`Дисперсия не бывает отрицательной и не зависит от сдвига $${b}$: $a^2 \operatorname{Var} X = ${par(a)}^2 \cdot ${v}$.`,
+      wrong: String.raw`Дисперсия не бывает отрицательной и не зависит от сдвига $${b}$; множитель $a$ входит в неё в квадрате.`,
     };
   },
 };
@@ -410,14 +412,19 @@ export const varLinear: Generator = {
 /** Урок III.5: неравенство Йенсена — сравнить f(E X) и E f(X) для выпуклой или вогнутой f. */
 export const jensen: Generator = {
   id: "prob.jensen",
-  version: 1,
+  version: 2,
   title: "Неравенство Йенсена",
   make(seed) {
+    // восемь функций: урок просит шесть разных вариантов (S7.10, находка 8)
     const fs = [
       { tex: "x^2", convex: true, why: String.raw`$x^2$ выпукла ($f'' = 2 > 0$), поэтому $f(\mathbb{E}X) \le \mathbb{E}f(X)$; разница — $\operatorname{Var} X$.` },
       { tex: String.raw`\log x`, convex: false, why: String.raw`$\log x$ вогнута ($f'' = -1/x^2 < 0$), неравенство переворачивается: $\mathbb{E}\log X \le \log \mathbb{E}X$. На этом стоит нижняя оценка в алгоритме EM (CS229).` },
       { tex: "e^x", convex: true, why: String.raw`$e^x$ выпукла: $e^{\mathbb{E}X} \le \mathbb{E}e^X$.` },
       { tex: String.raw`\sqrt{x}`, convex: false, why: String.raw`$\sqrt{x}$ вогнута: $\mathbb{E}\sqrt{X} \le \sqrt{\mathbb{E}X}$.` },
+      { tex: String.raw`1/x`, convex: true, why: String.raw`$1/x$ выпукла при $x > 0$ ($f'' = 2/x^3 > 0$): $1/\mathbb{E}X \le \mathbb{E}(1/X)$ — среднее обратных не меньше обратного к среднему.` },
+      { tex: String.raw`x \log x`, convex: true, why: String.raw`$x \log x$ выпукла при $x > 0$ ($f'' = 1/x > 0$): $\mathbb{E}X \log \mathbb{E}X \le \mathbb{E}(X \log X)$. Отсюда неотрицательность энтропийных разностей.` },
+      { tex: String.raw`-x^3`, convex: false, why: String.raw`$-x^3$ вогнута при $x > 0$ ($f'' = -6x < 0$): неравенство в другую сторону, $\mathbb{E}(-X^3) \le -(\mathbb{E}X)^3$.` },
+      { tex: String.raw`\log(1 + x)`, convex: false, why: String.raw`$\log(1 + x)$ вогнута ($f'' = -1/(1 + x)^2 < 0$): $\mathbb{E}\log(1 + X) \le \log(1 + \mathbb{E}X)$.` },
     ];
     const f = fs[(seed - 1) % fs.length]!;
     return {
@@ -477,7 +484,7 @@ export const familyMoments: Generator = {
 /** Урок III.6: вероятность значения — Пуассон (нечётный seed) или биномиальное (чётный). */
 export const pointProb: Generator = {
   id: "prob.point-prob",
-  version: 1,
+  version: 2,
   title: "Вероятность значения",
   make(seed) {
     const r = rng(seed);
@@ -494,7 +501,7 @@ export const pointProb: Generator = {
         tol: 0.005,
         hints: [String.raw`$P(X = k) = e^{-\lambda} \lambda^k / k!$.`],
         right: String.raw`$e^{-${lam}} \cdot ${lam}^{${k}} / ${k}! \approx ${answer}$.`,
-        wrong: String.raw`Не забудьте множитель $e^{-\lambda} = e^{-${lam}} \approx ${round(Math.exp(-lam))}$ и деление на $${k}! = ${fact}$.`,
+        wrong: String.raw`Частая ошибка — забыть множитель $e^{-\lambda}$ или деление на $${k}!$.`,
       };
     }
     const n = r.pick([4, 5, 6]);
@@ -1019,7 +1026,7 @@ export const entropyGen: Generator = {
 /** Урок III.13: KL-дивергенция двух распределений Бернулли в натах — и в какую сторону. */
 export const klGen: Generator = {
   id: "prob.kl",
-  version: 1,
+  version: 2,
   title: "KL-дивергенция",
   make(seed) {
     const r = rng(seed);
@@ -1037,7 +1044,7 @@ export const klGen: Generator = {
       tol: 0.001,
       hints: [String.raw`$D_{KL}(u \,\Vert\, v) = \sum_x u(x) \log \frac{u(x)}{v(x)}$; усредняют по первому аргументу. Для монет — два слагаемых: орёл и решка.`],
       right: String.raw`$${p} \ln \frac{${p}}{${q}} + ${round(1 - p)} \ln \frac{${round(1 - p)}}{${round(1 - q)}} \approx ${answer}$. В обратную сторону было бы $${other}$: KL несимметрична.`,
-      wrong: String.raw`Проверьте порядок: в $D_{KL}(u \,\Vert\, v)$ веса и числитель — у первого аргумента. В другую сторону получится $${other}$, а не $${answer}$.`,
+      wrong: String.raw`Проверьте порядок: в $D_{KL}(u \,\Vert\, v)$ веса и числитель — у первого аргумента. Частая ошибка — посчитать $D_{KL}(v \,\Vert\, u)$: расхождение Кульбака — Лейблера несимметрично.`,
     };
   },
 };

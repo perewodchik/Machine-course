@@ -258,7 +258,7 @@ export const covMle: Generator = {
 /** Урок IV.4: MLE параметров GDA в одном измерении — доля класса, среднее класса или общая дисперсия. */
 export const gdaMle: Generator = {
   id: "stat.gda-mle",
-  version: 1,
+  version: 2,
   title: "Параметры GDA",
   make(seed) {
     const r = rng(seed);
@@ -278,7 +278,7 @@ export const gdaMle: Generator = {
       tol: 0.005,
       hints: [String.raw`MLE GDA: $\hat\phi$ — доля класса $1$, $\hat\mu_k$ — среднее $x$ в классе $k$, $\hat\sigma^2 = \frac1n \sum_i (x^{(i)} - \hat\mu_{y^{(i)}})^2$ — отклонения каждого объекта от среднего своего класса, деление на всё $n = ${n}$.`],
       right: String.raw`$\hat\phi = ${x1.length}/${n}$, $\hat\mu_0 = ${round(m0, 4)}$, $\hat\mu_1 = ${round(m1, 4)}$, $\hat\sigma^2 = ${round(pooled, 4)}$.`,
-      wrong: kind === 2 ? String.raw`Отклонения берут от среднего **своего** класса, а делят на общее $n = ${n}$: $\hat\sigma^2 = ${round(pooled, 4)}$.` : String.raw`Оценки GDA — доли и средние по классам: $\hat\phi = ${x1.length}/${n}$, $\hat\mu_1$ — среднее только объектов класса $1$.`,
+      wrong: kind === 2 ? String.raw`Отклонения берут от среднего **своего** класса, а делят на общее $n = ${n}$. Частая ошибка — общее среднее или деление по классам.` : String.raw`Оценки GDA — доли и средние по классам: $\hat\phi = ${x1.length}/${n}$, $\hat\mu_1$ — среднее только объектов класса $1$.`,
     };
   },
 };

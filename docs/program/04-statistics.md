@@ -1,12 +1,12 @@
 # Модуль IV. Статистика
 
-**18–22 часа, 8 уроков.** Опора — CS109 (MLE, MAP, Beta), Wasserman, раздел CS229 «Regularization and model selection». Центр модуля — метод максимального правдоподобия: на нём построены почти все модели CS229. Капстоун — логистическая регрессия как MLE на данных «Квартиры» (урок IV.5, переход к V.2).
+**5–9 часов, 8 уроков** (по объёму уроков, `scripts/estimate_time.py`). Опора — CS109 (MLE, MAP, Beta), Wasserman, раздел CS229 «Regularization and model selection». Центр модуля — метод максимального правдоподобия: на нём построены почти все модели CS229. Капстоун — логистическая регрессия как MLE на данных «Квартиры» (урок IV.5, переход к V.2).
 
 ---
 
 ### IV.1. Выборка и описательная статистика
 
-**Время:** 1.5 ч. **Опирается на:** III.5.
+**Время:** 45 мин.5 ч. **Опирается на:** III.5.
 
 **Цели.** Ученик:
 - отличает выборку от генеральной совокупности, статистику от параметра;
@@ -29,7 +29,7 @@
 
 ### IV.2. Оценки: смещение, разброс, MSE
 
-**Время:** 2.5 ч. **Опирается на:** IV.1, III.8. **CS229:** «Generalization» (bias–variance).
+**Время:** 40 мин.5 ч. **Опирается на:** IV.1, III.8. **CS229:** «Generalization» (bias–variance).
 
 **Цели.** Ученик:
 - рассматривает оценку как случайную величину и считает её смещение и дисперсию;
@@ -54,7 +54,7 @@
 
 ### IV.3. Метод максимального правдоподобия
 
-**Время:** 3 ч. **Опирается на:** IV.2, III.6, III.7, II.5. **CS229:** «Linear regression» (probabilistic interpretation), «Classification and logistic regression», «Generative learning algorithms».
+**Время:** 1 ч 25 мин. **Опирается на:** IV.2, III.6, III.7, II.5. **CS229:** «Linear regression» (probabilistic interpretation), «Classification and logistic regression», «Generative learning algorithms».
 
 **Цели.** Ученик:
 - записывает правдоподобие и логарифм правдоподобия для i.i.d. выборки;
@@ -80,7 +80,7 @@
 
 ### IV.4. Многомерный MLE
 
-**Время:** 2 ч. **Опирается на:** IV.3, III.11, II.3. **CS229:** «Generative learning algorithms» (GDA).
+**Время:** 35 мин. **Опирается на:** IV.3, III.11, II.3. **CS229:** «Generative learning algorithms» (GDA).
 
 **Цели.** Ученик:
 - выводит MLE для $\mu$ и $\Sigma$ многомерного нормального с помощью трюка со следом и $\nabla \log\lvert\det\Sigma\rvert$;
@@ -98,7 +98,7 @@
 
 ### IV.5. Экспоненциальное семейство
 
-**Время:** 2.5 ч. **Опирается на:** IV.3, II.5. **CS229:** «Generalized linear models».
+**Время:** 1 ч 20 мин.5 ч. **Опирается на:** IV.3, II.5. **CS229:** «Generalized linear models».
 
 **Цели.** Ученик:
 - записывает Бернулли, нормальное, Пуассона и категориальное в форме экспоненциального семейства;
@@ -122,7 +122,7 @@
 
 ### IV.6. Байесовский подход и MAP
 
-**Время:** 2.5 ч. **Опирается на:** IV.3, III.3, III.7. **CS229:** «Regularization and model selection» (Bayesian statistics and regularization), «Generative learning algorithms» (Laplace smoothing).
+**Время:** 35 мин.5 ч. **Опирается на:** IV.3, III.3, III.7. **CS229:** «Regularization and model selection» (Bayesian statistics and regularization), «Generative learning algorithms» (Laplace smoothing).
 
 **Цели.** Ученик:
 - обновляет Beta-априорное распределение по наблюдениям Бернулли (сопряжённость) и трактует параметры как псевдонаблюдения;
@@ -146,7 +146,7 @@
 
 ### IV.7. Риск, обобщение, кросс-валидация
 
-**Время:** 2 ч. **Опирается на:** IV.2. **CS229:** «Generalization», «Regularization and model selection» (cross validation).
+**Время:** 55 мин. **Опирается на:** IV.2. **CS229:** «Generalization», «Regularization and model selection» (cross validation).
 
 **Цели.** Ученик:
 - отличает риск от эмпирического риска и объясняет переобучение;
@@ -170,7 +170,7 @@
 
 ### IV.8. ★ Доверительные интервалы и проверка гипотез
 
-**Время:** 2 ч. **Опирается на:** III.8, IV.2.
+**Время:** 40 мин. **Опирается на:** III.8, IV.2.
 
 Для CS229 не обязателен, но нужен на практике: сравнение моделей, A/B-тесты.
 

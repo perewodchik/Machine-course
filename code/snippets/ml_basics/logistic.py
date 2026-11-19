@@ -81,3 +81,20 @@ def _lesson_cell() -> None:
     p = sigmoid(X[:3] @ theta_n)
     print("вероятности первых трёх:", np.round(p, 3), " при 10θ:", np.round(sigmoid(X[:3] @ (10 * theta_n)), 3))
     # endregion
+
+
+def _sklearn_cell() -> None:
+    """Служебная обёртка: регион sklearn — ячейка сверки урока 1.4 (scikit-learn грузится только в ней)."""
+    # region sklearn
+    from sklearn.linear_model import LogisticRegression
+
+    F, y = expensive()
+    X = np.column_stack([np.ones(len(y)), (F - F.mean(axis=0)) / F.std(axis=0)])
+    theta, _ = newton(X, y)
+    # C=1e12 — штраф практически нулевой; по умолчанию C=1.0, и веса сжаты к нулю
+    lr = LogisticRegression(C=1e12, tol=1e-10, max_iter=10_000).fit(X[:, 1:], y)
+    print("Ньютон:           ", np.round(theta, 3))
+    print("LogisticRegression:", np.round(np.r_[lr.intercept_, lr.coef_[0]], 3))
+    d = LogisticRegression().fit(X[:, 1:], y)
+    print("по умолчанию (C=1):", np.round(np.r_[d.intercept_, d.coef_[0]], 3))
+    # endregion

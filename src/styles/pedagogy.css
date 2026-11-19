@@ -31,6 +31,7 @@
   .prereqs li { display: inline-flex; align-items: flex-start; gap: 5px; margin-right: var(--space-4); line-height: 1.9; }
   .prereqs li > .know { margin-top: 1px; }
   .prereqs .ref { color: var(--ink-3); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .prereqs .ref--course { display: block; line-height: 1.4; margin-bottom: var(--space-1); font-size: var(--text-sm); white-space: normal; }
 
   /* ───────── Карточка формулы ───────── */
   .formula-card { margin: var(--space-6) 0; border: 1px solid var(--rule); border-radius: var(--radius-panel); background: var(--surface); }

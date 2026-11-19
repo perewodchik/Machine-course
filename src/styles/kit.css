@@ -214,6 +214,10 @@
   .outlier-widget__controls { display: grid; gap: var(--space-4); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--rule); }
   .outlier-widget__readouts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: start; gap: var(--space-3) var(--space-5); }
   @media (max-width: 900px) { .outlier-widget__readouts { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  /* Виджеты «Основ ML» (S7.13, находка 12 аудита): внутренний отступ карточки — подписи, кнопки и значения бегунков
+     не касаются её края; на телефоне отступ меньше, чтобы рисунку хватило ширины */
+  :is(.train-test, .lms-path, .flexibility, .logistic-plane, .ascent-newton, .class-regions, .perceptron, .glm-builder, .threshold-lab, .model-cloud, .reg-path, .learning-curves, .folds) { padding: var(--space-3) var(--space-4) var(--space-4); }
+  @media (max-width: 700px) { :is(.train-test, .lms-path, .flexibility, .logistic-plane, .ascent-newton, .class-regions, .perceptron, .glm-builder, .threshold-lab, .model-cloud, .reg-path, .learning-curves, .folds) { padding: var(--space-2) var(--space-3) var(--space-3); } }
   /* «Обучение и тест» (курс «Основы ML», 1.1): два рисунка рядом, под ними управление */
   .train-test__plots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
   .train-test__legend { margin: var(--space-1) 0 0; font: var(--text-sm)/1.5 var(--font-ui); color: var(--ink-2); }

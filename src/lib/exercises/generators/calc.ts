@@ -372,24 +372,25 @@ const OPS: readonly { tex: string; convex: boolean; why: string }[] = [
   { tex: String.raw`\log(\theta^\top x), \ \theta^\top x > 0`, convex: false, why: String.raw`$\log z$ вогнута: $-1/z^2 < 0$. Выпукла $-\log z$.` },
 ];
 
-/** Урок II.5: выпукла ли функция потерь — по операциям, сохраняющим выпуклость. */
+/**
+ * Урок II.5: какая из трёх функций выпукла (нечётный seed) или какая не выпукла (чётный) — по операциям,
+ * сохраняющим выпуклость. Три варианта: угадыванием итоговая проверка проходится с вероятностью 1/3, а не 1/2.
+ */
 export const convexOps: Generator = {
   id: "calc.convex-ops",
-  version: 1,
+  version: 2,
   title: "Выпукла ли функция по θ",
   make(seed) {
     const r = rng(seed);
-    // чередуем выпуклые и невыпуклые, внутри — случайная заготовка
-    const pool = OPS.filter((o) => o.convex === (seed % 2 === 1));
-    const op = r.pick(pool);
+    const findConvex = seed % 2 === 1;
+    const odd = r.pick(OPS.filter((o) => o.convex === findConvex));
+    const others = r.shuffle(OPS.filter((o) => o.convex !== findConvex)).slice(0, 2);
+    const options = r.shuffle([odd, ...others]).map((o) => ({ text: `$${o.tex}$`, correct: o === odd, why: o.why }));
     return {
       kind: "choice",
-      prompt: String.raw`Выпукла ли по $\theta$ функция $$${op.tex}?$$`,
-      options: [
-        { text: "Выпукла", correct: op.convex, why: op.why },
-        { text: "Не выпукла", correct: !op.convex, why: op.why },
-      ],
-      hints: [String.raw`Выпуклость сохраняют неотрицательные суммы, композиция с аффинной функцией и максимум. Начните с одномерной функции от $z = \theta^\top x$.`],
+      prompt: findConvex ? String.raw`Какая из функций выпукла по $\theta$? Ровно одна.` : String.raw`Какая из функций **не** выпукла по $\theta$? Ровно одна.`,
+      options,
+      hints: [String.raw`Выпуклость сохраняют неотрицательные суммы, композиция с аффинной функцией и максимум. Для каждой функции начните с одномерной функции от $z = \theta^\top x$.`],
     };
   },
 };

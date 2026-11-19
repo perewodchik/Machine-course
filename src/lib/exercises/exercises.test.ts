@@ -114,7 +114,13 @@ describe("генераторы", () => {
 
   it("разные seed дают разные задачи", () => {
     for (const g of generators.values()) {
-      const prompts = new Set(Array.from({ length: 8 }, (_, s) => g.make(s + 1).prompt));
+      // условие вместе с вариантами выбора: у «какая из функций выпукла» вопрос один, а функции разные
+      const prompts = new Set(
+        Array.from({ length: 8 }, (_, s) => {
+          const e = g.make(s + 1);
+          return e.prompt + ("options" in e ? e.options.map((o) => o.text).join("|") : "");
+        }),
+      );
       expect(prompts.size, g.id).toBeGreaterThan(3);
     }
   });
@@ -613,11 +619,17 @@ describe("генераторы", () => {
     expect(seen).toContain("false:false");
   });
 
-  it("calc.convex-ops: выпуклые и невыпуклые чередуются по seed", () => {
+  it("calc.convex-ops: три разные функции, ровно одна верная; нечётный seed — найти выпуклую, чётный — невыпуклую", () => {
     for (let s = 1; s <= 12; s++) {
       const co = make("calc.convex-ops", s);
       if (co.kind !== "choice") throw new Error("ожидался выбор");
-      expect(co.options.find((o) => o.correct)!.text).toBe(s % 2 === 1 ? "Выпукла" : "Не выпукла");
+      expect(co.options).toHaveLength(3);
+      expect(new Set(co.options.map((o) => o.text)).size).toBe(3);
+      expect(co.options.filter((o) => o.correct)).toHaveLength(1);
+      expect(co.prompt.includes("**не**")).toBe(s % 2 === 0);
+      // разбор верного варианта согласован с вопросом: невыпуклая — «не выпукл…» или «вогнута»
+      const why = co.options.find((o) => o.correct)!.why;
+      expect(/не выпукл|вогнут/.test(why)).toBe(s % 2 === 0);
     }
   });
 
@@ -839,11 +851,14 @@ describe("генераторы", () => {
 
       const c = make("prob.independence-check", s);
       if (c.kind !== "choice") throw new Error("ожидался выбор");
-      const [, A, B] = /\$A\$ — (.*?), \$B\$ — (.*?)\. Независимы/.exec(c.prompt)!;
+      const [, A, B] = /\$A\$ — (.*?), \$B\$ — (.*?)\. Что верно/.exec(c.prompt)!;
       const na = pairs.filter(ev[A!]!).length;
       const nb2 = pairs.filter(ev[B!]!).length;
       const nab2 = pairs.filter((o) => ev[A!]!(o) && ev[B!]!(o)).length;
-      expect(c.options.find((o) => o.correct)!.text).toBe(36 * nab2 === na * nb2 ? "Независимы" : "Зависимы");
+      expect(c.options).toHaveLength(3);
+      expect(c.options.filter((o) => o.correct)).toHaveLength(1);
+      const verdict = 36 * nab2 === na * nb2 ? "Независимы" : nab2 === 0 ? "Несовместны — и потому зависимы" : "Зависимы, но могут случиться вместе";
+      expect(c.options.find((o) => o.correct)!.text).toBe(verdict);
     }
   });
 
@@ -893,7 +908,19 @@ describe("генераторы", () => {
       const j = make("prob.jensen", s);
       if (j.kind !== "choice") throw new Error("ожидался выбор");
       // X равновероятно 1 или 4: сравниваем f(E X) с E f(X) численно
-      const f = j.prompt.includes("x^2") ? (x: number) => x * x : j.prompt.includes("log") ? Math.log : j.prompt.includes("e^x") ? Math.exp : Math.sqrt;
+      const fx = /f\(x\) = (.*)\$\.$/.exec(j.prompt)![1]!;
+      const table: Record<string, (x: number) => number> = {
+        "x^2": (x) => x * x,
+        "\\log x": Math.log,
+        "e^x": Math.exp,
+        "\\sqrt{x}": Math.sqrt,
+        "1/x": (x) => 1 / x,
+        "x \\log x": (x) => x * Math.log(x),
+        "-x^3": (x) => -(x ** 3),
+        "\\log(1 + x)": (x) => Math.log(1 + x),
+      };
+      const f = table[fx]!;
+      expect(f, fx).toBeTypeOf("function");
       const lhs = f(2.5);
       const rhs = (f(1) + f(4)) / 2;
       expect(j.options.find((o) => o.correct)!.text).toBe(lhs < rhs ? String.raw`$f(\mathbb{E}X) < \mathbb{E}f(X)$` : String.raw`$f(\mathbb{E}X) > \mathbb{E}f(X)$`);

@@ -90,13 +90,13 @@ const mapDesc = `Карта курсов. ${map.edges
                   <p>{c.summary}</p>
                 </div>
                 <dl class="catalog__facts">
-                  <div><dt>Уроков</dt><dd>{c.lessons.length}{c.required < c.lessons.length && ` (${c.lessons.length - c.required} ★)`}</dd></div>
+                  <div><dt>Уроков</dt><dd>{c.lessons.length}{c.required < c.lessons.length && `, из них ${c.lessons.length - c.required}\u00a0★ по\u00a0желанию`}</dd></div>
                   <div><dt>Часов</dt><dd>{hours(c)[0] === hours(c)[1] ? hours(c)[0] : hours(c).join("–")}</dd></div>
                   <div><dt>{n.projects ? (n.projects.length > 1 ? "Проекты" : "Проект") : "Практика"}</dt><dd>{n.projects ? n.projects.join(", ") : n.practice}</dd></div>
                   <div><dt>Нужно до&nbsp;начала</dt><dd>{n.before}</dd></div>
                 </dl>
                 <div class="catalog__progress" data-progress-lessons={JSON.stringify(ls.map((l) => l.key))}>
-                  <span data-catalog-status>Знаю <span data-known-total>0</span> из&nbsp;{c.required} {ofLessons(c.required)}</span>
+                  <span data-catalog-status>Знаю <span data-known-total>0</span> из&nbsp;{c.required} {c.required < c.lessons.length ? "обязательных" : ofLessons(c.required)}</span>
                   <span class="progress" aria-hidden="true"><span data-known-bar style="width:0%"></span></span>
                   <a class="btn btn--sm" href={c.href} data-continue>Программа курса</a>
                 </div>

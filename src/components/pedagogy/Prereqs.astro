@@ -1,5 +1,8 @@
 ---
 // «Опирается на»: уроки-пререквизиты с галочкой «знаю». Урок другого курса подписан названием курса.
+import { readFileSync } from "node:fs";
+import { parse } from "yaml";
+import type { CatalogMap } from "../../lib/content/catalog-map";
 import type { LessonKey } from "../../lib/content/types";
 import { loadRegistry } from "../../lib/content/registry";
 import Know from "../layout/Know.astro";
@@ -12,6 +15,9 @@ interface Props {
 const { lessons, course } = Astro.props;
 const reg = await loadRegistry();
 const currentCourse = course ?? Astro.url.pathname.split("/")[1];
+// короткое имя курса из каталога («Математика»): полное название, повторённое у каждого урока, — шум
+const short = new Map((parse(readFileSync("content/catalog.yaml", "utf8")) as CatalogMap).nodes.map((n) => [n.course, n.short]));
+const courseName = (id: string) => short.get(id) ?? reg.courseTitles.get(id);
 const items = lessons.map((key) => {
   const lesson = reg.lessonsByKey.get(key);
   if (!lesson) throw new Error(`<Prereqs>: нет урока «${key}» (ключ — <курс>/<модуль>/<slug>)`);
@@ -26,7 +32,8 @@ const items = lessons.map((key) => {
         <Know lesson={l} />
         <span>
           <a href={l.href}>{l.title}</a>{" "}
-          <span class="ref">{l.course !== currentCourse && `${reg.courseTitles.get(l.course)}, `}{l.number}</span>
+          {/* урок другого курса: название курса всегда отдельной строкой под ссылкой, а не там, где кончилось место */}
+          <span class:list={["ref", l.course !== currentCourse && "ref--course"]}>{l.course !== currentCourse && `${courseName(l.course)}, `}{l.number}</span>
         </span>
       </li>
     ))}

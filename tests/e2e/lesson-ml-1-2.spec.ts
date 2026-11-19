@@ -39,7 +39,7 @@ test("урок 1.2: виджет спуска, итоговая проверка
 test("урок 1.2: ячейка Python — три спуска и веса на исходных признаках", async ({ page }) => {
   test.setTimeout(150_000);
   await page.goto(url);
-  const cell = page.locator("[data-py-cell]");
+  const cell = page.locator("[data-py-cell]").first();
   await cell.getByRole("button", { name: "Запустить" }).click();
   await expect(cell.locator("[data-py-status]")).toHaveText(/^готово/, { timeout: 90_000 });
   await expect(cell.locator("[data-py-output]")).toHaveText(
@@ -49,6 +49,33 @@ test("урок 1.2: ячейка Python — три спуска и веса на
       "SGD           J = 0.3258 (минимум 0.3192), |θ − θ*| = 0.0912\n" +
       "мини-батч 32  J = 0.3208 (минимум 0.3192), |θ − θ*| = 0.0343\n" +
       "веса на исходных признаках: [ 1.412  0.111  0.369  0.031 -0.06  -0.019]\n",
+  );
+});
+
+// S7.12: ячейка сверки со scikit-learn — библиотека грузится только здесь; время первого запуска пишется в отчёт
+test("урок 1.2: ячейка сверки со scikit-learn", async ({ page }, info) => {
+  test.setTimeout(180_000);
+  const loaded: string[] = [];
+  page.on("request", (r) => {
+    if (/\/py\/.*\.whl$/.test(r.url())) loaded.push(r.url().split("/").pop()!);
+  });
+  await page.goto(url);
+  // первая ячейка (NumPy) scikit-learn не тянет
+  const first = page.locator("[data-py-cell]").first();
+  await first.getByRole("button", { name: "Запустить" }).click();
+  await expect(first.locator("[data-py-status]")).toHaveText(/^готово/, { timeout: 90_000 });
+  expect(loaded.some((f) => f.startsWith("scikit_learn"))).toBe(false);
+
+  const cell = page.locator("[data-py-cell]").nth(1);
+  const t0 = Date.now();
+  await cell.getByRole("button", { name: "Запустить" }).click();
+  await expect(cell.locator("[data-py-status]")).toHaveText(/^готово/, { timeout: 150_000 });
+  const seconds = (Date.now() - t0) / 1000;
+  info.annotations.push({ type: "sklearn-first-run", description: `${seconds.toFixed(1)} с` });
+  console.log(`scikit-learn: первый запуск ячейки сверки — ${seconds.toFixed(1)} с`);
+  expect(loaded.some((f) => f.startsWith("scikit_learn"))).toBe(true);
+  await expect(cell.locator("[data-py-output]")).toHaveText(
+    "пакетный спуск совпал с LinearRegression до 10⁻³: True\n" + "SGD — в облаке вокруг минимума (ближе 0.2): True наш, True SGDRegressor\n",
   );
 });
 

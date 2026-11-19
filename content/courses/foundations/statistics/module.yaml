@@ -3,7 +3,7 @@ id: statistics
 number: 'IV'
 title:
   ru: 'Статистика'
-hours: [18, 22]
+hours: [5, 9]
 lessons:
   - slug: descriptive
     number: 'IV.1'
