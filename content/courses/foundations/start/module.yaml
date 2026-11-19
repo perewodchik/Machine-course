@@ -3,7 +3,7 @@ id: start
 number: '0'
 title:
   ru: 'Старт'
-hours: [8, 10]
+hours: [7, 12]
 lessons:
   - slug: regression-by-hand
     number: '0.1'

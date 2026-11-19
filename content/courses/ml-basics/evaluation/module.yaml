@@ -3,7 +3,7 @@ id: evaluation
 number: '2'
 title:
   ru: 'Оценка и обобщение'
-hours: [18, 22]
+hours: [3, 6]
 lessons:
   - slug: classification-metrics
     number: '2.1'

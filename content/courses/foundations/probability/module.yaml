@@ -3,7 +3,7 @@ id: probability
 number: 'III'
 title:
   ru: 'Вероятность'
-hours: [26, 30]
+hours: [9, 14]
 lessons:
   - slug: probability-space
     number: 'III.1'

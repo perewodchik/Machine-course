@@ -3,7 +3,7 @@ id: calculus
 number: 'II'
 title:
   ru: 'Анализ и оптимизация'
-hours: [22, 26]
+hours: [6, 10]
 lessons:
   - slug: gradient
     number: 'II.1'
