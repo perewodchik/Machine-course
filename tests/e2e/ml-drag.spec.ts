@@ -17,10 +17,17 @@ async function drag(page: Page, handle: Locator, dx: number, dy: number) {
 
 const value = (slider: Locator) => slider.inputValue().then(Number);
 
+/** Прокрутить к виджету и дождаться, пока его остров client:visible оживёт: до этого клики по кнопкам теряются. */
+async function hydrated(page: Page, selector: string): Promise<Locator> {
+  const w = page.locator(selector).first();
+  await w.scrollIntoViewIfNeeded();
+  await expect(page.locator(`astro-island[ssr]:has(${selector})`)).toHaveCount(0);
+  return w;
+}
+
 test("1.3: точку запроса LWR тянут по рисунку", async ({ page }) => {
   await page.goto("/ml-basics/linear-models/features-lwr/");
-  const w = page.locator(".flexibility").first();
-  await w.scrollIntoViewIfNeeded();
+  const w = await hydrated(page, ".flexibility");
   await w.getByRole("button", { name: "локально взвешенная" }).click();
   const q = w.getByRole("slider", { name: "запрос x" });
   const before = await value(q);
@@ -31,8 +38,7 @@ test("1.3: точку запроса LWR тянут по рисунку", async 
 
 test("1.4: границу решений тянут за точку на ней", async ({ page }) => {
   await page.goto("/ml-basics/linear-models/logistic-regression/");
-  const w = page.locator(".logistic-plane").first();
-  await w.scrollIntoViewIfNeeded();
+  const w = await hydrated(page, ".logistic-plane");
   const phi = w.getByRole("slider", { name: "направление, °" });
   const before = await value(phi);
   await expect(w.locator(".kit-handle")).toHaveCount(2);
@@ -42,8 +48,7 @@ test("1.4: границу решений тянут за точку на ней"
 
 test("1.5: конец стрелки θ₂ тянут — меняются направление и длина, выбран класс", async ({ page }) => {
   await page.goto("/ml-basics/linear-models/perceptron-softmax/");
-  const w = page.locator(".class-regions").first();
-  await w.scrollIntoViewIfNeeded();
+  const w = await hydrated(page, ".class-regions");
   const before = await value(w.getByRole("slider", { name: "длина" }));
   await drag(page, w.locator(".kit-handle").nth(1), 60, 40);
   await expect(w.getByRole("button", { name: /θ₂/ })).toHaveAttribute("aria-pressed", "true");
