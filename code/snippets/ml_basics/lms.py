@@ -62,3 +62,23 @@ def _lesson_cell() -> None:
     b = theta_star[0] - np.sum(theta_star[1:] * mu / s)
     print("веса на исходных признаках:", np.round(np.r_[b, w], 3))
     # endregion
+
+
+def _sklearn_cell() -> None:
+    """Служебная обёртка: регион sklearn — ячейка сверки урока 1.2 (scikit-learn грузится только в ней)."""
+    # region sklearn
+    from sklearn.linear_model import LinearRegression, SGDRegressor
+
+    X, y = apartments()
+    mu, s = X.mean(axis=0), X.std(axis=0)
+    Z = np.column_stack([np.ones(len(X)), (X - mu) / s])
+    theta = gd(Z, y, alpha=0.5, epochs=200)  # пакетный спуск на стандартизованных признаках
+    w, b = theta[1:] / s, theta[0] - np.sum(theta[1:] * mu / s)  # обратно к м², комнатам, минутам
+    lr = LinearRegression().fit(X, y)
+    print("пакетный спуск совпал с LinearRegression до 10⁻³:", np.abs(np.r_[b, w] - np.r_[lr.intercept_, lr.coef_]).max() < 1e-3)
+
+    ours = gd(Z, y, alpha=0.01, epochs=20, batch=1)  # SGD с постоянным шагом
+    sk = SGDRegressor(penalty=None, learning_rate="constant", eta0=0.01, max_iter=20, tol=None, random_state=0).fit(Z[:, 1:], y)
+    best = LinearRegression().fit(Z[:, 1:], y).coef_
+    print("SGD — в облаке вокруг минимума (ближе 0.2):", np.abs(ours[1:] - best).max() < 0.2, "наш,", np.abs(sk.coef_ - best).max() < 0.2, "SGDRegressor")
+    # endregion

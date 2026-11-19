@@ -37,7 +37,7 @@ test("урок 1.1: входная проверка, виджет, итогов�
 test("урок 1.1: ячейка Python — бейзлайн, площадь, все признаки", async ({ page }) => {
   test.setTimeout(150_000);
   await page.goto(url);
-  const cell = page.locator("[data-py-cell]");
+  const cell = page.locator("[data-py-cell]").first();
   await cell.getByRole("button", { name: "Запустить" }).click();
   await expect(cell.locator("[data-py-status]")).toHaveText(/^готово/, { timeout: 90_000 });
   await expect(cell.locator("[data-py-output]")).toHaveText(

@@ -43,16 +43,10 @@ def test_rmse_at_least_mae_and_split_disjoint():
 
 
 def test_lesson_data_is_the_course_dataset():
-    """Генератор в ячейке урока (без mlf: в браузере пакета нет) совпадает с mlf.datasets.apartments_full."""
-    import inspect
-
+    """Генератор в регионе data урока (без mlf: в браузере пакета нет) совпадает с mlf.datasets.apartments_full."""
     import ml_basics.learning_problem as lp
 
-    src = inspect.getsource(lp._lesson_cell)
-    ns: dict = {"np": np}
-    body = src[src.index("    def apartments"):src.index("    X, y = apartments()")]
-    exec("\n".join(line[4:] for line in body.splitlines()), ns)
-    X1, y1 = ns["apartments"]()
+    X1, y1 = lp.apartments()
     X2, y2 = apartments_full()
     np.testing.assert_array_equal(X1, X2)
     np.testing.assert_array_equal(y1, y2)

@@ -33,7 +33,7 @@ test("урок 1.3: виджет «Гибкость модели», итогов
 test("урок 1.3: ячейка Python — степени, окна и предел LWR", async ({ page }) => {
   test.setTimeout(150_000);
   await page.goto(url);
-  const cell = page.locator("[data-py-cell]");
+  const cell = page.locator("[data-py-cell]").first();
   await cell.getByRole("button", { name: "Запустить" }).click();
   await expect(cell.locator("[data-py-status]")).toHaveText(/^готово/, { timeout: 90_000 });
   const out = await cell.locator("[data-py-output]").textContent();

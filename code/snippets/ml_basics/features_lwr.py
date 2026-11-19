@@ -63,3 +63,23 @@ def _lesson_cell() -> None:
     line = np.polyfit(x[tr], y[tr], 1)
     print("LWR при τ = 10⁵ в 20 мин:", round(lwr(20, x[tr], y[tr], 1e5), 3), " прямая МНК:", round(np.polyval(line, 20), 3))
     # endregion
+
+
+def _sklearn_cell() -> None:
+    """Служебная обёртка: регион sklearn — ячейка сверки урока 1.3 (scikit-learn грузится только в ней)."""
+    # region sklearn
+    from sklearn.linear_model import LinearRegression
+    from sklearn.pipeline import make_pipeline
+    from sklearn.preprocessing import PolynomialFeatures
+
+    x, y = metro_prices()
+    idx = np.random.default_rng(0).permutation(len(x))
+    tr, va = idx[:56], idx[56:]
+    mu, s = x[tr].mean(), x[tr].std()
+    z = (x - mu) / s
+    print("признаки совпали с PolynomialFeatures:", np.allclose(poly_features(z, 4), PolynomialFeatures(4).fit_transform(z[:, None])))
+    for p in [2, 4, 9]:
+        theta = np.linalg.lstsq(poly_features(z[tr], p), y[tr], rcond=None)[0]
+        model = make_pipeline(PolynomialFeatures(p), LinearRegression()).fit(z[tr, None], y[tr])
+        print(f"степень {p}: RMSE вал. наша {rmse(poly_features(z[va], p) @ theta, y[va]):.2f}, sklearn {rmse(model.predict(z[va, None]), y[va]):.2f}")
+    # endregion

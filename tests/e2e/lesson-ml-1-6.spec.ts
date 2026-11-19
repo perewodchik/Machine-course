@@ -46,7 +46,7 @@ test("итоговая проверка модуля 1: 14 задач по ше�
 test("урок 1.6: ячейка Python — пуассоновская регрессия", async ({ page }) => {
   test.setTimeout(150_000);
   await page.goto(url);
-  const cell = page.locator("[data-py-cell]");
+  const cell = page.locator("[data-py-cell]").first();
   await cell.getByRole("button", { name: "Запустить" }).click();
   await expect(cell.locator("[data-py-status]")).toHaveText(/^готово/, { timeout: 90_000 });
   await expect(cell.locator("[data-py-output]")).toHaveText(

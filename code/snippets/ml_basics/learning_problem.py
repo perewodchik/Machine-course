@@ -1,10 +1,25 @@
 """Цикл обучения на «Квартирах»: разбиение, бейзлайн, линейная модель, RMSE и MAE на тесте (урок 1.1 «Основ ML»).
 
-Регионы вставляются в урок при сборке: ``<PyCode src="ml_basics/learning_problem.py#tools+demo" run />``. Тест
+Регионы вставляются в урок при сборке: ``<PyCode src="ml_basics/learning_problem.py#data+tools+demo" run />``, сверка — ``#sklearn``. Тест
 ``code/tests/test_learning_problem.py`` сверяет вывод и сравнивает функции с ``sklearn``.
 """
 
 import numpy as np
+
+
+# region data
+def apartments(n=2000, seed=2028):
+    """«Квартиры»: площадь, комнат, этаж, до метро (мин), возраст дома; цена, млн ₽ (как mlf.datasets.apartments_full)."""
+    rng = np.random.default_rng(seed)
+    area = np.round(rng.uniform(25, 120, size=n))
+    rooms = np.clip(np.round(area / 30 + rng.normal(0, 0.5, size=n)), 1, 5)
+    floor = rng.integers(1, 26, size=n).astype(float)
+    metro = np.round(rng.uniform(2, 40, size=n))
+    age = np.round(rng.uniform(0, 70, size=n))
+    X = np.column_stack([area, rooms, floor, metro, age])
+    price = 1.5 + 0.11 * area + 0.4 * rooms + 0.03 * floor - 0.06 * metro - 0.02 * age + rng.normal(0, 0.8, size=n)
+    return X, np.round(price, 2)
+# endregion
 
 
 # region tools
@@ -37,18 +52,6 @@ def predict(theta, X):
 def _lesson_cell() -> None:
     """Служебная обёртка: регион demo — ячейка урока 1.1; тест сверяет её вывод с уроком."""
     # region demo
-    def apartments(n=2000, seed=2028):
-        """«Квартиры»: площадь, комнат, этаж, до метро (мин), возраст дома; цена, млн ₽ (как mlf.datasets.apartments_full)."""
-        rng = np.random.default_rng(seed)
-        area = np.round(rng.uniform(25, 120, size=n))
-        rooms = np.clip(np.round(area / 30 + rng.normal(0, 0.5, size=n)), 1, 5)
-        floor = rng.integers(1, 26, size=n).astype(float)
-        metro = np.round(rng.uniform(2, 40, size=n))
-        age = np.round(rng.uniform(0, 70, size=n))
-        X = np.column_stack([area, rooms, floor, metro, age])
-        price = 1.5 + 0.11 * area + 0.4 * rooms + 0.03 * floor - 0.06 * metro - 0.02 * age + rng.normal(0, 0.8, size=n)
-        return X, np.round(price, 2)
-
     X, y = apartments()  # 2000 квартир, 5 признаков, цена в млн ₽
     tr, te = split(len(y), test=0.2, seed=0)
 
@@ -63,4 +66,21 @@ def _lesson_cell() -> None:
     pred, pred_tr = predict(theta, X[te]), predict(theta, X[tr])
     print(f"все признаки:     RMSE {rmse(y[te], pred):.3f}, MAE {mae(y[te], pred):.3f}")
     print(f"на обучении:      RMSE {rmse(y[tr], pred_tr):.3f}")
+    # endregion
+
+
+def _sklearn_cell() -> None:
+    """Служебная обёртка: регион sklearn — ячейка сверки урока 1.1 (scikit-learn грузится только в ней)."""
+    # region sklearn
+    from sklearn.linear_model import LinearRegression
+    from sklearn.metrics import mean_absolute_error, mean_squared_error
+
+    X, y = apartments()
+    tr, te = split(len(y), test=0.2, seed=0)
+    theta = fit(X[tr], y[tr])  # наш МНК
+    lr = LinearRegression().fit(X[tr], y[tr])  # библиотека
+    print("веса совпали с LinearRegression:", np.allclose(theta, np.r_[lr.intercept_, lr.coef_]))
+    pred = predict(theta, X[te])
+    print(f"RMSE: наш {rmse(y[te], pred):.4f}, sklearn {np.sqrt(mean_squared_error(y[te], pred)):.4f}")
+    print(f"MAE:  наш {mae(y[te], pred):.4f}, sklearn {mean_absolute_error(y[te], pred):.4f}")
     # endregion

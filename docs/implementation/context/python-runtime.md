@@ -20,6 +20,12 @@
 - COOP/COEP: в проде — `public/_headers`, в `astro dev`/`preview` — `server.headers` в `astro.config.mjs`.
 - Тесты: `tests/e2e/python.spec.ts` (θ из сниппета, «Стоп» без перезагрузки Python, правка, без JS), юнит — `snippets`, `python`, `traceback`.
 
+## scikit-learn в ячейках (S7.12)
+
+- `PY_LAZY_PACKAGES` в `src/python/version.ts` (scikit-learn со scipy, joblib, threadpoolctl, ≈ 19 МБ) — лежат в `public/py`, но грузятся только ячейкой, где есть импорт: воркер ищет пакеты по видимому коду и импортам верхнего уровня служебного (импорт внутри `_sklearn_cell()` соседние ячейки не трогает).
+- Ячейка сверки урока — регион `sklearn` внутри служебной функции `_sklearn_cell()` сниппета; вывод закреплён `code/tests/test_sklearn_cells.py` и `tests/e2e/sklearn-cells.spec.ts`. В браузере scikit-learn 1.8, в CI — новее: выводить совпадение с допуском, а не крошечные разницы; штраф отключать `C=1e12` (у `C=np.inf` в 1.8 предупреждение).
+- Первый запуск ячейки сверки в уроке 1.2 — 7 с (локально, e2e печатает время).
+
 ## Наборы данных в ячейках (S7.02)
 
 - Настоящие данные в уроке — подвыборки `public/data/<набор>-10k.csv` (≤ 10⁴ строк, ADR 0006). Сниппет читает файл относительным путём `data/<набор>-10k.csv` модулем `csv`. Воркер (`src/python/worker.ts`, `mountData`) находит такие пути в коде ячейки, скачивает файлы с `/data/` и кладёт в текущую папку Pyodide — один раз на страницу. Тест сниппета делает `monkeypatch.chdir(public/)` (образец — `code/tests/test_classification_metrics.py`).

@@ -3,7 +3,7 @@ id: linear-models
 number: '1'
 title:
   ru: 'Линейные модели'
-hours: [4, 7]
+hours: [5, 8]
 lessons:
   - slug: learning-problem
     number: '1.1'

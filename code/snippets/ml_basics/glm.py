@@ -48,3 +48,18 @@ def _lesson_cell() -> None:
     w = np.linalg.lstsq(X, y, rcond=None)[0]  # линейная регрессия на тех же признаках
     print(f"отрицательных прогнозов: у линейной {np.mean(X @ w < 0):.1%}, у пуассоновской {np.mean(np.exp(X @ theta) < 0):.1%}")
     # endregion
+
+
+def _sklearn_cell() -> None:
+    """Служебная обёртка: регион sklearn — ячейка сверки урока 1.6 (scikit-learn грузится только в ней)."""
+    # region sklearn
+    from sklearn.linear_model import PoissonRegressor
+
+    F, y = ad_views()
+    theta, _ = poisson_newton(np.column_stack([np.ones(len(y)), F]), y)
+    sk = PoissonRegressor(alpha=0, tol=1e-12, max_iter=10_000).fit(F, y)  # alpha=0 — без штрафа
+    print("Ньютон:          ", np.round(theta, 3))
+    print("PoissonRegressor:", np.round(np.r_[sk.intercept_, sk.coef_], 3))
+    d = PoissonRegressor().fit(F, y)  # по умолчанию alpha=1 сжимает веса
+    print("по умолчанию:    ", np.round(np.r_[d.intercept_, d.coef_], 3))
+    # endregion

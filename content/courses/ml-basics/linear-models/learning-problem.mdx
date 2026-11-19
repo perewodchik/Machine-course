@@ -3,7 +3,7 @@ id: learning-problem
 title: 'Задача обучения: данные, модель, потери, обобщение'
 number: '1.1'
 concepts: [ml.supervised-learning]
-minutes: 65
+minutes: 70
 lead: 'Модель учат на одних квартирах, а нужна она для других — тех, которых она не видела. За этот урок вы пройдёте весь цикл: данные, разбиение, бейзлайн, линейная модель и ошибка на тесте. Остальные уроки курса меняют в этом цикле по одному звену.'
 cs229:
   - edition: main-notes-2026-spring
@@ -15,7 +15,7 @@ cs229:
   0. Входная проверка (content/diagnostic-ml-basics.yaml): 12 задач по урокам математики, верные ставят «знаю».
   1. Постановка: x⁽ⁱ⁾, y⁽ⁱ⁾, h_θ, J(θ), регрессия и классификация; упражнение 1 (выбор).
   2. Цикл на «Квартирах»: разбиение, бейзлайн, линейная модель, RMSE и MAE; формула 1 (f.constant-baseline),
-     ячейка Python (сверка с sklearn — в code/tests/test_learning_problem.py); упражнения 2–3 (ml.best-constant, ml.rmse-mae).
+     ячейка Python и ячейка сверки со scikit-learn (числа — code/tests/test_learning_problem.py); упражнения 2–3 (ml.best-constant, ml.rmse-mae).
   3. Обобщение: виджет «Обучение и тест», подглядывание в тест и утечка; упражнение 4 (шумовые признаки).
   Итог, итоговая проверка (ml.rmse-mae, ставит «знаю»).
 */}
@@ -76,9 +76,15 @@ $$
 
 Пройдём весь цикл на&nbsp;2000 квартирах. Перед запуском предскажите: во&nbsp;сколько раз линейная модель по&nbsp;всем признакам точнее бейзлайна?
 
-<PyCode src="ml_basics/learning_problem.py#tools+demo" run />
+<PyCode src="ml_basics/learning_problem.py#data+tools+demo" run />
 
-Бейзлайн ошибается на&nbsp;3.5&nbsp;млн&nbsp;₽ (RMSE), модель по&nbsp;одной площади&nbsp;— на&nbsp;1.2, по&nbsp;всем пяти признакам&nbsp;— на&nbsp;0.82: в&nbsp;четыре с&nbsp;лишним раза точнее. Веса здесь&nbsp;— решение нормальных уравнений из&nbsp;урока V.1 математики; `LinearRegression` из&nbsp;scikit-learn даёт те&nbsp;же веса, а&nbsp;`sklearn.metrics`&nbsp;— те&nbsp;же RMSE и&nbsp;MAE (это проверяют тесты курса). Ошибка на&nbsp;обучении 0.795 чуть меньше тестовой: модель немного подстроилась под&nbsp;свои данные.
+Бейзлайн ошибается на&nbsp;3.5&nbsp;млн&nbsp;₽ (RMSE), модель по&nbsp;одной площади&nbsp;— на&nbsp;1.2, по&nbsp;всем пяти признакам&nbsp;— на&nbsp;0.82: в&nbsp;четыре с&nbsp;лишним раза точнее. Веса здесь&nbsp;— решение нормальных уравнений из&nbsp;урока V.1 математики. Ошибка на&nbsp;обучении 0.795 чуть меньше тестовой: модель немного подстроилась под&nbsp;свои данные.
+
+Теперь сверьте свой код с&nbsp;библиотекой: `LinearRegression` из&nbsp;scikit-learn и&nbsp;метрики из&nbsp;`sklearn.metrics` на&nbsp;том&nbsp;же разбиении. Первый запуск подгружает scikit-learn со&nbsp;SciPy, это несколько секунд.
+
+<PyCode src="ml_basics/learning_problem.py#data+tools+sklearn" run />
+
+Веса совпали, RMSE и&nbsp;MAE&nbsp;— до&nbsp;последнего знака: в&nbsp;работе можно брать библиотеку, зная, что внутри.
 
 <Note label="По-английски">Обучающая и&nbsp;тестовая выборки&nbsp;— *training* и&nbsp;*test sets*, бейзлайн&nbsp;— *baseline*, корень из&nbsp;среднего квадрата ошибки&nbsp;— *root mean squared error*, средняя абсолютная ошибка&nbsp;— *mean absolute error*.</Note>
 
