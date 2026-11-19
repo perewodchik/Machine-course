@@ -11,7 +11,7 @@
 
 ### III.1. Вероятностное пространство
 
-**Время:** 2 ч. **Опирается на:** 0.3, 0.4.
+**Время:** 45 мин. **Опирается на:** 0.3, 0.4.
 
 **Цели.** Ученик:
 - задаёт пространство исходов, события и вероятность для простых экспериментов;
@@ -35,7 +35,7 @@
 
 ### III.2. Условная вероятность и независимость
 
-**Время:** 2 ч. **Опирается на:** III.1. **CS229:** «Generative learning algorithms» (Naive Bayes assumption).
+**Время:** 40 мин. **Опирается на:** III.1. **CS229:** «Generative learning algorithms» (Naive Bayes assumption).
 
 **Цели.** Ученик:
 - считает условную вероятность как «сужение мира»;
@@ -59,7 +59,7 @@
 
 ### III.3. Формула полной вероятности и Байес
 
-**Время:** 2 ч. **Опирается на:** III.2. **CS229:** «Generative learning algorithms».
+**Время:** 40 мин. **Опирается на:** III.2. **CS229:** «Generative learning algorithms».
 
 **Цели.** Ученик:
 - применяет формулу полной вероятности и формулу Байеса;
@@ -83,7 +83,7 @@
 
 ### III.4. Случайные величины: PMF, PDF, CDF
 
-**Время:** 2.5 ч. **Опирается на:** III.1, 0.7.
+**Время:** 45 мин.5 ч. **Опирается на:** III.1, 0.7.
 
 **Цели.** Ученик:
 - описывает дискретную величину функцией вероятности, непрерывную — плотностью, любую — функцией распределения;
@@ -111,7 +111,7 @@
 
 ### III.5. Матожидание, дисперсия, неравенство Йенсена
 
-**Время:** 2.5 ч. **Опирается на:** III.4. **CS229:** «The EM algorithm» (Jensen's inequality).
+**Время:** 40 мин.5 ч. **Опирается на:** III.4. **CS229:** «The EM algorithm» (Jensen's inequality).
 
 **Цели.** Ученик:
 - считает матожидание и дисперсию, применяет линейность матожидания и LOTUS;
@@ -135,7 +135,7 @@
 
 ### III.6. Дискретные распределения
 
-**Время:** 2 ч. **Опирается на:** III.5. **CS229:** «Classification and logistic regression» (Bernoulli), «Generative learning algorithms» (multinomial event model), «Generalized linear models» (Poisson).
+**Время:** 40 мин. **Опирается на:** III.5. **CS229:** «Classification and logistic regression» (Bernoulli), «Generative learning algorithms» (multinomial event model), «Generalized linear models» (Poisson).
 
 **Цели.** Ученик:
 - узнаёт по сюжету распределения Бернулли, биномиальное, геометрическое, Пуассона, категориальное, мультиномиальное;
@@ -159,7 +159,7 @@
 
 ### III.7. Непрерывные распределения
 
-**Время:** 2.5 ч. **Опирается на:** III.5, 0.7. **CS229:** «Linear regression» (Gaussian noise), «Regularization and model selection» (Laplace prior), «Independent components analysis» (логистическая CDF).
+**Время:** 40 мин.5 ч. **Опирается на:** III.5, 0.7. **CS229:** «Linear regression» (Gaussian noise), «Regularization and model selection» (Laplace prior), «Independent components analysis» (логистическая CDF).
 
 **Цели.** Ученик:
 - работает с равномерным, экспоненциальным, нормальным, Лапласа, логистическим и бета-распределением;
@@ -184,7 +184,7 @@
 
 ### III.8. Предельные теоремы и метод Монте-Карло
 
-**Время:** 2.5 ч. **Опирается на:** III.6, III.7. **CS229:** «Generalization» (union bound, Hoeffding).
+**Время:** 1 ч 35 мин.5 ч. **Опирается на:** III.6, III.7. **CS229:** «Generalization» (union bound, Hoeffding).
 
 **Цели.** Ученик:
 - формулирует и иллюстрирует закон больших чисел и центральную предельную теорему;
@@ -209,7 +209,7 @@
 
 ### III.9. Совместные распределения и ковариация
 
-**Время:** 2.5 ч. **Опирается на:** III.5, III.8. **CS229:** «Generalization» (условное матожидание), «Reinforcement learning».
+**Время:** 45 мин.5 ч. **Опирается на:** III.5, III.8. **CS229:** «Generalization» (условное матожидание), «Reinforcement learning».
 
 **Цели.** Ученик:
 - переходит от совместного распределения к маргинальным и условным;
@@ -233,7 +233,7 @@
 
 ### III.10. Случайные векторы и линейные преобразования
 
-**Время:** 2 ч. **Опирается на:** III.9, I.10, II.10. **CS229:** «Principal components analysis», «Independent components analysis».
+**Время:** 45 мин. **Опирается на:** III.9, I.10, II.10. **CS229:** «Principal components analysis», «Independent components analysis».
 
 **Цели.** Ученик:
 - записывает среднее и ковариационную матрицу случайного вектора;
@@ -256,7 +256,7 @@
 
 ### III.11. Многомерное нормальное распределение
 
-**Время:** 3 ч. **Опирается на:** III.10, I.9, I.10. **CS229:** «Generative learning algorithms» (GDA), «The EM algorithm».
+**Время:** 45 мин. **Опирается на:** III.10, I.9, I.10. **CS229:** «Generative learning algorithms» (GDA), «The EM algorithm».
 
 **Цели.** Ученик:
 - записывает плотность $\mathcal{N}(\mu, \Sigma)$ и объясняет каждый множитель (существует при $\Sigma \succ 0$);
@@ -280,7 +280,7 @@
 
 ### III.12. Смеси и скрытые переменные
 
-**Время:** 2 ч. **Опирается на:** III.11, III.3. **CS229:** «The EM algorithm» (mixture of Gaussians).
+**Время:** 45 мин. **Опирается на:** III.11, III.3. **CS229:** «The EM algorithm» (mixture of Gaussians).
 
 **Цели.** Ученик:
 - записывает смесь гауссиан через скрытую переменную $z$;
@@ -302,7 +302,7 @@
 
 ### III.13. Энтропия, кросс-энтропия, KL
 
-**Время:** 2 ч. **Опирается на:** III.5, III.6. **CS229:** «Classification and logistic regression» (log loss), «Deep learning» (cross-entropy loss), «The EM algorithm» (ELBO).
+**Время:** 1 ч 55 мин. **Опирается на:** III.5, III.6. **CS229:** «Classification and logistic regression» (log loss), «Deep learning» (cross-entropy loss), «The EM algorithm» (ELBO).
 
 **Цели.** Ученик:
 - считает энтропию, кросс-энтропию и KL-дивергенцию для дискретных распределений;

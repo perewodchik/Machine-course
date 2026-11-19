@@ -1,7 +1,7 @@
 """Оценка времени уроков по фактическому объёму (S7.11, решение пользователя 19.11.2026: «честные часы»).
 
 Запуск: python scripts/estimate_time.py            (таблица: урок, слова, задачи, виджеты, ячейки, оценка и minutes)
-        python scripts/estimate_time.py --write    (переписать minutes в уроках и hours в module.yaml)
+        python scripts/estimate_time.py --write    (переписать minutes в уроках, hours в module.yaml и «Время:» в карточках)
         python scripts/estimate_time.py --check    (minutes и hours совпадают с оценкой — вызывает check_consistency.py)
 
 Модель времени (минуты; темп рефрешера: текст с формулами читается медленнее прозы):
@@ -113,6 +113,42 @@ def survey() -> list[tuple[Path, list[tuple[Path, dict]]]]:
     return out
 
 
+PROGRAM = {"foundations": sorted((ROOT / "docs" / "program").glob("0*.md")), "ml-basics": sorted((ROOT / "docs" / "program" / "ml-basics").glob("0*.md"))}
+CARD_TIME = r"(^### {num}\. [^\n]*\n\n\*\*Время:\*\* )[^.]*?( ?(?:ч|мин))?\."
+
+
+def card_time(minutes: int) -> str:
+    """«Время:» в карточке программы — те же минуты, что у урока: «45 мин», «1 ч 10 мин», «2 ч»."""
+    h, m = divmod(minutes, 60)
+    return f"{minutes} мин" if h == 0 else f"{h} ч" if m == 0 else f"{h} ч {m} мин"
+
+
+def _cards(apply: bool) -> list[str]:
+    """Сверить (или переписать) «**Время:** …» в карточках docs/program с minutes уроков."""
+    errs = []
+    nums = {}
+    for mod, lessons in survey():
+        meta = yaml.safe_load((mod / "module.yaml").read_text(encoding="utf-8"))
+        by_slug = {path.stem: e["estimate"] for path, e in lessons}
+        for les in meta["lessons"]:
+            if les["slug"] in by_slug:
+                nums[(mod.parent.name, str(les["number"]))] = by_slug[les["slug"]]
+    for (course, num), minutes in nums.items():
+        for card in PROGRAM.get(course, []):
+            text = card.read_text(encoding="utf-8")
+            rx = re.compile(CARD_TIME.format(num=re.escape(num)), flags=re.M)
+            m = rx.search(text)
+            if not m:
+                continue
+            want = f"{m.group(1)}{card_time(minutes)}."
+            if m.group(0) != want:
+                if apply:
+                    card.write_text(text[: m.start()] + want + text[m.end() :], encoding="utf-8")
+                else:
+                    errs.append(f"{card.relative_to(ROOT)}: у карточки {num} «Время» не совпадает с minutes урока ({card_time(minutes)})")
+    return errs
+
+
 def write() -> None:
     for mod, lessons in survey():
         for path, e in lessons:
@@ -121,6 +157,7 @@ def write() -> None:
         y = mod / "module.yaml"
         h = module_hours([e["estimate"] for _, e in lessons])
         y.write_text(re.sub(r"^hours: \[\d+, \d+\]$", f"hours: [{h[0]}, {h[1]}]", y.read_text(encoding="utf-8"), count=1, flags=re.M), encoding="utf-8")
+    _cards(apply=True)
 
 
 def problems() -> list[str]:
@@ -133,7 +170,7 @@ def problems() -> list[str]:
         h = module_hours([e["estimate"] for _, e in lessons])
         if list(meta["hours"]) != h:
             errs.append(f"{(mod / 'module.yaml').relative_to(ROOT)}: hours {meta['hours']}, по объёму {h}")
-    return errs
+    return errs + _cards(apply=False)
 
 
 def main() -> int:

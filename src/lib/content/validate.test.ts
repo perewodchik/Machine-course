@@ -18,7 +18,8 @@ function run(name?: string): string[] {
 }
 
 describe("корректный контент", () => {
-  it("текущий content/ проходит", () => {
+  // весь контент (65 уроков, ≈ 6000 формул KaTeX) проверяется 3–5 секунд — больше стандартного предела vitest
+  it("текущий content/ проходит", { timeout: 30_000 }, () => {
     const { problems, stats } = validateContent(process.cwd());
     expect(problems).toEqual([]);
     expect(stats.courses).toBe(9);

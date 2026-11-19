@@ -8,7 +8,7 @@
 
 ### II.1. Частные производные и градиент
 
-**Время:** 2.5 ч. **Опирается на:** 0.6, I.2. **CS229:** «Linear regression» (LMS).
+**Время:** 55 мин.5 ч. **Опирается на:** 0.6, I.2. **CS229:** «Linear regression» (LMS).
 
 **Цели.** Ученик:
 - считает частные производные и градиент функции нескольких переменных;
@@ -35,7 +35,7 @@
 
 ### II.2. Многомерное правило цепочки и якобиан
 
-**Время:** 2.5 ч. **Опирается на:** II.1, I.3. **CS229:** «Deep learning» (backpropagation).
+**Время:** 45 мин.5 ч. **Опирается на:** II.1, I.3. **CS229:** «Deep learning» (backpropagation).
 
 **Цели.** Ученик:
 - строит якобиан отображения $f: \mathbb{R}^n \to \mathbb{R}^m$;
@@ -59,7 +59,7 @@
 
 ### II.3. Матричное дифференцирование
 
-**Время:** 3 ч. **Опирается на:** II.1, II.2, I.5. **CS229:** «Linear regression» (normal equations), «Generative learning algorithms» (MLE для GDA).
+**Время:** 50 мин. **Опирается на:** II.1, II.2, I.5. **CS229:** «Linear regression» (normal equations), «Generative learning algorithms» (MLE для GDA).
 
 **Цели.** Ученик:
 - выводит градиенты $b^\top x$, $x^\top A x$, $\operatorname{tr}(AB)$, $\log\lvert\det A\rvert$ и проверяет их конечными разностями;
@@ -88,7 +88,7 @@
 
 ### II.4. Гессиан, ряд Тейлора, критические точки
 
-**Время:** 2 ч. **Опирается на:** II.3, I.10. **CS229:** «Classification and logistic regression» (Newton's method).
+**Время:** 30 мин. **Опирается на:** II.3, I.10. **CS229:** «Classification and logistic regression» (Newton's method).
 
 **Цели.** Ученик:
 - считает гессиан и строит квадратичное приближение функции;
@@ -110,7 +110,7 @@
 
 ### II.5. Выпуклость
 
-**Время:** 2.5 ч. **Опирается на:** II.4. **CS229:** «Classification and logistic regression», «Generalized linear models» (выпуклость NLL).
+**Время:** 45 мин.5 ч. **Опирается на:** II.4. **CS229:** «Classification and logistic regression», «Generalized linear models» (выпуклость NLL).
 
 **Цели.** Ученик:
 - проверяет выпуклость множества и функции по определению и по критериям первого и второго порядка;
@@ -136,7 +136,7 @@
 
 ### II.6. Градиентный спуск и SGD
 
-**Время:** 3 ч. **Опирается на:** II.5. **CS229:** «Linear regression» (batch vs stochastic gradient descent), «Classification and logistic regression» (gradient ascent), «Clustering and the k-means algorithm».
+**Время:** 1 ч 30 мин. **Опирается на:** II.5. **CS229:** «Linear regression» (batch vs stochastic gradient descent), «Classification and logistic regression» (gradient ascent), «Clustering and the k-means algorithm».
 
 **Цели.** Ученик:
 - реализует градиентный спуск и подъём; объясняет роль шага и условие сходимости $\eta < 2/\lambda_{\max}$ на квадратичной функции;
@@ -161,7 +161,7 @@
 
 ### II.7. Метод Ньютона
 
-**Время:** 2 ч. **Опирается на:** II.4, II.6. **CS229:** «Classification and logistic regression» (Newton's method).
+**Время:** 35 мин. **Опирается на:** II.4, II.6. **CS229:** «Classification and logistic regression» (Newton's method).
 
 **Цели.** Ученик:
 - выводит одномерный метод Ньютона как поиск нуля производной;
@@ -183,7 +183,7 @@
 
 ### II.8. Множители Лагранжа
 
-**Время:** 2.5 ч. **Опирается на:** II.5, I.10. **CS229:** «Principal components analysis», «Generative learning algorithms» (MLE категориального распределения), «The EM algorithm» (веса смеси).
+**Время:** 40 мин.5 ч. **Опирается на:** II.5, I.10. **CS229:** «Principal components analysis», «Generative learning algorithms» (MLE категориального распределения), «The EM algorithm» (веса смеси).
 
 **Цели.** Ученик:
 - решает задачу с ограничениями-равенствами через лагранжиан;
@@ -206,7 +206,7 @@
 
 ### II.9. ★ Двойственность и условия KKT
 
-**Время:** 2 ч. **Опирается на:** II.8. **CS229:** «Support vector machines» (Lagrange duality, optimal margin classifiers).
+**Время:** 30 мин. **Опирается на:** II.8. **CS229:** «Support vector machines» (Lagrange duality, optimal margin classifiers).
 
 **Цели.** Ученик:
 - записывает задачу с ограничениями-неравенствами и её двойственную;
@@ -227,7 +227,7 @@
 
 ### II.10. Кратные интегралы и замена переменных
 
-**Время:** 2 ч. **Опирается на:** 0.7, II.2, I.7. **CS229:** «Independent components analysis», «Probability review» (многомерные плотности).
+**Время:** 1 ч. **Опирается на:** 0.7, II.2, I.7. **CS229:** «Independent components analysis», «Probability review» (многомерные плотности).
 
 **Цели.** Ученик:
 - считает двойной интеграл как повторный;
